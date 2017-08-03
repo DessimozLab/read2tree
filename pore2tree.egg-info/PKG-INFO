@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: pore2tree
+Version: 0.0.1
+Summary: pore2tree allows to build high quality phylogenetic trees using reads and a reference set of orthologous groups (DNA + Protein).
+Home-page: UNKNOWN
+Author: David Dylus and Fritz Sedlaczek
+Author-email: david.dylus@unil.ch
+License: Proprietary
+Description: UNKNOWN
+Platform: UNKNOWN
