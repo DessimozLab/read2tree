@@ -74,6 +74,11 @@ class OGSet(object):
         """
         print('--- Load ogs and find their corresponding DNA seq from a database ---')
         ogs = {}
+
+        orthologous_groups_aa = os.path.join(self.args.output_path, "reference_ogs_aa")
+        if not os.path.exists(orthologous_groups_aa):
+            os.makedirs(orthologous_groups_aa)
+
         orthologous_groups_fasta = os.path.join(self.oma_output_path, "OrthologousGroupsFasta")
         og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
         tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
@@ -89,6 +94,8 @@ class OGSet(object):
                 records = list(SeqIO.parse(file, 'fasta'))
                 ogs[name] = OG()
                 ogs[name].aa = self._get_aa_records(og_ham, records)
+                output_file_aa = os.path.join(orthologous_groups_aa, name+".fa")
+                self._write(output_file_aa, ogs[name].aa)
                 if self.args.dna_reference:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
                 else:
@@ -140,7 +147,6 @@ class OGSet(object):
 
         return min_species
 
-
     def _clean_DNA_seq(self, record):
         '''
         Exchange all X in sequence with N
@@ -150,11 +156,32 @@ class OGSet(object):
         return Seq.Seq(re.sub('[^GATC]', 'N', str(record.seq).upper()), SingleLetterAlphabet())
 
     def add_mapped_seq(self, mapped_og_set):
+        """
+        Add the sequence given from the read mapping to its corresponding OG
+        :param mapped_og_set: set of ogs with its mapped sequences
+        """
+        ogs_with_mapped_seq = os.path.join(self.args.output_path, "ogs_with_mapped_seq")
+        if not os.path.exists(ogs_with_mapped_seq):
+            os.makedirs(ogs_with_mapped_seq)
+
         for name, value in mapped_og_set.items():
             best_record_aa = value.get_best_mapping_by_coverage()
             self.mapped_ogs[name] = self.ogs[name]
             self.mapped_ogs[name].aa.append(best_record_aa)
+            output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+            self._write(output_file, self.mapped_ogs[name].aa)
 
+    def _write(self, file, value):
+        """
+        Write output to fasta file
+        :param folder: file and location of outputfile
+        :param value: 
+        :return: 
+        """
+        handle = open(file, "w")
+        writer = FastaWriter(handle, wrap=None)
+        writer.write_file(value)
+        handle.close()
 
     def write_select_og_aa(self):
         '''
