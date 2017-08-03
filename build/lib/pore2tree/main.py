@@ -21,6 +21,7 @@ from pore2tree.OGSet import OGSet
 from pore2tree.ReferenceSet import ReferenceSet
 from pore2tree.Mapper import Mapper
 from pore2tree.Aligner import Aligner
+from pore2tree.Progress import Progress
 from pore2tree.TreeInference import TreeInference
 import argparse
 
@@ -98,8 +99,19 @@ def main(argv, exe_name, desc=''):
     # TODO: Check all given files and throw error if faulty
 
     # Read in orthologous groups
-    if args.ref_folder is None:
+    progress = Progress(args)
+
+    if progress.status >= 1:
+        ogset = OGSet(args, load=False)
+    else:
         ogset = OGSet(args)
+
+    # if progress.status >= 2:
+    #     reference = ReferenceSet(args, load=False)
+    # else:
+    #     reference = ReferenceSet(args, ogset=ogset, load=True)
+
+    if args.ref_folder is None:
         reference = ReferenceSet(args, ogset=ogset.ogs, load=False)
     else:
         reference = ReferenceSet(args, load=True)

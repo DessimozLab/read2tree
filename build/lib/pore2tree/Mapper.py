@@ -55,11 +55,10 @@ class Mapper(object):
         :return: dictionary with key og_name and value sequences mapped to each species
         """
         mapped_reads_species = {}
-        output_folder = os.path.join(self.args.output_path, "mapping")
+        output_folder = os.path.join(self.args.output_path, "03_mapping")
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
-
             # write reference into temporary file
             #ref_file_handle = tempfile.NamedTemporaryFile(mode='wt', delete=True)
             ref_file_handle = os.path.join(output_folder, species+'.fa')
@@ -76,8 +75,6 @@ class Mapper(object):
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
             mapped_reads_species[species] = Reference()
             mapped_reads_species[species].dna = mapped_reads
-
-
 
         return mapped_reads_species
 

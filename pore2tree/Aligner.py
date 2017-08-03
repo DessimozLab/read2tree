@@ -26,7 +26,7 @@ class Aligner(object):
     def _align(self, og_set):
         align_dict = {}
         self._adapt_id(og_set)
-        output_folder = os.path.join(self.args.output_path, "align")
+        output_folder = os.path.join(self.args.output_path, "05_align")
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         for key, value in tqdm(og_set.items(), desc='Aligning OGs ', unit=' OG'):

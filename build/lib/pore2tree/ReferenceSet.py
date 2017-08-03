@@ -40,6 +40,7 @@ class ReferenceSet(object):
         else:
             if ogset is not None:
                 self.ref = self._generate_reference(ogset)
+                self.write()
 
         # if args.remove_species:
         #     self.ref = self._remove_species()
@@ -70,6 +71,7 @@ class ReferenceSet(object):
         '''
         Split records into dictionary with keys being species and the values the corresponded sequence records
         '''
+        print('--- Generating reference for mapping ---')
         ref_set = {}
         for name, og in tqdm(og_set.items(), desc="Loading records", unit=" record"):
             for record in zip(og.aa, og.dna):
@@ -86,16 +88,16 @@ class ReferenceSet(object):
 
         return ref_set
 
-    def write(self, output_folder):
+    def write(self):
         '''
         Write for each species all the DNA sequences into separate fasta files
         :param output_folder: folder where files should be stored
         '''
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        for key, value in tqdm(self.ref.items(), desc="Writing OGs sorted by species", unit=" species"):
-            self.value.write_aa(key, output_folder)
-            self.value.write_dna(key, output_folder)
+        out_dna = os.path.join(self.args.output_path, '02_ref_dna')
+        if not os.path.exists(out_dna):
+            os.makedirs(out_dna)
+        for key, value in self.ref.items():
+            value.write_dna(key, out_dna)
 
     def _remove_species(self):
         raise NotImplementedError
@@ -114,7 +116,7 @@ class Reference(object):
         writer.write_file(self.aa)
         handle.close()
 
-    def write_dna(self):
+    def write_dna(self, species, output_folder):
         handle = open(os.path.join(output_folder, species + '_OGs.fa'), "w")
         writer = FastaWriter(handle, wrap=None)
         writer.write_file(self.dna)

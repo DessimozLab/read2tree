@@ -57,9 +57,9 @@ class OGSet(object):
         """
         print('--- Load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
-        orthologous_groups_aa = os.path.join(self.args.output_path, "reference_ogs_aa")
-        orthologous_groups_dna = os.path.join(self.args.output_path, "reference_ogs_dna")
-        for file in tqdm(zip(glob.glob(os.path.join(orthologous_groups_aa, "*.fa")), glob.glob(os.path.join(orthologous_groups_dna, "*.fa"))), desc='Loading files',
+        ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
+        ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
+        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))), desc='Loading files',
                          unit=' OGs'):
             name = file[0].split("/")[-1].split(".")[0]
             ogs[name] = OG()
@@ -75,9 +75,13 @@ class OGSet(object):
         print('--- Load ogs and find their corresponding DNA seq from a database ---')
         ogs = {}
 
-        orthologous_groups_aa = os.path.join(self.args.output_path, "reference_ogs_aa")
+        orthologous_groups_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         if not os.path.exists(orthologous_groups_aa):
             os.makedirs(orthologous_groups_aa)
+
+        orthologous_groups_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
+        if not os.path.exists(orthologous_groups_dna):
+            os.makedirs(orthologous_groups_dna)
 
         orthologous_groups_fasta = os.path.join(self.oma_output_path, "OrthologousGroupsFasta")
         og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
@@ -95,11 +99,13 @@ class OGSet(object):
                 ogs[name] = OG()
                 ogs[name].aa = self._get_aa_records(og_ham, records)
                 output_file_aa = os.path.join(orthologous_groups_aa, name+".fa")
+                output_file_dna = os.path.join(orthologous_groups_dna, name+".fa")
                 self._write(output_file_aa, ogs[name].aa)
                 if self.args.dna_reference:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
                 else:
                     print("DNA reference was not provided. Only amino acid sequences gathered!")
+                self._write(output_file_dna, ogs[name].dna)
         return ogs
 
     def _get_aa_records(self, og_ham, records):
@@ -160,7 +166,7 @@ class OGSet(object):
         Add the sequence given from the read mapping to its corresponding OG
         :param mapped_og_set: set of ogs with its mapped sequences
         """
-        ogs_with_mapped_seq = os.path.join(self.args.output_path, "ogs_with_mapped_seq")
+        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map")
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
 

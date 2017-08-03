@@ -3,6 +3,7 @@ bin/pore2tree
 pore2tree/Aligner.py
 pore2tree/Mapper.py
 pore2tree/OGSet.py
+pore2tree/Progress.py
 pore2tree/ReferenceSet.py
 pore2tree/TreeInference.py
 pore2tree/__init__.py
