@@ -31,6 +31,7 @@ class Progress(object):
         mapping = os.path.join(self.args.output_path, "03_mapping")
         ogs_map = os.path.join(self.args.output_path, "04_ogs_map")
 
+        # check progress of OG selection
         comp_files = 0
         if os.path.exists(ref_ogs_aa) and os.path.exists(ref_ogs_dna):
             for file in zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))):
@@ -40,6 +41,7 @@ class Progress(object):
         if comp_files == self._num_ogs:
             status = 1
 
+        # check progress of Ref generation
         ref_files = 0
         if os.path.exists(ref_dna):
             for file in glob.glob(os.path.join(ref_dna, "*.fa")):
@@ -48,6 +50,8 @@ class Progress(object):
 
         if ref_files == self._num_species and status == 1:
             status = 2
+
+        # check progress of mapping
 
         return status
 
@@ -58,7 +62,7 @@ class Progress(object):
         ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
 
         num_select_ogs = 0
-        num_species = len(ham_analysis.get_list_ancestral_genomes())
+        num_species = len(ham_analysis.get_list_extant_genomes())
         hog_dict = ham_analysis.get_dict_top_level_hogs()
         for hog, value in hog_dict.items():
             if len(value.get_all_descendant_genes()) >= self.args.min_species:

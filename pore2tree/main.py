@@ -106,15 +106,10 @@ def main(argv, exe_name, desc=''):
     else:
         ogset = OGSet(args)
 
-    # if progress.status >= 2:
-    #     reference = ReferenceSet(args, load=False)
-    # else:
-    #     reference = ReferenceSet(args, ogset=ogset, load=True)
-
-    if args.ref_folder is None:
-        reference = ReferenceSet(args, ogset=ogset.ogs, load=False)
+    if progress.status >= 2:
+        reference = ReferenceSet(args, load=False)
     else:
-        reference = ReferenceSet(args, load=True)
+        reference = ReferenceSet(args, ogset=ogset.ogs, load=True)
 
     mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
     ogset.add_mapped_seq(mapper.og_records)

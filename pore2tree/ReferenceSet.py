@@ -35,10 +35,9 @@ class ReferenceSet(object):
         self.load = load
         self.args = args
 
-        if load and ogset is None:
+        if load is False:
             self.ref = self._load_records_folder()
-        else:
-            if ogset is not None:
+        elif ogset is not None and load is True:
                 self.ref = self._generate_reference(ogset)
                 self.write()
 
@@ -56,11 +55,13 @@ class ReferenceSet(object):
 
     def _load_records_folder(self):
         """
-        
+        Parse species with their dna sequences from folder
         :return: 
         """
         ref_dict = {}
-        for file in tqdm(glob.glob(os.path.join(self.args.ref_folder, "*.fa")), desc="Loading references for mapping from folder", unit=" species"):
+        print('--- Generating reference for mapping from folder ---')
+        ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
+        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Loading references for mapping from folder", unit=" species"):
             species_name = file.split("/")[-1].split("_")[0]
             ref_dict[species_name] = Reference()
             ref_dict[species_name].dna = list(SeqIO.parse(file, 'fasta'))
