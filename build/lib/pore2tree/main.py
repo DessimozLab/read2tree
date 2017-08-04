@@ -119,7 +119,7 @@ def main(argv, exe_name, desc=''):
     else:
         mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
 
-    if args.single_mapping is not None:
+    if args.single_mapping is None:
         ogset.add_mapped_seq(mapper.og_records)
         alignments = Aligner(args, ogset.mapped_ogs)
         concat_alignment = alignments.concat_alignment()

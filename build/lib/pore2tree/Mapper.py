@@ -56,9 +56,9 @@ class Mapper(object):
 
     def _map_reads_to_single_reference(self, ref):
         """
-        
-        :param ref: 
-        :return: 
+        Map reads to single reference species file
+        :param ref: reference dataset
+        :return: dictionary with key og_name and value sequences mapped to each species
         """
         species = self.args.single_mapping.split("/")[-1].split("_")[0]
 
@@ -166,9 +166,9 @@ class Mapper(object):
 
         fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
 
-        SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split(".")[0] + '_consensus.fa'), 'fasta')
+        SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'), 'fasta')
 
-        return os.path.join(output_folder, ref_file.split(".")[0] + '_consensus.fa')
+        return os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
 
     def _clean_up_read_mapping(self):
         """
