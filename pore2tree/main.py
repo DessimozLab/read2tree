@@ -48,29 +48,32 @@ def parse_args(argv, exe_name, desc):
                             help='Show programme\'s version number and exit.',
                             version=pore2tree.__version__)
 
-    arg_parser.add_argument('--remove_species', default=None,
-                            help='Remove species present in dataset and only do analysis on '
-                                 'subset of species')
+    # arg_parser.add_argument('--remove_species', default=None,
+    #                         help='Remove species present in dataset and only do analysis on '
+    #                              'subset of species')
 
     arg_parser.add_argument('--standalone_path', default='.',
                             help='[Default is current directory] Path to '
                                  'oma standalone directory.', required=True)
 
-    arg_parser.add_argument('--ref_og_aa_folder', default='.',
-                            help='Path to preselected og_aa folder')
+    # arg_parser.add_argument('--ref_og_aa_folder', default='.',
+    #                         help='Path to preselected og_aa folder')
 
     # Arguments to generate the reference
-    arg_parser.add_argument('-r', '--reference', action='store_true',
-                            help='Just generate the reference dataset for mapping')
+    # arg_parser.add_argument('-r', '--reference', action='store_true',
+    #                         help='Just generate the reference dataset for mapping')
     arg_parser.add_argument('--min_species', type=int, default=None,
                             help='Min number of species in selected orthologous groups. \
                             If not selected it will be estimated such that around 1000 OGs are available.')
     arg_parser.add_argument('--dna_reference', default=None,
                             help='Reference fasta file that contains nucleotide sequences.')
 
+    arg_parser.add_argument('--single_mapping', default=None,
+                            help='Single species file allowing to map in a job array.')
+
     # Arguments to map the reads
-    arg_parser.add_argument('--ref_folder', default=None,
-                            help='Folder containing reference files with sequences sorted by species.')
+    # arg_parser.add_argument('--ref_folder', default=None,
+    #                         help='Folder containing reference files with sequences sorted by species.')
     arg_parser.add_argument('--reads', default=None,
                             help='Reads to be mapped to reference.')
 
@@ -112,11 +115,13 @@ def main(argv, exe_name, desc=''):
         reference = ReferenceSet(args, ogset=ogset.ogs, load=True)
 
     mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
-    ogset.add_mapped_seq(mapper.og_records)
-    alignments = Aligner(args, ogset.mapped_ogs)
-    concat_alignment = alignments.concat_alignment()
-    tree = TreeInference(args, concat_alignment=concat_alignment)
-    print(tree)
+
+    if args.single_mapping is not None:
+        ogset.add_mapped_seq(mapper.og_records)
+        alignments = Aligner(args, ogset.mapped_ogs)
+        concat_alignment = alignments.concat_alignment()
+        tree = TreeInference(args, concat_alignment=concat_alignment)
+        print(tree)
     #
     # # Map sequences to reference
     # if reference:

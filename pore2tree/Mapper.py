@@ -15,7 +15,8 @@
 import pysam
 import pyopa
 import os
-import tempfile
+import shutil
+import glob
 import subprocess
 from tqdm import tqdm
 from Bio import SeqIO, SeqRecord
@@ -61,12 +62,14 @@ class Mapper(object):
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
             # write reference into temporary file
             #ref_file_handle = tempfile.NamedTemporaryFile(mode='wt', delete=True)
+            #TODO: this files exist already and are in the 02_ref folder
             ref_file_handle = os.path.join(output_folder, species+'.fa')
             SeqIO.write(value.dna, ref_file_handle, 'fasta')
             # call the WRAPPER here
             if len(self._reads) == 2:
                 ngm_wrapper = NGM(ref_file_handle, self._reads)
                 ngm = ngm_wrapper()
+                sam_file = ngm['file']
             else:
                 ngm_wrapper = NGMLR(ref_file_handle, self._reads)
                 ngm = ngm_wrapper()
@@ -75,6 +78,8 @@ class Mapper(object):
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
             mapped_reads_species[species] = Reference()
             mapped_reads_species[species].dna = mapped_reads
+
+        self._clean_up_read_mapping()
 
         return mapped_reads_species
 
@@ -85,7 +90,11 @@ class Mapper(object):
         :param reference_file_handle: 
         :return: 
         """
-        outfile_name = ref_file.split(".")[0]+"_post"
+        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        tmp_folder = os.path.join(output_folder, 'tmp')
+        if not os.path.exists(tmp_folder):
+            os.makedirs(tmp_folder)
+        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0]+"_post")
         # with tempfile.NamedTemporaryFile(mode='wt') as file_handle:
         #     outfile_name = file_handle.name
 
@@ -100,10 +109,23 @@ class Mapper(object):
 
         fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
 
-        SeqIO.write(fastq_records, outfile_name + '_consensus_call.fa', 'fasta')
+        SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split(".")[0] + '_consensus_call.fa'), 'fasta')
 
 
-        return outfile_name+'_consensus_call.fa'
+        return os.path.join(output_folder, ref_file.split(".")[0] + '_consensus_call.fa')
+
+    def _clean_up_read_mapping(self):
+        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        tmp_folder = os.path.join(output_folder, "tmp")
+        ngm1_files = glob.glob(os.path.join(output_folder, "*enc.2.ngm"))
+        ngm2_files = glob.glob(os.path.join(output_folder, "*13-2.2.ngm"))
+        fai_files = glob.glob(os.path.join(output_folder, "*.fai"))
+        sam_files = glob.glob(os.path.join(output_folder, "*.sam"))
+        for file in zip(ngm1_files, ngm2_files, fai_files, sam_files):
+            shutil.move(file[0], tmp_folder)
+            shutil.move(file[1], tmp_folder)
+            shutil.move(file[2], tmp_folder)
+            shutil.move(file[3], tmp_folder)
 
     def _output_shell(self, line):
         """

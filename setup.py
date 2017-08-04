@@ -8,7 +8,7 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
             exec(line.rstrip())
 
 requirements = ['biopython', 'ete3', 'dendropy', 'lxml', 'pandas', 'tqdm',
-                'scipy', 'zoo']
+                'scipy', 'zoo', 'pysam', 'pyham']
 
 setup(
     name=name,

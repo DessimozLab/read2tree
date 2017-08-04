@@ -6,3 +6,5 @@ pandas
 tqdm
 scipy
 zoo
+pysam
+pyham
