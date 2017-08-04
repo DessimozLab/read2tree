@@ -5,11 +5,11 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/pore2tree-0.0.1-py3.5.egg" afterPath="$PROJECT_DIR$/dist/pore2tree-0.0.1-py3.5.egg" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/Mapper.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/Mapper.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/Progress.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/Progress.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/main.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree.egg-info/requires.txt" afterPath="$PROJECT_DIR$/pore2tree.egg-info/requires.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/Mapper.py" afterPath="$PROJECT_DIR$/pore2tree/Mapper.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/Progress.py" afterPath="$PROJECT_DIR$/pore2tree/Progress.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/main.py" afterPath="$PROJECT_DIR$/pore2tree/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -37,8 +37,18 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pore2tree/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="892">
-              <caret line="112" column="50" lean-forward="true" selection-start-line="112" selection-start-column="50" selection-end-line="112" selection-end-column="50" />
+            <state relative-caret-position="520">
+              <caret line="117" column="40" lean-forward="false" selection-start-line="117" selection-start-column="40" selection-end-line="117" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pore2tree/OGSet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1423">
+              <caret line="61" column="121" lean-forward="false" selection-start-line="61" selection-start-column="121" selection-end-line="61" selection-end-column="121" />
               <folding />
             </state>
           </provider>
@@ -47,8 +57,8 @@
       <file leaf-file-name="Progress.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pore2tree/Progress.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="321">
-              <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+            <state relative-caret-position="269">
+              <caret line="56" column="67" lean-forward="false" selection-start-line="56" selection-start-column="67" selection-end-line="56" selection-end-column="67" />
               <folding />
             </state>
           </provider>
@@ -67,9 +77,11 @@
       <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pore2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="162">
+              <caret line="57" column="117" lean-forward="false" selection-start-line="57" selection-start-column="117" selection-end-line="57" selection-end-column="117" />
+              <folding>
+                <element signature="e#309#321#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -156,11 +168,11 @@
         <option value="$PROJECT_DIR$/pore2tree/TreeInference.py" />
         <option value="$PROJECT_DIR$/pore2tree/OGSet.py" />
         <option value="$PROJECT_DIR$/pore2tree/Aligner.py" />
-        <option value="$PROJECT_DIR$/pore2tree/Progress.py" />
         <option value="$PROJECT_DIR$/pore2tree/ReferenceSet.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/pore2tree/main.py" />
+        <option value="$PROJECT_DIR$/pore2tree/Progress.py" />
         <option value="$PROJECT_DIR$/pore2tree/Mapper.py" />
       </list>
     </option>
@@ -417,7 +429,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="23" width="1436" height="877" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19153515" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -427,7 +438,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964131" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2955414" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2955414" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -671,14 +682,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pore2tree/OGSet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="597">
-          <caret line="61" column="121" lean-forward="false" selection-start-line="61" selection-start-column="121" selection-end-line="61" selection-end-column="121" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -698,14 +701,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pore2tree/Progress.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -714,19 +709,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pore2tree/OGSet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1423">
+          <caret line="61" column="121" lean-forward="false" selection-start-line="61" selection-start-column="121" selection-end-line="61" selection-end-column="121" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pore2tree/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="892">
-          <caret line="112" column="50" lean-forward="true" selection-start-line="112" selection-start-column="50" selection-end-line="112" selection-end-column="50" />
+        <state relative-caret-position="520">
+          <caret line="117" column="40" lean-forward="false" selection-start-line="117" selection-start-column="40" selection-end-line="117" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pore2tree/Progress.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="56" column="67" lean-forward="false" selection-start-line="56" selection-start-column="67" selection-end-line="56" selection-end-column="67" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pore2tree/Mapper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="162">
+          <caret line="57" column="117" lean-forward="false" selection-start-line="57" selection-start-column="117" selection-end-line="57" selection-end-column="117" />
+          <folding>
+            <element signature="e#309#321#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

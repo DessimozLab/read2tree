@@ -52,6 +52,14 @@ class Progress(object):
             status = 2
 
         # check progress of mapping
+        map_files = 0
+        if os.path.exists(mapping):
+            for file in glob.glob(os.path.join(mapping, "*consensus.fa")):
+                if os.path.getsize(file) > 0:
+                    map_files += 1
+
+        if map_files == self._num_species and status == 2:
+            status = 3
 
         return status
 

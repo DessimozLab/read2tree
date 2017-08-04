@@ -33,7 +33,7 @@ class Mapper(object):
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None):
+    def __init__(self, args, ref_set=None, og_set=None, load=True):
         print('--- Mapping of reads to reference sequences ---')
         self.args = args
         self._reads = args.reads
@@ -43,11 +43,24 @@ class Mapper(object):
         self.envs = self.defaults['environments']
         self.env = self.envs[515]
 
-        if ref_set is not None:
-            self.mapped_records = self._map_reads_to_reference(ref_set)
+        if load:
+            if ref_set is not None:
+                self.mapped_records = self._map_reads_to_reference(ref_set)
 
-        if self.mapped_records and og_set is not None:
-            self.og_records = self._sort_by_og(og_set)
+            if self.mapped_records and og_set is not None:
+                self.og_records = self._sort_by_og(og_set)
+        else:
+            self.mapped_records = self._read_mapping_from_folder()
+
+    def _read_mapping_from_folder(self):
+        map_reads_species = {}
+        in_folder = os.path.join(self.args.output_path, "03_mapping")
+        for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
+            species = file.split("/")[-1].split("_")[0]
+            map_reads_species[species] = Reference()
+            map_reads_species[species].dna = list(SeqIO.parse(file, "fasta"))
+
+        return map_reads_species
 
     def _map_reads_to_reference(self, reference):
         """
@@ -109,12 +122,16 @@ class Mapper(object):
 
         fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
 
-        SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split(".")[0] + '_consensus_call.fa'), 'fasta')
+        SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split(".")[0] + '_consensus.fa'), 'fasta')
 
 
-        return os.path.join(output_folder, ref_file.split(".")[0] + '_consensus_call.fa')
+        return os.path.join(output_folder, ref_file.split(".")[0] + '_consensus.fa')
 
     def _clean_up_read_mapping(self):
+        """
+        Clean the mapping directory such that only the important consensus files are at the top level
+        :return: 
+        """
         output_folder = os.path.join(self.args.output_path, "03_mapping")
         tmp_folder = os.path.join(output_folder, "tmp")
         ngm1_files = glob.glob(os.path.join(output_folder, "*enc.2.ngm"))
@@ -122,10 +139,10 @@ class Mapper(object):
         fai_files = glob.glob(os.path.join(output_folder, "*.fai"))
         sam_files = glob.glob(os.path.join(output_folder, "*.sam"))
         for file in zip(ngm1_files, ngm2_files, fai_files, sam_files):
-            shutil.move(file[0], tmp_folder)
-            shutil.move(file[1], tmp_folder)
-            shutil.move(file[2], tmp_folder)
-            shutil.move(file[3], tmp_folder)
+            shutil.move(file[0], os.path.join(tmp_folder, file[0].split('/')[-1]))
+            shutil.move(file[1], os.path.join(tmp_folder, file[1].split('/')[-1]))
+            shutil.move(file[2], os.path.join(tmp_folder, file[2].split('/')[-1]))
+            shutil.move(file[3], os.path.join(tmp_folder, file[3].split('/')[-1]))
 
     def _output_shell(self, line):
         """

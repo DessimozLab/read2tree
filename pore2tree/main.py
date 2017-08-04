@@ -114,7 +114,10 @@ def main(argv, exe_name, desc=''):
     else:
         reference = ReferenceSet(args, ogset=ogset.ogs, load=True)
 
-    mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
+    if progress.status >= 3:
+        mapper = Mapper(args, load=False)
+    else:
+        mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
 
     if args.single_mapping is not None:
         ogset.add_mapped_seq(mapper.og_records)
