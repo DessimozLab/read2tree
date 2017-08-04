@@ -115,11 +115,11 @@ def main(argv, exe_name, desc=''):
         reference = ReferenceSet(args, ogset=ogset.ogs, load=True)
 
     if progress.status >= 3:
-        mapper = Mapper(args, load=False)
+        mapper = Mapper(args, ogset=ogset.ogs, load=False)
     else:
         mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
 
-    if args.single_mapping is not None:
+    if args.single_mapping is None:
         ogset.add_mapped_seq(mapper.og_records)
         alignments = Aligner(args, ogset.mapped_ogs)
         concat_alignment = alignments.concat_alignment()

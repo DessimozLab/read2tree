@@ -34,7 +34,6 @@ class Mapper(object):
     """
 
     def __init__(self, args, ref_set=None, og_set=None, load=True):
-        print('--- Mapping of reads to reference sequences ---')
         self.args = args
         self._reads = args.reads
 
@@ -45,14 +44,58 @@ class Mapper(object):
 
         if load:
             if ref_set is not None:
-                self.mapped_records = self._map_reads_to_reference(ref_set)
-
+                if self.args.single_mapping is None:
+                    self.mapped_records = self._map_reads_to_references(ref_set)
+                else:
+                    self.mapped_records = self._map_reads_to_single_reference(ref_set)
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:
-            self.mapped_records = self._read_mapping_from_folder()
+            if og_set is not None:
+                self.mapped_records = self._read_mapping_from_folder()
+
+    def _map_reads_to_single_reference(self, ref):
+        """
+        
+        :param ref: 
+        :return: 
+        """
+        species = self.args.single_mapping.split("/")[-1].split("_")[0]
+
+        print('--- Mapping of reads to {} reference species ---'.format(species))
+
+        mapped_reads_species = {}
+        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        ref_file_handle = os.path.join(output_folder, species + '.fa')
+        SeqIO.write(ref[species].dna, ref_file_handle, 'fasta')
+        # call the WRAPPER here
+        if len(self._reads) == 2:
+            ngm_wrapper = NGM(ref_file_handle, self._reads)
+            ngm = ngm_wrapper()
+            sam_file = ngm['file']
+        else:
+            ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+            ngm = ngm_wrapper()
+            sam_file = ngm['file']
+
+        mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+        mapped_reads_species[species] = Reference()
+        mapped_reads_species[species].dna = mapped_reads
+
+        self._clean_up_read_mapping()
+
+        return mapped_reads_species
+
 
     def _read_mapping_from_folder(self):
+        """
+        Retrieve all the mapped consensus files from folder and add to mapper object
+        :return: dictionary with key og_name and value sequences mapped to each species
+        """
+        print('--- Retrieve mapped consensus sequences ---')
         map_reads_species = {}
         in_folder = os.path.join(self.args.output_path, "03_mapping")
         for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
@@ -62,12 +105,13 @@ class Mapper(object):
 
         return map_reads_species
 
-    def _map_reads_to_reference(self, reference):
+    def _map_reads_to_references(self, reference):
         """
         Map all the reads to reference
         :param reference: 
         :return: dictionary with key og_name and value sequences mapped to each species
         """
+        print('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
         output_folder = os.path.join(self.args.output_path, "03_mapping")
         if not os.path.exists(output_folder):
@@ -124,13 +168,11 @@ class Mapper(object):
 
         SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split(".")[0] + '_consensus.fa'), 'fasta')
 
-
         return os.path.join(output_folder, ref_file.split(".")[0] + '_consensus.fa')
 
     def _clean_up_read_mapping(self):
         """
         Clean the mapping directory such that only the important consensus files are at the top level
-        :return: 
         """
         output_folder = os.path.join(self.args.output_path, "03_mapping")
         tmp_folder = os.path.join(output_folder, "tmp")
