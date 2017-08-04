@@ -87,7 +87,7 @@ class Mapper(object):
         mapped_reads_species[species] = Reference()
         mapped_reads_species[species].dna = mapped_reads
 
-        self._clean_up_read_mapping()
+        self._clean_up_read_mapping(filename=species+'.fa')
 
         return mapped_reads_species
 
@@ -174,16 +174,16 @@ class Mapper(object):
 
         return os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
 
-    def _clean_up_read_mapping(self):
+    def _clean_up_read_mapping(self, filename="*"):
         """
         Clean the mapping directory such that only the important consensus files are at the top level
         """
         output_folder = os.path.join(self.args.output_path, "03_mapping")
         tmp_folder = os.path.join(output_folder, "tmp")
-        ngm1_files = glob.glob(os.path.join(output_folder, "*enc.2.ngm"))
-        ngm2_files = glob.glob(os.path.join(output_folder, "*13-2.2.ngm"))
-        fai_files = glob.glob(os.path.join(output_folder, "*.fai"))
-        sam_files = glob.glob(os.path.join(output_folder, "*.sam"))
+        ngm1_files = glob.glob(os.path.join(output_folder, filename+"-enc.2.ngm"))
+        ngm2_files = glob.glob(os.path.join(output_folder, filename+"-ht-13-2.2.ngm"))
+        fai_files = glob.glob(os.path.join(output_folder, filename+".fai"))
+        sam_files = glob.glob(os.path.join(output_folder, filename+".sam"))
         for file in zip(ngm1_files, ngm2_files, fai_files, sam_files):
             shutil.move(file[0], os.path.join(tmp_folder, file[0].split('/')[-1]))
             shutil.move(file[1], os.path.join(tmp_folder, file[1].split('/')[-1]))

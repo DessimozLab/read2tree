@@ -5,16 +5,19 @@ Given a set of reference OGs and sequencing reads this tool allows to automatica
 ## Getting Started
 
 To set up pore2tree on your local machine.
-```angular2html
-
+```
+git clone pore2tree
 ```
 ### Prerequisites
 
 What things you need to install the software and how to install them
 
-```
-Give examples
-```
+* [mafft](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+* [fasttree](https://maven.apache.org/) - Dependency Management
+* [ngmlr](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [pyopa](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [pyoma](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [samtools](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
 ### Installing
 
