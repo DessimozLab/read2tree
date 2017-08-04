@@ -4,10 +4,12 @@
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/pore2tree-0.0.1-py3.5.egg" afterPath="$PROJECT_DIR$/dist/pore2tree-0.0.1-py3.5.egg" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/Mapper.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/Mapper.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/main.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/wrappers/read_mappers/ngmlr.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/wrappers/read_mappers/ngmlr.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/Mapper.py" afterPath="$PROJECT_DIR$/pore2tree/Mapper.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/main.py" afterPath="$PROJECT_DIR$/pore2tree/main.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py" afterPath="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -35,8 +37,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pore2tree/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1103">
-              <caret line="95" column="43" lean-forward="true" selection-start-line="95" selection-start-column="43" selection-end-line="95" selection-end-column="43" />
+            <state relative-caret-position="444">
+              <caret line="74" column="86" lean-forward="false" selection-start-line="74" selection-start-column="86" selection-end-line="74" selection-end-column="86" />
               <folding />
             </state>
           </provider>
@@ -45,8 +47,8 @@
       <file leaf-file-name="Aligner.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pore2tree/Aligner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-33">
-              <caret line="28" column="64" lean-forward="false" selection-start-line="28" selection-start-column="64" selection-end-line="28" selection-end-column="64" />
+            <state relative-caret-position="226">
+              <caret line="33" column="12" lean-forward="false" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="72" />
               <folding />
             </state>
           </provider>
@@ -85,10 +87,32 @@
       <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pore2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="498">
-              <caret line="172" column="37" lean-forward="true" selection-start-line="172" selection-start-column="37" selection-end-line="172" selection-end-column="37" />
+            <state relative-caret-position="1019">
+              <caret line="135" column="0" lean-forward="false" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
               <folding>
                 <element signature="e#309#321#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mafft.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/aligners/mafft.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="140" column="23" lean-forward="false" selection-start-line="140" selection-start-column="4" selection-end-line="140" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ngmlr.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="159">
+              <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -135,6 +159,7 @@
       <find>record.description.split(&quot; | &quot;)[0]</find>
       <find>mapped_sequences</find>
       <find>01</find>
+      <find>get_default_options</find>
       <find>_map_reads_to_reference</find>
     </findStrings>
     <replaceStrings>
@@ -167,7 +192,6 @@
         <option value="$PROJECT_DIR$/docs/test_sorted.sam" />
         <option value="$PROJECT_DIR$/scripts/get_highly_conserved_og_dna_hdf5.py" />
         <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/__init__.py" />
-        <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py" />
         <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngm.py" />
         <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/parser.py" />
         <option value="$PROJECT_DIR$/bin/pore2tree" />
@@ -181,8 +205,9 @@
         <option value="$PROJECT_DIR$/pore2tree/ReferenceSet.py" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/pore2tree/Progress.py" />
-        <option value="$PROJECT_DIR$/pore2tree/main.py" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/pore2tree/main.py" />
+        <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py" />
         <option value="$PROJECT_DIR$/pore2tree/Mapper.py" />
       </list>
     </option>
@@ -238,6 +263,68 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wrappers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wrappers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="read_mappers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pore2tree" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wrappers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aligners" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -597,14 +684,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="27" lean-forward="false" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/read_mappers/parser.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1110">
@@ -657,13 +736,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/mapper/test1/tree.nwk" />
-    <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/aligners/mafft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1723">
-          <caret line="115" column="28" lean-forward="false" selection-start-line="115" selection-start-column="28" selection-end-line="115" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pore2tree/TreeInference.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -702,22 +774,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pore2tree/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1103">
-          <caret line="95" column="43" lean-forward="true" selection-start-line="95" selection-start-column="43" selection-end-line="95" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pore2tree/Aligner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-33">
-          <caret line="28" column="64" lean-forward="false" selection-start-line="28" selection-start-column="64" selection-end-line="28" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pore2tree/Progress.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -737,10 +793,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pore2tree/Aligner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="33" column="12" lean-forward="false" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/aligners/mafft.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="140" column="23" lean-forward="false" selection-start-line="140" selection-start-column="4" selection-end-line="140" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pore2tree/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="444">
+          <caret line="74" column="86" lean-forward="false" selection-start-line="74" selection-start-column="86" selection-end-line="74" selection-end-column="86" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="29" column="0" lean-forward="true" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pore2tree/Mapper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="172" column="37" lean-forward="true" selection-start-line="172" selection-start-column="37" selection-end-line="172" selection-end-column="37" />
+        <state relative-caret-position="1019">
+          <caret line="135" column="0" lean-forward="false" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
           <folding>
             <element signature="e#309#321#0" expanded="true" />
           </folding>

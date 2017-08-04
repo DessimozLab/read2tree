@@ -78,6 +78,8 @@ class Mapper(object):
             sam_file = ngm['file']
         else:
             ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             sam_file = ngm['file']
 
@@ -129,6 +131,8 @@ class Mapper(object):
                 sam_file = ngm['file']
             else:
                 ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+                if self.args.threads is not None:
+                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 sam_file = ngm['file']
 

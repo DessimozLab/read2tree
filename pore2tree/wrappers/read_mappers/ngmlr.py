@@ -34,6 +34,7 @@ class NGMLR(ReadMapper):
             a filename or an biopython SeqRecord collection.
         """
         super(NGMLR, self).__init__(reference, reads, *args, **kwargs)
+        self.options = get_default_options()
         set_default_options(self)
 
     def __call__(self, *args, **kwargs):
@@ -110,5 +111,5 @@ def get_default_options():
         # Algorithm
 
         # set number of threads
-        StringOption('-t', '4', active=True)
+        IntegerOption('-t', 4, active=True)
     ])

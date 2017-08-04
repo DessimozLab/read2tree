@@ -71,6 +71,9 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--single_mapping', default=None,
                             help='Single species file allowing to map in a job array.')
 
+    arg_parser.add_argument('--threads', type=int, default=None,
+                            help='Number of threads for the mapping using ngm / ngmlr!')
+
     # Arguments to map the reads
     # arg_parser.add_argument('--ref_folder', default=None,
     #                         help='Folder containing reference files with sequences sorted by species.')
