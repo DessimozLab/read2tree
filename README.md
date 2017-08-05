@@ -10,14 +10,15 @@ git clone pore2tree
 ```
 ### Prerequisites
 
-What things you need to install the software and how to install them
+pore2tree integrates multiple software tools and allows to direclty
 
-* [mafft](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [fasttree](https://maven.apache.org/) - Dependency Management
-* [ngmlr](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-* [pyopa](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-* [pyoma](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-* [samtools](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [mafft](http://mafft.cbrc.jp/alignment/software/) - Mutliple sequence alignment software
+* [fasttree](http://www.microbesonline.org/fasttree/) - Dependency Management
+* [ngmlr](https://github.com/philres/ngmlr) - Long read mapper for nanopore or PacBio read data
+* [pyopa](...) - Implementation of Smith Waterman alignment algorithm in python
+* [pyoma](...) - Library for retrieval of nucleotide sequences after oma run
+* [pyham](...) - Library to work with HOGs
+* [samtools](http://www.htslib.org/download/) - Set of programms to interact with high-throughput sequencing data
 
 ### Installing
 

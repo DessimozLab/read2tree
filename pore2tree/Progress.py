@@ -66,14 +66,21 @@ class Progress(object):
     def _determine_num(self):
         og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
         tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
+        orthologous_groups_fasta = os.path.join(self.oma_output_path, "OrthologousGroupsFasta")
 
         ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
 
         num_select_ogs = 0
         num_species = len(ham_analysis.get_list_extant_genomes())
-        hog_dict = ham_analysis.get_dict_top_level_hogs()
-        for hog, value in hog_dict.items():
-            if len(value.get_all_descendant_genes()) >= self.args.min_species:
+        # hog_dict = ham_analysis.get_dict_top_level_hogs()
+        # for hog, value in hog_dict.items():
+        #     if len(value.get_all_descendant_genes()) >= self.args.min_species:
+        #         num_select_ogs += 1
+        for file in (glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))):
+            name = file.split("/")[-1].split(".")[0]
+            og_ham = ham_analysis.get_hog_by_id(name[2:])
+            #     og_new = [for gene in og_ham]
+            if len(og_ham.get_all_descendant_genes()) >= self.min_species:
                 num_select_ogs += 1
 
         return [num_select_ogs, num_species]
