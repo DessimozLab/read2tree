@@ -25,21 +25,15 @@ class OGSet(object):
         self.args = args
         self.ogs = {}
         self.mapped_ogs = {}
+        self._db = None
+        self._db_id_map = None
+        self._db_source = None
+
+
         self.min_species = self._estimate_best_number_species()
 
         if self.args.standalone_path:
             self.oma_output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
-        if '.fa' in self.args.dna_reference or '.fasta' in self.args.dna_reference:
-            print(
-                'Loading {} into memory. This might take a while . . . '.format(self.args.dna_reference.split("/")[-1]))
-            self._db = SeqIO.index(self.args.dna_reference, "fasta")
-            self._db_source = 'fa'
-        elif '.h5' in self.args.dna_reference:
-            self._db = db.Database(self.args.dna_reference)
-            self._db_id_map = db.OmaIdMapper(self._db)
-            self._db_source = 'h5'
-        else:
-            raise FileNotFoundError
 
             # self.records = {}
         if load:
@@ -73,6 +67,19 @@ class OGSet(object):
         :return: Dictionary with og name as key and list of SeqRecords
         """
         print('--- Load ogs and find their corresponding DNA seq from a database ---')
+
+        if '.fa' in self.args.dna_reference or '.fasta' in self.args.dna_reference:
+            print(
+                'Loading {} into memory. This might take a while . . . '.format(self.args.dna_reference.split("/")[-1]))
+            self._db = SeqIO.index(self.args.dna_reference, "fasta")
+            self._db_source = 'fa'
+        elif '.h5' in self.args.dna_reference:
+            self._db = db.Database(self.args.dna_reference)
+            self._db_id_map = db.OmaIdMapper(self._db)
+            self._db_source = 'h5'
+        else:
+            raise FileNotFoundError
+
         ogs = {}
 
         orthologous_groups_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
