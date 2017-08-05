@@ -24,11 +24,11 @@ class ReferenceSet(object):
     Structure for reference
     '''
 
-    def __init__(self, args, ogset=None, load=True):
+    def __init__(self, args, og_set=None, load=True):
         """
         
         :param args: list of arguments from command line
-        :param ogset: set of OGs used to obtain reference DNA sequences
+        :param og_set: set of OGs used to obtain reference DNA sequences
         :param load: set to True when reference loaded from folder/file of list of arguments
         """
         self.ref = {}
@@ -37,8 +37,8 @@ class ReferenceSet(object):
 
         if load is False:
             self.ref = self._load_records_folder()
-        elif ogset is not None and load is True:
-                self.ref = self._generate_reference(ogset)
+        elif og_set is not None and load is True:
+                self.ref = self._generate_reference(og_set)
                 self.write()
 
         # if args.remove_species:

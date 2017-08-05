@@ -115,10 +115,10 @@ def main(argv, exe_name, desc=''):
     if progress.status >= 2:
         reference = ReferenceSet(args, load=False)
     else:
-        reference = ReferenceSet(args, ogset=ogset.ogs, load=True)
+        reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
 
     if progress.status >= 3:
-        mapper = Mapper(args, ogset=ogset.ogs, load=False)
+        mapper = Mapper(args, og_set=ogset.ogs, load=False)
     else:
         mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
 
