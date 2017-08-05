@@ -80,7 +80,7 @@ class Progress(object):
             name = file.split("/")[-1].split(".")[0]
             og_ham = ham_analysis.get_hog_by_id(name[2:])
             #     og_new = [for gene in og_ham]
-            if len(og_ham.get_all_descendant_genes()) >= self.args.min_specie:
+            if len(og_ham.get_all_descendant_genes()) >= self.args.min_species:
                 num_select_ogs += 1
 
         return [num_select_ogs, num_species]
