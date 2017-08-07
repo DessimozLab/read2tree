@@ -38,7 +38,7 @@ class Progress(object):
                 if os.path.getsize(file[0]) > 0 and os.path.getsize(file[1]) > 0:
                     comp_files += 1
 
-        if comp_files == self._num_ogs:
+        if comp_files >= self._num_ogs:
             status = 1
 
         # check progress of Ref generation

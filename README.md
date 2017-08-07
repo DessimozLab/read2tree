@@ -4,43 +4,32 @@ Given a set of reference OGs and sequencing reads this tool allows to automatica
 
 ## Getting Started
 
-To set up pore2tree on your local machine.
+pore2tree was build and tested with python 3.5.1. To set up pore2tree on your local machine.
 ```
-git clone pore2tree
+git clone https://github.com/dvdylus/pore2tree.git
+python setup.py install
 ```
 ### Prerequisites
 
-pore2tree integrates multiple software tools and allows to direclty
+pore2tree integrates multiple software tools and allows to infer a phylogenetic tree skipping several steps of a usual pipeline.
 
 * [mafft](http://mafft.cbrc.jp/alignment/software/) - Mutliple sequence alignment software
 * [fasttree](http://www.microbesonline.org/fasttree/) - Dependency Management
 * [ngmlr](https://github.com/philres/ngmlr) - Long read mapper for nanopore or PacBio read data
 * [pyopa](...) - Implementation of Smith Waterman alignment algorithm in python
-* [pyoma](...) - Library for retrieval of nucleotide sequences after oma run
+* [pyoma](...) - Library for retrieval of nucleotide sequences from oma run
 * [pyham](...) - Library to work with HOGs
-* [samtools](http://www.htslib.org/download/) - Set of programms to interact with high-throughput sequencing data
+* [samtools](http://www.htslib.org/download/) - Set of programs to interact with high-throughput sequencing data
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
+For mafft, fasttree, ngmlr and samtools please follow the instructions provided by the individual packages. 
 
 End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+Once successfully installed
 
 ### Break down into end to end tests
 
@@ -64,9 +53,7 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [pyCharm](https://www.jetbrains.com/pycharm) - Python IDE
 
 ## Contributing
 
@@ -88,7 +75,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* Alex Warwick for help how to initiate such a package.
 __

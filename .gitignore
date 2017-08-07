@@ -1,0 +1,10 @@
+*~
+tmp/*
+.Rhistory
+.RData
+*pyc
+tmp
+**/.ropeproject
+**/__pycache__
+**/.ipynb_checkpoints
+.python-version

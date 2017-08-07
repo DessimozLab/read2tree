@@ -53,6 +53,7 @@ class Mapper(object):
         else:
             if og_set is not None:
                 self.mapped_records = self._read_mapping_from_folder()
+                self.og_records = self._sort_by_og(og_set)
 
     def _map_reads_to_single_reference(self, ref):
         """

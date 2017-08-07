@@ -247,7 +247,7 @@ class Mapper(object):
         ref_og_seq = og.aa[0]
         s1 = pyopa.Sequence(str(ref_og_seq.seq))
         best_score = 0
-        if 'X' not in record.seq and 'N' not in record.seq:
+        try:
             frames = [record.seq[i:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False) for i
                       in range(3)]
             best_seq_idx = 0
@@ -260,6 +260,8 @@ class Mapper(object):
                     best_score = local_double[0]
                     best_seq_idx = i
             best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id="UNKNOWN", description=record.description, name=record.name)
+        except:
+            raise ValueError("Problem with sequence format!", ref_og_seq.seq)
         return best_translation
 
     def write_by_og(self, output_folder):
