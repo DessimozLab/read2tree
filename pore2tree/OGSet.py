@@ -35,6 +35,10 @@ class OGSet(object):
         if self.args.standalone_path:
             self.oma_output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
 
+        if self.args.remove_species:
+            self.species_to_remove = self.args.remove_species.split(",")
+            print(self.species_to_remove)
+
             # self.records = {}
         if load:
             self.ogs = self._load_ogs()
@@ -100,19 +104,23 @@ class OGSet(object):
                          unit=' OGs'):
             name = file.split("/")[-1].split(".")[0]
             og_ham = ham_analysis.get_hog_by_id(name[2:])
-            #     og_new = [for gene in og_ham]
+
             if len(og_ham.get_all_descendant_genes()) >= self.min_species:
                 records = list(SeqIO.parse(file, 'fasta'))
                 ogs[name] = OG()
                 ogs[name].aa = self._get_aa_records(og_ham, records)
                 output_file_aa = os.path.join(orthologous_groups_aa, name+".fa")
                 output_file_dna = os.path.join(orthologous_groups_dna, name+".fa")
-                self._write(output_file_aa, ogs[name].aa)
+
                 if self.args.dna_reference:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
                 else:
                     print("DNA reference was not provided. Only amino acid sequences gathered!")
+                if self.species_to_remove:
+                    ogs[name].remove_species_records(self.species_to_remove)
                 self._write(output_file_dna, ogs[name].dna)
+                self._write(output_file_aa, ogs[name].aa)
+
         return ogs
 
     def _get_aa_records(self, og_ham, records):
@@ -264,8 +272,9 @@ class OG(object):
         Remove species from reference sequence set
         :param species_list: list of species to be removed
         '''
-        print('--- Removing {} species of list ---'.format(len(species_list )))
-        for key, value in tqdm(self.records.items(), desc="Loading records", unit=" record"):
-            for i, record in enumerate(value):
-                if record.id[0:5] in species_list:
-                    del value[i]
+        species_ids = [record.id[0:5] for record in self.aa]
+        for species in species_list:
+            if species in species_ids:
+                rm_idx = species_ids.index(species)
+                self.aa.pop(rm_idx)
+                self.dna.pop(rm_idx)

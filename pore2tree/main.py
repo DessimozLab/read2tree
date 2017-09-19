@@ -48,9 +48,9 @@ def parse_args(argv, exe_name, desc):
                             help='Show programme\'s version number and exit.',
                             version=pore2tree.__version__)
 
-    # arg_parser.add_argument('--remove_species', default=None,
-    #                         help='Remove species present in dataset and only do analysis on '
-    #                              'subset of species')
+    arg_parser.add_argument('--remove_species', default=None,
+                            help='Remove species present in dataset and only do analysis on '
+                                 'subset of species')
 
     arg_parser.add_argument('--standalone_path', default='.',
                             help='[Default is current directory] Path to '
