@@ -9,6 +9,7 @@ import os
 import re
 import pyham
 
+from ete3 import Tree
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.Alphabet import SingleLetterAlphabet
@@ -28,7 +29,7 @@ class OGSet(object):
         self._db = None
         self._db_id_map = None
         self._db_source = None
-
+        self._remove_species = False
 
         self.min_species = self._estimate_best_number_species()
 
@@ -37,9 +38,9 @@ class OGSet(object):
 
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
-            print(self.species_to_remove)
+        else:
+            self.species_to_remove = []
 
-            # self.records = {}
         if load:
             self.ogs = self._load_ogs()
         else:
@@ -47,6 +48,25 @@ class OGSet(object):
 
     def og(self, name):
         return self.ogs[name]
+
+    def _has_species_to_remove(self):
+        """
+        :return: true or false depending whether species to remove are part of all the species present
+        """
+        not_included_species = []
+        for spec in self.species_to_remove:
+            if spec not in self.species_list:
+                not_included_species.append(spec)
+        return not_included_species
+
+    def _get_species_list(self):
+        """
+        Use nwk string to return list of species
+        :return:
+        """
+        tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
+        t = Tree(tree_str)
+        return [leaf.name for leaf in t]
 
     def _load_ogs_from_folder(self):
         """
@@ -63,7 +83,22 @@ class OGSet(object):
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
             ogs[name].dna = list(SeqIO.parse(file[1], format='fasta'))
+
+            # if self._remove_species:
+            #     ogs[name].remove_species_records(self.species_to_remove, species_in_hog)
         return ogs
+
+    def _get_num_species_after_removal(self, species_in_og):
+        in_og = 0
+        for spec in self.species_to_remove:
+            if spec in species_in_og:
+                in_og += 1
+
+        return len(species_in_og)-in_og
+
+    def _change_record_id(self):
+        raise NotImplementedError
+
 
     def _load_ogs(self):
         """
@@ -99,27 +134,37 @@ class OGSet(object):
         tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
 
         ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
+        names_og = {}
 
-        for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Loading files',
+        for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Loading files for pre-filter',
                          unit=' OGs'):
             name = file.split("/")[-1].split(".")[0]
+            records = list(SeqIO.parse(file, 'fasta'))
+            new_records = []
+            for record in records:
+                species = record.description[record.description.find("[")+1:record.description.find("]")]
+                if species not in self.species_to_remove:
+                    new_records.append(record)
+            if len(new_records) >= self.min_species:
+                names_og[name] = new_records
+
+        for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs'):
+            # name = file.split("/")[-1].split(".")[0]
             og_ham = ham_analysis.get_hog_by_id(name[2:])
+            # species_in_og = [gene.prot_id[0:5] for gene in og_ham.get_all_descendant_genes()]
+            # len_after_removal = self._get_num_species_after_removal(species_in_og)
 
-            if len(og_ham.get_all_descendant_genes()) >= self.min_species:
-                records = list(SeqIO.parse(file, 'fasta'))
-                ogs[name] = OG()
-                ogs[name].aa = self._get_aa_records(og_ham, records)
-                output_file_aa = os.path.join(orthologous_groups_aa, name+".fa")
-                output_file_dna = os.path.join(orthologous_groups_dna, name+".fa")
+            ogs[name] = OG()
+            ogs[name].aa = self._get_aa_records(og_ham, records)
+            output_file_aa = os.path.join(orthologous_groups_aa, name + ".fa")
+            output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
 
-                if self.args.dna_reference:
-                    ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
-                else:
-                    print("DNA reference was not provided. Only amino acid sequences gathered!")
-                if self.species_to_remove:
-                    ogs[name].remove_species_records(self.species_to_remove)
-                self._write(output_file_dna, ogs[name].dna)
-                self._write(output_file_aa, ogs[name].aa)
+            if self.args.dna_reference:
+                ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
+            else:
+                print("DNA reference was not provided. Only amino acid sequences gathered!")
+            self._write(output_file_dna, ogs[name].dna)
+            self._write(output_file_aa, ogs[name].aa)
 
         return ogs
 
@@ -267,19 +312,17 @@ class OG(object):
                 coverage.append(non_n_len / seq_len)
         return coverage
 
-    def remove_species_records(self, species_list):
+    def remove_species_records(self, species_to_remove, all_species):
         '''
         Remove species from reference sequence set
-        :param species_list: list of species to be removed
+        :param species_to_remove: list of species to be removed
+        :param all_species: list of all species present in analysis
         '''
-        # print('--- Removing {} species of list ---'.format(len(species_list )))
-        # for key, value in tqdm(self.records.items(), desc="Loading records", unit=" record"):
-        #     for i, record in enumerate(value):
-        #         if record.id[0:5] in species_list:
-        #             del value[i]
-        species_ids = [record.id[0:5] for record in self.aa]
-        for species in species_list:
-            if species in species_ids:
-                rm_idx = species_ids.index(species)
+        for species in species_to_remove:
+            if species in all_species:
+                rm_idx = all_species.index(species)
+                all_species.pop(rm_idx)
                 self.aa.pop(rm_idx)
-                self.dna.pop(rm_idx)
+
+        return self.aa
+        # print("Species after {}".format(", ".join(all_species)))

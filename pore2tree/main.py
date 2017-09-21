@@ -106,6 +106,7 @@ def main(argv, exe_name, desc=''):
 
     # Read in orthologous groups
     progress = Progress(args)
+    print(progress.status)
 
     if progress.status >= 1:
         ogset = OGSet(args, load=False)

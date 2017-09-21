@@ -16,6 +16,10 @@ class Progress(object):
 
     def __init__(self, args):
         self.args = args
+        if self.args.remove_species:
+            self.species_to_remove = self.args.remove_species.split(",")
+        else:
+            self.species_to_remove = []
         self.status = None
         self.oma_output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
         self._num_ogs = self._determine_num()[0]
@@ -70,10 +74,14 @@ class Progress(object):
         ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
 
         num_select_ogs = 0
-        num_species = len(ham_analysis.get_list_extant_genomes())
+        num_species = len(ham_analysis.get_list_extant_genomes()) - len(self.species_to_remove)
         hog_dict = ham_analysis.get_dict_top_level_hogs()
         for hog, value in hog_dict.items():
-            if len(value.get_all_descendant_genes()) >= self.args.min_species:
+            genes = self._remove_species(value.get_all_descendant_genes())
+            if len(genes) >= self.args.min_species:
                 num_select_ogs += 1
 
         return [num_select_ogs, num_species]
+
+    def _remove_species(self, genes_in_hog):
+        return [gene for gene in genes_in_hog if gene.prot_id[0:5] not in self.species_to_remove]
