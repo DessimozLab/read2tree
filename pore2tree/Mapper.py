@@ -36,6 +36,10 @@ class Mapper(object):
     def __init__(self, args, ref_set=None, og_set=None, load=True):
         self.args = args
         self._reads = args.reads
+        if len(self._reads) == 2:
+            self._species_name = args.reads[0].split("/")[-1].split(".")[0]
+        else:
+            self._species_name = args.reads.split("/")[-1].split(".")[0]
 
         # load pyopa related stuff
         self.defaults = pyopa.load_default_environments()
@@ -57,7 +61,7 @@ class Mapper(object):
 
     def _map_reads_to_single_reference(self, ref):
         """
-        Map reads to single reference species file
+        Map reads to single reference species file. Allows to run each mapping in parallel on the cluster. Mapping the reads per species (=job)
         :param ref: reference dataset
         :return: dictionary with key og_name and value sequences mapped to each species
         """
@@ -259,7 +263,7 @@ class Mapper(object):
                 if local_double[0] > best_score:
                     best_score = local_double[0]
                     best_seq_idx = i
-            best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id="UNKNOWN", description=record.description, name=record.name)
+            best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id=self._species_name, description=record.description, name=record.name)
         except:
             raise ValueError("Problem with sequence format!", ref_og_seq.seq)
         return best_translation
