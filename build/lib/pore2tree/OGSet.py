@@ -8,6 +8,7 @@ import glob
 import os
 import re
 import pyham
+import requests
 
 from ete3 import Tree
 from tqdm import tqdm
@@ -19,22 +20,31 @@ from pyoma.browser import db
 
 
 OMA_STANDALONE_OUTPUT = 'Output'
+OMA_MARKER_GENE_EXPORT = 'marker_genes'
+API_URL = 'http://omadev.cs.ucl.ac.uk/api'
+
 
 class OGSet(object):
 
-    def __init__(self, args, load=True):
+    def __init__(self, args, oma_output, load=True):
         self.args = args
-        self.ogs = {}
+        self.oma = oma_output
+        print(self.oma.mode)
+        self.ogs = oma_output.ogs
         self.mapped_ogs = {}
         self._db = None
         self._db_id_map = None
         self._db_source = None
+        self._ham_analysis = None
+        self._tree_str = None
+        self._og_orthoxml = None
         self._remove_species = False
+        self._marker_genes = False
 
         self.min_species = self._estimate_best_number_species()
 
-        if self.args.standalone_path:
-            self.oma_output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
+        self.oma_output_path = self.args.oma_output_path
+
 
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
@@ -44,10 +54,20 @@ class OGSet(object):
         if load:
             self.ogs = self._load_ogs()
         else:
-            self.ogs = self._load_ogs_from_folder()
+            self.ogs = self._reload_ogs_from_folder()
 
     def og(self, name):
         return self.ogs[name]
+
+    def _check_oma_standalone_path(self):
+        """
+        :return: return true if oma standalone output path provided
+        """
+        output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
+        if os.path.getsize(os.path.join(output_path, "OrthologousGroups.orthoxml")) > 0:
+            return True
+        else:
+            return False
 
     def _has_species_to_remove(self):
         """
@@ -68,7 +88,7 @@ class OGSet(object):
         t = Tree(tree_str)
         return [leaf.name for leaf in t]
 
-    def _load_ogs_from_folder(self):
+    def _reload_ogs_from_folder(self):
         """
         Re-load ogs if selection has finished and already exists in output folders
         :return: Dictionary with og name as key and list of SeqRecords
@@ -105,19 +125,26 @@ class OGSet(object):
         Using the orthoxml file select only the OGs of interest that have more species than the min_species threshold
         :return: Dictionary with og name as key and list of SeqRecords
         """
-        print('--- Load ogs and find their corresponding DNA seq from a database ---')
 
         if '.fa' in self.args.dna_reference or '.fasta' in self.args.dna_reference:
+            print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
             print(
                 'Loading {} into memory. This might take a while . . . '.format(self.args.dna_reference.split("/")[-1]))
             self._db = SeqIO.index(self.args.dna_reference, "fasta")
             self._db_source = 'fa'
         elif '.h5' in self.args.dna_reference:
+            print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
             self._db = db.Database(self.args.dna_reference)
             self._db_id_map = db.OmaIdMapper(self._db)
             self._db_source = 'h5'
         else:
-            raise FileNotFoundError
+            print('--- Load ogs and find their corresponding DNA seq using the REST api ---')
+            self._db_source = 'REST_api'
+
+        if self.oma.mode is 'standalone':
+            self._og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
+            self._tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
+            self._ham_analysis = pyham.Ham(self._tree_str, self._og_orthoxml, use_internal_name=False)
 
         ogs = {}
 
@@ -129,37 +156,16 @@ class OGSet(object):
         if not os.path.exists(orthologous_groups_dna):
             os.makedirs(orthologous_groups_dna)
 
-        orthologous_groups_fasta = os.path.join(self.oma_output_path, "OrthologousGroupsFasta")
-        og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
-        tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
-
-        ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
-        names_og = {}
-
-        for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Loading files for pre-filter',
-                         unit=' OGs'):
-            name = file.split("/")[-1].split(".")[0]
-            records = list(SeqIO.parse(file, 'fasta'))
-            new_records = []
-            for record in records:
-                species = record.description[record.description.find("[")+1:record.description.find("]")]
-                if species not in self.species_to_remove:
-                    new_records.append(record)
-            if len(new_records) >= self.min_species:
-                names_og[name] = new_records
+        names_og = self.ogs
 
         for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs'):
             # name = file.split("/")[-1].split(".")[0]
-            og_ham = ham_analysis.get_hog_by_id(name[2:])
-            # species_in_og = [gene.prot_id[0:5] for gene in og_ham.get_all_descendant_genes()]
-            # len_after_removal = self._get_num_species_after_removal(species_in_og)
-
             ogs[name] = OG()
-            ogs[name].aa = self._get_aa_records(og_ham, records)
+            ogs[name].aa = self._get_aa_records(name, records)
             output_file_aa = os.path.join(orthologous_groups_aa, name + ".fa")
             output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
 
-            if self.args.dna_reference:
+            if self._db_source:
                 ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
             else:
                 print("DNA reference was not provided. Only amino acid sequences gathered!")
@@ -168,17 +174,21 @@ class OGSet(object):
 
         return ogs
 
-    def _get_aa_records(self, og_ham, records):
+    def _get_aa_records(self, name, records):
         """
         
         :param og_ham: 
         :param records: 
         :return: 
         """
-        prot_ids = [gene.prot_id.split(" | ")[0] for gene in og_ham.get_all_descendant_genes()]
-        for record in records:
-            mystr = record.description
-            record.id = [x for x in prot_ids if mystr[mystr.find("[") + 1:mystr.find("]")] in x[0:5]][0]
+        if self.oma.mode is 'standalone':
+            og_ham = self._ham_analysis.get_hog_by_id(name[2:])
+            prot_ids = [gene.prot_id.split(" | ")[0] for gene in og_ham.get_all_descendant_genes()]
+            for record in records:
+                mystr = record.description
+                record.id = [x for x in prot_ids if mystr[mystr.find("[") + 1:mystr.find("]")] in x[0:5]][0]
+        elif self.oma.mode is 'marker_genes':
+            records = records
         return records
 
     def _get_dna_records(self, records, name):
@@ -195,6 +205,11 @@ class OGSet(object):
                                                  id=record.id + "_" + name, description="")
             elif 'fa' in self._db_source:
                 og_cdna[i] = self._db[record.id]
+            elif 'REST_api' in self._db_source:
+                protein = requests.get(API_URL + "/protein/" + record.id + "/")
+                protein = protein.json()
+                og_cdna[i] = SeqRecord.SeqRecord(Seq.Seq(protein['cdna']),
+                                                 id=record.id + "_" + name, description="")
 
             if 'X' in str(og_cdna[i].seq):
                 cleaned_seq = self._clean_DNA_seq(og_cdna[i])

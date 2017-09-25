@@ -23,6 +23,7 @@ from pore2tree.Mapper import Mapper
 from pore2tree.Aligner import Aligner
 from pore2tree.Progress import Progress
 from pore2tree.TreeInference import TreeInference
+from pore2tree.parser import OMAOutputParser
 import argparse
 
 
@@ -65,7 +66,7 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--min_species', type=int, default=None,
                             help='Min number of species in selected orthologous groups. \
                             If not selected it will be estimated such that around 1000 OGs are available.')
-    arg_parser.add_argument('--dna_reference', default=None,
+    arg_parser.add_argument('--dna_reference', default='',
                             help='Reference fasta file that contains nucleotide sequences.')
 
     arg_parser.add_argument('--single_mapping', default=None,
@@ -98,6 +99,9 @@ def main(argv, exe_name, desc=''):
     # Parse
     args = parse_args(argv, exe_name, desc)
 
+    oma_output = OMAOutputParser(args)
+    args.oma_output_path = oma_output.oma_output_path
+
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
@@ -105,30 +109,29 @@ def main(argv, exe_name, desc=''):
     # TODO: Check all given files and throw error if faulty
 
     # Read in orthologous groups
-    progress = Progress(args)
-    print(progress.status)
+    progress = Progress(args, oma_output)
 
     if progress.status >= 1:
-        ogset = OGSet(args, load=False)
+        ogset = OGSet(args, oma_output, load=False)
     else:
-        ogset = OGSet(args)
-
-    if progress.status >= 2:
-        reference = ReferenceSet(args, load=False)
-    else:
-        reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
-
-    if progress.status >= 3:
-        mapper = Mapper(args, og_set=ogset.ogs, load=False)
-    else:
-        mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
-
-    if args.single_mapping is None:
-        ogset.add_mapped_seq(mapper.og_records)
-        alignments = Aligner(args, ogset.mapped_ogs)
-        concat_alignment = alignments.concat_alignment()
-        tree = TreeInference(args, concat_alignment=concat_alignment)
-        print(tree)
+        ogset = OGSet(args, oma_output)
+    #
+    # if progress.status >= 2:
+    #     reference = ReferenceSet(args, load=False)
+    # else:
+    #     reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
+    #
+    # if progress.status >= 3:
+    #     mapper = Mapper(args, og_set=ogset.ogs, load=False)
+    # else:
+    #     mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
+    #
+    # if args.single_mapping is None:
+    #     ogset.add_mapped_seq(mapper.og_records)
+    #     alignments = Aligner(args, ogset.mapped_ogs)
+    #     concat_alignment = alignments.concat_alignment()
+    #     tree = TreeInference(args, concat_alignment=concat_alignment)
+    #     print(tree)
     #
     # # Map sequences to reference
     # if reference:
