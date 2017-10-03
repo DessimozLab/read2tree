@@ -76,10 +76,11 @@ def parse_args(argv, exe_name, desc):
                             help='Number of threads for the mapping using ngm / ngmlr!')
 
     # Arguments to map the reads
-    # arg_parser.add_argument('--ref_folder', default=None,
-    #                         help='Folder containing reference files with sequences sorted by species.')
-    arg_parser.add_argument('--reads', default=None,
-                            help='Reads to be mapped to reference.')
+    arg_parser.add_argument('--ref_folder', default=None,
+                            help='Folder containing reference files with sequences sorted by species.')
+    #arg_parser.add_argument('--reads', nargs='+', default=None, help='Reads to be mapped to reference.')
+
+    #arg_parser.add_argument('--reads', default=None, help = 'Reads to be mapped to reference.')
 
 
     # Parse the arguments.
@@ -110,29 +111,28 @@ def main(argv, exe_name, desc=''):
 
     # Read in orthologous groups
     progress = Progress(args, oma_output)
-    print(progress.status)
 
     if progress.status >= 1:
         ogset = OGSet(args, oma_output, load=False)
     else:
         ogset = OGSet(args, oma_output)
-    #
-    # if progress.status >= 2:
-    #     reference = ReferenceSet(args, load=False)
-    # else:
-    #     reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
-    #
-    # if progress.status >= 3:
-    #     mapper = Mapper(args, og_set=ogset.ogs, load=False)
-    # else:
-    #     mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
-    #
-    # if args.single_mapping is None:
-    #     ogset.add_mapped_seq(mapper.og_records)
-    #     alignments = Aligner(args, ogset.mapped_ogs)
-    #     concat_alignment = alignments.concat_alignment()
-    #     tree = TreeInference(args, concat_alignment=concat_alignment)
-    #     print(tree)
+
+    if progress.status >= 2:
+        reference = ReferenceSet(args, load=False)
+    else:
+        reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
+
+    if progress.status >= 3:
+        mapper = Mapper(args, og_set=ogset.ogs, load=False)
+    else:
+        mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
+
+    if args.single_mapping is None:
+        ogset.add_mapped_seq(mapper.og_records)
+        alignments = Aligner(args, ogset.mapped_ogs)
+        concat_alignment = alignments.concat_alignment()
+        tree = TreeInference(args, concat_alignment=concat_alignment)
+        print(tree)
     #
     # # Map sequences to reference
     # if reference:

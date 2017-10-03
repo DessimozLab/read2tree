@@ -53,10 +53,11 @@ class OMAOutputParser(object):
 
 
     def _load_ogs_from_path(self):
-        if self.mode is "standalone":
-            ogs = self._filter_ogs_min_species()
-        elif self.mode is "marker_genes":
+
+        if self.mode is "marker_genes":
             ogs = self._filter_ogs_min_species_marker()
+        else:
+                ogs = self._filter_ogs_min_species()
         return ogs
 
 

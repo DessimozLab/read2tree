@@ -92,12 +92,11 @@ class OGSet(object):
         Re-load ogs if selection has finished and already exists in output folders
         :return: Dictionary with og name as key and list of SeqRecords
         """
-        print('--- Load ogs and find their corresponding DNA seq from output folder ---')
+        print('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
         ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))), desc='Loading files',
-                         unit=' OGs'):
+        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))),desc='Loading files',unit=' OGs'):
             name = file[0].split("/")[-1].split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
@@ -117,7 +116,6 @@ class OGSet(object):
 
     def _change_record_id(self):
         raise NotImplementedError
-
 
     def _load_ogs(self):
         """
@@ -240,12 +238,14 @@ class OGSet(object):
         Add the sequence given from the read mapping to its corresponding OG
         :param mapped_og_set: set of ogs with its mapped sequences
         """
-        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map")
+        species_name = self.args.reads.split("/")[-1].split(".")[0]
+        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+species_name)
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
 
         for name, value in mapped_og_set.items():
             best_record_aa = value.get_best_mapping_by_coverage()
+            best_record_aa.id = species_name
             self.mapped_ogs[name] = self.ogs[name]
             self.mapped_ogs[name].aa.append(best_record_aa)
             output_file = os.path.join(ogs_with_mapped_seq, name+".fa")

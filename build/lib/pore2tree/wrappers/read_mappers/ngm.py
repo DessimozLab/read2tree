@@ -107,4 +107,13 @@ class NGM(ReadMapper):
 def get_default_options():
     return OptionSet([
         # Algorithm
+
+        # set number of threads
+        IntegerOption('-t', 4, active=True),
+
+        # Automatically selects an appropriate strategy from L-INS-i, FFT-NS-i
+        # and FFT-NS-2, according to data size. Default: off (always FFT-NS-2)
+        FlagOption('--no-unal', False, active=True)
+
+
     ])
