@@ -78,9 +78,9 @@ def parse_args(argv, exe_name, desc):
     # Arguments to map the reads
     arg_parser.add_argument('--ref_folder', default=None,
                             help='Folder containing reference files with sequences sorted by species.')
-    #arg_parser.add_argument('--reads', nargs='+', default=None, help='Reads to be mapped to reference.')
+    arg_parser.add_argument('--reads', nargs='+', default=None, help='Reads to be mapped to reference.')
 
-    #arg_parser.add_argument('--reads', default=None, help = 'Reads to be mapped to reference.')
+    # arg_parser.add_argument('--reads', default=None, help = 'Reads to be mapped to reference.')
 
 
     # Parse the arguments.

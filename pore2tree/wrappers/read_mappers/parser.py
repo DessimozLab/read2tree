@@ -23,7 +23,7 @@ class NGMParser(object):
         self.INSERT_SIZE = Literal('[MAIN] Estimated insert size:')
         self.COMPUTED_ALIGNMENTS = Literal('[MAIN] Alignments computed:')
         # These are all the models that are possible to be tested using phyml
-        self.vp = Suppress(SkipTo(self.VAILD_PAIRS)) + Suppress(self.VAILD_PAIRS) + FLOAT
+        self.vp = Suppress(SkipTo(self.VAILD_PAIRS)) + Suppress(self.VAILD_PAIRS) + WORD
         self.inssize = Suppress(SkipTo(self.INSERT_SIZE)) + Suppress(self.INSERT_SIZE) + FLOAT
         self.compalign = Suppress(SkipTo(self.COMPUTED_ALIGNMENTS)) + Suppress(self.COMPUTED_ALIGNMENTS) + FLOAT
 

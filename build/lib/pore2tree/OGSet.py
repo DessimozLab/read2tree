@@ -28,6 +28,18 @@ class OGSet(object):
 
     def __init__(self, args, oma_output, load=True):
         self.args = args
+
+        self.args = args
+        if " " in args.reads:
+            self._reads = args.reads.rstrip().split(" ")
+        else:
+            self._reads = args.reads
+
+        if len(self._reads) == 2:
+            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        else:
+            self._species_name = self._reads.split("/")[-1].split(".")[0]
+
         self.oma = oma_output
         self.ogs = oma_output.ogs
         self.mapped_ogs = {}
@@ -238,14 +250,13 @@ class OGSet(object):
         Add the sequence given from the read mapping to its corresponding OG
         :param mapped_og_set: set of ogs with its mapped sequences
         """
-        species_name = self.args.reads.split("/")[-1].split(".")[0]
-        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+species_name)
+        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+self._species_name)
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
 
         for name, value in mapped_og_set.items():
             best_record_aa = value.get_best_mapping_by_coverage()
-            best_record_aa.id = species_name
+            best_record_aa.id = self._species_name
             self.mapped_ogs[name] = self.ogs[name]
             self.mapped_ogs[name].aa.append(best_record_aa)
             output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
