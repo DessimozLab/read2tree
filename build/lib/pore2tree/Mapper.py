@@ -35,7 +35,15 @@ class Mapper(object):
 
     def __init__(self, args, ref_set=None, og_set=None, load=True):
         self.args = args
-        self._reads = args.reads
+        if " " in args.reads:
+            self._reads = args.reads.rstrip().split(" ")
+        else:
+            self._reads = args.reads
+
+        if len(self._reads) == 2:
+            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        else:
+            self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         # load pyopa related stuff
         self.defaults = pyopa.load_default_environments()
@@ -57,16 +65,13 @@ class Mapper(object):
 
     def _map_reads_to_single_reference(self, ref):
         """
-        Map reads to single reference species file
+        Map reads to single reference species file. Allows to run each mapping in parallel on the cluster. Mapping the reads per species (=job)
         :param ref: reference dataset
         :return: dictionary with key og_name and value sequences mapped to each species
         """
-        species = self.args.single_mapping.split("/")[-1].split("_")[0]
-
         print('--- Mapping of reads to {} reference species ---'.format(species))
-
         mapped_reads_species = {}
-        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
@@ -116,7 +121,7 @@ class Mapper(object):
         """
         print('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
-        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
@@ -137,9 +142,12 @@ class Mapper(object):
                 ngm = ngm_wrapper()
                 sam_file = ngm['file']
 
-            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
-            mapped_reads_species[species] = Reference()
-            mapped_reads_species[species].dna = mapped_reads
+            try:
+                mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+                mapped_reads_species[species] = Reference()
+                mapped_reads_species[species].dna = mapped_reads
+            except ValueError:
+                pass
 
         self._clean_up_read_mapping()
 
@@ -259,7 +267,7 @@ class Mapper(object):
                 if local_double[0] > best_score:
                     best_score = local_double[0]
                     best_seq_idx = i
-            best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id="UNKNOWN", description=record.description, name=record.name)
+            best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id=self._species_name, description=record.description, name=record.name)
         except:
             raise ValueError("Problem with sequence format!", ref_og_seq.seq)
         return best_translation
