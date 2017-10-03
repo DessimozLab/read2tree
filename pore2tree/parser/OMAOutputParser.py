@@ -8,9 +8,6 @@ from tables import *
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
-OUTPUT_FOLDER = 'Output'
-OG_OUTPUT_FOLDER = os.path.join(OUTPUT_FOLDER, 'OrthologousGroupsFasta')
-
 
 class OMAOutputParser(object):
 
@@ -38,6 +35,8 @@ class OMAOutputParser(object):
         :return:
         """
         oma_output_path = ''
+        if os.path.exists(os.path.join(self.args.standalone_path, "OrthologousGroupsFasta")):
+            OMA_STANDALONE_OUTPUT = "."
         if os.path.exists(os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)):
             oma_output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
             if os.path.join(oma_output_path, "OrthologousGroups.orthoxml"):
