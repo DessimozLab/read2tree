@@ -2,24 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/TODO" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scripts/sample_from_reads.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/pore2tree-0.0.1-py3.5.egg" afterPath="$PROJECT_DIR$/dist/pore2tree-0.0.1-py3.5.egg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/Mapper.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/Mapper.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/OGSet.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/OGSet.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/main.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/parser/OMAOutputParser.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/parser/OMAOutputParser.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/lib/pore2tree/wrappers/read_mappers/ngm.py" afterPath="$PROJECT_DIR$/build/lib/pore2tree/wrappers/read_mappers/ngm.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/.ipynb_checkpoints/Untitled-checkpoint.ipynb" afterPath="$PROJECT_DIR$/docs/.ipynb_checkpoints/Untitled-checkpoint.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/Untitled.ipynb" afterPath="$PROJECT_DIR$/docs/Untitled.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/Untitled1.ipynb" afterPath="$PROJECT_DIR$/docs/Untitled1.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/Untitled2.ipynb" afterPath="$PROJECT_DIR$/docs/Untitled2.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/Mapper.py" afterPath="$PROJECT_DIR$/pore2tree/Mapper.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/OGSet.py" afterPath="$PROJECT_DIR$/pore2tree/OGSet.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/main.py" afterPath="$PROJECT_DIR$/pore2tree/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/parser/OMAOutputParser.py" afterPath="$PROJECT_DIR$/pore2tree/parser/OMAOutputParser.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngm.py" afterPath="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngm.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
