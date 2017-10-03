@@ -61,27 +61,23 @@ def parse_args(argv, exe_name, desc):
     #                         help='Path to preselected og_aa folder')
 
     # Arguments to generate the reference
-    # arg_parser.add_argument('-r', '--reference', action='store_true',
-    #                         help='Just generate the reference dataset for mapping')
+    arg_parser.add_argument('-r', '--reference', action='store_true',
+                            help='Just generate the reference dataset for mapping')
     arg_parser.add_argument('--min_species', type=int, default=None,
                             help='Min number of species in selected orthologous groups. \
                             If not selected it will be estimated such that around 1000 OGs are available.')
     arg_parser.add_argument('--dna_reference', default='',
                             help='Reference fasta file that contains nucleotide sequences.')
-
     arg_parser.add_argument('--single_mapping', default=None,
                             help='Single species file allowing to map in a job array.')
-
     arg_parser.add_argument('--threads', type=int, default=None,
                             help='Number of threads for the mapping using ngm / ngmlr!')
 
     # Arguments to map the reads
     arg_parser.add_argument('--ref_folder', default=None,
                             help='Folder containing reference files with sequences sorted by species.')
+
     arg_parser.add_argument('--reads', nargs='+', default=None, help='Reads to be mapped to reference.')
-
-    # arg_parser.add_argument('--reads', default=None, help = 'Reads to be mapped to reference.')
-
 
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
@@ -122,17 +118,20 @@ def main(argv, exe_name, desc=''):
     else:
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
 
-    if progress.status >= 3:
-        mapper = Mapper(args, og_set=ogset.ogs, load=False)
-    else:
-        mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
+    if not args.reference:
+        if progress.status >= 3:
+            mapper = Mapper(args, og_set=ogset.ogs, load=False)
+        else:
+            mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
 
-    if args.single_mapping is None:
-        ogset.add_mapped_seq(mapper.og_records)
-        alignments = Aligner(args, ogset.mapped_ogs)
-        concat_alignment = alignments.concat_alignment()
-        tree = TreeInference(args, concat_alignment=concat_alignment)
-        print(tree)
+        if args.single_mapping is None:
+            ogset.add_mapped_seq(mapper.og_records)
+            alignments = Aligner(args, ogset.mapped_ogs)
+            concat_alignment = alignments.concat_alignment()
+            tree = TreeInference(args, concat_alignment=concat_alignment)
+            print(tree)
+    else:
+        print('--- Finished generating references for mapping! ---')
     #
     # # Map sequences to reference
     # if reference:
