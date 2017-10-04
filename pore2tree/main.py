@@ -129,7 +129,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment)
-            print(tree)
+            print(tree.tree)
     else:
         print('--- Finished generating references for mapping! ---')
     #
