@@ -17,6 +17,16 @@ class Progress(object):
 
     def __init__(self, args, oma_output):
         self.args = args
+        if " " in args.reads:
+            self._reads = args.reads.rstrip().split(" ")
+        else:
+            self._reads = args.reads
+
+        if len(self._reads) == 2:
+            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        else:
+            self._species_name = self._reads.split("/")[-1].split(".")[0]
+
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
         else:
@@ -33,8 +43,8 @@ class Progress(object):
         ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
         ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
-        mapping = os.path.join(self.args.output_path, "03_mapping")
-        ogs_map = os.path.join(self.args.output_path, "04_ogs_map")
+        mapping = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        ogs_map = os.path.join(self.args.output_path, "04_ogs_map"+self._species_name)
 
         # check progress of OG selection
         comp_files = 0

@@ -55,6 +55,7 @@ class Mapper(object):
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
                 else:
+                    self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
@@ -69,14 +70,14 @@ class Mapper(object):
         :param ref: reference dataset
         :return: dictionary with key og_name and value sequences mapped to each species
         """
-        print('--- Mapping of reads to {} reference species ---'.format(species))
+        print('--- Mapping of reads to {} reference species ---'.format(self.ref_species))
         mapped_reads_species = {}
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        ref_file_handle = os.path.join(output_folder, species + '.fa')
-        SeqIO.write(ref[species].dna, ref_file_handle, 'fasta')
+        ref_file_handle = os.path.join(output_folder, self.ref_species + '.fa')
+        SeqIO.write(ref[self.ref_species].dna, ref_file_handle, 'fasta')
         # call the WRAPPER here
         if len(self._reads) == 2:
             ngm_wrapper = NGM(ref_file_handle, self._reads)
@@ -90,10 +91,10 @@ class Mapper(object):
             sam_file = ngm['file']
 
         mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
-        mapped_reads_species[species] = Reference()
-        mapped_reads_species[species].dna = mapped_reads
+        mapped_reads_species[self.ref_species] = Reference()
+        mapped_reads_species[self.ref_species].dna = mapped_reads
 
-        self._clean_up_read_mapping(filename=species+'.fa')
+        self._clean_up_read_mapping(filename=self.ref_species+'.fa')
 
         return mapped_reads_species
 
@@ -105,7 +106,7 @@ class Mapper(object):
         """
         print('--- Retrieve mapped consensus sequences ---')
         map_reads_species = {}
-        in_folder = os.path.join(self.args.output_path, "03_mapping")
+        in_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
             species = file.split("/")[-1].split("_")[0]
             map_reads_species[species] = Reference()
@@ -160,7 +161,7 @@ class Mapper(object):
         :param reference_file_handle: 
         :return: 
         """
-        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         tmp_folder = os.path.join(output_folder, 'tmp')
         if not os.path.exists(tmp_folder):
             os.makedirs(tmp_folder)
@@ -187,7 +188,7 @@ class Mapper(object):
         """
         Clean the mapping directory such that only the important consensus files are at the top level
         """
-        output_folder = os.path.join(self.args.output_path, "03_mapping")
+        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         tmp_folder = os.path.join(output_folder, "tmp")
         ngm1_files = glob.glob(os.path.join(output_folder, filename+"-enc.2.ngm"))
         ngm2_files = glob.glob(os.path.join(output_folder, filename+"-ht-13-2.2.ngm"))

@@ -25,4 +25,5 @@ class TreeInference(object):
         tree = fasttree_wrapper()
         with open(os.path.join(output_folder, "tree.nwk"), "w") as text_file:
             text_file.write("{};".format(tree))
+        self.tree = "{};".format(tree)
         return tree
