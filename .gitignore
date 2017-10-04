@@ -1,4 +1,7 @@
 *~
+build
+dist
+read2tree.egg-info
 tmp/*
 .Rhistory
 .RData
