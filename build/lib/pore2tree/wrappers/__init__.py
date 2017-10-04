@@ -1,2 +1,0 @@
-class WrapperError(Exception):
-    pass

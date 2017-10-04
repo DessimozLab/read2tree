@@ -1,0 +1,16 @@
+#!/usr/bin/env python -W
+'''
+    Wrapper to enable the user to call the installed hogprop without the '.py'
+    ending.
+
+    -- Alex Warwick Vesztrocy, June 2016
+'''
+from read2tree.main import main
+from read2tree._utils import exe_name
+import sys
+
+
+if __name__ == '__main__':
+    desc = 'read2tree is a pipeline allowing to use read data in combination with ' \
+           'an OMA standalone output run to produce high quality trees. '
+    main(sys.argv[1:], exe_name=exe_name(), desc=desc)

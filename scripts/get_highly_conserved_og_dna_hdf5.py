@@ -8,7 +8,7 @@ import familyanalyzer as fa
 # parameters
 MIN_SPECIES = 20
 DUP_RATIO = 0
-DIR = '/Users/daviddylus/Research/pore2tree/reference_datasets/Dataset1/Output/'
+DIR = '/Users/daviddylus/Research/read2tree/reference_datasets/Dataset1/Output/'
 
 # read in files
 hog_XML = DIR+'HierarchicalGroups.orthoxml'
