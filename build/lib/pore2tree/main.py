@@ -130,6 +130,8 @@ def main(argv, exe_name, desc=''):
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment)
             print(tree)
+    else:
+        print('--- Finished generating references for mapping! ---')
     #
     # # Map sequences to reference
     # if reference:

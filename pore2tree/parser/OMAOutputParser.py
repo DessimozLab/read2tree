@@ -37,6 +37,9 @@ class OMAOutputParser(object):
         oma_output_path = ''
         if os.path.exists(os.path.join(self.args.standalone_path, "OrthologousGroupsFasta")):
             OMA_STANDALONE_OUTPUT = "."
+        else:
+            OMA_STANDALONE_OUTPUT = 'Output'
+
         if os.path.exists(os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)):
             oma_output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
             if os.path.join(oma_output_path, "OrthologousGroups.orthoxml"):
@@ -68,8 +71,8 @@ class OMAOutputParser(object):
         names_og = {}
         unique_species = []
         orthologous_groups_fasta = os.path.join(self.oma_output_path, "OrthologousGroupsFasta")
-
-        for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Loading files for pre-filter',
+        print('--- Filter OGs to have min {} species and remove {} species! ---'.format(self.min_species, len(self.species_to_remove)))
+        for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Pre-filter files',
                          unit=' OGs'):
             name = file.split("/")[-1].split(".")[0]
             records = list(SeqIO.parse(file, 'fasta'))

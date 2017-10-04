@@ -75,6 +75,7 @@ class OGSet(object):
         :return: return true if oma standalone output path provided
         """
         output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
+        ortho_group_xml = os.path.getsize(os.path.join(output_path, "OrthologousGroups.orthoxml"))
         if os.path.getsize(os.path.join(output_path, "OrthologousGroups.orthoxml")) > 0:
             return True
         else:
