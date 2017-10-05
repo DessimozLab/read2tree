@@ -34,9 +34,10 @@ output_file_left = []
 output_file_right = []
 for i in range(args.sample):
     output_sequence_sets.append(set(random.sample(range(total_records + 1), args.number)))
-    output_file = args.input[0].split("/")[-1].split(".")[0]
-    output_file_left.append(open(output_file + "_left_" + str(i) + ".fq", "w"))
-    output_file_right.append(open(output_file + "_right_" + str(i) + ".fq", "w"))
+    #output_file = args.input[0].split("/")[-1].split(".")[0]
+    output_file = args.output
+    output_file_left.append(open(output_file + "_0_" + str(i) + ".fq", "w"))
+    output_file_right.append(open(output_file + "_1_" + str(i) + ".fq", "w"))
 
 record_number = 0
 with open(args.input[0]) as read_input:

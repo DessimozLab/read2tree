@@ -7,8 +7,11 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
         if line.startswith('__version__'):
             exec(line.rstrip())
 
-requirements = ['biopython', 'ete3', 'dendropy', 'lxml', 'pandas', 'tqdm',
+requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml', 'pandas', 'tqdm',
                 'scipy', 'zoo', 'pysam', 'pyham']
+
+# requirements = [line.strip() for line in open("requirements.txt", 'r')]
+# print(requirements)
 
 setup(
     name=name,

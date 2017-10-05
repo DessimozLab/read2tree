@@ -1,0 +1,19 @@
+biopython
+numpy>=1.13.3
+scipy
+lxml
+pandas
+Cython
+ete3>=3.0.0b35
+tables>=3.4.2
+pyparsing>=2.1.10
+pysam>=0.11.2.2
+six>=1.10.0
+requests>=2.13.0
+dendropy>=4.3.0
+tqdm>=4.19.1
+
+-e git+ssh://gitolite@lab.dessimoz.org:2222/pyopa@master#egg=pyopa
+-e git+ssh://gitolite@lab.dessimoz.org:2222/pyham@master#egg=pyham
+-e git+ssh://gitolite@lab.dessimoz.org:2222/pyoma@master#egg=pyoma
+-e git+ssh://gitolite@lab.dessimoz.org:2222/zoo@master#egg=zoo

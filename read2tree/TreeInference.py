@@ -13,6 +13,17 @@ class TreeInference(object):
     def __init__(self, args, concat_alignment=None):
         print('--- Tree inference ---')
         self.args = args
+
+        if " " in args.reads:
+            self._reads = args.reads.rstrip().split(" ")
+        else:
+            self._reads = args.reads
+
+        if len(self._reads) == 2:
+            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        else:
+            self._species_name = self._reads.split("/")[-1].split(".")[0]
+
         self.tree = None
         if concat_alignment is not None:
             self.tree = self._infer_tree(concat_alignment)
@@ -23,7 +34,7 @@ class TreeInference(object):
             os.makedirs(output_folder)
         fasttree_wrapper = Fasttree(concat_alignment, datatype="PROTEIN")
         tree = fasttree_wrapper()
-        with open(os.path.join(output_folder, "tree.nwk"), "w") as text_file:
+        with open(os.path.join(output_folder, "tree_" + self._species_name + ".nwk"), "w") as text_file:
             text_file.write("{};".format(tree))
         self.tree = "{};".format(tree)
         return tree

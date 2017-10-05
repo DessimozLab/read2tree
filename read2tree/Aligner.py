@@ -18,6 +18,17 @@ class Aligner(object):
     def __init__(self, args, og_set=None):
         print('--- Alignment of OGs ---')
         self.args = args
+
+        if " " in args.reads:
+            self._reads = args.reads.rstrip().split(" ")
+        else:
+            self._reads = args.reads
+
+        if len(self._reads) == 2:
+            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        else:
+            self._species_name = self._reads.split("/")[-1].split(".")[0]
+
         self.alignments = {}
 
         if og_set is not None:
@@ -26,7 +37,7 @@ class Aligner(object):
     def _align(self, og_set):
         align_dict = {}
         self._adapt_id(og_set)
-        output_folder = os.path.join(self.args.output_path, "05_align")
+        output_folder = os.path.join(self.args.output_path, "05_align_" + self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         for key, value in tqdm(og_set.items(), desc='Aligning OGs ', unit=' OG'):

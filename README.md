@@ -1,17 +1,17 @@
-# pore2tree 
+# read2tree 
 
 Given a set of reference OGs and sequencing reads this tool allows to automatically build phylogenetic trees of similar quality to a full blown genomics pipeline. 
 
 ## Getting Started
 
-pore2tree was build and tested with python 3.5.1. To set up pore2tree on your local machine.
+read2tree was build and tested with python 3.5.1. To set up read2tree on your local machine.
 ```
-git clone https://github.com/dvdylus/pore2tree.git
+git clone https://github.com/dvdylus/read2tree.git
 python setup.py install
 ```
 ### Prerequisites
 
-pore2tree integrates multiple software tools and allows to infer a phylogenetic tree skipping several steps of a usual pipeline.
+read2tree integrates multiple software tools and allows to infer a phylogenetic tree skipping several steps of a usual pipeline.
 
 * [mafft](http://mafft.cbrc.jp/alignment/software/) - Mutliple sequence alignment software
 * [fasttree](http://www.microbesonline.org/fasttree/) - Dependency Management
