@@ -2,7 +2,7 @@
 import random
 import argparse
 import sys
-# bp length of mouse transcriptome in OMA: 37914531
+# bp length of mouse transcriptome in OMA: 37.914.531
 # bp length of CANVA genome 2.5Mpb
 
 parser = argparse.ArgumentParser()
