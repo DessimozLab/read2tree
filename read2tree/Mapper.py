@@ -173,7 +173,10 @@ class Mapper(object):
         pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
         pysam.index(outfile_name + "_sorted.bam")
 
-        cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1'
+        if len(self._reads) > 1:
+            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1 -Q 1'
+        else:
+            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1'
 
         with open(outfile_name + '_consensus_call.fq', "wb") as out:
             out.write(self._output_shell(cmd))
