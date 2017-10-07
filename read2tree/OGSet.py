@@ -263,6 +263,26 @@ class OGSet(object):
             output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
             self._write(output_file, self.mapped_ogs[name].aa)
 
+    def add_mapped_seq_v2(self, mapped_og_set):
+        """
+        Add the sequence given from the read mapping to its corresponding OG
+        :param mapped_og_set: set of ogs with its mapped sequences
+        """
+        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_aa_"+self._species_name)
+        if not os.path.exists(ogs_with_mapped_seq):
+            os.makedirs(ogs_with_mapped_seq)
+
+        for name, value in self.ogs.items():
+            if name in mapped_og_set.keys():
+                best_record_aa = mapped_og_set[name].get_best_mapping_by_coverage()
+                best_record_aa.id = self._species_name
+                self.mapped_ogs[name] = value
+                self.mapped_ogs[name].aa.append(best_record_aa)
+            else:
+                self.mapped_ogs[name] = value
+            output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+            self._write(output_file, self.mapped_ogs[name].aa)
+
     def _write(self, file, value):
         """
         Write output to fasta file
@@ -328,13 +348,13 @@ class OG(object):
         coverage = []
         if gene_code is 'dna':
             for record in self.dna:
-                seq_len = len(record)
-                non_n_len = len(record) - record.seq.count('n')
+                seq_len = len(record.seq)
+                non_n_len = len(record.seq) - str(record.seq).count('n')
                 coverage.append(non_n_len / seq_len)
         elif gene_code is 'aa':
-            for record in self.dna:
-                seq_len = len(record)
-                non_n_len = len(record) - record.seq.count('X')
+            for record in self.aa:
+                seq_len = len(record.seq)
+                non_n_len = len(record.seq) - str(record.seq).count('X')
                 coverage.append(non_n_len / seq_len)
         return coverage
 
