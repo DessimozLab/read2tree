@@ -265,10 +265,12 @@ class OGSet(object):
 
     def add_mapped_seq_v2(self, mapped_og_set):
         """
-        Add the sequence given from the read mapping to its corresponding OG
+        Add the sequence given from the read mapping to its corresponding OG and retain
+        all OGs that do not have the mapped sequence, thus all original OGs are used for
+        tree inference
         :param mapped_og_set: set of ogs with its mapped sequences
         """
-        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_aa_"+self._species_name)
+        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+self._species_name)
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
 
