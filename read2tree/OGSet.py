@@ -18,6 +18,8 @@ from Bio.SeqIO.FastaIO import FastaWriter
 from tables import *
 from pyoma.browser import db
 
+from read2tree.Progress import Progress
+
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
@@ -26,7 +28,7 @@ API_URL = 'http://omadev.cs.ucl.ac.uk/api'
 
 class OGSet(object):
 
-    def __init__(self, args, oma_output, load=True):
+    def __init__(self, args, oma_output=None, load=True):
         self.args = args
 
         self.args = args
@@ -40,8 +42,7 @@ class OGSet(object):
         else:
             self._species_name = self._reads.split("/")[-1].split(".")[0]
 
-        self.oma = oma_output
-        self.ogs = oma_output.ogs
+        self.progress = Progress(args)
         self.mapped_ogs = {}
         self._db = None
         self._db_id_map = None
@@ -54,15 +55,15 @@ class OGSet(object):
 
         self.min_species = self._estimate_best_number_species()
 
-        self.oma_output_path = self.args.oma_output_path
-
-
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
         else:
             self.species_to_remove = []
 
-        if load:
+        if load and oma_output is not None:
+            self.oma = oma_output
+            self.ogs = oma_output.ogs
+            self.oma_output_path = self.args.oma_output_path
             self.ogs = self._load_ogs()
         else:
             self.ogs = self._reload_ogs_from_folder()
@@ -181,7 +182,7 @@ class OGSet(object):
                 print("DNA reference was not provided. Only amino acid sequences gathered!")
             self._write(output_file_dna, ogs[name].dna)
             self._write(output_file_aa, ogs[name].aa)
-
+        self.progress.set_status('ogs')
         return ogs
 
     def _get_aa_records(self, name, records):

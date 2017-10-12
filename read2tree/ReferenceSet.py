@@ -17,6 +17,7 @@ from Bio.Alphabet import SingleLetterAlphabet
 from tables import *
 from pyoma.browser import db
 
+from read2tree.Progress import Progress
 
 
 class ReferenceSet(object):
@@ -34,12 +35,14 @@ class ReferenceSet(object):
         self.ref = {}
         self.load = load
         self.args = args
+        self.progress = Progress(args)
 
         if load is False:
             self.ref = self._load_records_folder()
         elif og_set is not None and load is True:
                 self.ref = self._generate_reference(og_set)
                 self.write()
+                self.progress.set_status('ref')
 
         # if args.remove_species:
         #     self.ref = self._remove_species()

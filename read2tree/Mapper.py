@@ -25,6 +25,7 @@ from read2tree.OGSet import OG
 from read2tree.ReferenceSet import Reference
 from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
+from read2tree.Progress import Progress
 from tables import *
 
 
@@ -49,14 +50,18 @@ class Mapper(object):
         self.defaults = pyopa.load_default_environments()
         self.envs = self.defaults['environments']
         self.env = self.envs[515]
+        self.progress = Progress(args)
 
         if load:
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
+                    self.progress.set_status('map')
                 else:
                     self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
+                    if self.progress.check_mapping():
+                        self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:
