@@ -39,7 +39,7 @@ class Progress(object):
         self._folder_mapping = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
         self._folder_ogs_map = os.path.join(self.args.output_path, "04_ogs_map" + self._species_name)
 
-        self.status_file = os.path.join(self.args.output_path, 'status_'+self._species_name+'.txt')
+        self.status_file = os.path.join(self.args.output_path, 'status.txt')
         self.status = self._get_status()
         # self.oma_output_path = self.args.oma_output_path
         # self._num_ogs = oma_output.num_selected_ogs
@@ -82,7 +82,7 @@ class Progress(object):
             status = 0
         return status
 
-    def set_status(self, status):
+    def set_status(self, status, ref=None):
         if not os.path.exists(self.status_file):
             to_append = self._write_header()
             with open(self.status_file, "w") as myfile:
@@ -94,6 +94,13 @@ class Progress(object):
             status_text = '02_ref_dna: OK\n'
         elif status is 'map':
             status_text = '03_mapping_'+self._species_name+': OK\n'
+        elif status is 'single_map' and ref is not None:
+            last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
+            if '02_ref_dna: OK' in last_line:
+                status_text = '----- ' + self._species_name + ' -----\n'
+                status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
+            else:
+                status_text = 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
         elif status is 're_ogs':
             status_text = '04_ogs_map_'+self._species_name+': OK\n'
         elif status is 'og_align':
@@ -119,12 +126,10 @@ class Progress(object):
                 fm.close()
 
     def _write_header(self):
-        header = '--- Computation Status ---\n' \
-                 '\n'
+        header = '--- Computation Status ---\n'
         return header
 
     def _append_status(self, status_text):
-        to_append = '------------------------\n'
-        to_append += status_text
+        to_append = status_text
         with open(self.status_file, "a") as myfile:
             myfile.write(to_append)
