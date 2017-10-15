@@ -64,7 +64,7 @@ class ReferenceSet(object):
         ref_dict = {}
         print('--- Generating reference for mapping from folder ---')
         ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
-        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Loading references for mapping from folder", unit=" species"):
+        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Re-loading references for mapping from folder", unit=" species"):
             species_name = file.split("/")[-1].split("_")[0]
             ref_dict[species_name] = Reference()
             ref_dict[species_name].dna = list(SeqIO.parse(file, 'fasta'))

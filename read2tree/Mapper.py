@@ -241,6 +241,9 @@ class Mapper(object):
         for records in self.mapped_records.values():
             for record in records.dna:
                 name = record.id.split("_")[-1]
+                tmp_id = record.id
+                species_name = tmp_id[0:5]
+                record.description = tmp_id + " [" + species_name + "]"
                 if name in og_records.keys():
                     og_records[name].dna.append(record)
                     aa = self._predict_best_protein_pyopa(record, og_set[name])

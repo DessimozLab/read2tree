@@ -78,6 +78,9 @@ class Progress(object):
                 status = 4
             elif '05_align_'+self._species_name+': OK' in last_line:
                 status = 5
+            elif 'Mapping' in last_line:
+                status = 2
+                self._find_last_completed_step()
         else:
             status = 0
         return status
@@ -133,3 +136,11 @@ class Progress(object):
         to_append = status_text
         with open(self.status_file, "a") as myfile:
             myfile.write(to_append)
+
+    def _find_last_completed_step(self):
+        if os.path.exists(self.status_file):
+            to_append = self._write_header()
+            with open(self.status_file, "w") as myfile:
+                myfile.write(to_append)
+        self.set_status('ogs')
+        self.set_status('ref')
