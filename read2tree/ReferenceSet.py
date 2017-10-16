@@ -78,17 +78,23 @@ class ReferenceSet(object):
         print('--- Generating reference for mapping ---')
         ref_set = {}
         for name, og in tqdm(og_set.items(), desc="Loading records", unit=" record"):
-            for record in zip(og.aa, og.dna):
-                species = record[0].id[0:5]
-                record[0].id = record[0].id+"_"+name
-                record[1].id = record[1].id+"_"+name
+            for record in og.aa:
+                species = record.id[0:5]
+                record.id = record.id+"_"+name
                 if species in ref_set.keys():
-                    ref_set[species].aa.append(record[0])
-                    ref_set[species].dna.append(record[1])
+                    ref_set[species].aa.append(record)
                 else:
                     ref_set[species] = Reference()
-                    ref_set[species].aa.append(record[0])
-                    ref_set[species].dna.append(record[1])
+                    ref_set[species].aa.append(record)
+
+            for record in og.dna:
+                species = record.id[0:5]
+                record.id = record.id + "_" + name
+                if species in ref_set.keys():
+                    ref_set[species].dna.append(record)
+                else:
+                    ref_set[species] = Reference()
+                    ref_set[species].dna.append(record)
 
         return ref_set
 
