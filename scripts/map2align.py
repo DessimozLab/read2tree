@@ -177,8 +177,8 @@ def build_tree(concat_align, mapping_dir, threshold=1, exclude_species=["none"])
     fasttree_wrapper = Fasttree(concat_align, datatype="PROTEIN")
     tree = fasttree_wrapper()
     print("FINISHED TREE INFERENCE!")
-    with open(tree_out, "w") as text_file:
-        text_file.write("{};".format(tree))
+        with open(tree_out, "w") as text_file:
+            text_file.write("{};".format(tree))
     print("Resulting tree: {}".format(tree))
     return tree
 
