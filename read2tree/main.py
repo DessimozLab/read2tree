@@ -106,8 +106,6 @@ def parse_args(argv, exe_name, desc):
 
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
-    print(args.keep_all_ogs)
-    print(args.remove_species_mapping_only)
 
     return args
 
