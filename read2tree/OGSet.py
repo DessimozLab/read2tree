@@ -299,13 +299,33 @@ class OGSet(object):
             os.makedirs(ogs_with_mapped_seq)
 
         for name, value in self.ogs.items():
-            if name in mapped_og_set.keys():
-                best_record_aa = mapped_og_set[name].get_best_mapping_by_coverage()
-                best_record_aa.id = self._species_name
-                self.mapped_ogs[name] = value
-                self.mapped_ogs[name].aa.append(best_record_aa)
+            # remove species from initial list
+            if self.args.remove_species_mapping_only:
+                og = value
             else:
-                self.mapped_ogs[name] = value
+                og = OG()
+                filtered_og = value.remove_species_records(self.species_to_remove)
+                og.dna = filtered_og[0]
+                og.aa = filtered_og[1]
+
+            if self.args.keep_all_ogs:
+                self.mapped_ogs[name] = og
+
+            if name in mapped_og_set.keys():
+                # remove species that were mapped to from initial list
+                mapping_og = OG()
+                filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
+                mapping_og.dna = filtered_mapping[0]
+                mapping_og.aa = filtered_mapping[1]
+
+                if len(mapping_og.aa) > 1:
+                    best_record_aa = mapping_og.get_best_mapping_by_coverage()
+                    best_record_aa.id = self._species_name
+                    self.mapped_ogs[name] = og
+                    all_id = [rec.id for rec in self.mapped_ogs[name].aa]
+                    if best_record_aa.id not in all_id:
+                        self.mapped_ogs[name].aa.append(best_record_aa)
+
             output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
             self._write(output_file, self.mapped_ogs[name].aa)
 
@@ -394,6 +414,9 @@ class OG(object):
         index_to_remove = []
         for i, record in enumerate(self.aa):
             species = record.description[record.description.find("[") + 1:record.description.find("]")]
+            if len(species.split(" ")) > 1:
+                new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
+                species = new_id.upper()
             if species in species_to_remove:
                 index_to_remove.append(i)
 
