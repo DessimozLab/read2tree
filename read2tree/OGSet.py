@@ -255,9 +255,10 @@ class OGSet(object):
                 except ValueError:
                     pass
 
-            if 'X' in str(og_cdna[i].seq) and not not_found:
-                cleaned_seq = self._clean_DNA_seq(og_cdna[i])
-                og_cdna[i].seq = cleaned_seq
+            if not not_found:
+                if 'X' in str(og_cdna[i].seq):
+                    cleaned_seq = self._clean_DNA_seq(og_cdna[i])
+                    og_cdna[i].seq = cleaned_seq
 
         return og_cdna
 
