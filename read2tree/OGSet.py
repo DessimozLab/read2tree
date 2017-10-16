@@ -239,32 +239,28 @@ class OGSet(object):
                 try:
                     oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
                 except:
-                    not_found = True
                     pass
                 else:
-                    og_cdna[i].append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
+                    og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
                                                      id=record.id + "_" + name, description=""))
             elif 'fa' in self._db_source:
                 try:
-                    og_cdna[i].append(self._db[record.id])
+                    og_cdna.append(self._db[record.id])
                 except ValueError:
-                    not_found = True
                     pass
             elif 'REST_api' in self._db_source:
                 try:
                     protein = requests.get(API_URL + "/protein/" + record.id + "/")
                 except requests.exceptions.RequestException:
-                    not_found = True
                     pass
                 else:
                     protein = protein.json()
-                    og_cdna[i].append(SeqRecord.SeqRecord(Seq.Seq(protein['cdna']),
+                    og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(protein['cdna']),
                                                           id=record.id + "_" + name, description=""))
 
-            if not not_found:
-                if 'X' in str(og_cdna[i].seq):
-                    cleaned_seq = self._clean_DNA_seq(og_cdna[i])
-                    og_cdna[i].seq = cleaned_seq
+            if 'X' in str(og_cdna[-1].seq):
+                cleaned_seq = self._clean_DNA_seq(og_cdna[-1])
+                og_cdna[-1].seq = cleaned_seq
 
 
         return og_cdna

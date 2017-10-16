@@ -74,8 +74,8 @@
           <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="222">
-                  <caret line="256" column="36" lean-forward="false" selection-start-line="256" selection-start-column="36" selection-end-line="256" selection-end-column="36" />
+                <state relative-caret-position="276">
+                  <caret line="266" column="0" lean-forward="true" selection-start-line="266" selection-start-column="0" selection-end-line="266" selection-end-column="0" />
                   <folding>
                     <element signature="e#148#159#0" expanded="true" />
                   </folding>
@@ -814,8 +814,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="256" column="36" lean-forward="false" selection-start-line="256" selection-start-column="36" selection-end-line="256" selection-end-column="36" />
+        <state relative-caret-position="276">
+          <caret line="266" column="0" lean-forward="true" selection-start-line="266" selection-start-column="0" selection-end-line="266" selection-end-column="0" />
           <folding>
             <element signature="e#148#159#0" expanded="true" />
           </folding>
