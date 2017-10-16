@@ -192,7 +192,10 @@ class OGSet(object):
             output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
 
             if self._db_source:
-                ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
+                try:
+                    ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
+                except ValueError:
+                    pass
             else:
                 print("DNA reference was not provided. Only amino acid sequences gathered!")
             self._write(output_file_dna, ogs[name].dna)
@@ -229,12 +232,14 @@ class OGSet(object):
             # if len(species.split(" ")) > 1:
             #     new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
             #     species = new_id.upper()
+            not_found = False
             if 'h5' in self._db_source:
                 try:
                     oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
                     og_cdna[i] = SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
                                                  id=record.id + "_" + name, description="")
-                except ValueError:
+                except:
+                    not_found = True
                     pass
             elif 'fa' in self._db_source:
                 try:
@@ -250,7 +255,7 @@ class OGSet(object):
                 except ValueError:
                     pass
 
-            if 'X' in str(og_cdna[i].seq):
+            if 'X' in str(og_cdna[i].seq) and not not_found:
                 cleaned_seq = self._clean_DNA_seq(og_cdna[i])
                 og_cdna[i].seq = cleaned_seq
 
