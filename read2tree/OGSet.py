@@ -192,12 +192,10 @@ class OGSet(object):
             output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
 
             if self._db_source:
-                try:
-                    ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
-                except ValueError:
-                    pass
+                ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
             else:
                 print("DNA reference was not provided. Only amino acid sequences gathered!")
+            print(ogs[name].dna)
             self._write(output_file_dna, ogs[name].dna)
             self._write(output_file_aa, ogs[name].aa)
         self.progress.set_status('ogs')
