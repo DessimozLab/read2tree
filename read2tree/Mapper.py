@@ -25,6 +25,7 @@ from read2tree.OGSet import OG
 from read2tree.ReferenceSet import Reference
 from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
+from read2tree.Progress import Progress
 from tables import *
 
 
@@ -49,14 +50,18 @@ class Mapper(object):
         self.defaults = pyopa.load_default_environments()
         self.envs = self.defaults['environments']
         self.env = self.envs[515]
+        self.progress = Progress(args)
 
         if load:
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
+                    self.progress.set_status('map')
                 else:
                     self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
+                    if self.progress.check_mapping():
+                        self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:
@@ -95,6 +100,7 @@ class Mapper(object):
         mapped_reads_species[self.ref_species].dna = mapped_reads
 
         self._clean_up_read_mapping(filename=self.ref_species+'.fa')
+        self.progress.set_status('single_map', ref=self.ref_species)
 
         return mapped_reads_species
 
@@ -147,6 +153,7 @@ class Mapper(object):
                 mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
                 mapped_reads_species[species] = Reference()
                 mapped_reads_species[species].dna = mapped_reads
+                self.progress.set_status('single_map', ref=species)
             except ValueError:
                 pass
 
@@ -234,6 +241,9 @@ class Mapper(object):
         for records in self.mapped_records.values():
             for record in records.dna:
                 name = record.id.split("_")[-1]
+                tmp_id = record.id
+                species_name = tmp_id[0:5]
+                record.description = tmp_id + " [" + species_name + "]"
                 if name in og_records.keys():
                     og_records[name].dna.append(record)
                     aa = self._predict_best_protein_pyopa(record, og_set[name])

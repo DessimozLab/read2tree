@@ -18,6 +18,8 @@ from Bio.SeqIO.FastaIO import FastaWriter
 from tables import *
 from pyoma.browser import db
 
+from read2tree.Progress import Progress
+
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
@@ -26,7 +28,7 @@ API_URL = 'http://omadev.cs.ucl.ac.uk/api'
 
 class OGSet(object):
 
-    def __init__(self, args, oma_output, load=True):
+    def __init__(self, args, oma_output=None, load=True):
         self.args = args
 
         self.args = args
@@ -40,8 +42,7 @@ class OGSet(object):
         else:
             self._species_name = self._reads.split("/")[-1].split(".")[0]
 
-        self.oma = oma_output
-        self.ogs = oma_output.ogs
+        self.progress = Progress(args)
         self.mapped_ogs = {}
         self._db = None
         self._db_id_map = None
@@ -54,15 +55,15 @@ class OGSet(object):
 
         self.min_species = self._estimate_best_number_species()
 
-        self.oma_output_path = self.args.oma_output_path
-
-
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
         else:
             self.species_to_remove = []
 
-        if load:
+        if load and oma_output is not None:
+            self.oma = oma_output
+            self.ogs = oma_output.ogs
+            self.oma_output_path = self.args.oma_output_path
             self.ogs = self._load_ogs()
         else:
             self.ogs = self._reload_ogs_from_folder()
@@ -80,6 +81,18 @@ class OGSet(object):
             return True
         else:
             return False
+
+    def _remove_species(self):
+        """
+        removes species of ogs that are set by user
+        :return:
+        """
+        new_ogs = []
+        for name, og in self.ogs:
+            species = og.aa.description[og.aa.description.find("[") + 1:og.aa.description.find("]")]
+            if species not in self.species_to_remove:
+                new_ogs.apped(og)
+        return new_ogs
 
     def _has_species_to_remove(self):
         """
@@ -181,7 +194,7 @@ class OGSet(object):
                 print("DNA reference was not provided. Only amino acid sequences gathered!")
             self._write(output_file_dna, ogs[name].dna)
             self._write(output_file_aa, ogs[name].aa)
-
+        self.progress.set_status('ogs')
         return ogs
 
     def _get_aa_records(self, name, records):
@@ -256,12 +269,23 @@ class OGSet(object):
             os.makedirs(ogs_with_mapped_seq)
 
         for name, value in mapped_og_set.items():
-            best_record_aa = value.get_best_mapping_by_coverage()
-            best_record_aa.id = self._species_name
-            self.mapped_ogs[name] = self.ogs[name]
-            self.mapped_ogs[name].aa.append(best_record_aa)
-            output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-            self._write(output_file, self.mapped_ogs[name].aa)
+            # remove species from initial list
+            og = OG()
+            og.dna = self.ogs[name].remove_species_records(self.species_to_remove)[0]
+            og.aa = self.ogs[name].remove_species_records(self.species_to_remove)[1]
+            # remove species that were mapped to from initial list
+            mapping_og = OG()
+            mapping_og.dna = value.remove_species_records(self.species_to_remove)[0]
+            mapping_og.aa = value.remove_species_records(self.species_to_remove)[1]
+            if len(mapping_og.aa) > 1:
+                best_record_aa = mapping_og.get_best_mapping_by_coverage()
+                best_record_aa.id = self._species_name
+                self.mapped_ogs[name] = og
+                all_id = [rec.id for rec in self.mapped_ogs[name].aa]
+                if best_record_aa.id not in all_id:
+                    self.mapped_ogs[name].aa.append(best_record_aa)
+                output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+                self._write(output_file, self.mapped_ogs[name].aa)
 
     def _write(self, file, value):
         """
@@ -332,23 +356,24 @@ class OG(object):
                 non_n_len = len(record) - record.seq.count('n')
                 coverage.append(non_n_len / seq_len)
         elif gene_code is 'aa':
-            for record in self.dna:
+            for record in self.aa:
                 seq_len = len(record)
                 non_n_len = len(record) - record.seq.count('X')
                 coverage.append(non_n_len / seq_len)
         return coverage
 
-    def remove_species_records(self, species_to_remove, all_species):
+    def remove_species_records(self, species_to_remove):
         '''
         Remove species from reference sequence set
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         '''
-        for species in species_to_remove:
-            if species in all_species:
-                rm_idx = all_species.index(species)
-                all_species.pop(rm_idx)
-                self.aa.pop(rm_idx)
+        index_to_remove = []
+        for i, record in enumerate(self.aa):
+            species = record.description[record.description.find("[") + 1:record.description.find("]")]
+            if species in species_to_remove:
+                index_to_remove.append(i)
 
-        return self.aa
-        # print("Species after {}".format(", ".join(all_species)))
+        aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove]
+        dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove]
+        return [dna, aa]

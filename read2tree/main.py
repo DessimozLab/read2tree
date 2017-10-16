@@ -96,9 +96,6 @@ def main(argv, exe_name, desc=''):
     # Parse
     args = parse_args(argv, exe_name, desc)
 
-    oma_output = OMAOutputParser(args)
-    args.oma_output_path = oma_output.oma_output_path
-
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
@@ -106,12 +103,14 @@ def main(argv, exe_name, desc=''):
     # TODO: Check all given files and throw error if faulty
 
     # Read in orthologous groups
-    progress = Progress(args, oma_output)
+    progress = Progress(args)
 
     if progress.status >= 1:
-        ogset = OGSet(args, oma_output, load=False)
+        ogset = OGSet(args, load=False)
     else:
-        ogset = OGSet(args, oma_output)
+        oma_output = OMAOutputParser(args)
+        args.oma_output_path = oma_output.oma_output_path
+        ogset = OGSet(args, oma_output=oma_output)
 
     if progress.status >= 2:
         reference = ReferenceSet(args, load=False)
