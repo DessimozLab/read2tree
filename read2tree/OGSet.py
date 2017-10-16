@@ -333,8 +333,8 @@ class OGSet(object):
         """
         Write output to fasta file
         :param folder: file and location of outputfile
-        :param value: 
-        :return: 
+        :param value:
+        :return:
         """
         handle = open(file, "w")
         writer = FastaWriter(handle, wrap=None)
