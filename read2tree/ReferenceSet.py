@@ -107,7 +107,8 @@ class ReferenceSet(object):
         if not os.path.exists(out_dna):
             os.makedirs(out_dna)
         for key, value in self.ref.items():
-            value.write_dna(key, out_dna)
+            if value:  # only write if not empty
+                value.write_dna(key, out_dna)
 
     def _remove_species(self):
         raise NotImplementedError
