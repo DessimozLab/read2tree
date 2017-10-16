@@ -47,6 +47,7 @@ class OGSet(object):
         self._db = None
         self._db_id_map = None
         self._db_source = None
+        self._db_species_list = None
         self._ham_analysis = None
         self._tree_str = None
         self._og_orthoxml = None
@@ -160,6 +161,8 @@ class OGSet(object):
             self._db = db.Database(self.args.dna_reference)
             self._db_id_map = db.OmaIdMapper(self._db)
             self._db_source = 'h5'
+            # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
+            # print(self._db_species_list)
         else:
             print('--- Load ogs and find their corresponding DNA seq using the REST api ---')
             self._db_source = 'REST_api'
@@ -222,17 +225,30 @@ class OGSet(object):
         """
         og_cdna = [None] * len(records)
         for i, record in enumerate(records):
+            # species = record.description[record.description.find("[") + 1:record.description.find("]")]
+            # if len(species.split(" ")) > 1:
+            #     new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
+            #     species = new_id.upper()
             if 'h5' in self._db_source:
-                oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
-                og_cdna[i] = SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
+                try:
+                    oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
+                    og_cdna[i] = SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
                                                  id=record.id + "_" + name, description="")
+                except ValueError:
+                    pass
             elif 'fa' in self._db_source:
-                og_cdna[i] = self._db[record.id]
+                try:
+                    og_cdna[i] = self._db[record.id]
+                except ValueError:
+                    pass
             elif 'REST_api' in self._db_source:
-                protein = requests.get(API_URL + "/protein/" + record.id + "/")
-                protein = protein.json()
-                og_cdna[i] = SeqRecord.SeqRecord(Seq.Seq(protein['cdna']),
+                try:
+                    protein = requests.get(API_URL + "/protein/" + record.id + "/")
+                    protein = protein.json()
+                    og_cdna[i] = SeqRecord.SeqRecord(Seq.Seq(protein['cdna']),
                                                  id=record.id + "_" + name, description="")
+                except ValueError:
+                    pass
 
             if 'X' in str(og_cdna[i].seq):
                 cleaned_seq = self._clean_DNA_seq(og_cdna[i])
