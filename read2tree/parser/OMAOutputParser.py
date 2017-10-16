@@ -22,10 +22,6 @@ class OMAOutputParser(object):
         self.num_species = 0
 
         self.min_species = self._estimate_best_number_species()
-        if self.args.remove_species:
-            self.species_to_remove = self.args.remove_species.split(",")
-        else:
-            self.species_to_remove = []
 
         self.ogs = self._load_ogs_from_path()
 
@@ -71,7 +67,7 @@ class OMAOutputParser(object):
         names_og = {}
         unique_species = []
         orthologous_groups_fasta = os.path.join(self.oma_output_path, "OrthologousGroupsFasta")
-        print('--- Filter OGs to have min {} species and remove {} species! ---'.format(self.min_species, len(self.species_to_remove)))
+        print('--- Load OGs with min {} species from oma standalone! ---'.format(self.min_species))
         for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Pre-filter files',
                          unit=' OGs'):
             name = file.split("/")[-1].split(".")[0]
@@ -79,11 +75,11 @@ class OMAOutputParser(object):
             new_records = []
             for record in records:
                 species = record.description[record.description.find("[")+1:record.description.find("]")]
-                if species not in self.species_to_remove:
-                    new_records.append(record)
-                    if species not in unique_species:
-                        unique_species.append(species)
-                        self.num_species += 1
+                new_records.append(record)
+                if species not in unique_species:
+                    unique_species.append(species)
+                    self.num_species += 1
+
             if len(new_records) >= self.min_species:
                 names_og[name] = new_records
                 self.num_selected_ogs += 1
@@ -97,7 +93,7 @@ class OMAOutputParser(object):
         names_og = {}
         unique_species = []
         orthologous_groups_fasta = os.path.join(self.oma_output_path, "marker_genes")
-
+        print('--- Load OGs with min {} species from oma marker gene export! ---'.format(self.min_species))
         for file in tqdm((glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta"))), desc='Loading files for pre-filter',
                          unit=' OGs'):
             name = file.split("/")[-1].split(".")[0].replace('OMAGroup_', 'OG')
@@ -105,11 +101,11 @@ class OMAOutputParser(object):
             new_records = []
             for record in records:
                 species = record.description[record.description.find("[")+1:record.description.find("]")]
-                if species not in self.species_to_remove:
-                    new_records.append(record)
-                    if species not in unique_species:
-                        unique_species.append(species)
-                        self.num_species += 1
+                new_records.append(record)
+                if species not in unique_species:
+                    unique_species.append(species)
+                    self.num_species += 1
+
             if len(new_records) >= self.min_species:
                 names_og[name] = new_records
                 self.num_selected_ogs += 1

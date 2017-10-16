@@ -2,6 +2,7 @@
 build
 dist
 read2tree.egg-info
+docs/*
 tmp/*
 .Rhistory
 .RData

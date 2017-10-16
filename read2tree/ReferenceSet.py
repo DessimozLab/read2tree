@@ -17,6 +17,7 @@ from Bio.Alphabet import SingleLetterAlphabet
 from tables import *
 from pyoma.browser import db
 
+from read2tree.Progress import Progress
 
 
 class ReferenceSet(object):
@@ -34,12 +35,14 @@ class ReferenceSet(object):
         self.ref = {}
         self.load = load
         self.args = args
+        self.progress = Progress(args)
 
         if load is False:
             self.ref = self._load_records_folder()
         elif og_set is not None and load is True:
                 self.ref = self._generate_reference(og_set)
                 self.write()
+                self.progress.set_status('ref')
 
         # if args.remove_species:
         #     self.ref = self._remove_species()
@@ -61,7 +64,7 @@ class ReferenceSet(object):
         ref_dict = {}
         print('--- Generating reference for mapping from folder ---')
         ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
-        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Loading references for mapping from folder", unit=" species"):
+        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Re-loading references for mapping from folder", unit=" species"):
             species_name = file.split("/")[-1].split("_")[0]
             ref_dict[species_name] = Reference()
             ref_dict[species_name].dna = list(SeqIO.parse(file, 'fasta'))

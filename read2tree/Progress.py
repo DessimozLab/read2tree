@@ -6,7 +6,7 @@
     -- David Dylus, July--XXX 2017
 '''
 
-import pyham
+import mmap
 import glob
 import os
 
@@ -15,8 +15,9 @@ OMA_MARKER_GENE_EXPORT = 'marker_genes'
 
 class Progress(object):
 
-    def __init__(self, args, oma_output):
+    def __init__(self, args):
         self.args = args
+
         if " " in args.reads:
             self._reads = args.reads.rstrip().split(" ")
         else:
@@ -31,68 +32,115 @@ class Progress(object):
             self.species_to_remove = self.args.remove_species.split(",")
         else:
             self.species_to_remove = []
-        self.status = None
-        self.oma_output_path = self.args.oma_output_path
-        self._num_ogs = oma_output.num_selected_ogs
-        self._num_species = oma_output.num_species
 
-        self.status = self._determine_progress()
+        self._folder_ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
+        self._folder_ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
+        self._folder_ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
+        self._folder_mapping = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
+        self._folder_ogs_map = os.path.join(self.args.output_path, "04_ogs_map" + self._species_name)
 
-    def _determine_progress(self):
-        status = 0
-        ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
-        ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
-        mapping = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
-        ogs_map = os.path.join(self.args.output_path, "04_ogs_map"+self._species_name)
+        self.status_file = os.path.join(self.args.output_path, 'status.txt')
+        self.status = self._get_status()
+        # self.oma_output_path = self.args.oma_output_path
+        # self._num_ogs = oma_output.num_selected_ogs
+        self._num_species = self._set_num_species()
 
-        # check progress of OG selection
-        comp_files = 0
-        if os.path.exists(ref_ogs_aa) and os.path.exists(ref_ogs_dna):
-            for file in zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))):
-                if os.path.getsize(file[0]) > 0 and os.path.getsize(file[1]) > 0:
-                    comp_files += 1
+        # self.status = self._determine_progress()
 
-        if comp_files >= self._num_ogs:
-            status = 1
-
-        # check progress of Ref generation
-        ref_files = 0
-        if os.path.exists(ref_dna):
-            for file in glob.glob(os.path.join(ref_dna, "*.fa")):
-                if os.path.getsize(file) > 0:
-                    ref_files += 1
-
-        if ref_files == self._num_species and status == 1:
-            status = 2
-
-        # check progress of mapping
+    def check_mapping(self):
         map_files = 0
-        if os.path.exists(mapping):
-            for file in glob.glob(os.path.join(mapping, "*consensus.fa")):
+        if os.path.exists(self._folder_mapping):
+            for file in glob.glob(os.path.join(self._folder_mapping, "*consensus.fa")):
                 if os.path.getsize(file) > 0:
                     map_files += 1
 
-        if map_files == self._num_species and status == 2:
-            status = 3
+        if map_files == self._num_species:
+            return True
+        else:
+            return False
 
+    def _set_num_species(self):
+        if self.status > 1:
+            return len(os.listdir(self._folder_ref_dna))
+        else:
+            return 0
+
+    def _get_status(self):
+        if os.path.exists(self.status_file):
+            last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
+            if '01_ref_ogs_aa: OK' in last_line:
+                status = 1
+            elif '02_ref_dna: OK' in last_line:
+                status = 2
+            elif '03_mapping_'+self._species_name+': OK' in last_line:
+                status = 3
+            elif '04_ogs_map_'+self._species_name+': OK' in last_line:
+                status = 4
+            elif '05_align_'+self._species_name+': OK' in last_line:
+                status = 5
+            elif 'Mapping' in last_line:
+                status = 2
+                self._find_last_completed_step()
+        else:
+            status = 0
         return status
 
-    # def _determine_num(self):
-    #     og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
-    #     tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
-    #
-    #     ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
-    #
-    #     num_select_ogs = 0
-    #     num_species = len(ham_analysis.get_list_extant_genomes()) - len(self.species_to_remove)
-    #     hog_dict = ham_analysis.get_dict_top_level_hogs()
-    #     for hog, value in hog_dict.items():
-    #         genes = self._remove_species(value.get_all_descendant_genes())
-    #         if len(genes) >= self.args.min_species:
-    #             num_select_ogs += 1
-    #
-    #     return [num_select_ogs, num_species]
-    #
-    # def _remove_species(self, genes_in_hog):
-    #     return [gene for gene in genes_in_hog if gene.prot_id[0:5] not in self.species_to_remove]
+    def set_status(self, status, ref=None):
+        if not os.path.exists(self.status_file):
+            to_append = self._write_header()
+            with open(self.status_file, "w") as myfile:
+                myfile.write(to_append)
+        if status is 'ogs':
+            status_text = '01_ref_ogs_dna: OK\n' \
+                          '01_ref_ogs_aa: OK\n'
+        elif status is 'ref':
+            status_text = '02_ref_dna: OK\n'
+        elif status is 'map':
+            status_text = '03_mapping_'+self._species_name+': OK\n'
+        elif status is 'single_map' and ref is not None:
+            last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
+            if '02_ref_dna: OK' in last_line:
+                status_text = '----- ' + self._species_name + ' -----\n'
+                status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
+            else:
+                status_text = 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
+        elif status is 're_ogs':
+            status_text = '04_ogs_map_'+self._species_name+': OK\n'
+        elif status is 'og_align':
+            status_text = '05_align_'+self._species_name+': OK\n'
+        self._append_status(status_text)
+
+    def _tail(self, filename, n):
+        """Returns last n lines from the filename.
+        No exception handling
+        https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail"""
+        size = os.path.getsize(filename)
+        with open(filename, "r") as f:
+            # for Windows the mmap parameters are different
+            fm = mmap.mmap(f.fileno(), 0, mmap.MAP_SHARED, mmap.PROT_READ)
+            try:
+                for i in range(size - 1, -1, -1):
+                    if fm[i] == '\n':
+                        n -= 1
+                        if n == -1:
+                            break
+                return fm[i + 1 if i else 0:].splitlines()
+            finally:
+                fm.close()
+
+    def _write_header(self):
+        header = '--- Computation Status ---\n'
+        return header
+
+    def _append_status(self, status_text):
+        to_append = status_text
+        with open(self.status_file, "a") as myfile:
+            myfile.write(to_append)
+
+    def _find_last_completed_step(self):
+        if os.path.exists(self.status_file):
+            to_append = self._write_header()
+            with open(self.status_file, "w") as myfile:
+                myfile.write(to_append)
+        self.set_status('ogs')
+        self.set_status('ref')
