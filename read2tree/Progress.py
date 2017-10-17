@@ -68,6 +68,7 @@ class Progress(object):
     def _get_status(self):
         status = 0
         if os.path.exists(self.status_file):
+            self._find_last_completed_step()
             f = open(self.status_file, 'r')
             for line in f:
                 # last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
@@ -81,9 +82,6 @@ class Progress(object):
                     status = 4
                 elif '05_align_'+self._species_name+': OK' in line:
                     status = 5
-                elif 'Mapping' in line:
-                    status = 2
-                    self._find_last_completed_step()
         return status
 
     def set_status(self, status, ref=None):
@@ -100,7 +98,7 @@ class Progress(object):
             status_text = '03_mapping_'+self._species_name+': OK\n'
         elif status is 'single_map' and ref is not None:
             last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
-            if '02_ref_dna: OK' in last_line:
+            if '02_ref_dna: OK' in last_line or '03' in last_line:
                 status_text = '----- ' + self._species_name + ' -----\n'
                 status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
             else:
@@ -139,9 +137,14 @@ class Progress(object):
             myfile.write(to_append)
 
     def _find_last_completed_step(self):
-        if os.path.exists(self.status_file):
-            to_append = self._write_header()
-            with open(self.status_file, "w") as myfile:
-                myfile.write(to_append)
-        self.set_status('ogs')
-        self.set_status('ref')
+        f = open(self.status_file, 'r')
+        idx_last_completed_step = 0
+        all_lines = []
+        for i, line in enumerate(f):
+            if 'OK' in line:
+                idx_last_completed_step = i
+            all_lines.append(line)
+        open(self.status_file, 'w').writelines(all_lines[0:idx_last_completed_step+1])
+
+
+

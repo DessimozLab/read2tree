@@ -323,7 +323,7 @@ class OGSet(object):
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
 
-        print('--- Add inferred mapped sequence back to OGs {} ---'.format(self.args.dna_reference))
+        print('--- Add inferred mapped sequence back to OGs ---')
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from initial list
