@@ -323,7 +323,9 @@ class OGSet(object):
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
 
-        for name, value in self.ogs.items():
+        print('--- Add inferred mapped sequence back to OGs {} ---'.format(self.args.dna_reference))
+
+        for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from initial list
             if self.args.remove_species_mapping_only:
                 og = value
@@ -332,9 +334,6 @@ class OGSet(object):
                 filtered_og = value.remove_species_records(self.species_to_remove)
                 og.dna = filtered_og[0]
                 og.aa = filtered_og[1]
-
-            if self.args.keep_all_ogs:
-                self.mapped_ogs[name] = og
 
             if name in mapped_og_set.keys():
                 # remove species that were mapped to from initial list
@@ -351,8 +350,13 @@ class OGSet(object):
                     if best_record_aa.id not in all_id:
                         self.mapped_ogs[name].aa.append(best_record_aa)
 
-            output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-            self._write(output_file, self.mapped_ogs[name].aa)
+                output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+                self._write(output_file, self.mapped_ogs[name].aa)
+            else:
+                if self.args.keep_all_ogs:
+                    self.mapped_ogs[name] = og
+                    output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
+                    self._write(output_file, self.mapped_ogs[name].aa)
 
     def _write(self, file, value):
         """

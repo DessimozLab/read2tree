@@ -66,23 +66,24 @@ class Progress(object):
             return 0
 
     def _get_status(self):
+        status = 0
         if os.path.exists(self.status_file):
-            last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
-            if '01_ref_ogs_aa: OK' in last_line:
+            f = open(self.status_file, 'r')
+            for line in f:
+            # last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
+            if '01_ref_ogs_aa: OK' in line:
                 status = 1
-            elif '02_ref_dna: OK' in last_line:
+            elif '02_ref_dna: OK' in line:
                 status = 2
-            elif '03_mapping_'+self._species_name+': OK' in last_line:
+            elif '03_mapping_'+self._species_name+': OK' in line:
                 status = 3
-            elif '04_ogs_map_'+self._species_name+': OK' in last_line:
+            elif '04_ogs_map_'+self._species_name+': OK' in line:
                 status = 4
-            elif '05_align_'+self._species_name+': OK' in last_line:
+            elif '05_align_'+self._species_name+': OK' in line:
                 status = 5
-            elif 'Mapping' in last_line:
+            elif 'Mapping' in line:
                 status = 2
                 self._find_last_completed_step()
-        else:
-            status = 0
         return status
 
     def set_status(self, status, ref=None):
