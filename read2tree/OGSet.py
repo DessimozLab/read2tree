@@ -337,8 +337,6 @@ class OGSet(object):
             if name in mapped_og_set.keys():
                 have_mapping = True
                 if self.args.remove_species_mapping_only:  #TODO: this should be changed to another option
-                    mapping_og = mapped_og_set[name]
-                else:  # remove species from sequences inferred from mapping
                     mapping_og = OG()
                     filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
                     if filtered_mapping:
@@ -346,6 +344,8 @@ class OGSet(object):
                         mapping_og.aa = filtered_mapping[1]
                     else:  # in case the removed mapped seq was the only one
                         have_mapping = False
+                else:
+                    mapping_og = mapped_og_set[name]
 
                 if have_mapping:
                     best_record_aa = mapping_og.get_best_mapping_by_coverage()

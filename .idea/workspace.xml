@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/Untitled-Copy1.ipynb" afterPath="$PROJECT_DIR$/docs/Untitled-Copy1.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/read2tree/OGSet.py" afterPath="$PROJECT_DIR$/read2tree/OGSet.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -29,8 +30,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="81" column="4" lean-forward="false" selection-start-line="81" selection-start-column="4" selection-end-line="85" selection-end-column="50" />
+            <state relative-caret-position="416">
+              <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
               <folding>
                 <element signature="e#614#623#0" expanded="true" />
                 <marker date="1508217314000" expanded="true" signature="1125:1557" ph="..." />
@@ -62,8 +63,8 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
-              <caret line="337" column="35" lean-forward="false" selection-start-line="337" selection-start-column="35" selection-end-line="337" selection-end-column="35" />
+            <state relative-caret-position="327">
+              <caret line="338" column="106" lean-forward="true" selection-start-line="338" selection-start-column="106" selection-end-line="338" selection-end-column="106" />
               <folding>
                 <element signature="e#148#159#0" expanded="true" />
               </folding>
@@ -762,17 +763,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="81" column="4" lean-forward="false" selection-start-line="81" selection-start-column="4" selection-end-line="85" selection-end-column="50" />
-          <folding>
-            <element signature="e#614#623#0" expanded="true" />
-            <marker date="1508217314000" expanded="true" signature="1125:1557" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-679">
@@ -817,10 +807,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="76" column="0" lean-forward="true" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+          <folding>
+            <element signature="e#614#623#0" expanded="true" />
+            <marker date="1508217314000" expanded="true" signature="1125:1557" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="337" column="35" lean-forward="false" selection-start-line="337" selection-start-column="35" selection-end-line="337" selection-end-column="35" />
+        <state relative-caret-position="327">
+          <caret line="338" column="106" lean-forward="true" selection-start-line="338" selection-start-column="106" selection-end-line="338" selection-end-column="106" />
           <folding>
             <element signature="e#148#159#0" expanded="true" />
           </folding>
