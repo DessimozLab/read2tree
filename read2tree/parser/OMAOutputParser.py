@@ -23,6 +23,11 @@ class OMAOutputParser(object):
 
         self.min_species = self._estimate_best_number_species()
 
+        if self.args.ignore_species:
+            self.ignore_species = self.args.ignore_species.split(",")
+        else:
+            self.ignore_species = []
+
         self.ogs = self._load_ogs_from_path()
 
     def _check_oma_output_path(self):
@@ -75,10 +80,11 @@ class OMAOutputParser(object):
             new_records = []
             for record in records:
                 species = record.description[record.description.find("[")+1:record.description.find("]")]
-                new_records.append(record)
-                if species not in unique_species:
-                    unique_species.append(species)
-                    self.num_species += 1
+                if species not in self.ignore_species:
+                    new_records.append(record)
+                    if species not in unique_species:
+                        unique_species.append(species)
+                        self.num_species += 1
 
             if len(new_records) >= self.min_species:
                 names_og[name] = new_records
@@ -101,10 +107,11 @@ class OMAOutputParser(object):
             new_records = []
             for record in records:
                 species = record.description[record.description.find("[")+1:record.description.find("]")]
-                new_records.append(record)
-                if species not in unique_species:
-                    unique_species.append(species)
-                    self.num_species += 1
+                if species not in self.ignore_species:
+                    new_records.append(record)
+                    if species not in unique_species:
+                        unique_species.append(species)
+                        self.num_species += 1
 
             if len(new_records) >= self.min_species:
                 names_og[name] = new_records

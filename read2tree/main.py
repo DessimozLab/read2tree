@@ -64,8 +64,14 @@ def parse_args(argv, exe_name, desc):
                                  'from http://omabrowser.org directly. NOTE: internet connection '
                                  'required!')
 
+    arg_parser.add_argument('--ignore_species', default=None,
+                            help='[Default is none] Ignores species part of the OMA standalone '
+                                 'pipeline. Input is comma separated list without spaces, e.g. '
+                                 'XXX,YYY,AAA.')
+
     arg_parser.add_argument('--remove_species', default=None,
-                            help='[Default is none] Remove species present in dataset and only do analysis on '
+                            help='[Default is none] Remove species present in dataset after '
+                                 'mapping step completed and only do analysis on '
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
 
