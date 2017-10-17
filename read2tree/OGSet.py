@@ -326,32 +326,33 @@ class OGSet(object):
         print('--- Add inferred mapped sequence back to OGs ---')
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
-            # remove species from initial list
             if self.args.remove_species_mapping_only:
                 og = value
-            else:
+            else:  # remove species part of the original dataset
                 og = OG()
                 filtered_og = value.remove_species_records(self.species_to_remove)
                 og.dna = filtered_og[0]
                 og.aa = filtered_og[1]
 
             if name in mapped_og_set.keys():
-                # remove species that were mapped to from initial list
-                mapping_og = OG()
-                filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
-                mapping_og.dna = filtered_mapping[0]
-                mapping_og.aa = filtered_mapping[1]
+
+                if self.args.remove_species_mapping_only:  #TODO: this should be changed to another option
+                    mapping_og = mapped_og_set[name]
+                else:  # remove species that from sequences inferred from mapping
+                    mapping_og = OG()
+                    filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
+                    mapping_og.dna = filtered_mapping[0]
+                    mapping_og.aa = filtered_mapping[1]
 
                 if len(mapping_og.aa) > 1:
                     best_record_aa = mapping_og.get_best_mapping_by_coverage()
                     best_record_aa.id = self._species_name
                     self.mapped_ogs[name] = og
                     all_id = [rec.id for rec in self.mapped_ogs[name].aa]
-                    if best_record_aa.id not in all_id:
+                    if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
                         self.mapped_ogs[name].aa.append(best_record_aa)
-
-                output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-                self._write(output_file, self.mapped_ogs[name].aa)
+                        output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+                        self._write(output_file, self.mapped_ogs[name].aa)
             else:
                 if self.args.keep_all_ogs:
                     self.mapped_ogs[name] = og
