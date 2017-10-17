@@ -335,24 +335,27 @@ class OGSet(object):
                 og.aa = filtered_og[1]
 
             if name in mapped_og_set.keys():
-
                 if self.args.remove_species_mapping_only:  #TODO: this should be changed to another option
                     mapping_og = mapped_og_set[name]
-                else:  # remove species that from sequences inferred from mapping
+                    have_mapping = True
+                else:  # remove species from sequences inferred from mapping
                     mapping_og = OG()
                     filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
-                    mapping_og.dna = filtered_mapping[0]
-                    mapping_og.aa = filtered_mapping[1]
+                    if filtered_mapping:
+                        mapping_og.dna = filtered_mapping[0]
+                        mapping_og.aa = filtered_mapping[1]
+                    else:  # in case the removed mapped seq was the only one
+                        have_mapping = False
 
-                if len(mapping_og.aa) > 1:
+                if have_mapping:
                     best_record_aa = mapping_og.get_best_mapping_by_coverage()
                     best_record_aa.id = self._species_name
                     self.mapped_ogs[name] = og
                     all_id = [rec.id for rec in self.mapped_ogs[name].aa]
                     if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
                         self.mapped_ogs[name].aa.append(best_record_aa)
-                        output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-                        self._write(output_file, self.mapped_ogs[name].aa)
+                    output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+                    self._write(output_file, self.mapped_ogs[name].aa)
             else:
                 if self.args.keep_all_ogs:
                     self.mapped_ogs[name] = og
@@ -452,4 +455,7 @@ class OG(object):
 
         aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove]
         dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove]
-        return [dna, aa]
+        if len(aa) > 0 and len(dna) > 0:
+            return [dna, aa]
+        else:
+            return None
