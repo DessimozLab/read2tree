@@ -96,13 +96,14 @@ class Mapper(object):
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             sam_file = ngm['file']
-
-        mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
-        mapped_reads_species[self.ref_species] = Reference()
-        mapped_reads_species[self.ref_species].dna = mapped_reads
-
-        self._clean_up_read_mapping(filename=self.ref_species+'.fa')
-        self.progress.set_status('single_map', ref=self.ref_species)
+        try:
+            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+            mapped_reads_species[self.ref_species] = Reference()
+            mapped_reads_species[self.ref_species].dna = mapped_reads
+            self._clean_up_read_mapping(filename=self.ref_species + '.fa')
+            self.progress.set_status('single_map', ref=self.ref_species)
+        except ValueError:
+            pass
 
         return mapped_reads_species
 
