@@ -97,10 +97,11 @@ class Mapper(object):
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
-            self._clean_up_read_mapping(filename=self.ref_species + '.fa')
             self.progress.set_status('single_map', ref=self.ref_species)
         except ValueError:
             pass
+
+        self._clean_up_read_mapping(filename=self.ref_species + '.fa')
 
         return mapped_reads_species
 
