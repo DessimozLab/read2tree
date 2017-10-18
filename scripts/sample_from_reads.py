@@ -31,18 +31,24 @@ print("sampling " + str(args.number) + " out of " + str(total_records) + " recor
 
 output_sequence_sets = []
 output_file_left = []
-output_file_right = []
+if len(args.input) > 1:
+    output_file_right = []
 for i in range(args.sample):
     output_sequence_sets.append(set(random.sample(range(total_records + 1), args.number)))
     #output_file = args.input[0].split("/")[-1].split(".")[0]
     output_file = args.output
     output_file_left.append(open(output_file + "_0_" + str(i) + ".fq", "w"))
-    output_file_right.append(open(output_file + "_1_" + str(i) + ".fq", "w"))
+    if len(args.input) > 1:
+        output_file_right.append(open(output_file + "_1_" + str(i) + ".fq", "w"))
+
+initial_length = 0
+sampling_length = 0
 
 record_number = 0
 with open(args.input[0]) as read_input:
     for line1 in read_input:
         line2 = read_input.readline()
+        initial_length += len(line2)
         line3 = read_input.readline()
         line4 = read_input.readline()
         for i, output in enumerate(output_file_left):
@@ -51,25 +57,28 @@ with open(args.input[0]) as read_input:
                     output.write(line2)
                     output.write(line3)
                     output.write(line4)
+                    sampling_length += len(line2)
         record_number += 1
 
-record_number = 0
-with open(args.input[1]) as read_input:
-    for line1 in read_input:
-        line2 = read_input.readline()
-        line3 = read_input.readline()
-        line4 = read_input.readline()
-        for i, output in enumerate(output_file_right):
-            if record_number in output_sequence_sets[i]:
-                    output.write(line1)
-                    output.write(line2)
-                    output.write(line3)
-                    output.write(line4)
-        record_number += 1
+if len(args.input) > 1:
+    record_number = 0
+    with open(args.input[1]) as read_input:
+        for line1 in read_input:
+            line2 = read_input.readline()
+            line3 = read_input.readline()
+            line4 = read_input.readline()
+            for i, output in enumerate(output_file_right):
+                if record_number in output_sequence_sets[i]:
+                        output.write(line1)
+                        output.write(line2)
+                        output.write(line3)
+                        output.write(line4)
+            record_number += 1
 
 
-for output in zip(output_file_right, output_file_left):
-    output[0].close()
+#output[0].close()
+if len(args.input) > 1:
     output[1].close()
+print("The mean length of all reads is {} and the mean length of the subsampled reads is {}".format(initial_length/total_records, sampling_length/args.number))
+print("The sum length of all reads is {} and the sum length of the subsampled reads is {}".format(initial_length, sampling_length))
 print("done!")
-print("want to learn how to write useful tools like this? Go to http://pythonforbiologists.com/books")
