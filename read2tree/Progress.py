@@ -17,12 +17,6 @@ class Progress(object):
 
     def __init__(self, args):
         self.args = args
-        print(args.reads)
-
-        # if " " in args.reads:
-        #     self._reads = args.reads.rstrip().split(" ")
-        # else:
-        #     self._reads = args.reads[0]
 
         if len(self.args.reads) == 2:
             self._reads = self.args.reads

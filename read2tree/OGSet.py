@@ -32,10 +32,6 @@ class OGSet(object):
         self.args = args
 
         self.args = args
-        # if " " in args.reads:
-        #     self._reads = args.reads.rstrip().split(" ")
-        # else:
-        #     self._reads = args.reads[0]
 
         if len(self.args.reads) == 2:
             self._reads = self.args.reads

@@ -36,10 +36,6 @@ class Mapper(object):
 
     def __init__(self, args, ref_set=None, og_set=None, load=True):
         self.args = args
-        # if " " in args.reads:
-        #     self._reads = args.reads.rstrip().split(" ")
-        # else:
-        #     self._reads = args.reads[0]
 
         if len(self.args.reads) == 2:
             self._reads = self.args.reads
@@ -96,6 +92,7 @@ class Mapper(object):
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             sam_file = ngm['file']
+
         try:
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
             mapped_reads_species[self.ref_species] = Reference()
