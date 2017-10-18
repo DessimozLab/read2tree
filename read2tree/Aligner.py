@@ -27,7 +27,7 @@ class Aligner(object):
         if len(self._reads) == 2:
             self._species_name = self._reads[0].split("/")[-1].split(".")[0]
         else:
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
 
         self.alignments = {}
 
