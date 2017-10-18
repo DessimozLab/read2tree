@@ -86,16 +86,16 @@ class Progress(object):
             to_append = self._write_header()
             with open(self.status_file, "w") as myfile:
                 myfile.write(to_append)
-        if status is 'ogs':
+        if status is 'ogs' and self.status < 1:
             status_text = '01_ref_ogs_dna: OK\n' \
                           '01_ref_ogs_aa: OK\n'
-        elif status is 'ref':
+        elif status is 'ref' and self.status < 2:
             status_text = '02_ref_dna: OK\n'
-        elif status is 'map':
+        elif status is 'map' and self.status < 3:
             status_text = '03_mapping_'+self._species_name+': OK\n'
-        elif status is 'single_map' and ref is not None:
+        elif status is 'single_map' and ref is not None and self.status < 3:
             last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
-            if '02_ref_dna: OK' in last_line or '03' in last_line:
+            if 'OK' in last_line:
                 status_text = '----- ' + self._species_name + ' -----\n'
                 status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
             else:
