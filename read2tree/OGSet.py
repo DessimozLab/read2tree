@@ -32,15 +32,17 @@ class OGSet(object):
         self.args = args
 
         self.args = args
-        if " " in args.reads:
-            self._reads = args.reads.rstrip().split(" ")
-        else:
-            self._reads = args.reads
+        # if " " in args.reads:
+        #     self._reads = args.reads.rstrip().split(" ")
+        # else:
+        #     self._reads = args.reads[0]
 
-        if len(self._reads) == 2:
+        if len(self.args.reads) == 2:
+            self._reads = self.args.reads
             self._species_name = self._reads[0].split("/")[-1].split(".")[0]
         else:
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            self._reads = self.args.reads[0]
+            self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         self.progress = Progress(args)
         self.mapped_ogs = {}
