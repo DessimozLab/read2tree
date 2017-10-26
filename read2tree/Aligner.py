@@ -5,7 +5,7 @@
     -- David Dylus, July--XXX 2017
 '''
 import os
-from tables import *
+#from tables import *
 from Bio import AlignIO
 
 from tqdm import tqdm

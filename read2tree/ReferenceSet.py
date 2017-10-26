@@ -11,7 +11,7 @@ import glob
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.SeqIO.FastaIO import FastaWriter
-from tables import *
+#from tables import *
 
 from read2tree.Progress import Progress
 

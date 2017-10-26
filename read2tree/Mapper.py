@@ -26,7 +26,7 @@ from read2tree.ReferenceSet import Reference
 from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
 from read2tree.Progress import Progress
-from tables import *
+#from tables import *
 
 
 class Mapper(object):

@@ -3,7 +3,7 @@ import os
 
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
-from tables import *
+#from tables import *
 
 
 OMA_STANDALONE_OUTPUT = 'Output'
