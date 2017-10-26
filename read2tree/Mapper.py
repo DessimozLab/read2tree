@@ -26,6 +26,7 @@ from read2tree.ReferenceSet import Reference
 from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
 from read2tree.Progress import Progress
+from read2tree.stats.Coverage import Coverage
 #from tables import *
 
 
@@ -54,11 +55,13 @@ class Mapper(object):
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
+                    self._clean_up_tmp_files()
                     self.progress.set_status('map')
                 else:
                     self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
                     if self.progress.check_mapping():
+                        self._clean_up_tmp_files()
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
@@ -181,6 +184,10 @@ class Mapper(object):
         pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
         pysam.index(outfile_name + "_sorted.bam")
 
+        cov = Coverage()
+        cov.get_coverage_bam(outfile_name + "_sorted.bam")
+        cov.write_coverage_bam(outfile_name + "_cov.txt")
+
         if len(self._reads) > 1:
             cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1 -Q 1'
         else:
@@ -210,6 +217,25 @@ class Mapper(object):
             shutil.move(file[1], os.path.join(tmp_folder, file[1].split('/')[-1]))
             shutil.move(file[2], os.path.join(tmp_folder, file[2].split('/')[-1]))
             shutil.move(file[3], os.path.join(tmp_folder, file[3].split('/')[-1]))
+
+
+    def _clean_up_tmp_files(self):
+        """
+        Clean the mapping directory such that only the important consensus files are at the top level
+        """
+        output_folder = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
+        tmp_folder = os.path.join(output_folder, "tmp")
+        cov_files = glob.glob(os.path.join(tmp_folder, "*_cov.txt"))
+
+        for file in glob.glob(output_folder + "/*"):
+            if os.path.isfile(file) and '_consensus.fa' not in file:
+                os.remove(file)
+
+        for file in cov_files:
+            shutil.move(file, os.path.join(output_folder, file.split('/')[-1]))
+
+        shutil.rmtree(tmp_folder)
+
 
     def _output_shell(self, line):
         """
