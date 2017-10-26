@@ -9,7 +9,7 @@ logger.addHandler(logging.StreamHandler())
 
 FLOAT = Word(nums + '.-').setParseAction(lambda x: float(x[0]))
 INT = Word(nums).setParseAction(lambda x: int(x[0]))
-WORD = Word(alphanums + '_')
+WORD = Word(alphanums + '_-%. ')
 SPACEDWORD = Word(alphanums+' _')
 
 
@@ -22,7 +22,6 @@ class NGMParser(object):
         self.VAILD_PAIRS = Literal('[MAIN] Valid pairs found:')
         self.INSERT_SIZE = Literal('[MAIN] Estimated insert size:')
         self.COMPUTED_ALIGNMENTS = Literal('[MAIN] Alignments computed:')
-        # These are all the models that are possible to be tested using phyml
         self.vp = Suppress(SkipTo(self.VAILD_PAIRS)) + Suppress(self.VAILD_PAIRS) + WORD
         self.inssize = Suppress(SkipTo(self.INSERT_SIZE)) + Suppress(self.INSERT_SIZE) + FLOAT
         self.compalign = Suppress(SkipTo(self.COMPUTED_ALIGNMENTS)) + Suppress(self.COMPUTED_ALIGNMENTS) + FLOAT
