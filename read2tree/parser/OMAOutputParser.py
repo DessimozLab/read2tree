@@ -18,7 +18,7 @@ class OMAOutputParser(object):
         self.args = args
         self.mode = ''
         self.oma_output_path = self._check_oma_output_path()
-         self.num_selected_ogs = 0
+        self.num_selected_ogs = 0
         self.num_species = 0
 
         self.min_species = self._estimate_best_number_species()
