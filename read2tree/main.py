@@ -70,7 +70,7 @@ def parse_args(argv, exe_name, desc):
                                  'XXX,YYY,AAA.')
 
     arg_parser.add_argument('--remove_species', default=None,
-                            help='[Default is none] Remove species present in dataset after '
+                            help='[Default is none] Remove species present in data set after '
                                  'mapping step completed and only do analysis on '
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')

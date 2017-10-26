@@ -6,16 +6,12 @@
     -- David Dylus, July--XXX 2017
 '''
 
-import re
 import os
 import glob
 from tqdm import tqdm
-from itertools import chain
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.SeqIO.FastaIO import FastaWriter
-from Bio.Alphabet import SingleLetterAlphabet
 from tables import *
-from pyoma.browser import db
 
 from read2tree.Progress import Progress
 

@@ -16,7 +16,8 @@ from Bio import SeqIO, Seq, SeqRecord
 from Bio.Alphabet import SingleLetterAlphabet
 from Bio.SeqIO.FastaIO import FastaWriter
 from tables import *
-from pyoma.browser import db
+# ----------- only to be used internally; requires hdf5 installation -------------------
+# from pyoma.browser import db
 
 from read2tree.Progress import Progress
 
@@ -154,11 +155,12 @@ class OGSet(object):
                 'Loading {} into memory. This might take a while . . . '.format(self.args.dna_reference.split("/")[-1]))
             self._db = SeqIO.index(self.args.dna_reference, "fasta")
             self._db_source = 'fa'
-        elif '.h5' in self.args.dna_reference:
-            print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
-            self._db = db.Database(self.args.dna_reference)
-            self._db_id_map = db.OmaIdMapper(self._db)
-            self._db_source = 'h5'
+        # ---------------- only to be used internally ----------------------
+        # elif '.h5' in self.args.dna_reference:
+        #     print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
+        #     self._db = db.Database(self.args.dna_reference)
+        #     self._db_id_map = db.OmaIdMapper(self._db)
+        #     self._db_source = 'h5'
             # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
             # print(self._db_species_list)
         else:
@@ -232,16 +234,16 @@ class OGSet(object):
             # if len(species.split(" ")) > 1:
             #     new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
             #     species = new_id.upper()
-            not_found = False
-            if 'h5' in self._db_source:
-                try:
-                    oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
-                except:
-                    pass
-                else:
-                    og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
-                                                     id=record.id + "_" + name, description=""))
-            elif 'fa' in self._db_source:
+            #-------------- only to be used internally -----------------
+            # if 'h5' in self._db_source:
+            #     try:
+            #         oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
+            #     except:
+            #         pass
+            #     else:
+            #         og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
+            #                                          id=record.id + "_" + name, description=""))
+            if 'fa' in self._db_source:
                 try:
                     og_cdna.append(self._db[record.id])
                 except ValueError:
