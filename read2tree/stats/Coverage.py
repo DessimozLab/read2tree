@@ -1,4 +1,5 @@
 import pysam
+import numpy as np
 
 class Coverage(object):
 
@@ -10,16 +11,20 @@ class Coverage(object):
         for ref in mybam.references:
             self.coverage[ref] = self._get_gene_coverage(mybam, ref)
 
+    def add_coverage(self, ref, coverage):
+        self.coverage[ref] = coverage
+
+
     def write_coverage_bam(self, file_name):
         out_text = ''
-        header = '#species,og,gene_id,coverage\n'
+        header = '#species,og,gene_id,coverage,std\n'
         out_text += header
         for key, value in self.coverage.items():
             species = key[0:5]
             og = key.split("_")[-1]
             gene_id = key.split("_")[0]
             coverage = value
-            line = species + "," + og + "," + gene_id + "," + str(coverage) + "\n"
+            line = species + "," + og + "," + gene_id + "," + str(coverage[0]) + "," + str(coverage[1]) +"\n"
             out_text += line
 
 
@@ -37,13 +42,8 @@ class Coverage(object):
         :param ref: the gene_id reference to pileup the the number of reads per column
         :return: average coverage per gene
         """
-        absolute_coverage = 0
-        num_positions = 0
-        relative_coverage = 0
+        column_coverage = []
         for pileupcolumn in mybam.pileup(ref, 0, 100000):
-            absolute_coverage += pileupcolumn.n
-            num_positions += 1
-        if num_positions != 0:
-            relative_coverage = absolute_coverage/num_positions
-
-        return relative_coverage
+            column_coverage.append(pileupcolumn.n)
+        np_column_coverage = np.array(column_coverage)
+        return [np.mean(np_column_coverage), np.std(np_column_coverage)]

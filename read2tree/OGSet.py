@@ -20,6 +20,8 @@ from Bio.SeqIO.FastaIO import FastaWriter
 # from pyoma.browser import db
 
 from read2tree.Progress import Progress
+from read2tree.stats.Coverage import Coverage
+
 
 
 OMA_STANDALONE_OUTPUT = 'Output'
@@ -312,13 +314,15 @@ class OGSet(object):
                 output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                 self._write(output_file, self.mapped_ogs[name].aa)
 
-    def add_mapped_seq_v2(self, mapped_og_set):
+    def add_mapped_seq_v2(self, mapper):
         """
         Add the sequence given from the read mapping to its corresponding OG and retain
         all OGs that do not have the mapped sequence, thus all original OGs are used for
         tree inference
         :param mapped_og_set: set of ogs with its mapped sequences
         """
+        mapped_og_set = mapper.og_records
+        cov = Coverage()
         ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+self._species_name)
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
@@ -353,6 +357,7 @@ class OGSet(object):
                     self.mapped_ogs[name] = og
                     all_id = [rec.id for rec in self.mapped_ogs[name].aa]
                     if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
+                        cov.add_coverage(best_record_aa.description.split(" ")[0], mapper.all_cov[best_record_aa.description.split(" ")[0]])
                         self.mapped_ogs[name].aa.append(best_record_aa)
                     output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
@@ -361,6 +366,8 @@ class OGSet(object):
                     self.mapped_ogs[name] = og
                     output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
+
+        cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
 
     def _write(self, file, value):
         """

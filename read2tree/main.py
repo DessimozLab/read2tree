@@ -155,7 +155,7 @@ def main(argv, exe_name, desc=''):
             mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
 
         if args.single_mapping is None:
-            ogset.add_mapped_seq_v2(mapper.og_records)
+            ogset.add_mapped_seq_v2(mapper)
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment)

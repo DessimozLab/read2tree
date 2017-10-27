@@ -50,6 +50,7 @@ class Mapper(object):
         self.envs = self.defaults['environments']
         self.env = self.envs[515]
         self.progress = Progress(args)
+        self.all_cov = {}
 
         if load:
             if ref_set is not None:
@@ -122,6 +123,15 @@ class Mapper(object):
             map_reads_species[species] = Reference()
             map_reads_species[species].dna = list(SeqIO.parse(file, "fasta"))
 
+            cov = Coverage()
+            cov_file_name = os.path.join(in_folder, species + "_cov.txt")
+            for line in open(cov_file_name, "r"):
+                if "#" not in line:
+                    values = line.split(",")
+                    cov.add_coverage(values[2]+"_"+values[1], [float(values[3]), float(values[4].replace("\n", ""))])
+
+            self.all_cov.update(cov.coverage)
+
         return map_reads_species
 
     def _map_reads_to_references(self, reference):
@@ -184,9 +194,11 @@ class Mapper(object):
         pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
         pysam.index(outfile_name + "_sorted.bam")
 
+        # Get effective coverage of each mapped sequence
         cov = Coverage()
         cov.get_coverage_bam(outfile_name + "_sorted.bam")
-        cov.write_coverage_bam(outfile_name + "_cov.txt")
+        cov.write_coverage_bam(outfile_name.split("_post")[0] + "_cov.txt")
+        self.all_cov.update(cov.coverage)
 
         if len(self._reads) > 1:
             cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1 -Q 1'
