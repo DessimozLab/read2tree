@@ -73,6 +73,7 @@ if len(args.input) > 1:
                         output.write(line2)
                         output.write(line3)
                         output.write(line4)
+                        sampling_length += len(line2)
             record_number += 1
 
 
