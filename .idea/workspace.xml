@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/sample_from_reads.py" afterPath="$PROJECT_DIR$/scripts/sample_from_reads.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/read2tree/OGSet.py" afterPath="$PROJECT_DIR$/read2tree/OGSet.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/read2tree/ReferenceSet.py" afterPath="$PROJECT_DIR$/read2tree/ReferenceSet.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -40,19 +41,27 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="369" column="67" lean-forward="false" selection-start-line="369" selection-start-column="67" selection-end-line="369" selection-end-column="67" />
-              <folding>
-                <element signature="e#148#159#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="259">
+              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sample_from_reads.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ReferenceSet.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/read2tree/ReferenceSet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="195">
+              <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sample_from_reads.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/sample_from_reads.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="542">
+            <state relative-caret-position="1095">
               <caret line="75" column="24" lean-forward="false" selection-start-line="75" selection-start-column="24" selection-end-line="75" selection-end-column="24" />
               <folding />
             </state>
@@ -190,7 +199,6 @@
         <option value="$PROJECT_DIR$/read2tree/TreeInference.py" />
         <option value="$PROJECT_DIR$/read2tree/Progress.py" />
         <option value="$PROJECT_DIR$/read2tree/parser/OMAOutputParser.py" />
-        <option value="$PROJECT_DIR$/read2tree/ReferenceSet.py" />
         <option value="$PROJECT_DIR$/read2tree/Aligner.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/ReadCoverage.py" />
         <option value="$PROJECT_DIR$/setup.py" />
@@ -200,9 +208,10 @@
         <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/Coverage.py" />
+        <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
+        <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
         <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
-        <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
-        <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
+        <option value="$PROJECT_DIR$/read2tree/ReferenceSet.py" />
       </list>
     </option>
   </component>
@@ -241,6 +250,11 @@
           <expand>
             <path>
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -699,14 +713,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/ReferenceSet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-469">
-          <caret line="13" column="1" lean-forward="false" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-374">
@@ -746,16 +752,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Analyzer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="18" column="42" lean-forward="false" selection-start-line="18" selection-start-column="42" selection-end-line="18" selection-end-column="42" />
-          <folding>
-            <element signature="e#155#164#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="508">
@@ -763,16 +759,6 @@
           <folding>
             <element signature="e#614#623#0" expanded="true" />
             <marker date="1509121386000" expanded="true" signature="1125:1557" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/stats/Coverage.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="572">
-          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -787,20 +773,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
+    <entry file="file://$PROJECT_DIR$/scripts/sample_from_reads.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="369" column="67" lean-forward="false" selection-start-line="369" selection-start-column="67" selection-end-line="369" selection-end-column="67" />
+        <state relative-caret-position="1095">
+          <caret line="75" column="24" lean-forward="false" selection-start-line="75" selection-start-column="24" selection-end-line="75" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/Analyzer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="18" column="42" lean-forward="false" selection-start-line="18" selection-start-column="42" selection-end-line="18" selection-end-column="42" />
           <folding>
-            <element signature="e#148#159#0" expanded="true" />
+            <element signature="e#155#164#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/sample_from_reads.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/stats/Coverage.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="542">
-          <caret line="75" column="24" lean-forward="false" selection-start-line="75" selection-start-column="24" selection-end-line="75" selection-end-column="24" />
+        <state relative-caret-position="572">
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="259">
+          <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/ReferenceSet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
           <folding />
         </state>
       </provider>
