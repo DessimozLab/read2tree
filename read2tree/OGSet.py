@@ -303,7 +303,7 @@ class OGSet(object):
             mapping_og.dna = value.remove_species_records(self.species_to_remove)[0]
             mapping_og.aa = value.remove_species_records(self.species_to_remove)[1]
             if len(mapping_og.aa) > 1:
-                best_record_aa = mapping_og.get_best_mapping_by_coverage()
+                best_record_aa = mapping_og.get_best_mapping_by_seq_completeness()
                 best_record_aa.id = self._species_name
                 self.mapped_ogs[name] = og
                 all_id = [rec.id for rec in self.mapped_ogs[name].aa]
@@ -348,7 +348,7 @@ class OGSet(object):
                     mapping_og = mapped_og_set[name]
 
                 if have_mapping:
-                    best_record_aa = mapping_og.get_best_mapping_by_coverage()
+                    best_record_aa = mapping_og.get_best_mapping_by_seq_completeness()
                     best_record_aa.id = self._species_name
                     self.mapped_ogs[name] = og
                     all_id = [rec.id for rec in self.mapped_ogs[name].aa]
@@ -418,25 +418,36 @@ class OG(object):
         self.aa = []
         self.dna = []
 
-    def get_best_mapping_by_coverage(self, gene_code='aa'):
-        coverages = self._get_coverage(gene_code=gene_code)
-        best_record = coverages.index(max(coverages))
+    def get_best_mapping_by_seq_completeness(self, gene_code='aa'):
+        """
+        From the list of all mapped sequences part of a OG it tries to find the one that mapped best according to its
+        mapping length.
+        :param gene_code: dna or aa
+        :return: best record
+        """
+        seq_completenesses = self._get_seq_completeness(gene_code=gene_code)
+        best_record = seq_completenesses.index(max(seq_completenesses))
         return self.aa[best_record]
 
-    def _get_coverage(self, gene_code='aa'):
-        coverage = []
+    def _get_seq_completeness(self, gene_code='aa'):
+        """
+
+        :param gene_code:
+        :return:
+        """
+        seq_completeness = []
         if gene_code is 'dna':
             for record in self.dna:
                 seq_len = len(record.seq)
                 non_n_len = len(record.seq) - str(record.seq).count('n')
-                coverage.append(non_n_len / seq_len)
+                seq_completeness.append(non_n_len / seq_len)
         elif gene_code is 'aa':
             for record in self.aa:
                 seq_len = len(record.seq)
                 non_n_len = len(record.seq) - str(record.seq).count('X')
 
-                coverage.append(non_n_len / seq_len)
-        return coverage
+                seq_completeness.append(non_n_len / seq_len)
+        return seq_completeness
 
     def remove_species_records(self, species_to_remove):
         '''

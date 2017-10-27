@@ -9,7 +9,6 @@ class Coverage(object):
         mybam = pysam.AlignmentFile(file_name, 'rb')
         for ref in mybam.references:
             self.coverage[ref] = self._get_gene_coverage(mybam, ref)
-        #return self.coverages
 
     def write_coverage_bam(self, file_name):
         out_text = ''
@@ -29,9 +28,15 @@ class Coverage(object):
 
     def read_coverage_from_file(self, file_name):
         raise NotImplementedError
-
+        
 
     def _get_gene_coverage(self, mybam, ref):
+        """
+
+        :param mybam: bam_file object from pysam
+        :param ref: the gene_id reference to pileup the the number of reads per column
+        :return: average coverage per gene
+        """
         absolute_coverage = 0
         num_positions = 0
         relative_coverage = 0
