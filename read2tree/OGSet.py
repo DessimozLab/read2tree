@@ -357,7 +357,7 @@ class OGSet(object):
                     self.mapped_ogs[name] = og
                     all_id = [rec.id for rec in self.mapped_ogs[name].aa]
                     if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                        cov.add_coverage(best_record_aa.description.split(" ")[0], mapper.all_cov[best_record_aa.description.split(" ")[0]])
+                        cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
                         self.mapped_ogs[name].aa.append(best_record_aa)
                     output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
@@ -368,6 +368,10 @@ class OGSet(object):
                     self._write(output_file, self.mapped_ogs[name].aa)
 
         cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
+
+    def _get_clean_id(self, record):
+        des = record.description.split("_")
+        return des[0]+"_"+des[1]
 
     def _write(self, file, value):
         """
