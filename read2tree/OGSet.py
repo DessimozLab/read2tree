@@ -314,6 +314,7 @@ class OGSet(object):
                 output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                 self._write(output_file, self.mapped_ogs[name].aa)
 
+
     def add_mapped_seq_v2(self, mapper):
         """
         Add the sequence given from the read mapping to its corresponding OG and retain
@@ -330,28 +331,27 @@ class OGSet(object):
         print('--- Add inferred mapped sequence back to OGs ---')
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
-            if self.args.remove_species_mapping_only:
+            # remove species from the original set
+            if self.args.keep_all_species:
                 og = value
-            else:  # remove species part of the original dataset
+            else:
                 og = OG()
                 filtered_og = value.remove_species_records(self.species_to_remove)
                 og.dna = filtered_og[0]
                 og.aa = filtered_og[1]
 
+            # continue only if OG is in mapped OGs
             if name in mapped_og_set.keys():
-                have_mapping = True
-                if self.args.remove_species_mapping_only:  #TODO: this should be changed to another option
+                if self.species_to_remove:  # in case we decided to remove species from the mapping
                     mapping_og = OG()
                     filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
                     if filtered_mapping:
                         mapping_og.dna = filtered_mapping[0]
                         mapping_og.aa = filtered_mapping[1]
-                    else:  # in case the removed mapped seq was the only one
-                        have_mapping = False
-                else:
+                else:  # nothing to remove
                     mapping_og = mapped_og_set[name]
 
-                if have_mapping:
+                if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
                     best_record_aa = mapping_og.get_best_mapping_by_seq_completeness()
                     best_record_aa.id = self._species_name
                     self.mapped_ogs[name] = og
@@ -361,7 +361,12 @@ class OGSet(object):
                         self.mapped_ogs[name].aa.append(best_record_aa)
                     output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
-            else:
+                else:  # mapping had only one that we removed
+                    if self.args.keep_all_ogs:
+                        self.mapped_ogs[name] = og
+                        output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
+                        self._write(output_file, self.mapped_ogs[name].aa)
+            else:  # nothing was mapped to that og
                 if self.args.keep_all_ogs:
                     self.mapped_ogs[name] = og
                     output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
@@ -370,7 +375,8 @@ class OGSet(object):
         cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
 
     def _get_clean_id(self, record):
-        des = record.description.split("_")
+        des = record.description.split(" ")[0]
+        des = des.split("_")
         return des[0]+"_"+des[1]
 
     def _write(self, file, value):
