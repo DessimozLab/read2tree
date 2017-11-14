@@ -56,13 +56,14 @@ class Mapper(object):
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
-                    self._clean_up_tmp_files()
+                    # self._clean_up_tmp_files()
                     self.progress.set_status('map')
                 else:
                     self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
+                    self._clean_up_tmp_files_single(self.ref_species)
                     if self.progress.check_mapping():
-                        self._clean_up_tmp_files()
+                        # self._clean_up_tmp_files()
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
@@ -106,6 +107,7 @@ class Mapper(object):
             pass
 
         self._clean_up_read_mapping(filename=self.ref_species + '.fa')
+
 
         return mapped_reads_species
 
@@ -171,7 +173,9 @@ class Mapper(object):
             except ValueError:
                 pass
 
-        self._clean_up_read_mapping()
+            self._clean_up_tmp_files_single(species)
+
+        # self._clean_up_read_mapping()
 
         return mapped_reads_species
 
@@ -183,10 +187,10 @@ class Mapper(object):
         :return: 
         """
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
-        tmp_folder = os.path.join(output_folder, 'tmp')
-        if not os.path.exists(tmp_folder):
-            os.makedirs(tmp_folder)
-        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0]+"_post")
+        # tmp_folder = os.path.join(output_folder, 'tmp')
+        # if not os.path.exists(tmp_folder):
+        #     os.makedirs(tmp_folder)
+        outfile_name = os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0]+"_post")
         # with tempfile.NamedTemporaryFile(mode='wt') as file_handle:
         #     outfile_name = file_handle.name
 
@@ -247,6 +251,25 @@ class Mapper(object):
             shutil.move(file, os.path.join(output_folder, file.split('/')[-1]))
 
         shutil.rmtree(tmp_folder)
+
+    def _clean_up_tmp_files_single(self, species):
+        """
+        Clean the mapping directory such that only the important consensus files are at the top level
+        """
+        output_folder = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
+
+        # delete mapping files
+        os.remove(os.path.join(output_folder, species + ".fa.fai"))
+        os.remove(os.path.join(output_folder, species + ".fa.sam"))
+        os.remove(os.path.join(output_folder, species + ".fa-ht-13-2.3.ngm"))
+        os.remove(os.path.join(output_folder, species + ".fa"))
+        os.remove(os.path.join(output_folder, species + ".fa-enc.2.ngm"))
+
+        # delete tmp files
+        os.remove(os.path.join(output_folder, species + "_post.bam"))
+        os.remove(os.path.join(output_folder, species + "_post_consensus_call.fq"))
+        os.remove(os.path.join(output_folder, species + "_post_sorted.bam"))
+        os.remove(os.path.join(output_folder, species + "_post_sorted.bam.bai"))
 
 
     def _output_shell(self, line):
