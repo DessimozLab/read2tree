@@ -259,17 +259,48 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
 
         # delete mapping files
-        os.remove(os.path.join(output_folder, species + ".fa.fai"))
-        os.remove(os.path.join(output_folder, species + ".fa.sam"))
-        os.remove(os.path.join(output_folder, species + ".fa-ht-13-2.3.ngm"))
-        os.remove(os.path.join(output_folder, species + ".fa"))
-        os.remove(os.path.join(output_folder, species + ".fa-enc.2.ngm"))
+        try:
+            os.remove(os.path.join(output_folder, species + ".fa.fai"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + ".fa.sam"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + ".fa-ht-13-2.3.ngm"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + ".fa-ht-13-2.2.ngm"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + ".fa"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + ".fa-enc.2.ngm"))
+        except FileNotFoundError:
+            pass
 
         # delete tmp files
-        os.remove(os.path.join(output_folder, species + "_post.bam"))
-        os.remove(os.path.join(output_folder, species + "_post_consensus_call.fq"))
-        os.remove(os.path.join(output_folder, species + "_post_sorted.bam"))
-        os.remove(os.path.join(output_folder, species + "_post_sorted.bam.bai"))
+        try:
+            os.remove(os.path.join(output_folder, species + "_post.bam"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + "_post_consensus_call.fq"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + "_post_sorted.bam"))
+        except FileNotFoundError:
+            pass
+        try:
+            os.remove(os.path.join(output_folder, species + "_post_sorted.bam.bai"))
+        except FileNotFoundError:
+            pass
 
 
     def _output_shell(self, line):
