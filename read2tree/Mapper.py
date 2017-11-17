@@ -106,9 +106,6 @@ class Mapper(object):
         except ValueError:
             pass
 
-        self._clean_up_read_mapping(filename=self.ref_species + '.fa')
-
-
         return mapped_reads_species
 
 
@@ -175,8 +172,6 @@ class Mapper(object):
 
             self._clean_up_tmp_files_single(species)
 
-        # self._clean_up_read_mapping()
-
         return mapped_reads_species
 
     def _post_process_read_mapping(self, ref_file, sam_file):
@@ -218,22 +213,6 @@ class Mapper(object):
 
         return os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
 
-    def _clean_up_read_mapping(self, filename="*"):
-        """
-        Clean the mapping directory such that only the important consensus files are at the top level
-        """
-        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
-        tmp_folder = os.path.join(output_folder, "tmp")
-        ngm1_files = glob.glob(os.path.join(output_folder, filename+"-enc.2.ngm"))
-        ngm2_files = glob.glob(os.path.join(output_folder, filename+"-ht-13-2.2.ngm"))
-        fai_files = glob.glob(os.path.join(output_folder, filename+".fai"))
-        sam_files = glob.glob(os.path.join(output_folder, filename+".sam"))
-        for file in zip(ngm1_files, ngm2_files, fai_files, sam_files):
-            shutil.move(file[0], os.path.join(tmp_folder, file[0].split('/')[-1]))
-            shutil.move(file[1], os.path.join(tmp_folder, file[1].split('/')[-1]))
-            shutil.move(file[2], os.path.join(tmp_folder, file[2].split('/')[-1]))
-            shutil.move(file[3], os.path.join(tmp_folder, file[3].split('/')[-1]))
-
 
     def _clean_up_tmp_files(self):
         """
@@ -252,55 +231,19 @@ class Mapper(object):
 
         shutil.rmtree(tmp_folder)
 
+    def _rm_file(self, *fns, ignore_error=False):
+        for fn in fns:
+            try:
+                os.remove(fn)
+            except FileNotFoundError:
+                if not ignore_error:
+                    raise
+
     def _clean_up_tmp_files_single(self, species):
-        """
-        Clean the mapping directory such that only the important consensus files are at the top level
-        """
         output_folder = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
-
-        # delete mapping files
-        try:
-            os.remove(os.path.join(output_folder, species + ".fa.fai"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + ".fa.sam"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + ".fa-ht-13-2.3.ngm"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + ".fa-ht-13-2.2.ngm"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + ".fa"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + ".fa-enc.2.ngm"))
-        except FileNotFoundError:
-            pass
-
-        # delete tmp files
-        try:
-            os.remove(os.path.join(output_folder, species + "_post.bam"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + "_post_consensus_call.fq"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + "_post_sorted.bam"))
-        except FileNotFoundError:
-            pass
-        try:
-            os.remove(os.path.join(output_folder, species + "_post_sorted.bam.bai"))
-        except FileNotFoundError:
-            pass
+        fn_ends = ('_post.bam', '_post_consensus_call.fq', '_post_sorted.bam',  '_post_sorted.bam.bai', '.fa.fai',
+                   '.fa.sam', '.fa-ht-13-2.3.ngm', '.fa-ht-13-2.3.ngm', '.fa', '.fa-enc.2.ngm')
+        self._rm_file(*[os.path.join(output_folder, species + fn_end) for fn_end in fn_ends], ignore_error=True)
 
 
     def _output_shell(self, line):
