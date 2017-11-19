@@ -56,14 +56,12 @@ class Mapper(object):
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
-                    # self._clean_up_tmp_files()
                     self.progress.set_status('map')
                 else:
                     self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
-                    self._clean_up_tmp_files_single(self.ref_species)
+                    #self._clean_up_tmp_files_single(self.ref_species)
                     if self.progress.check_mapping():
-                        # self._clean_up_tmp_files()
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
@@ -89,6 +87,8 @@ class Mapper(object):
         # call the WRAPPER here
         if len(self._reads) == 2:
             ngm_wrapper = NGM(ref_file_handle, self._reads)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             sam_file = ngm['file']
         else:
@@ -98,13 +98,24 @@ class Mapper(object):
             ngm = ngm_wrapper()
             sam_file = ngm['file']
 
+        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-enc.2.ngm"), ignore_error=True)
+        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-ht-13-2.2.ngm"), ignore_error=True)
+        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-ht-13-2.3.ngm"), ignore_error=True)
+
+
         try:
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+        except AttributeError or ValueError:
+            mapped_reads = []
+            pass
+
+        self.progress.set_status('single_map', ref=self.ref_species)
+        self._rm_file(ref_file_handle, ignore_error=True)
+        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa.fai"), ignore_error=True)
+
+        if mapped_reads:
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
-            self.progress.set_status('single_map', ref=self.ref_species)
-        except ValueError:
-            pass
 
         return mapped_reads_species
 
@@ -153,6 +164,8 @@ class Mapper(object):
             # call the WRAPPER here
             if len(self._reads) == 2:
                 ngm_wrapper = NGM(ref_file_handle, self._reads)
+                if self.args.threads is not None:
+                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 sam_file = ngm['file']
             else:
@@ -162,16 +175,23 @@ class Mapper(object):
                 ngm = ngm_wrapper()
                 sam_file = ngm['file']
 
+            self._rm_file(os.path.join(output_folder, species+".fa-enc.2.ngm"), ignore_error=True)
+            self._rm_file(os.path.join(output_folder, species+".fa-ht-13-2.2.ngm"), ignore_error=True)
+            self._rm_file(os.path.join(output_folder, species+".fa-ht-13-2.3.ngm"), ignore_error=True)
+
             try:
                 mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
-                mapped_reads_species[species] = Reference()
-                mapped_reads_species[species].dna = mapped_reads
-                self.progress.set_status('single_map', ref=species)
-            except ValueError:
+            except AttributeError or ValueError:
+                mapped_reads = []
                 pass
 
-            self._clean_up_tmp_files_single(species)
+            self.progress.set_status('single_map', ref=species)
+            self._rm_file(ref_file_handle, ignore_error=True)
+            self._rm_file(os.path.join(output_folder, species + ".fa.fai"), ignore_error=True)
 
+            if mapped_reads:
+                mapped_reads_species[species] = Reference()
+                mapped_reads_species[species].dna = mapped_reads
         return mapped_reads_species
 
     def _post_process_read_mapping(self, ref_file, sam_file):
@@ -182,16 +202,13 @@ class Mapper(object):
         :return: 
         """
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
-        # tmp_folder = os.path.join(output_folder, 'tmp')
-        # if not os.path.exists(tmp_folder):
-        #     os.makedirs(tmp_folder)
         outfile_name = os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0]+"_post")
-        # with tempfile.NamedTemporaryFile(mode='wt') as file_handle:
-        #     outfile_name = file_handle.name
 
         pysam.view("-bh", "-S", "-o", outfile_name + ".bam", sam_file, catch_stdout=False)
         pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
         pysam.index(outfile_name + "_sorted.bam")
+        self._rm_file(sam_file, ignore_error=True)
+        self._rm_file(outfile_name + ".bam", ignore_error=True)
 
         # Get effective coverage of each mapped sequence
         cov = Coverage()
@@ -205,31 +222,31 @@ class Mapper(object):
             cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1'
 
         with open(outfile_name + '_consensus_call.fq', "wb") as out:
+            #print(out)
+            #print(outfile_name + '_consensus_call.fq')
             out.write(self._output_shell(cmd))
 
-        fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
+        if os.path.getsize(outfile_name + '_consensus_call.fq') > 0:
+            try:
+                fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
+                SeqIO.write(fastq_records,
+                            os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'),
+                            'fasta')
+            except ValueError:
+                pass
 
-        SeqIO.write(fastq_records, os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'), 'fasta')
+        self._rm_file(outfile_name + "_sorted.bam", ignore_error=True)
+        self._rm_file(outfile_name + "_sorted.bam.bai", ignore_error=True)
+        self._rm_file(outfile_name + "_consensus_call.fq", ignore_error=True)
 
-        return os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
+        if os.path.exists(os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')):
+            return os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
+        else:
+            return None
 
 
-    def _clean_up_tmp_files(self):
-        """
-        Clean the mapping directory such that only the important consensus files are at the top level
-        """
-        output_folder = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
-        tmp_folder = os.path.join(output_folder, "tmp")
-        cov_files = glob.glob(os.path.join(tmp_folder, "*_cov.txt"))
 
-        for file in glob.glob(output_folder + "/*"):
-            if os.path.isfile(file) and '_consensus.fa' not in file:
-                os.remove(file)
 
-        for file in cov_files:
-            shutil.move(file, os.path.join(output_folder, file.split('/')[-1]))
-
-        shutil.rmtree(tmp_folder)
 
     def _rm_file(self, *fns, ignore_error=False):
         for fn in fns:

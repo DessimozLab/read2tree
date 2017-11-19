@@ -3,4 +3,4 @@
 01_ref_ogs_aa: OK
 02_ref_dna: OK
 ----- test_1a -----
-Mapping of test_1a to CIOIN
+Mapping of test_1a to HUMAN
