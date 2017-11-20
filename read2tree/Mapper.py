@@ -222,8 +222,6 @@ class Mapper(object):
             cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1'
 
         with open(outfile_name + '_consensus_call.fq', "wb") as out:
-            #print(out)
-            #print(outfile_name + '_consensus_call.fq')
             out.write(self._output_shell(cmd))
 
         if os.path.getsize(outfile_name + '_consensus_call.fq') > 0:
@@ -235,14 +233,16 @@ class Mapper(object):
             except ValueError:
                 pass
 
+        if os.path.exists(os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')):
+            out_file = os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
+        else:
+            out_file = None
+
         self._rm_file(outfile_name + "_sorted.bam", ignore_error=True)
         self._rm_file(outfile_name + "_sorted.bam.bai", ignore_error=True)
         self._rm_file(outfile_name + "_consensus_call.fq", ignore_error=True)
 
-        if os.path.exists(os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')):
-            return os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
-        else:
-            return None
+        return out_file
 
 
 
