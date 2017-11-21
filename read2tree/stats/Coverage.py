@@ -9,7 +9,12 @@ class Coverage(object):
     def get_coverage_bam(self, file_name):
         mybam = pysam.AlignmentFile(file_name, 'rb')
         for ref in mybam.references:
-            self.coverage[ref] = self._get_gene_coverage(mybam, ref)
+            self.coverage[self._get_clean_id(ref)] = self._get_gene_coverage(mybam, ref)
+
+    def _get_clean_id(self, id):
+        id = id.split(" ")[0]
+        id = id.split("_")
+        return id[0]+"_"+id[1]
 
     def add_coverage(self, ref, coverage):
         self.coverage[ref] = coverage

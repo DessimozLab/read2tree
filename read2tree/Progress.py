@@ -47,7 +47,7 @@ class Progress(object):
     def check_mapping(self):
         map_files = 0
         if os.path.exists(self._folder_mapping):
-            for file in glob.glob(os.path.join(self._folder_mapping, "*consensus.fa")):
+            for file in glob.glob(os.path.join(self._folder_mapping, "*cov.fa")):
                 if os.path.getsize(file) > 0:
                     map_files += 1
 
@@ -57,8 +57,11 @@ class Progress(object):
             return False
 
     def _set_num_species(self):
+        """
+        :return:
+        """
         if self.status > 1:
-            return len(os.listdir(self._folder_ref_dna))
+            return len(os.listdir(self._folder_ref_dna)) - len(self.args.remove_species)
         else:
             return 0
 

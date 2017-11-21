@@ -78,8 +78,8 @@ if len(args.input) > 1:
 
 
 #output[0].close()
-if len(args.input) > 1:
-    output[1].close()
+# if len(args.input) > 1:
+#     output[1].close()
 print("The mean length of all reads is {} and the mean length of the subsampled reads is {}".format(initial_length/total_records, sampling_length/args.number))
 print("The sum length of all reads is {} and the sum length of the subsampled reads is {}".format(initial_length, sampling_length))
 print("done!")

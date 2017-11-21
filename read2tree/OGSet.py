@@ -15,9 +15,9 @@ from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.Alphabet import SingleLetterAlphabet
 from Bio.SeqIO.FastaIO import FastaWriter
-#from tables import *
+from tables import *
 # ----------- only to be used internally; requires hdf5 installation -------------------
-# from pyoma.browser import db
+from pyoma.browser import db
 
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
@@ -124,7 +124,7 @@ class OGSet(object):
         ogs = {}
         ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))),desc='Loading files',unit=' OGs'):
+        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))),desc='Re-loading files',unit=' OGs'):
             name = file[0].split("/")[-1].split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
@@ -158,11 +158,11 @@ class OGSet(object):
             self._db = SeqIO.index(self.args.dna_reference, "fasta")
             self._db_source = 'fa'
         # ---------------- only to be used internally ----------------------
-        # elif '.h5' in self.args.dna_reference:
-        #     print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
-        #     self._db = db.Database(self.args.dna_reference)
-        #     self._db_id_map = db.OmaIdMapper(self._db)
-        #     self._db_source = 'h5'
+        elif '.h5' in self.args.dna_reference:
+            print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
+            self._db = db.Database(self.args.dna_reference)
+            self._db_id_map = db.OmaIdMapper(self._db)
+            self._db_source = 'h5'
             # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
             # print(self._db_species_list)
         else:
@@ -237,15 +237,15 @@ class OGSet(object):
             #     new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
             #     species = new_id.upper()
             #-------------- only to be used internally -----------------
-            # if 'h5' in self._db_source:
-            #     try:
-            #         oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
-            #     except:
-            #         pass
-            #     else:
-            #         og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
-            #                                          id=record.id + "_" + name, description=""))
-            if 'fa' in self._db_source:
+            if 'h5' in self._db_source:
+                try:
+                    oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
+                except:
+                    pass
+                else:
+                    og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
+                                                     id=record.id + "_" + name, description=""))
+            elif 'fa' in self._db_source:
                 try:
                     og_cdna.append(self._db[record.id])
                 except ValueError:
@@ -314,6 +314,7 @@ class OGSet(object):
                 output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                 self._write(output_file, self.mapped_ogs[name].aa)
 
+
     def add_mapped_seq_v2(self, mapper):
         """
         Add the sequence given from the read mapping to its corresponding OG and retain
@@ -330,44 +331,54 @@ class OGSet(object):
         print('--- Add inferred mapped sequence back to OGs ---')
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
-            if self.args.remove_species_mapping_only:
+            # remove species from the original set
+            if self.args.keep_all_species:
                 og = value
-            else:  # remove species part of the original dataset
+            else:
                 og = OG()
                 filtered_og = value.remove_species_records(self.species_to_remove)
                 og.dna = filtered_og[0]
                 og.aa = filtered_og[1]
 
+            # continue only if OG is in mapped OGs
             if name in mapped_og_set.keys():
-                have_mapping = True
-                if self.args.remove_species_mapping_only:  #TODO: this should be changed to another option
+                if self.species_to_remove:  # in case we decided to remove species from the mapping
                     mapping_og = OG()
                     filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
                     if filtered_mapping:
                         mapping_og.dna = filtered_mapping[0]
                         mapping_og.aa = filtered_mapping[1]
-                    else:  # in case the removed mapped seq was the only one
-                        have_mapping = False
-                else:
+                else:  # nothing to remove
                     mapping_og = mapped_og_set[name]
 
-                if have_mapping:
+                if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
                     best_record_aa = mapping_og.get_best_mapping_by_seq_completeness()
                     best_record_aa.id = self._species_name
                     self.mapped_ogs[name] = og
                     all_id = [rec.id for rec in self.mapped_ogs[name].aa]
                     if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                        cov.add_coverage(best_record_aa.description.split(" ")[0], mapper.all_cov[best_record_aa.description.split(" ")[0]])
+                        #print(mapper.all_cov)
+                        cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
                         self.mapped_ogs[name].aa.append(best_record_aa)
                     output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
-            else:
+                else:  # mapping had only one that we removed
+                    if self.args.keep_all_ogs:
+                        self.mapped_ogs[name] = og
+                        output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
+                        self._write(output_file, self.mapped_ogs[name].aa)
+            else:  # nothing was mapped to that og
                 if self.args.keep_all_ogs:
                     self.mapped_ogs[name] = og
                     output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
 
         cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
+
+    def _get_clean_id(self, record):
+        des = record.description.split(" ")[0]
+        des = des.split("_")
+        return des[0]+"_"+des[1]
 
     def _write(self, file, value):
         """

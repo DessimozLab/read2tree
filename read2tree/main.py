@@ -75,9 +75,9 @@ def parse_args(argv, exe_name, desc):
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
 
-    arg_parser.add_argument('--remove_species_mapping_only', action='store_true',
-                            help='[Default is remove from everywhere]'
-                                 'Remove species only from mapping set.')
+    arg_parser.add_argument('--keep_all_species', action='store_true',
+                            help='[Default is to keep all species]'
+                                 'Remove species only from mapping set. ')
 
     arg_parser.add_argument('--keep_all_ogs', action='store_true',
                             help='Keep all orthologs after addition of mapped seq, which means '
