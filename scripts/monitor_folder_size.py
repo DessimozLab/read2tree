@@ -41,16 +41,16 @@ if __name__ == "__main__":
     number_jobs = []
     total_time = []
     current_time = 0
-    time_interval = 2
+    time_interval = 10
 
     try:
         with open('./monitoring.csv', 'a') as file:
-            file.write('current_time,folder_size,num_bjobs')
+            file.write('current_time,folder_size,num_bjobs\n')
             while True and bjobs_exist:
                 folder_size.append(du(path))
                 number_jobs.append(bjobs())
                 total_time.append(current_time)
-                to_write = str(current_time)+','+str(folder_size)+','+str(number_jobs)+'\n'
+                to_write = str(current_time)+','+str(folder_size[-1])+','+str(number_jobs[-1])+'\n'
                 file.write(to_write)
                 current_time += time_interval
                 time.sleep(time_interval)
