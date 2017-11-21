@@ -43,18 +43,24 @@ if __name__ == "__main__":
     current_time = 0
     time_interval = 2
 
+    with open('./monitoring.csv', 'wa') as file:
+        file.write('current_time,folder_size,num_bjobs')
+
     try:
         while True and bjobs_exist:
             folder_size.append(du(path))
             number_jobs.append(bjobs())
             total_time.append(current_time)
+            to_write = current_time+','+folder_size+','+number_jobs+'\n'
+            file.write(to_write)
             current_time += time_interval
             time.sleep(time_interval)
             # if "No unfinished job found" in output_shell("bjobs"):
             #     bjobs_exist = False
     except KeyboardInterrupt:
-        time.sleep(time_interval)
-        d = {"folder_size": folder_size, "current_time": total_time, "num_bjobs": number_jobs}
-        df = pd.DataFrame(d)
-        df.to_csv("./monitoring.csv")
+        #time.sleep(time_interval)
+        file.close()
+        # d = {"folder_size": folder_size, "current_time": total_time, "num_bjobs": number_jobs}
+        # df = pd.DataFrame(d)
+        # df.to_csv("./monitoring.csv")
         raise
