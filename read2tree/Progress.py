@@ -58,11 +58,10 @@ class Progress(object):
 
     def _set_num_species(self):
         """
-        TODO: what about removing species from final steps
         :return:
         """
         if self.status > 1:
-            return len(os.listdir(self._folder_ref_dna))
+            return len(os.listdir(self._folder_ref_dna)) - len(self.args.remove_species)
         else:
             return 0
 
