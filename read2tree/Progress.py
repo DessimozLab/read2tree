@@ -60,10 +60,15 @@ class Progress(object):
         """
         :return:
         """
+        num_species = 0
         if self.status > 1:
-            return len(os.listdir(self._folder_ref_dna)) - len(self.args.remove_species)
+            if self.args.remove_species:
+                num_species = len(os.listdir(self._folder_ref_dna)) - len(self.args.remove_species)
+            else:
+                num_species = len(os.listdir(self._folder_ref_dna))
         else:
-            return 0
+            num_species = 0
+        return num_species
 
     def _get_status(self):
         status = 0
@@ -96,13 +101,13 @@ class Progress(object):
             status_text = '02_ref_dna: OK\n'
         elif status is 'map' and self.status < 3:
             status_text = '03_mapping_'+self._species_name+': OK\n'
-        elif status is 'single_map' and ref is not None and self.status < 3:
-            last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
-            if 'OK' in last_line:
-                status_text = '----- ' + self._species_name + ' -----\n'
-                status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
-            else:
-                status_text = 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
+        # elif status is 'single_map' and ref is not None and self.status < 3:
+        #     last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
+        #     if 'OK' in last_line:
+        #         status_text = '----- ' + self._species_name + ' -----\n'
+        #         status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
+        #     else:
+        #         status_text = 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
         elif status is 're_ogs':
             status_text = '04_ogs_map_'+self._species_name+': OK\n'
         elif status is 'og_align':

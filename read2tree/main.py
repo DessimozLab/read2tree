@@ -24,6 +24,7 @@ from read2tree.Aligner import Aligner
 from read2tree.Progress import Progress
 from read2tree.TreeInference import TreeInference
 from read2tree.parser import OMAOutputParser
+from Bio import AlignIO
 import argparse
 
 
@@ -126,6 +127,7 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
+    species_name = args.reads[0].split("/")[-1].split(".")[0]
 
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
@@ -158,6 +160,10 @@ def main(argv, exe_name, desc=''):
             ogset.add_mapped_seq_v2(mapper)
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
+            if concat_alignment:
+                align_output = open(os.path.join(args.output_path,"concat_"+species_name+".phy"), "w")
+                AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
+                align_output.close()
             tree = TreeInference(args, concat_alignment=concat_alignment)
             print(tree.tree)
     else:

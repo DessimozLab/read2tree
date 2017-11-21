@@ -109,7 +109,7 @@ class Mapper(object):
             mapped_reads = []
             pass
 
-        self.progress.set_status('single_map', ref=self.ref_species)
+        # self.progress.set_status('single_map', ref=self.ref_species)
         self._rm_file(ref_file_handle, ignore_error=True)
         self._rm_file(os.path.join(output_folder, self.ref_species + ".fa.fai"), ignore_error=True)
 
@@ -185,7 +185,7 @@ class Mapper(object):
                 mapped_reads = []
                 pass
 
-            self.progress.set_status('single_map', ref=species)
+            # self.progress.set_status('single_map', ref=species)
             self._rm_file(ref_file_handle, ignore_error=True)
             self._rm_file(os.path.join(output_folder, species + ".fa.fai"), ignore_error=True)
 
@@ -243,10 +243,6 @@ class Mapper(object):
         self._rm_file(outfile_name + "_consensus_call.fq", ignore_error=True)
 
         return out_file
-
-
-
-
 
     def _rm_file(self, *fns, ignore_error=False):
         for fn in fns:
