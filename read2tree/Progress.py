@@ -60,10 +60,9 @@ class Progress(object):
         """
         :return:
         """
-        num_species = 0
         if self.status > 1:
-            if self.args.remove_species:
-                num_species = len(os.listdir(self._folder_ref_dna)) - len(self.args.remove_species)
+            if self.species_to_remove:
+                num_species = len(os.listdir(self._folder_ref_dna)) - len(self.species_to_remove)
             else:
                 num_species = len(os.listdir(self._folder_ref_dna))
         else:
