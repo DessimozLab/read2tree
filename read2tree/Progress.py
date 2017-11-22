@@ -74,7 +74,7 @@ class Progress(object):
         status = 0
         if os.path.exists(self.status_file):
             self._find_last_completed_step()
-            f = open(self.status_file, 'r')
+            f = open(self.status_file, 'r', os.O_NONBLOCK)
             for line in f:
                 # last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
                 if '01_ref_ogs_aa: OK' in line:
@@ -87,6 +87,7 @@ class Progress(object):
                     status = 4
                 elif '05_align_'+self._species_name+': OK' in line:
                     status = 5
+            f.close()
         return status
 
     def set_status(self, status, ref=None):
