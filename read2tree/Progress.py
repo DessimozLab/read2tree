@@ -9,6 +9,7 @@
 import mmap
 import glob
 import os
+import time
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
@@ -73,6 +74,7 @@ class Progress(object):
         status = 0
         if os.path.exists(self.status_file):
             self._find_last_completed_step()
+            self._wait_for_status_file()
             f = open(self.status_file, 'r', os.O_NONBLOCK)
             for line in f:
                 # last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
@@ -80,11 +82,11 @@ class Progress(object):
                     status = 1
                 elif '02_ref_dna: OK' in line:
                     status = 2
-                elif '03_mapping_'+self._species_name+': OK' in line:
+                elif '03_mapping_' + self._species_name + ': OK' in line:
                     status = 3
-                elif '04_ogs_map_'+self._species_name+': OK' in line:
+                elif '04_ogs_map_' + self._species_name + ': OK' in line:
                     status = 4
-                elif '05_align_'+self._species_name+': OK' in line:
+                elif '05_align_' + self._species_name + ': OK' in line:
                     status = 5
             f.close()
         return status
@@ -150,6 +152,44 @@ class Progress(object):
                 idx_last_completed_step = i
             all_lines.append(line)
         open(self.status_file, 'w').writelines(all_lines[0:idx_last_completed_step+1])
+
+    def _is_locked(self):
+        """
+        Taken from: https://www.calazan.com/how-to-check-if-a-file-is-locked-in-python/
+        Checks if a file is locked by opening it in append mode.
+        If no exception thrown, then the file is not locked.
+        """
+        locked = None
+        file_object = None
+        if os.path.exists(self.status_file):
+            try:
+                buffer_size = 8
+                # Opening file in append mode and read the first 8 characters.
+                file_object = open(self.status_file, 'a', buffer_size)
+                if file_object:
+                    locked = False
+            except IOError:
+                locked = True
+            finally:
+                if file_object:
+                    file_object.close()
+
+        return locked
+
+    def _wait_for_status_file(self):
+        """
+        Taken from: https://www.calazan.com/how-to-check-if-a-file-is-locked-in-python/
+        Checks if the files are ready.
+        For a file to be ready it must exist and can be opened in append
+        mode.
+        """
+        wait_time = 5
+        # If the file exists but locked, wait wait_time seconds and check
+        # again until it's no longer locked by another process.
+        while self._is_locked(self.status_file):
+            print("WAITING FOR STATUS FILE!")
+            time.sleep(wait_time)
+
 
 
 
