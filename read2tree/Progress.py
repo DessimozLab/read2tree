@@ -73,9 +73,9 @@ class Progress(object):
     def _get_status(self):
         status = 0
         if os.path.exists(self.status_file):
-            self._find_last_completed_step()
             self._wait_for_status_file()
-            f = open(self.status_file, 'r', os.O_NONBLOCK)
+            f = open(self.status_file, 'r')
+            # self._find_last_completed_step()
             for line in f:
                 # last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
                 if '01_ref_ogs_aa: OK' in line:
