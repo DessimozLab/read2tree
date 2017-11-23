@@ -186,7 +186,7 @@ class Progress(object):
         wait_time = 5
         # If the file exists but locked, wait wait_time seconds and check
         # again until it's no longer locked by another process.
-        while self._is_locked(self.status_file):
+        while self._is_locked():
             print("WAITING FOR STATUS FILE!")
             time.sleep(wait_time)
 
