@@ -1,6 +1,0 @@
-#species,og,gene_id,coverage,std
-PANTR,OG3,PANTR03896,nan,nan
-PANTR,OG5,PANTR10648,nan,nan
-PANTR,OG2,PANTR13591,nan,nan
-PANTR,OG4,PANTR02755,1.0,0.0
-PANTR,OG1,PANTR04422,nan,nan
