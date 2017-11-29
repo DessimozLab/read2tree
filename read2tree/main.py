@@ -165,6 +165,7 @@ def main(argv, exe_name, desc=''):
             else:
                 for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
                     species_name = folder.split("_")[-2]+"_"+folder.split("_")[-1]
+                    print('--- Addition of {} to all ogs ---'.format(folder.split("_")[-2]))
                     mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
                     ogset.add_mapped_seq_v2(mapper, species_name=species_name)
                 ogset.write_added_ogs(folder_name="04_merged_OGs")

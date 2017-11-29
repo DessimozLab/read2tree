@@ -16,20 +16,25 @@ OMA_MARKER_GENE_EXPORT = 'marker_genes'
 
 class Progress(object):
 
-    def __init__(self, args):
+    def __init__(self, args, species_name=None):
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        if not species_name:
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
         else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+            self._species_name = species_name
 
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
         else:
             self.species_to_remove = []
+
+
 
         self._folder_ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         self._folder_ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
