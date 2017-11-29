@@ -335,6 +335,7 @@ class Mapper(object):
                 if local_double[0] > best_score:
                     best_score = local_double[0]
                     best_seq_idx = i
+            print(best_seq_idx)
             best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id=self._species_name, description=record.description, name=record.name)
         except:
             raise ValueError("Problem with sequence format!", ref_og_seq.seq)

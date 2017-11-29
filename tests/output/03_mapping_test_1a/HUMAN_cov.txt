@@ -1,0 +1,6 @@
+#species,og,gene_id,coverage,std
+HUMAN,OG3,HUMAN06764,nan,nan
+HUMAN,OG2,HUMAN22943,nan,nan
+HUMAN,OG5,HUMAN20242,nan,nan
+HUMAN,OG1,HUMAN07007,nan,nan
+HUMAN,OG4,HUMAN04136,1.0,0.0
