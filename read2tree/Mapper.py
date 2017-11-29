@@ -35,7 +35,7 @@ class Mapper(object):
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None, load=True):
+    def __init__(self, args, ref_set=None, og_set=None, species_name=None, load=True):
         self.args = args
 
         if len(self.args.reads) == 2:
@@ -66,8 +66,11 @@ class Mapper(object):
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:
-            if og_set is not None:
+            if og_set is not None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder()
+                self.og_records = self._sort_by_og(og_set)
+            elif og_set is not None and self.args.merge_all_mappings and species_name is not None:
+                self.mapped_records = self._read_mapping_from_folder(species_name=species_name)
                 self.og_records = self._sort_by_og(og_set)
 
     def _map_reads_to_single_reference(self, ref):
@@ -120,14 +123,16 @@ class Mapper(object):
         return mapped_reads_species
 
 
-    def _read_mapping_from_folder(self):
+    def _read_mapping_from_folder(self, species_name=None):
         """
         Retrieve all the mapped consensus files from folder and add to mapper object
         :return: dictionary with key og_name and value sequences mapped to each species
         """
         print('--- Retrieve mapped consensus sequences ---')
         map_reads_species = {}
-        in_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        if not species_name:
+            species_name = self._species_name
+        in_folder = os.path.join(self.args.output_path, "03_mapping_"+species_name)
         for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
             species = file.split("/")[-1].split("_")[0]
             map_reads_species[species] = Reference()

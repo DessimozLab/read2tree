@@ -14,6 +14,7 @@
     -- David V Dylus, July--XX 2017
 '''
 import os
+import glob
 from datetime import date
 from timeit import default_timer as timer
 import read2tree
@@ -49,9 +50,9 @@ def parse_args(argv, exe_name, desc):
 
     arg_parser.add_argument('--standalone_path', default='.',
                             help='[Default is current directory] Path to '
-                                 'oma standalone directory.', required=True)
+                                 'oma standalone directory.')
 
-    arg_parser.add_argument('--reads', nargs='+', default=None, required=True,
+    arg_parser.add_argument('--reads', nargs='+', default=None,
                             help='Reads to be mapped to reference. If paired end '
                                  'add separated by space.')
 
@@ -90,6 +91,10 @@ def parse_args(argv, exe_name, desc):
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
 
+    arg_parser.add_argument('--merge_all_mappings', action='store_true',
+                            help='In case multiple species were mapped to the same reference this '
+                            'allows to merge this mappings and build a tree with all included species!')
+
     # arg_parser.add_argument('--ref_og_aa_folder', default='.',
     #                         help='Path to preselected og_aa folder')
 
@@ -127,7 +132,8 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
-    species_name = args.reads[0].split("/")[-1].split(".")[0]
+    if args.reads:
+        species_name = args.reads[0].split("/")[-1].split(".")[0]
 
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
@@ -152,12 +158,22 @@ def main(argv, exe_name, desc=''):
 
     if not args.reference:
         if progress.status >= 3:
-            mapper = Mapper(args, og_set=ogset.ogs, load=False)
+            if not args.merge_all_mappings:
+                mapper = Mapper(args, og_set=ogset.ogs, load=False)
+                ogset.add_mapped_seq_v2(mapper)
+                ogset.write_added_ogs()
+            else:
+                for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
+                    species_name = folder.split("_")[-2]+"_"+folder.split("_")[-1]
+                    mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
+                    ogset.add_mapped_seq_v2(mapper, species_name=species_name)
+                ogset.write_added_ogs(folder_name="04_merged_OGs")
         else:
             mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
+            ogset.add_mapped_seq_v2(mapper)
+            ogset.write_added_ogs()
 
         if args.single_mapping is None:
-            ogset.add_mapped_seq_v2(mapper)
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             if concat_alignment:
