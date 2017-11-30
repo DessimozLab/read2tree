@@ -53,7 +53,7 @@ class Progress(object):
     def check_mapping(self):
         map_files = 0
         if os.path.exists(self._folder_mapping):
-            for file in glob.glob(os.path.join(self._folder_mapping, "*cov.fa")):
+            for file in glob.glob(os.path.join(self._folder_mapping, "*cov.txt")):
                 if os.path.getsize(file) > 0:
                     map_files += 1
 
