@@ -300,18 +300,32 @@ class Mapper(object):
                 record.description = tmp_id + " [" + species_name + "]"
                 if name in og_records.keys():
                     og_records[name].dna.append(record)
-                    aa = self._predict_best_protein_pyopa(record, og_set[name])
+                    # aa = self._predict_best_protein_pyopa(record, og_set[name])
+                    aa = self._predict_best_protein_position(record)
                     og_records[name].aa.append(aa)
                 else:
                     og_records[name] = OG()
                     og_records[name].dna.append(record)
-                    aa = self._predict_best_protein_pyopa(record, og_set[name])
+                    # aa = self._predict_best_protein_pyopa(record, og_set[name])
+                    aa = self._predict_best_protein_position(record)
                     og_records[name].aa.append(aa)
 
         return og_records
 
-    def _predict_best_protein_position(self):
-        raise NotImplementedError
+    def _predict_best_protein_position(self, record):
+        """
+        Given a list of sequences that are derived from mapped reads to multiple seq of a OG
+        we find the best corresponding mapped seq by comparing it with a representative sequence of the original OG using
+        pyopa local alignment and return the sequence with its highest score!
+        :return:
+        """
+        try:
+            frame = record.seq[0:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False)
+            best_translation = SeqRecord.SeqRecord(frame, id=self._species_name,
+                                                   description=record.description, name=record.name)
+        except:
+            raise ValueError("Problem with sequence format!", ref_og_seq.seq)
+        return best_translation
 
     def _predict_best_protein_pyopa(self, record, og):
         """

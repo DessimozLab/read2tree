@@ -334,7 +334,7 @@ class OGSet(object):
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from the original set
-            if self.args.keep_all_species:
+            if self.args.keep_all_species or self.args.merge_all_mappings:
                 og = value
             else:
                 og = OG()
@@ -367,7 +367,6 @@ class OGSet(object):
             else:  # nothing was mapped to that og
                 if self.args.keep_all_ogs:
                     self.mapped_ogs[name] = og
-
         cov.write_coverage_bam(os.path.join(self.args.output_path, species_name+'_all_cov.txt'))
 
     def write_added_ogs(self, folder_name=None):

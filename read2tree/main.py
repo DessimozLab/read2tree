@@ -143,6 +143,8 @@ def main(argv, exe_name, desc=''):
 
     # Read in orthologous groups
     progress = Progress(args)
+    if args.merge_all_mappings:
+        progress.status = 3
 
     if progress.status >= 1:
         ogset = OGSet(args, load=False)
@@ -164,10 +166,12 @@ def main(argv, exe_name, desc=''):
                 ogset.write_added_ogs()
             else:
                 for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
-                    species_name = folder.split("_")[-2]+"_"+folder.split("_")[-1]
-                    print('--- Addition of {} to all ogs ---'.format(folder.split("_")[-2]))
-                    mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
-                    ogset.add_mapped_seq_v2(mapper, species_name=species_name)
+                    species_name = folder.split("03_mapping_")[-1]
+                    species_progress = Progress(args, species_name=species_name)
+                    if species_progress.status >= 3:
+                        print('--- Addition of {} to all ogs ---'.format(species_name))
+                        mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
+                        ogset.add_mapped_seq_v2(mapper, species_name=species_name)
                 ogset.write_added_ogs(folder_name="04_merged_OGs")
         else:
             mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
