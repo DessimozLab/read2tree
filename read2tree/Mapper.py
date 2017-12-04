@@ -204,9 +204,27 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         outfile_name = os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0]+"_post")
 
-        pysam.view("-bh", "-S", "-o", outfile_name + ".bam", sam_file, catch_stdout=False)
-        pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
-        pysam.index(outfile_name + "_sorted.bam")
+        # pysam.view("-bh", "-S", "-o", outfile_name + ".bam", sam_file, catch_stdout=False)
+        # print('sambamba view -h -S -f bam -t ' + str(self.args.threads) + ' -o ' + outfile_name + ".bam " + sam_file)
+        if os.path.exists(sam_file):
+            self._output_shell('sambamba view -h -S -f bam -t ' + str(self.args.threads) + ' -o ' + outfile_name + ".bam " + sam_file)
+
+        # print('sambamba sort -m 2G  -t ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + outfile_name + '.bam')
+        if os.path.exists(outfile_name + ".bam"):
+            # pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
+            self._output_shell(
+                'sambamba sort -m 2G  -t ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + outfile_name + '.bam')
+
+        # print('sambamba index -t ' + str(self.args.threads) + ' ' + outfile_name + '_sorted.bam')
+        if os.path.exists(outfile_name + "_sorted.bam"):
+            # pysam.index(outfile_name + "_sorted.bam")
+            self._output_shell(
+                'sambamba index -t ' + str(self.args.threads) + ' ' + outfile_name + '_sorted.bam')
+
+        #self._output_shell(cmd)
+        #self._output_shell(cmd)
+
+
         self._rm_file(sam_file, ignore_error=True)
         self._rm_file(outfile_name + ".bam", ignore_error=True)
 
