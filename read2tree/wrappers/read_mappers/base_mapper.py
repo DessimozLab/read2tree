@@ -33,7 +33,7 @@ class ReadMapper(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, reference=None, reads=None, binary=None):
+    def __init__(self, reference=None, reads=None, tmp_folder=None, binary=None):
         """
         ..note::  TODO: this documentation is not correct. it needs to be updateted.
 
@@ -62,6 +62,11 @@ class ReadMapper(object):
         else:
             self.read_input_type = None
             self.read_input = None
+
+        if tmp_folder is not None:
+            self.tmp_folder = tmp_folder
+        else:
+            self.tmp_folder = "./" # set to current folder
 
         self.elapsed_time = None
         self.stdout = None

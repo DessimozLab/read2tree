@@ -449,7 +449,7 @@ class OG(object):
 
     def _get_seq_completeness(self, gene_code='aa'):
         """
-
+        TODO: this has to be changed to incorporate the expected sequence length
         :param gene_code:
         :return:
         """
