@@ -471,8 +471,12 @@ class OG(object):
         aa_dict = {}
         dna_dict = {}
         for record in zip(ref_og.aa, ref_og.dna):
+            if '_' in record[0].id:
+                tmp = record[0].id.split("_")[0]
+                record[0].id = tmp
+
             aa_dict[record[0].id] = record[0]
-            dna_dict[record[1].id] = record[1]
+            dna_dict[record[0].id] = record[1]
         return (dna_dict, aa_dict)
 
 
@@ -499,8 +503,6 @@ class OG(object):
                 non_n_len = len(record.seq) - str(record.seq).count('X')
                 seq_completeness.append(non_n_len / seq_len)
                 full_seq_completeness.append(non_n_len / full_seq_len)
-        print(seq_completeness)
-        print(full_seq_completeness)
         return seq_completeness
 
     def _get_seq_completeness(self, gene_code='aa'):

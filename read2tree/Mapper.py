@@ -28,6 +28,7 @@ from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
+from read2tree.stats.SeqCompleteness import SeqCompleteness
 #from tables import *
 
 
@@ -52,6 +53,7 @@ class Mapper(object):
         self.env = self.envs[515]
         self.progress = Progress(args)
         self.all_cov = {}
+        self.all_sc = {}
 
         if load:
             if ref_set is not None:
@@ -70,6 +72,7 @@ class Mapper(object):
             if og_set is not None:
                 self.mapped_records = self._read_mapping_from_folder()
                 self.og_records = self._sort_by_og(og_set)
+
 
     def _map_reads_to_single_reference(self, ref):
         """
@@ -123,6 +126,10 @@ class Mapper(object):
         if mapped_reads:
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
+            seqC = SeqCompleteness(ref)
+            seqC.get_seq_completeness(mapped_reads)
+            seqC.write_seq_completeness(os.path.join(output_folder, self.ref_species + "_sc.txt"))
+
         tmp_output_folder.cleanup()
         return mapped_reads_species
 
@@ -146,8 +153,16 @@ class Mapper(object):
                 if "#" not in line:
                     values = line.split(",")
                     cov.add_coverage(values[2]+"_"+values[1], [float(values[3]), float(values[4].replace("\n", ""))])
-
             self.all_cov.update(cov.coverage)
+
+            seqC = SeqCompleteness()
+            seqC_file_name = os.path.join(in_folder, species + "_OGs_sc.txt")
+            for line in open(seqC_file_name, "r"):
+                if "#" not in line:
+                    values = line.split(",")
+                    seqC.add_seq_completeness(values[2] + "_" + values[1],
+                                     [float(values[3]), float(values[4].replace("\n", ""))])
+            self.all_sc.update(seqC.seq_completeness)
 
         return map_reads_species
 
@@ -203,6 +218,10 @@ class Mapper(object):
             if mapped_reads:
                 mapped_reads_species[species] = Reference()
                 mapped_reads_species[species].dna = mapped_reads
+                seqC = SeqCompleteness(value)
+                seqC.get_seq_completeness(mapped_reads)
+                seqC.write_seq_completeness(os.path.join(output_folder, species+"_OGs_sc.txt"))
+                self.all_sc.update(seqC.seq_completeness)
 
         tmp_output_folder.cleanup()
         return mapped_reads_species
@@ -222,15 +241,15 @@ class Mapper(object):
             sam_file = bam_file
             if os.path.exists(sam_file):
                 self._output_shell(
-                    'sambamba view -h -S -f bam -t ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+                    'samtools view -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
 
         if os.path.exists(bam_file):
             self._output_shell(
-                'sambamba sort -m 2G  -t ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
+                'samtools sort -m 2G  -@ ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
 
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
-                'sambamba index -t ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
+                'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
 
         self._rm_file(bam_file, ignore_error=True)
 
