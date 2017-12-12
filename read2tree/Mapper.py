@@ -141,7 +141,7 @@ class Mapper(object):
             map_reads_species[species].dna = list(SeqIO.parse(file, "fasta"))
 
             cov = Coverage()
-            cov_file_name = os.path.join(in_folder, species + "_cov.txt")
+            cov_file_name = os.path.join(in_folder, species + "_OGs_cov.txt")
             for line in open(cov_file_name, "r"):
                 if "#" not in line:
                     values = line.split(",")

@@ -86,7 +86,7 @@ def parse_args(argv, exe_name, desc):
                             'groups are used that have the mapped sequence for alignment '
                             'and tree inference.')
 
-    arg_parser.add_argument('--species_name', default=None,
+    arg_parser.add_argument('-s', '--species_name', default=None,
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
 
