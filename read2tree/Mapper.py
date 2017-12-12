@@ -13,6 +13,7 @@
 '''
 
 import pysam
+import tempfile
 import pyopa
 import os
 import shutil
@@ -78,45 +79,51 @@ class Mapper(object):
         """
         print('--- Mapping of reads to {} reference species ---'.format(self.ref_species))
         mapped_reads_species = {}
+        reference_path = os.path.join(self.args.output_path, "02_ref_dna")
+
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        ref_file_handle = os.path.join(output_folder, self.ref_species + '.fa')
-        SeqIO.write(ref[self.ref_species].dna, ref_file_handle, 'fasta')
+        if "TMPDIR" in os.environ:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm', dir=os.environ.get("TMPDIR"))
+        else:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
+            print('--- Creating tmp directory on local node ---')
+
+        ref_file_handle = os.path.join(reference_path, species + '_OGs.fa')
         # call the WRAPPER here
         if len(self._reads) == 2:
-            ngm_wrapper = NGM(ref_file_handle, self._reads)
+            ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
-            sam_file = ngm['file']
+            bam_file = ngm['file']
         else:
-            ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+            ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
-            sam_file = ngm['file']
+            bam_file = ngm['file']
 
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-enc.2.ngm"), ignore_error=True)
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-ht-13-2.2.ngm"), ignore_error=True)
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-ht-13-2.3.ngm"), ignore_error=True)
+        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
+        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
 
         try:
-            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
         except AttributeError or ValueError:
             mapped_reads = []
             pass
 
         # self.progress.set_status('single_map', ref=self.ref_species)
-        self._rm_file(ref_file_handle, ignore_error=True)
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa.fai"), ignore_error=True)
+        self._rm_file(ref_file_handle + ".fai", ignore_error=True)
 
         if mapped_reads:
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
-
+        tmp_output_folder.cleanup()
         return mapped_reads_species
 
 
@@ -134,7 +141,7 @@ class Mapper(object):
             map_reads_species[species].dna = list(SeqIO.parse(file, "fasta"))
 
             cov = Coverage()
-            cov_file_name = os.path.join(in_folder, species + "_cov.txt")
+            cov_file_name = os.path.join(in_folder, species + "_OGs_cov.txt")
             for line in open(cov_file_name, "r"):
                 if "#" not in line:
                     values = line.split(",")
@@ -152,49 +159,55 @@ class Mapper(object):
         """
         print('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
+        reference_path = os.path.join(self.args.output_path, "02_ref_dna")
+
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
+
+        if "TMPDIR" in os.environ:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm', dir=os.environ.get("TMPDIR"))
+        else:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
+            print('--- Creating tmp directory on local node ---')
+
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
             # write reference into temporary file
-            #ref_file_handle = tempfile.NamedTemporaryFile(mode='wt', delete=True)
-            #TODO: this files exist already and are in the 02_ref folder
-            ref_file_handle = os.path.join(output_folder, species+'.fa')
-            SeqIO.write(value.dna, ref_file_handle, 'fasta')
+            ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
             # call the WRAPPER here
             if len(self._reads) == 2:
-                ngm_wrapper = NGM(ref_file_handle, self._reads)
+                ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
-                sam_file = ngm['file']
+                bam_file = ngm['file']
             else:
-                ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+                ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
-                sam_file = ngm['file']
-
-            self._rm_file(os.path.join(output_folder, species+".fa-enc.2.ngm"), ignore_error=True)
-            self._rm_file(os.path.join(output_folder, species+".fa-ht-13-2.2.ngm"), ignore_error=True)
-            self._rm_file(os.path.join(output_folder, species+".fa-ht-13-2.3.ngm"), ignore_error=True)
+                bam_file = ngm['file']
+            self._rm_file(ref_file_handle+"-enc.2.ngm", ignore_error=True)
+            self._rm_file(ref_file_handle+"-ht-13-2.2.ngm", ignore_error=True)
+            self._rm_file(ref_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
 
             try:
-                mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+                mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
             except AttributeError or ValueError:
                 mapped_reads = []
                 pass
 
             # self.progress.set_status('single_map', ref=species)
-            self._rm_file(ref_file_handle, ignore_error=True)
-            self._rm_file(os.path.join(output_folder, species + ".fa.fai"), ignore_error=True)
+            self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
             if mapped_reads:
                 mapped_reads_species[species] = Reference()
                 mapped_reads_species[species].dna = mapped_reads
+
+        tmp_output_folder.cleanup()
         return mapped_reads_species
 
-    def _post_process_read_mapping(self, ref_file, sam_file):
+    def _post_process_read_mapping(self, ref_file, bam_file):
         """
         Function that will perform postprocessing of finished read mapping using the pysam functionality
         :param ngm: 
@@ -202,18 +215,29 @@ class Mapper(object):
         :return: 
         """
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
-        outfile_name = os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0]+"_post")
+        tmp_folder = os.path.dirname(bam_file)
+        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
 
-        pysam.view("-bh", "-S", "-o", outfile_name + ".bam", sam_file, catch_stdout=False)
-        pysam.sort("-o", outfile_name + "_sorted.bam", outfile_name + ".bam")
-        pysam.index(outfile_name + "_sorted.bam")
-        self._rm_file(sam_file, ignore_error=True)
-        self._rm_file(outfile_name + ".bam", ignore_error=True)
+        if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
+            sam_file = bam_file
+            if os.path.exists(sam_file):
+                self._output_shell(
+                    'sambamba view -h -S -f bam -t ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+
+        if os.path.exists(bam_file):
+            self._output_shell(
+                'sambamba sort -m 2G  -t ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
+
+        if os.path.exists(outfile_name + "_sorted.bam"):
+            self._output_shell(
+                'sambamba index -t ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
+
+        self._rm_file(bam_file, ignore_error=True)
 
         # Get effective coverage of each mapped sequence
         cov = Coverage()
         cov.get_coverage_bam(outfile_name + "_sorted.bam")
-        cov.write_coverage_bam(outfile_name.split("_post")[0] + "_cov.txt")
+        cov.write_coverage_bam(os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
         self.all_cov.update(cov.coverage)
 
         if len(self._reads) > 1:
@@ -237,10 +261,6 @@ class Mapper(object):
             out_file = os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
         else:
             out_file = None
-
-        self._rm_file(outfile_name + "_sorted.bam", ignore_error=True)
-        self._rm_file(outfile_name + "_sorted.bam.bai", ignore_error=True)
-        self._rm_file(outfile_name + "_consensus_call.fq", ignore_error=True)
 
         return out_file
 

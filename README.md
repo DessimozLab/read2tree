@@ -35,6 +35,13 @@ python -W ignore bin/read2tree --standalone_path tests/marker_genes/ --reads ~/R
 
 ```
 
+## Running on clusters
+
+### LSF
+
+
+### SGE
+
 ## Built With
 
 * [pyCharm](https://www.jetbrains.com/pycharm) - Python IDE

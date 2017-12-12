@@ -28,12 +28,12 @@ def set_default_options(readmapper):
 
 class NGMLR(ReadMapper):
 
-    def __init__(self, reference, reads, *args, **kwargs):
+    def __init__(self, reference, reads, tmp_folder, *args, **kwargs):
         """
         :param alignment: input multiple sequence alignment. This can be either
             a filename or an biopython SeqRecord collection.
         """
-        super(NGMLR, self).__init__(reference, reads, *args, **kwargs)
+        super(NGMLR, self).__init__(reference, reads, tmp_folder, *args, **kwargs)
         self.options = get_default_options()
         set_default_options(self)
 
@@ -48,10 +48,10 @@ class NGMLR(ReadMapper):
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
                 SeqIO.write(self.ref_input, filehandle, 'fasta')
                 filehandle.seek(0)
-                output, error = self._call(filehandle.name, self.ref_input, *args, **kwargs)
+                output, error = self._call(filehandle.name, self.ref_input, self.tmp_folder, *args, **kwargs)
                 self.result = self._read_result(error, filehandle.name)
         else:
-            output, error = self._call(self.ref_input, self.read_input, *args, **kwargs)
+            output, error = self._call(self.ref_input, self.read_input, self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input)  # store result
 
         self.stdout = output
@@ -63,14 +63,18 @@ class NGMLR(ReadMapper):
         # End call
 
     # Any other accessory methods
-    def _call(self, reference, reads, *args, **kwargs):
+    def _call(self, reference, reads, tmp_folder=None, *args, **kwargs):
         """
         Call underlying low level _ngm wrapper. 
         Options are passed via *args and **kwargs
         [This only covers the simplest automatic
          case]
         """
-        self.cli('{} -r {} -q {} -o {}.sam'.format(self.command(), reference, reads, reference), wait=True)
+        if tmp_folder is None:
+            tmp_file = './' + os.path.basename(reference)+".sam"
+        if '/' not in tmp_folder[-1]:
+            tmp_file = os.path.join(tmp_folder, os.path.basename(reference))+".sam"
+        self.cli('{} -r {} -q {} -o {}.sam'.format(self.command(), reference, reads, tmp_file), wait=True)
 
         return self.cli.get_stdout(), self.cli.get_stderr()
 
@@ -81,15 +85,10 @@ class NGMLR(ReadMapper):
         """
         Read back the result.
         """
-
         # TODO: change the output dictionary into a better format
-        outfile = '{}.sam'.format(filename)
+        outfile = os.path.join(tmp_folder, os.path.basename(filename)) + ".sam"
         parser = NGMLRParser()
 
-        # Phyml outputs two outfiles, a stats file and a tree file.
-        # Sometimes it appends .txt, sometimes not. Seems to be platform-specific.
-        # Here we assume they are without .txt, but if we can't find them, try
-        # looking for the .txt onees instead
         try:
             # parser.parse(output)
             result = parser.to_dict(outfile, output)
