@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/scripts/get_seq_completeness.py" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/scripts/adjust_mapping_names.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/read2tree/Mapper.py" afterPath="$PROJECT_DIR$/read2tree/Mapper.py" />
-      <change beforePath="$PROJECT_DIR$/read2tree/OGSet.py" afterPath="$PROJECT_DIR$/read2tree/OGSet.py" />
-      <change beforePath="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" afterPath="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -34,11 +31,23 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="get_seq_completeness.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="get_seq_completeness.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/scripts/get_seq_completeness.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="275">
-                  <caret line="50" column="91" lean-forward="true" selection-start-line="50" selection-start-column="91" selection-end-line="50" selection-end-column="91" />
+                <state relative-caret-position="140">
+                  <caret line="20" column="52" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#0#10#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="adjust_mapping_names.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-205">
+                  <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#10#0" expanded="true" />
                   </folding>
@@ -91,18 +100,6 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="base_mapper.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/base_mapper.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="316">
-                  <caret line="68" column="58" lean-forward="false" selection-start-line="68" selection-start-column="58" selection-end-line="68" selection-end-column="58" />
-                  <folding>
-                    <element signature="e#0#16#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file leaf-file-name="monitor_folder_size.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/scripts/monitor_folder_size.py">
               <provider selected="true" editor-type-id="text-editor">
@@ -144,11 +141,9 @@
           <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="393">
-                  <caret line="41" column="0" lean-forward="false" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#309#321#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="18">
+                  <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -245,7 +240,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/__init__.py" />
         <option value="$PROJECT_DIR$/bin/pore2tree" />
         <option value="$PROJECT_DIR$/pore2tree/Reference.py" />
         <option value="$PROJECT_DIR$/pore2tree/utils/seq_utils.py" />
@@ -296,6 +290,7 @@
         <option value="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" />
         <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
         <option value="$PROJECT_DIR$/scripts/get_seq_completeness.py" />
+        <option value="$PROJECT_DIR$/scripts/adjust_mapping_names.py" />
       </list>
     </option>
   </component>
@@ -337,6 +332,15 @@
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
               <item name="scripts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+            <path>
+              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; Python 3.5.1 (~/.pyenv/versions/3.5.1/bin/python) &gt;" type="70bed36:NamedLibraryElementNode" />
             </path>
           </expand>
           <select />
@@ -620,7 +624,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tests/mapper/test1/mapping/CANAW.fa" />
     <entry file="file://$PROJECT_DIR$/tests/mapper/test1/db/ASHGO_OGs.fa" />
     <entry file="file://$PROJECT_DIR$/tests/mapper/test1/align/OG470.phy" />
     <entry file="file://$PROJECT_DIR$/tests/mapper/test1/align/OG666.phy" />
@@ -991,8 +994,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/get_seq_completeness.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="50" column="91" lean-forward="true" selection-start-line="50" selection-start-column="91" selection-end-line="50" selection-end-column="91" />
+        <state relative-caret-position="140">
+          <caret line="20" column="52" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-205">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
