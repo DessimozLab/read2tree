@@ -197,6 +197,8 @@ class Mapper(object):
             if mapped_reads:
                 mapped_reads_species[species] = Reference()
                 mapped_reads_species[species].dna = mapped_reads
+
+        tmp_output_folder.cleanup()
         return mapped_reads_species
 
     def _post_process_read_mapping(self, ref_file, bam_file):
@@ -210,9 +212,11 @@ class Mapper(object):
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
 
-        # if os.path.exists(sam_file):
-        #     sam_to_bam_file = tempfile.NamedTemporaryFile()
-        #     self._output_shell('sambamba view -h -S -f bam -t ' + str(self.args.threads) + ' -o ' + sam_to_bam_file.name + " " + sam_file)
+        if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
+            sam_file = bam_file
+            if os.path.exists(sam_file):
+                self._output_shell(
+                    'sambamba view -h -S -f bam -t ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
 
         if os.path.exists(bam_file):
             self._output_shell(
@@ -251,10 +255,6 @@ class Mapper(object):
             out_file = os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
         else:
             out_file = None
-
-        # self._rm_file(index_sorted_bame_file.name + ".bai", ignore_error=True)
-        # self._rm_file(outfile_name + "_consensus_call.fq", ignore_error=True)
-        # index_sorted_bame_file.close()
 
         return out_file
 

@@ -91,10 +91,6 @@ class NGM(ReadMapper):
         outfile = os.path.join(tmp_folder, os.path.basename(filename))+".bam"
         parser = NGMParser()
 
-        # Phyml outputs two outfiles, a stats file and a tree file.
-        # Sometimes it appends .txt, sometimes not. Seems to be platform-specific.
-        # Here we assume they are without .txt, but if we can't find them, try
-        # looking for the .txt onees instead
         try:
             # parser.parse(output)
             result = parser.to_dict(outfile, output)
@@ -117,9 +113,6 @@ def get_default_options():
         # set number of threads
         IntegerOption('-t', 4, active=True),
 
-        # Automatically selects an appropriate strategy from L-INS-i, FFT-NS-i
-        # and FFT-NS-2, according to data size. Default: off (always FFT-NS-2)
+        # makes sure that unmapped reads are not saved in bam file
         FlagOption('--no-unal', True, active=True)
-
-
     ])
