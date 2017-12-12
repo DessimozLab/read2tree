@@ -79,45 +79,51 @@ class Mapper(object):
         """
         print('--- Mapping of reads to {} reference species ---'.format(self.ref_species))
         mapped_reads_species = {}
+        reference_path = os.path.join(self.args.output_path, "02_ref_dna")
+
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        ref_file_handle = os.path.join(output_folder, self.ref_species + '.fa')
-        SeqIO.write(ref[self.ref_species].dna, ref_file_handle, 'fasta')
+        if "TMPDIR" in os.environ:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm', dir=os.environ.get("TMPDIR"))
+        else:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
+            print('--- Creating tmp directory on local node ---')
+
+        ref_file_handle = os.path.join(reference_path, species + '_OGs.fa')
         # call the WRAPPER here
         if len(self._reads) == 2:
-            ngm_wrapper = NGM(ref_file_handle, self._reads)
+            ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
-            sam_file = ngm['file']
+            bam_file = ngm['file']
         else:
-            ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+            ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
-            sam_file = ngm['file']
+            bam_file = ngm['file']
 
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-enc.2.ngm"), ignore_error=True)
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-ht-13-2.2.ngm"), ignore_error=True)
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa-ht-13-2.3.ngm"), ignore_error=True)
+        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
+        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
 
         try:
-            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, sam_file), 'fasta'))
+            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
         except AttributeError or ValueError:
             mapped_reads = []
             pass
 
         # self.progress.set_status('single_map', ref=self.ref_species)
-        self._rm_file(ref_file_handle, ignore_error=True)
-        self._rm_file(os.path.join(output_folder, self.ref_species + ".fa.fai"), ignore_error=True)
+        self._rm_file(ref_file_handle + ".fai", ignore_error=True)
 
         if mapped_reads:
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
-
+        tmp_output_folder.cleanup()
         return mapped_reads_species
 
 
@@ -154,16 +160,16 @@ class Mapper(object):
         print('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
         reference_path = os.path.join(self.args.output_path, "02_ref_dna")
+
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
 
         if "TMPDIR" in os.environ:
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm', dir=os.environ.get("TMPDIR"))
         else:
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
             print('--- Creating tmp directory on local node ---')
-
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
 
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
             # write reference into temporary file
@@ -176,7 +182,7 @@ class Mapper(object):
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
             else:
-                ngm_wrapper = NGMLR(ref_file_handle, self._reads)
+                ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
