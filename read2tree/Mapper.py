@@ -126,7 +126,7 @@ class Mapper(object):
         if mapped_reads:
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
-            seqC = SeqCompleteness(ref)
+            seqC = SeqCompleteness(ref.dna)
             seqC.get_seq_completeness(mapped_reads)
             seqC.write_seq_completeness(os.path.join(output_folder, self.ref_species + "_sc.txt"))
 
@@ -218,7 +218,7 @@ class Mapper(object):
             if mapped_reads:
                 mapped_reads_species[species] = Reference()
                 mapped_reads_species[species].dna = mapped_reads
-                seqC = SeqCompleteness(value)
+                seqC = SeqCompleteness(value.dna)
                 seqC.get_seq_completeness(mapped_reads)
                 seqC.write_seq_completeness(os.path.join(output_folder, species+"_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)

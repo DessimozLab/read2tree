@@ -41,7 +41,7 @@ class SeqCompleteness(object):
 
     def _get_og_dict(self, ref_og):
         dna_dict = {}
-        for record in ref_og.dna:
+        for record in ref_og:
             if '_' in record.id:
                 split_id = record.id.split("_")
                 tmp = split_id[0]+"_"+split_id[1]

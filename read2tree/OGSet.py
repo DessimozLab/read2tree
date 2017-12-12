@@ -21,6 +21,7 @@ from pyoma.browser import db
 
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
+from read2tree.stats.SeqCompleteness import SeqCompleteness
 
 
 
@@ -324,6 +325,7 @@ class OGSet(object):
         """
         mapped_og_set = mapper.og_records
         cov = Coverage()
+        seqC = SeqCompleteness()
         ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+self._species_name)
         if not os.path.exists(ogs_with_mapped_seq):
             os.makedirs(ogs_with_mapped_seq)
@@ -359,6 +361,7 @@ class OGSet(object):
                     if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
                         #print(mapper.all_cov)
                         cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
+                        seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
                         self.mapped_ogs[name].aa.append(best_record_aa)
                     output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
@@ -374,6 +377,7 @@ class OGSet(object):
                     self._write(output_file, self.mapped_ogs[name].aa)
 
         cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
+        seqC.write_seq_completeness(os.path.join(self.args.output_path, self._species_name+'_all_sc.txt'))
 
     def _get_clean_id(self, record):
         des = record.description.split(" ")[0]
