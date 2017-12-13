@@ -38,7 +38,7 @@ def main():
         for file in glob.glob(mapping_folder + "/*cov.txt"):
             if "_OGs" not in os.path.basename(file):
                 species_name = os.path.basename(file).split("_")[0]
-                new_file_name = species_name + "_OGs_cov.txt
+                new_file_name = species_name + "_OGs_cov.txt"
                 shutil.move(file, os.path.join(mapping_folder, new_file_name))
 
 if __name__ == "__main__":

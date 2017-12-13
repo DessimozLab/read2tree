@@ -130,7 +130,6 @@ class OGSet(object):
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
             ogs[name].dna = list(SeqIO.parse(file[1], format='fasta'))
-
             # if self._remove_species:
             #     ogs[name].remove_species_records(self.species_to_remove, species_in_hog)
         return ogs
@@ -334,6 +333,7 @@ class OGSet(object):
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from the original set
+            dna_id = [r.id.split("_")[0] for r in value.dna if 'COLG' in r.id]
             if self.args.keep_all_species:
                 og = value
             else:
@@ -341,7 +341,6 @@ class OGSet(object):
                 filtered_og = value.remove_species_records(self.species_to_remove)
                 og.dna = filtered_og[0]
                 og.aa = filtered_og[1]
-
             # continue only if OG is in mapped OGs
             if name in mapped_og_set.keys():
                 if self.species_to_remove:  # in case we decided to remove species from the mapping
@@ -440,14 +439,14 @@ class OG(object):
         self.aa = []
         self.dna = []
 
-    def get_best_mapping_by_seq_completeness(self, ref_og=None, gene_code='aa'):
+    def get_best_mapping_by_seq_completeness(self, ref_og=None):
         """
         From the list of all mapped sequences part of a OG it tries to find the one that mapped best according to its
         mapping length.
         :param gene_code: dna or aa
         :return: best record
         """
-        seq_completenesses = self._get_seq_completeness_v2(ref_og=ref_og, gene_code=gene_code)
+        seq_completenesses = self._get_seq_completeness_v2(ref_og=ref_og)
         best_record = seq_completenesses.index(max(seq_completenesses))
         return self.aa[best_record]
 
@@ -472,41 +471,31 @@ class OG(object):
         return seq_completeness
 
     def _get_og_dict(self, ref_og):
-        aa_dict = {}
         dna_dict = {}
-        for record in zip(ref_og.aa, ref_og.dna):
-            if '_' in record[0].id:
-                tmp = record[0].id.split("_")[0]
-                record[0].id = tmp
+        for record in ref_og.dna:
+            if '_' in record.id:
+                tmp = record.id.split("_")[0]
+                record.id = tmp
 
-            aa_dict[record[0].id] = record[0]
-            dna_dict[record[0].id] = record[1]
-        return (dna_dict, aa_dict)
+            dna_dict[record.id] = record
+        return dna_dict
 
 
-    def _get_seq_completeness_v2(self, ref_og=None, gene_code='aa'):
+    def _get_seq_completeness_v2(self, ref_og=None):
         """
         TODO: this has to be changed to incorporate the expected sequence length
         :param gene_code:
         :return:
         """
-        ref_og_tuple = self._get_og_dict(ref_og)
+        ref_og_dna = self._get_og_dict(ref_og)
         seq_completeness = []
         full_seq_completeness = []
-        if gene_code is 'dna':
-            for record in self.dna:
-                full_seq_len = len(ref_og_tuple[0][record.name.split("_")[0]].seq)
-                seq_len = len(record.seq)
-                non_n_len = len(record.seq) - str(record.seq).count('n')
-                seq_completeness.append(non_n_len / seq_len)
-                full_seq_completeness.append(non_n_len / full_seq_len)
-        elif gene_code is 'aa':
-            for record in self.aa:
-                full_seq_len = len(ref_og_tuple[1][record.name.split("_")[0]].seq)
-                seq_len = len(record.seq)
-                non_n_len = len(record.seq) - str(record.seq).count('X')
-                seq_completeness.append(non_n_len / seq_len)
-                full_seq_completeness.append(non_n_len / full_seq_len)
+        for record in self.dna:
+            full_seq_len = len(ref_og_dna[record.name.split("_")[0]].seq)
+            seq_len = len(record.seq)
+            non_n_len = len(record.seq) - str(record.seq).count('n')
+            seq_completeness.append(non_n_len / seq_len)
+            full_seq_completeness.append(non_n_len / full_seq_len)
         return seq_completeness
 
     def _get_seq_completeness(self, gene_code='aa'):
@@ -535,17 +524,25 @@ class OG(object):
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         '''
-        index_to_remove = []
+        index_to_remove_aa = []
+        index_to_remove_dna = []
         for i, record in enumerate(self.aa):
             species = record.description[record.description.find("[") + 1:record.description.find("]")]
             if len(species.split(" ")) > 1:
                 new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
                 species = new_id.upper()
             if species in species_to_remove:
-                index_to_remove.append(i)
+                index_to_remove_aa.append(i)
+        for i, record in enumerate(self.dna):
+            species = record.description[record.description.find("[") + 1:record.description.find("]")]
+            if len(species.split(" ")) > 1:
+                new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
+                species = new_id.upper()
+            if species in species_to_remove:
+                index_to_remove_dna.append(i)
 
-        aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove]
-        dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove]
+        aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove_aa]
+        dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove_dna]
         if len(aa) > 0 and len(dna) > 0:
             return [dna, aa]
         else:
