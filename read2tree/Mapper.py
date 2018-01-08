@@ -122,13 +122,12 @@ class Mapper(object):
 
         # self.progress.set_status('single_map', ref=self.ref_species)
         self._rm_file(ref_file_handle + ".fai", ignore_error=True)
-
         if mapped_reads:
             mapped_reads_species[self.ref_species] = Reference()
             mapped_reads_species[self.ref_species].dna = mapped_reads
-            seqC = SeqCompleteness(ref.dna)
+            seqC = SeqCompleteness(ref[self.ref_species].dna)
             seqC.get_seq_completeness(mapped_reads)
-            seqC.write_seq_completeness(os.path.join(output_folder, self.ref_species + "_sc.txt"))
+            seqC.write_seq_completeness(os.path.join(output_folder, self.ref_species + "_OGs_sc.txt"))
 
         tmp_output_folder.cleanup()
         return mapped_reads_species
