@@ -94,7 +94,7 @@ class Mapper(object):
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
             print('--- Creating tmp directory on local node ---')
 
-        ref_file_handle = os.path.join(reference_path, species + '_OGs.fa')
+        ref_file_handle = os.path.join(reference_path, self.ref_species + '_OGs.fa')
         # call the WRAPPER here
         if len(self._reads) == 2:
             ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
