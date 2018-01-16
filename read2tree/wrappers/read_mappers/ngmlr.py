@@ -50,10 +50,10 @@ class NGMLR(ReadMapper):
                 SeqIO.write(self.ref_input, filehandle, 'fasta')
                 filehandle.seek(0)
                 output, error = self._call(filehandle.name, self.ref_input, self.tmp_folder, *args, **kwargs)
-                self.result = self._read_result(error, filehandle.name)
+                self.result = self._read_result(error, filehandle.name, self.tmp_folder)
         else:
             output, error = self._call(self.ref_input, self.read_input, self.tmp_folder, *args, **kwargs)
-            self.result = self._read_result(error, self.ref_input)  # store result
+            self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result
 
         self.stdout = output
         self.stderr = error
@@ -82,7 +82,7 @@ class NGMLR(ReadMapper):
     def command(self):
         return str(self.options)
 
-    def _read_result(self, output, filename):
+    def _read_result(self, output, filename, tmp_folder):
         """
         Read back the result.
         """
