@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" afterPath="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" />
+      <change beforePath="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py" afterPath="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -46,7 +45,7 @@
           <file leaf-file-name="get_seq_completeness.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/scripts/get_seq_completeness.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-106">
+                <state relative-caret-position="-122">
                   <caret line="21" column="19" lean-forward="false" selection-start-line="21" selection-start-column="19" selection-end-line="21" selection-end-column="19" />
                   <folding>
                     <element signature="e#0#10#0" expanded="true" />
@@ -55,23 +54,21 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="adjust_mapping_names.py" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
+          <file leaf-file-name="ngmlr.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="501">
-                  <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#0#10#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="15">
+                  <caret line="1" column="9" lean-forward="false" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+                  <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="get_og_from_readmapping.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/scripts/get_og_from_readmapping.py">
+          <file leaf-file-name="adjust_mapping_names.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="0">
-                  <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                <state relative-caret-position="344">
+                  <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#10#0" expanded="true" />
                   </folding>
@@ -295,16 +292,16 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/base_mapper.py" />
-        <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" />
         <option value="$PROJECT_DIR$/read2tree/Analyzer.py" />
         <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/SeqCompletness.py" />
         <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
-        <option value="$PROJECT_DIR$/scripts/get_seq_completeness.py" />
         <option value="$PROJECT_DIR$/scripts/adjust_mapping_names.py" />
         <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" />
+        <option value="$PROJECT_DIR$/scripts/get_seq_completeness.py" />
+        <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py" />
       </list>
     </option>
   </component>
@@ -346,16 +343,20 @@
             <path>
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="scripts" type="462c0819:PsiDirectoryNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.5.1 (~/.pyenv/versions/3.5.1/bin/python) &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
+              <item name="read_mappers" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -861,13 +862,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="622">
-          <caret line="114" column="0" lean-forward="false" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="969">
@@ -966,9 +960,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/get_seq_completeness.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-106">
+        <state relative-caret-position="-122">
           <caret line="21" column="19" lean-forward="false" selection-start-line="21" selection-start-column="19" selection-end-line="21" selection-end-column="19" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
@@ -976,13 +980,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="501">
-          <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="15">
+          <caret line="1" column="9" lean-forward="false" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>

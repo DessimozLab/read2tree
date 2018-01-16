@@ -1,4 +1,5 @@
 import time
+import os
 import tempfile
 from Bio import SeqIO
 
