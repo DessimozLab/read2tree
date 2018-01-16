@@ -104,7 +104,7 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--single_mapping', default=None,
                             help='Single species file allowing to map in a job array.')
 
-    arg_parser.add_argument('--threads', type=int, default=None,
+    arg_parser.add_argument('--threads', type=int, default=1,
                             help='Number of threads for the mapping using ngm / ngmlr!')
 
     # Arguments to map the reads

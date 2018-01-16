@@ -49,10 +49,10 @@ class NGMLR(ReadMapper):
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
                 SeqIO.write(self.ref_input, filehandle, 'fasta')
                 filehandle.seek(0)
-                output, error = self._call(filehandle.name, self.ref_input, self.tmp_folder, *args, **kwargs)
+                output, error = self._call(filehandle.name, self.ref_input, tmp_folder=self.tmp_folder, *args, **kwargs)
                 self.result = self._read_result(error, filehandle.name, self.tmp_folder)
         else:
-            output, error = self._call(self.ref_input, self.read_input, self.tmp_folder, *args, **kwargs)
+            output, error = self._call(self.ref_input, self.read_input, tmp_folder=self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result
 
         self.stdout = output
@@ -75,8 +75,7 @@ class NGMLR(ReadMapper):
             tmp_file = './' + os.path.basename(reference)+".sam"
         if '/' not in tmp_folder[-1]:
             tmp_file = os.path.join(tmp_folder, os.path.basename(reference))+".sam"
-        self.cli('{} -r {} -q {} -o {}.sam'.format(self.command(), reference, reads, tmp_file), wait=True)
-
+        self.cli('{} -r {} -q {} -o {}'.format(self.command(), reference, reads, tmp_file), wait=True)
         return self.cli.get_stdout(), self.cli.get_stderr()
 
     def command(self):
@@ -89,7 +88,6 @@ class NGMLR(ReadMapper):
         # TODO: change the output dictionary into a better format
         outfile = os.path.join(tmp_folder, os.path.basename(filename)) + ".sam"
         parser = NGMLRParser()
-
         try:
             # parser.parse(output)
             result = parser.to_dict(outfile, output)
@@ -99,7 +97,6 @@ class NGMLR(ReadMapper):
         except ParseException as parseerr:
             logger.error('Other parse error', parseerr)
             result = None
-
         return result
 
     def _init_cli(self, binary):

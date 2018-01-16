@@ -238,6 +238,7 @@ class Mapper(object):
 
         if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
             sam_file = bam_file
+            bam_file = sam_file.replace(".sam", ".bam")
             if os.path.exists(sam_file):
                 self._output_shell(
                     'samtools view -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
@@ -315,6 +316,7 @@ class Mapper(object):
         shell_command.wait()
         if shell_command.returncode != 0:
             print("Shell command failed to execute")
+            print(line)
             return None
 
         return output
