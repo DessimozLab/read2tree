@@ -374,7 +374,6 @@ class OGSet(object):
                     self.mapped_ogs[name] = og
                     output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
-
         cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
         seqC.write_seq_completeness(os.path.join(self.args.output_path, self._species_name+'_all_sc.txt'))
 

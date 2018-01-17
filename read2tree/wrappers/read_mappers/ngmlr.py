@@ -108,5 +108,8 @@ def get_default_options():
         # Algorithm
 
         # set number of threads
-        IntegerOption('-t', 4, active=True)
+        IntegerOption('-t', 4, active=True),
+
+        # Alignments containing less than <int> or (<float> * read length) residues will be discarded [0.25]
+        FloatOption('-R', 0.05, active=True)
     ])
