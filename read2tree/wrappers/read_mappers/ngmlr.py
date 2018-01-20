@@ -111,7 +111,7 @@ def get_default_options():
         IntegerOption('-t', 4, active=True),
 
         # Alignments containing less than <int> or (<float> * read length) residues will be discarded [0.25]
-        FloatOption('-R', 0.05, active=False),
+        FloatOption('-R', 0.25, active=False),
 
         # Length of corridor sub-reads are aligned with [40]
         IntegerOption('--subread-corridor', 40, active=False),
@@ -123,5 +123,7 @@ def get_default_options():
         IntegerOption('--max-segments', 1, active=False),
 
         # Parameter presets for different sequencing technologies [ont]
-        StringOption('-x', 'ont', active=True)
+        StringOption('-x', 'ont', active=True),
+
+        FlagOption('--no-lowqualitysplit', True, active=False)
     ])
