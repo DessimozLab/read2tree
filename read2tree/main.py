@@ -76,6 +76,12 @@ def parse_args(argv, exe_name, desc):
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
 
+    arg_parser.add_argument('--ngmlr_parameters', default=None,
+                            help='In case this parameters need to be changed all 3 values '
+                                 'have to be changed [x,subread-length,R]. The standard '
+                                 'is: pacbio,256,0.25. Possibilities for these parameter '
+                                 'can be found in the original documentation of ngmlr.')
+
     arg_parser.add_argument('--keep_all_species', action='store_true',
                             help='[Default is to keep all species]'
                                  'Remove species only from mapping set. ')

@@ -47,6 +47,9 @@ class Mapper(object):
             self._reads = self.args.reads[0]
             self._species_name = self._reads.split("/")[-1].split(".")[0]
 
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
         # load pyopa related stuff
         self.defaults = pyopa.load_default_environments()
         self.envs = self.defaults['environments']
@@ -106,13 +109,17 @@ class Mapper(object):
             ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+            if self.args.ngmlr_parameters is not None:
+                par = self.args.ngmlr_parameters.split(',')
+                ngm_wrapper.options.options['-x'].set_value(int(par[0]))
+                ngm_wrapper.options.options['--subread-length'].set_value(int(par[1]))
+                ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
 
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
-
 
         try:
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
