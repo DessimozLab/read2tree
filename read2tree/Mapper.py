@@ -111,7 +111,7 @@ class Mapper(object):
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             if self.args.ngmlr_parameters is not None:
                 par = self.args.ngmlr_parameters.split(',')
-                ngm_wrapper.options.options['-x'].set_value(int(par[0]))
+                ngm_wrapper.options.options['-x'].set_value(str(par[0]))
                 ngm_wrapper.options.options['--subread-length'].set_value(int(par[1]))
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
