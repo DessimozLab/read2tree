@@ -167,7 +167,7 @@ class Mapper(object):
                 if "#" not in line:
                     values = line.split(",")
                     seqC.add_seq_completeness(values[2] + "_" + values[1],
-                                     [float(values[3]), float(values[4]), int(values[5]), int(values[6].replace("\n", ""))])
+                                     [float(values[3]), float(values[4]), int(values[5]), int(values[6]), int(values[7].replace("\n", ""))])
             self.all_sc.update(seqC.seq_completeness)
 
         return map_reads_species
