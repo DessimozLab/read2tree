@@ -35,8 +35,6 @@ class OGSet(object):
     def __init__(self, args, oma_output=None, load=True):
         self.args = args
 
-        self.args = args
-
         if len(self.args.reads) == 2:
             self._reads = self.args.reads
             self._species_name = self._reads[0].split("/")[-1].split(".")[0]
@@ -353,17 +351,18 @@ class OGSet(object):
                     mapping_og = mapped_og_set[name]
 
                 if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
-                    best_record_aa = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og)
-                    best_record_aa.id = self._species_name
-                    self.mapped_ogs[name] = og
-                    all_id = [rec.id for rec in self.mapped_ogs[name].aa]
-                    if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                        #print(mapper.all_cov)
-                        cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
-                        seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
-                        self.mapped_ogs[name].aa.append(best_record_aa)
-                    output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-                    self._write(output_file, self.mapped_ogs[name].aa)
+                    best_record_aa = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
+                    if best_record_aa:
+                        best_record_aa.id = self._species_name
+                        self.mapped_ogs[name] = og
+                        all_id = [rec.id for rec in self.mapped_ogs[name].aa]
+                        if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
+                            #print(mapper.all_cov)
+                            cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
+                            seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
+                            self.mapped_ogs[name].aa.append(best_record_aa)
+                        output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
+                        self._write(output_file, self.mapped_ogs[name].aa)
                 else:  # mapping had only one that we removed
                     if self.args.keep_all_ogs:
                         self.mapped_ogs[name] = og
@@ -438,16 +437,19 @@ class OG(object):
         self.aa = []
         self.dna = []
 
-    def get_best_mapping_by_seq_completeness(self, ref_og=None):
+    def get_best_mapping_by_seq_completeness(self, ref_og=None, threshold=0.0):
         """
-        From the list of all mapped sequences part of a OG it tries to find the one that mapped best according to its
-        mapping length.
-        :param gene_code: dna or aa
-        :return: best record
+
+        :param ref_og: OG containing reference sequences
+        :param threshold: minimum sequence completeness [0.0]
+        :return: best amino acid sequence
         """
         seq_completenesses = self._get_seq_completeness_v2(ref_og=ref_og)
         best_record = seq_completenesses.index(max(seq_completenesses))
-        return self.aa[best_record]
+        if seq_completenesses[best_record] >= threshold:
+            return self.aa[best_record]
+        else:
+            return None
 
     def _get_seq_completeness(self, gene_code='aa'):
         """

@@ -37,7 +37,7 @@ class SeqCompleteness(object):
             seq_completeness = non_n_len / seq_len
             full_seq_completeness = non_n_len / full_seq_len
 
-        return (seq_completeness, full_seq_completeness, non_n_len, seq_len)
+        return (seq_completeness, full_seq_completeness, non_n_len, seq_len, full_seq_len)
 
     def _get_og_dict(self, ref_og):
         dna_dict = {}
@@ -59,31 +59,15 @@ class SeqCompleteness(object):
 
     def write_seq_completeness(self, file_name):
         out_text = ''
-        header = '#species,og,gene_id,partial_seq_completeness,full_seq_completeness,inferred_len,full_len\n'
+        header = '#species,og,gene_id,partial_seq_completeness,full_seq_completeness,inferred_len,given_len,ref_len\n'
         out_text += header
         for key, value in self.seq_completeness.items():
             species = key[0:5]
             og = key.split("_")[-1]
             gene_id = key.split("_")[0]
             seq_completeness = value
-            line = species + "," + og + "," + gene_id + "," + str(seq_completeness[0]) + "," + str(seq_completeness[1]) + "," + str(seq_completeness[2]) + "," + str(seq_completeness[3]) + "\n"
+            line = species + "," + og + "," + gene_id + "," + str(seq_completeness[0]) + "," + str(seq_completeness[1]) + "," + str(seq_completeness[2]) + "," + str(seq_completeness[3]) + "," + str(seq_completeness[4]) + "\n"
             out_text += line
 
         with open(file_name, "w") as myfile:
             myfile.write(out_text)
-
-    def read_coverage_from_file(self, file_name):
-        raise NotImplementedError
-
-    def _get_gene_coverage(self, mybam, ref):
-        """
-
-        :param mybam: bam_file object from pysam
-        :param ref: the gene_id reference to pileup the the number of reads per column
-        :return: average coverage per gene
-        """
-        column_coverage = []
-        for pileupcolumn in mybam.pileup(ref, 0, 100000):
-            column_coverage.append(pileupcolumn.n)
-        np_column_coverage = np.array(column_coverage)
-        return [np.mean(np_column_coverage), np.std(np_column_coverage)]

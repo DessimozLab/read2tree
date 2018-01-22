@@ -70,6 +70,11 @@ def parse_args(argv, exe_name, desc):
                                  'pipeline. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
 
+    arg_parser.add_argument('--sc_threshold', type=float, default=0.0,
+                            help='[Default is 0.0; Range 0-1] Parameter for selection of sequences from mapping '
+                                 'by completeness compared to its reference sequence. By default, '
+                                 'all sequences are selected.')
+
     arg_parser.add_argument('--remove_species', default=None,
                             help='[Default is none] Remove species present in data set after '
                                  'mapping step completed and only do analysis on '
