@@ -20,7 +20,8 @@ import shutil
 import glob
 import subprocess
 from tqdm import tqdm
-from Bio import SeqIO, SeqRecord
+from Bio import SeqIO, SeqRecord, Seq
+from Bio.Alphabet import generic_dna
 from Bio.SeqIO.FastaIO import FastaWriter
 from read2tree.OGSet import OG
 from read2tree.ReferenceSet import Reference
@@ -57,6 +58,8 @@ class Mapper(object):
         self.progress = Progress(args)
         self.all_cov = {}
         self.all_sc = {}
+
+        self.read_og_set = {}
 
         if load:
             if ref_set is not None:
@@ -122,6 +125,7 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         try:
+            self._bin_reads(ref_file_handle, bam_file)
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
         except AttributeError or ValueError:
             mapped_reads = []
@@ -213,6 +217,7 @@ class Mapper(object):
             self._rm_file(ref_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
 
             try:
+                self._bin_reads(ref_file_handle, bam_file)
                 mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
             except AttributeError or ValueError:
                 mapped_reads = []
@@ -232,6 +237,80 @@ class Mapper(object):
         tmp_output_folder.cleanup()
         return mapped_reads_species
 
+    def _bin_reads(self, ref_file, bam_file):
+        """
+                Function that will perform postprocessing of finished read mapping using the pysam functionality
+                :param ngm:
+                :param reference_file_handle:
+                :return:
+                """
+        print("--- Binning reads to {} ---".format(self._species_name))
+        output_folder = os.path.join(self.args.output_path, "03_read_ogs_" + self._species_name)
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        tmp_folder = os.path.dirname(bam_file)
+        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
+
+        if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
+            sam_file = bam_file
+            bam_file = sam_file.replace(".sam", ".bam")
+            if os.path.exists(sam_file):
+                self._output_shell(
+                    'samtools view -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+
+        if os.path.exists(bam_file):
+            self._output_shell(
+                'samtools sort -m 2G  -@ ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
+
+        if os.path.exists(outfile_name + "_sorted.bam"):
+            self._output_shell(
+                'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
+        shutil.copy(outfile_name + "_sorted.bam", os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam")))
+        shutil.copy(outfile_name + "_sorted.bam.bai",
+                    os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam.bai")))
+        if os.path.exists(outfile_name + "_sorted.bam"):
+            bam = pysam.AlignmentFile(outfile_name + "_sorted.bam", "rb")
+            paired = 0
+            for read in bam.fetch():
+                if not read.is_unmapped:
+                    og_name = read.reference_name.split("_")[-1]
+                    if os.path.exists(os.path.join(output_folder, og_name+".fa")):
+                        og = list(SeqIO.parse(os.path.join(output_folder, og_name+".fa"), 'fasta'))
+                        og_ids = [rec.id for rec in og]
+                    else:
+                        og = []
+                        og_ids = []
+
+
+                    if read.is_paired:
+                        if paired != 1:
+                            read_id = read.query_name + "/1"
+                            paired = 1
+                        else:
+                            read_id = read.query_name + "/2"
+                            paired = 0
+                        if read_id not in og_ids:
+                            seq = Seq.Seq(read.query_alignment_sequence, generic_dna)
+                            record = SeqRecord.SeqRecord(seq, id=read_id)
+                            og.append(record)
+                    else:
+                        read_id = read.query_name
+                        if read_id not in og_ids:
+                            seq = Seq.Seq(read.query_alignment_sequence, generic_dna)
+                            record = SeqRecord.SeqRecord(seq, id=read_id)
+                            og.append(record)
+
+                    if og:
+                        handle = open(os.path.join(output_folder, og_name+".fa"), "w")
+                        writer = FastaWriter(handle, wrap=None)
+                        writer.write_file(og)
+                        handle.close()
+                    # self.read_og_set[og_name][read_id] = record
+
+            bam.close()
+
+
+
     def _post_process_read_mapping(self, ref_file, bam_file):
         """
         Function that will perform postprocessing of finished read mapping using the pysam functionality
@@ -239,6 +318,7 @@ class Mapper(object):
         :param reference_file_handle: 
         :return: 
         """
+        print("--- Postprocessing reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
@@ -257,6 +337,7 @@ class Mapper(object):
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
                 'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
+            self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
 
         self._rm_file(bam_file, ignore_error=True)
 
@@ -267,9 +348,9 @@ class Mapper(object):
         self.all_cov.update(cov.coverage)
 
         if len(self._reads) > 1:
-            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1 -Q 1'
+            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 2 -Q 1'
         else:
-            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1'
+            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 2 -Q 1'
 
         with open(outfile_name + '_consensus_call.fq', "wb") as out:
             out.write(self._output_shell(cmd))
@@ -280,6 +361,7 @@ class Mapper(object):
                 SeqIO.write(fastq_records,
                             os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'),
                             'fasta')
+                self._output_shell('bedtools maskfasta  -fi ' + os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa') + ' -fo ' + os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus_N.fa') + ' -bed ' + outfile_name + "_sorted.bed")
             except ValueError:
                 pass
 
