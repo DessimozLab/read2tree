@@ -23,17 +23,19 @@ class SeqCompleteness(object):
         :return: tuple with partial seq completeness computed using just the mapped_record itself
             and full_seq_completeness computed using also t
         """
+        map_seq = str(mapped_record.seq).upper()
         ref_record = self.ref_records[self._get_clean_id(mapped_record.id)]
+        ref_seq = str(ref_record.seq).upper()
         if gene_code is 'dna':
-            full_seq_len = len(ref_record.seq)
-            seq_len = len(mapped_record.seq)
-            non_n_len = len(mapped_record.seq) - str(mapped_record.seq).count('n')
+            full_seq_len = len(ref_seq)
+            seq_len = len(map_seq)
+            non_n_len = len(map_seq) - str(map_seq).count('N')
             seq_completeness = non_n_len / seq_len
             full_seq_completeness = non_n_len / full_seq_len
         elif gene_code is 'aa':
-            full_seq_len = len(ref_record.seq)
-            seq_len = len(mapped_record.seq)
-            non_n_len = len(mapped_record.seq) - str(mapped_record.seq).count('X')
+            full_seq_len = len(ref_seq)
+            seq_len = len(map_seq)
+            non_n_len = len(map_seq) - str(map_seq).count('X')
             seq_completeness = non_n_len / seq_len
             full_seq_completeness = non_n_len / full_seq_len
 
