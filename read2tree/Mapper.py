@@ -125,7 +125,6 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         try:
-            self._bin_reads(ref_file_handle, bam_file)
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
         except AttributeError or ValueError:
             mapped_reads = []
@@ -217,7 +216,6 @@ class Mapper(object):
             self._rm_file(ref_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
 
             try:
-                # self._bin_reads(ref_file_handle, bam_file)
                 mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
             except AttributeError or ValueError:
                 mapped_reads = []
@@ -239,11 +237,11 @@ class Mapper(object):
 
     def _bin_reads(self, ref_file, bam_file):
         """
-                Function that will perform postprocessing of finished read mapping using the pysam functionality
-                :param ngm:
-                :param reference_file_handle:
-                :return:
-                """
+        Function that will perform postprocessing of finished read mapping using the pysam functionality
+        :param ngm:
+        :param reference_file_handle:
+        :return:
+        """
         print("--- Binning reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path, "03_read_ogs_" + self._species_name)
         if not os.path.exists(output_folder):
@@ -251,25 +249,12 @@ class Mapper(object):
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
 
-        if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
-            sam_file = bam_file
-            bam_file = sam_file.replace(".sam", ".bam")
-            if os.path.exists(sam_file):
-                self._output_shell(
-                    'samtools view -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+        shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam")))
+        shutil.copy(bam_file + ".bai",
+                    os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam.bai")))
 
         if os.path.exists(bam_file):
-            self._output_shell(
-                'samtools sort -m 2G  -@ ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
-
-        if os.path.exists(outfile_name + "_sorted.bam"):
-            self._output_shell(
-                'samtools index ' + outfile_name + "_sorted.bam")
-        shutil.copy(outfile_name + "_sorted.bam", os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam")))
-        shutil.copy(outfile_name + "_sorted.bam.bai",
-                    os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam.bai")))
-        if os.path.exists(outfile_name + "_sorted.bam"):
-            bam = pysam.AlignmentFile(outfile_name + "_sorted.bam", "rb")
+            bam = pysam.AlignmentFile(bam_file, "rb")
             paired = 0
             for read in bam.fetch():
                 if not read.is_unmapped:
@@ -280,7 +265,6 @@ class Mapper(object):
                     else:
                         og = []
                         og_ids = []
-
 
                     if read.is_paired:
                         if paired != 1:
@@ -310,6 +294,12 @@ class Mapper(object):
             bam.close()
 
     def _build_consensus_seq(self, ref_file, bam_file):
+        """
+        Function to build consensus sequence by taking sequence to be mapped
+        :param ref_file:
+        :param bam_file:
+        :return:
+        """
         bam = pysam.AlignmentFile(bam_file)
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
@@ -363,25 +353,11 @@ class Mapper(object):
         cov.write_coverage_bam(os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
         self.all_cov.update(cov.coverage)
 
+        if self.args.debug:
+            self._bin_reads(ref_file, outfile_name + '_sorted.bam')
+
         consensus = self._build_consensus_seq(ref_file, outfile_name + '_sorted.bam')
 
-        # if len(self._reads) > 1:
-        #     cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 2 -Q 1'
-        # else:
-        #     cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 2 -Q 1'
-        #
-        # with open(outfile_name + '_consensus_call.fq', "wb") as out:
-        #     out.write(self._output_shell(cmd))
-
-        # if os.path.getsize(outfile_name + '_consensus_call.fq') > 0:
-        #     try:
-        #         fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
-        #         SeqIO.write(fastq_records,
-        #                     os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'),
-        #                     'fasta')
-        #         self._output_shell('bedtools maskfasta  -fi ' + os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa') + ' -fo ' + os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus_N.fa') + ' -bed ' + outfile_name + "_sorted.bed")
-        #     except ValueError:
-        #         pass
         all_consensus = []
         if consensus:
             try:

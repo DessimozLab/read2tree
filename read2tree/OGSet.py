@@ -489,15 +489,14 @@ class OG(object):
         :return:
         """
         ref_og_dna = self._get_og_dict(ref_og)
-        seq_completeness = []
         full_seq_completeness = []
         for record in self.dna:
-            full_seq_len = len(ref_og_dna[record.name.split("_")[0]].seq)
-            seq_len = len(record.seq)
-            non_n_len = len(record.seq) - str(record.seq).count('n')
-            seq_completeness.append(non_n_len / seq_len)
+            map_seq = str(record.seq).upper()
+            ref_seq = str(ref_og_dna[record.name.split("_")[0]].seq).upper()
+            full_seq_len = len(ref_seq)
+            non_n_len = len(map_seq) - map_seq.count('N')
             full_seq_completeness.append(non_n_len / full_seq_len)
-        return seq_completeness
+        return full_seq_completeness
 
     def _get_seq_completeness(self, gene_code='aa'):
         """

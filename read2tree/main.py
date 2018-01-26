@@ -97,6 +97,11 @@ def parse_args(argv, exe_name, desc):
                             'groups are used that have the mapped sequence for alignment '
                             'and tree inference.')
 
+    arg_parser.add_argument('--debug', action='store_true',
+                            help='Changes to debug mode: '
+                                 '* bam files are saved!'
+                                 '* reads are saved by mapping to OG')
+
     arg_parser.add_argument('-s', '--species_name', default=None,
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
