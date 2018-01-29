@@ -123,8 +123,8 @@ class OGSet(object):
         ogs = {}
         ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))),desc='Re-loading files',unit=' OGs'):
-            name = file[0].split("/")[-1].split(".")[0]
+        for file in tqdm(zip(sorted(glob.glob(os.path.join(ref_ogs_aa, "*.fa"))), sorted(glob.glob(os.path.join(ref_ogs_dna, "*.fa")))),desc='Re-loading files',unit=' OGs'):
+            name = os.path.basename(file[0]).split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
             ogs[name].dna = list(SeqIO.parse(file[1], format='fasta'))
