@@ -72,8 +72,8 @@ def parse_args(argv, exe_name, desc):
 
     arg_parser.add_argument('--sc_threshold', type=float, default=0.0,
                             help='[Default is 0.0; Range 0-1] Parameter for selection of sequences from mapping '
-                                 'by completeness compared to its reference sequence. By default, '
-                                 'all sequences are selected.')
+                                 'by completeness compared to its reference sequence (number of ACGT basepairs '
+                                 'vs length of sequence). By default, all sequences are selected.')
 
     arg_parser.add_argument('--remove_species', default=None,
                             help='[Default is none] Remove species present in data set after '
@@ -82,9 +82,9 @@ def parse_args(argv, exe_name, desc):
                                  'XXX,YYY,AAA.')
 
     arg_parser.add_argument('--ngmlr_parameters', default=None,
-                            help='In case this parameters need to be changed all 3 values '
+                            help='[Default is none] In case this parameters need to be changed all 3 values '
                                  'have to be changed [x,subread-length,R]. The standard '
-                                 'is: pacbio,256,0.25. Possibilities for these parameter '
+                                 'is: ont,256,0.25. Possibilities for these parameter '
                                  'can be found in the original documentation of ngmlr.')
 
     arg_parser.add_argument('--keep_all_species', action='store_true',
@@ -96,6 +96,11 @@ def parse_args(argv, exe_name, desc):
                             'also the groups that have no mapped sequence. Otherwise only '
                             'groups are used that have the mapped sequence for alignment '
                             'and tree inference.')
+
+    arg_parser.add_argument('--debug', action='store_true',
+                            help='Changes to debug mode: '
+                                 '* bam files are saved!'
+                                 '* reads are saved by mapping to OG')
 
     arg_parser.add_argument('-s', '--species_name', default=None,
                             help='[Default is name of read] Name of species '
@@ -172,7 +177,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             if concat_alignment:
-                align_output = open(os.path.join(args.output_path,"concat_"+species_name+".phy"), "w")
+                align_output = open(os.path.join(args.output_path, "concat_"+species_name+".phy"), "w")
                 AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
                 align_output.close()
             tree = TreeInference(args, concat_alignment=concat_alignment)

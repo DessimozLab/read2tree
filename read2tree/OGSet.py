@@ -123,8 +123,8 @@ class OGSet(object):
         ogs = {}
         ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        for file in tqdm(zip(glob.glob(os.path.join(ref_ogs_aa, "*.fa")), glob.glob(os.path.join(ref_ogs_dna, "*.fa"))),desc='Re-loading files',unit=' OGs'):
-            name = file[0].split("/")[-1].split(".")[0]
+        for file in tqdm(zip(sorted(glob.glob(os.path.join(ref_ogs_aa, "*.fa"))), sorted(glob.glob(os.path.join(ref_ogs_dna, "*.fa")))),desc='Re-loading files',unit=' OGs'):
+            name = os.path.basename(file[0]).split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
             ogs[name].dna = list(SeqIO.parse(file[1], format='fasta'))
@@ -331,7 +331,6 @@ class OGSet(object):
 
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from the original set
-            dna_id = [r.id.split("_")[0] for r in value.dna if 'COLG' in r.id]
             if self.args.keep_all_species:
                 og = value
             else:
@@ -451,26 +450,6 @@ class OG(object):
         else:
             return None
 
-    def _get_seq_completeness(self, gene_code='aa'):
-        """
-        TODO: this has to be changed to incorporate the expected sequence length
-        :param gene_code:
-        :return:
-        """
-        seq_completeness = []
-        if gene_code is 'dna':
-            for record in self.dna:
-                seq_len = len(record.seq)
-                non_n_len = len(record.seq) - str(record.seq).count('n')
-                seq_completeness.append(non_n_len / seq_len)
-        elif gene_code is 'aa':
-            for record in self.aa:
-                seq_len = len(record.seq)
-                non_n_len = len(record.seq) - str(record.seq).count('X')
-
-                seq_completeness.append(non_n_len / seq_len)
-        return seq_completeness
-
     def _get_og_dict(self, ref_og):
         dna_dict = {}
         for record in ref_og.dna:
@@ -481,7 +460,6 @@ class OG(object):
             dna_dict[record.id] = record
         return dna_dict
 
-
     def _get_seq_completeness_v2(self, ref_og=None):
         """
         TODO: this has to be changed to incorporate the expected sequence length
@@ -489,35 +467,14 @@ class OG(object):
         :return:
         """
         ref_og_dna = self._get_og_dict(ref_og)
-        seq_completeness = []
         full_seq_completeness = []
         for record in self.dna:
-            full_seq_len = len(ref_og_dna[record.name.split("_")[0]].seq)
-            seq_len = len(record.seq)
-            non_n_len = len(record.seq) - str(record.seq).count('n')
-            seq_completeness.append(non_n_len / seq_len)
+            map_seq = str(record.seq).upper()
+            ref_seq = str(ref_og_dna[record.name.split("_")[0]].seq).upper()
+            full_seq_len = len(ref_seq)
+            non_n_len = len(map_seq) - map_seq.count('N')
             full_seq_completeness.append(non_n_len / full_seq_len)
-        return seq_completeness
-
-    def _get_seq_completeness(self, gene_code='aa'):
-        """
-        TODO: this has to be changed to incorporate the expected sequence length
-        :param gene_code:
-        :return:
-        """
-        seq_completeness = []
-        if gene_code is 'dna':
-            for record in self.dna:
-                seq_len = len(record.seq)
-                non_n_len = len(record.seq) - str(record.seq).count('n')
-                seq_completeness.append(non_n_len / seq_len)
-        elif gene_code is 'aa':
-            for record in self.aa:
-                seq_len = len(record.seq)
-                non_n_len = len(record.seq) - str(record.seq).count('X')
-
-                seq_completeness.append(non_n_len / seq_len)
-        return seq_completeness
+        return full_seq_completeness
 
     def remove_species_records(self, species_to_remove):
         '''

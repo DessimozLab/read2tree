@@ -26,6 +26,9 @@ class Progress(object):
             self._reads = self.args.reads[0]
             self._species_name = self._reads.split("/")[-1].split(".")[0]
 
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
         else:

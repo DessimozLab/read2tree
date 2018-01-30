@@ -20,7 +20,8 @@ import shutil
 import glob
 import subprocess
 from tqdm import tqdm
-from Bio import SeqIO, SeqRecord
+from Bio import SeqIO, SeqRecord, Seq
+from Bio.Alphabet import generic_dna
 from Bio.SeqIO.FastaIO import FastaWriter
 from read2tree.OGSet import OG
 from read2tree.ReferenceSet import Reference
@@ -57,6 +58,8 @@ class Mapper(object):
         self.progress = Progress(args)
         self.all_cov = {}
         self.all_sc = {}
+
+        self.read_og_set = {}
 
         if load:
             if ref_set is not None:
@@ -98,15 +101,18 @@ class Mapper(object):
             print('--- Creating tmp directory on local node ---')
 
         ref_file_handle = os.path.join(reference_path, self.ref_species + '_OGs.fa')
+        ref_tmp_file_handle = os.path.join(tmp_output_folder.name, self.ref_species + '_OGs.fa')
+        shutil.copy(ref_file_handle, ref_tmp_file_handle)
+
         # call the WRAPPER here
         if len(self._reads) == 2:
-            ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
+            ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
         else:
-            ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
+            ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             if self.args.ngmlr_parameters is not None:
@@ -117,9 +123,9 @@ class Mapper(object):
             ngm = ngm_wrapper()
             bam_file = ngm['file']
 
-        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        self._rm_file(ref_tmp_file_handle + "-enc.2.ngm", ignore_error=True)
+        self._rm_file(ref_tmp_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        self._rm_file(ref_tmp_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         try:
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
@@ -195,22 +201,25 @@ class Mapper(object):
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
+            ref_tmp_file_handle = os.path.join(tmp_output_folder.name, species + '_OGs.fa')
+            shutil.copy(ref_file_handle, ref_tmp_file_handle)
+
             # call the WRAPPER here
             if len(self._reads) == 2:
-                ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
+                ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
             else:
-                ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
+                ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
-            self._rm_file(ref_file_handle+"-enc.2.ngm", ignore_error=True)
-            self._rm_file(ref_file_handle+"-ht-13-2.2.ngm", ignore_error=True)
-            self._rm_file(ref_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
+            self._rm_file(ref_tmp_file_handle+"-enc.2.ngm", ignore_error=True)
+            self._rm_file(ref_tmp_file_handle+"-ht-13-2.2.ngm", ignore_error=True)
+            self._rm_file(ref_tmp_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
 
             try:
                 mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
@@ -232,6 +241,88 @@ class Mapper(object):
         tmp_output_folder.cleanup()
         return mapped_reads_species
 
+    def _bin_reads(self, ref_file, bam_file):
+        """
+        Function that will perform postprocessing of finished read mapping using the pysam functionality
+        :param ngm:
+        :param reference_file_handle:
+        :return:
+        """
+        print("--- Binning reads to {} ---".format(self._species_name))
+        output_folder = os.path.join(self.args.output_path, "03_read_ogs_" + self._species_name)
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+        tmp_folder = os.path.dirname(bam_file)
+        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
+
+        shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam")))
+        shutil.copy(bam_file + ".bai",
+                    os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam.bai")))
+
+        if os.path.exists(bam_file):
+            bam = pysam.AlignmentFile(bam_file, "rb")
+            paired = 0
+            for read in bam.fetch():
+                if not read.is_unmapped:
+                    og_name = read.reference_name.split("_")[-1]
+                    if os.path.exists(os.path.join(output_folder, og_name+".fa")):
+                        og = list(SeqIO.parse(os.path.join(output_folder, og_name+".fa"), 'fasta'))
+                        og_ids = [rec.id for rec in og]
+                    else:
+                        og = []
+                        og_ids = []
+
+                    if read.is_paired:
+                        if paired != 1:
+                            read_id = read.query_name + "/1"
+                            paired = 1
+                        else:
+                            read_id = read.query_name + "/2"
+                            paired = 0
+                        if read_id not in og_ids:
+                            seq = Seq.Seq(read.query_alignment_sequence, generic_dna)
+                            record = SeqRecord.SeqRecord(seq, id=read_id)
+                            og.append(record)
+                    else:
+                        read_id = read.query_name
+                        if read_id not in og_ids:
+                            seq = Seq.Seq(read.query_alignment_sequence, generic_dna)
+                            record = SeqRecord.SeqRecord(seq, id=read_id)
+                            og.append(record)
+
+                    if og:
+                        handle = open(os.path.join(output_folder, og_name+".fa"), "w")
+                        writer = FastaWriter(handle, wrap=None)
+                        writer.write_file(og)
+                        handle.close()
+                    # self.read_og_set[og_name][read_id] = record
+
+            bam.close()
+
+    def _build_consensus_seq(self, ref_file, bam_file):
+        """
+        Function to build consensus sequence by taking sequence to be mapped
+        :param ref_file:
+        :param bam_file:
+        :return:
+        """
+        bam = pysam.AlignmentFile(bam_file)
+        records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
+        new_records = {}
+        for read in bam.fetch():
+            #     print(read.qual)
+            read_seq = list(read.seq)
+            pairs = read.get_aligned_pairs(matches_only=True, with_seq=True)
+            if read.reference_name in new_records.keys():
+                seq = list(new_records[read.reference_name])
+            else:
+                seq = list('N' * len(records[read.reference_name]))
+            for tup in pairs:
+                seq[tup[1]] = read_seq[tup[0]]
+
+            new_records[read.reference_name] = ("").join(seq)
+        return new_records
+
     def _post_process_read_mapping(self, ref_file, bam_file):
         """
         Function that will perform postprocessing of finished read mapping using the pysam functionality
@@ -239,6 +330,7 @@ class Mapper(object):
         :param reference_file_handle: 
         :return: 
         """
+        # print("--- Postprocessing reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
@@ -248,7 +340,7 @@ class Mapper(object):
             bam_file = sam_file.replace(".sam", ".bam")
             if os.path.exists(sam_file):
                 self._output_shell(
-                    'samtools view -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+                    'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
 
         if os.path.exists(bam_file):
             self._output_shell(
@@ -257,8 +349,9 @@ class Mapper(object):
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
                 'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
+            # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
 
-        self._rm_file(bam_file, ignore_error=True)
+        # self._rm_file(bam_file, ignore_error=True)
 
         # Get effective coverage of each mapped sequence
         cov = Coverage()
@@ -266,20 +359,22 @@ class Mapper(object):
         cov.write_coverage_bam(os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
         self.all_cov.update(cov.coverage)
 
-        if len(self._reads) > 1:
-            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1 -Q 1'
-        else:
-            cmd = 'samtools mpileup -d 100000 -B -uf ' + ref_file + ' ' + outfile_name + '_sorted.bam | bcftools call -c | vcfutils.pl vcf2fq -d 1'
+        if self.args.debug:
+            self._bin_reads(ref_file, outfile_name + '_sorted.bam')
 
-        with open(outfile_name + '_consensus_call.fq', "wb") as out:
-            out.write(self._output_shell(cmd))
+        consensus = self._build_consensus_seq(ref_file, outfile_name + '_sorted.bam')
 
-        if os.path.getsize(outfile_name + '_consensus_call.fq') > 0:
+        all_consensus = []
+        if consensus:
             try:
-                fastq_records = list(SeqIO.parse(outfile_name + '_consensus_call.fq', 'fastq'))
-                SeqIO.write(fastq_records,
-                            os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'),
-                            'fasta')
+                for key, value in consensus.items():
+                    seq = Seq.Seq(value, generic_dna)
+                    record = SeqRecord.SeqRecord(seq, id=key, description='')
+                    all_consensus.append(record)
+                handle = open(os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'), "w")
+                writer = FastaWriter(handle, wrap=None)
+                writer.write_file(all_consensus)
+                handle.close()
             except ValueError:
                 pass
 
