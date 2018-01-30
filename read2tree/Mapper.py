@@ -101,15 +101,18 @@ class Mapper(object):
             print('--- Creating tmp directory on local node ---')
 
         ref_file_handle = os.path.join(reference_path, self.ref_species + '_OGs.fa')
+        ref_tmp_file_handle = os.path.join(tmp_output_folder.name, self.ref_species + '_OGs.fa')
+        shutil.copy(ref_file_handle, ref_tmp_file_handle)
+
         # call the WRAPPER here
         if len(self._reads) == 2:
-            ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
+            ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
         else:
-            ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
+            ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             if self.args.ngmlr_parameters is not None:
@@ -120,9 +123,9 @@ class Mapper(object):
             ngm = ngm_wrapper()
             bam_file = ngm['file']
 
-        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        self._rm_file(ref_tmp_file_handle + "-enc.2.ngm", ignore_error=True)
+        self._rm_file(ref_tmp_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        self._rm_file(ref_tmp_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         try:
             mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
@@ -198,22 +201,25 @@ class Mapper(object):
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
+            ref_tmp_file_handle = os.path.join(tmp_output_folder.name, species + '_OGs.fa')
+            shutil.copy(ref_file_handle, ref_tmp_file_handle)
+
             # call the WRAPPER here
             if len(self._reads) == 2:
-                ngm_wrapper = NGM(ref_file_handle, self._reads, tmp_output_folder.name)
+                ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
             else:
-                ngm_wrapper = NGMLR(ref_file_handle, self._reads, tmp_output_folder.name)
+                ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
-            self._rm_file(ref_file_handle+"-enc.2.ngm", ignore_error=True)
-            self._rm_file(ref_file_handle+"-ht-13-2.2.ngm", ignore_error=True)
-            self._rm_file(ref_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
+            self._rm_file(ref_tmp_file_handle+"-enc.2.ngm", ignore_error=True)
+            self._rm_file(ref_tmp_file_handle+"-ht-13-2.2.ngm", ignore_error=True)
+            self._rm_file(ref_tmp_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
 
             try:
                 mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
