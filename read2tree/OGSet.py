@@ -362,6 +362,10 @@ class OGSet(object):
                             self.mapped_ogs[name].aa.append(best_record_aa)
                         output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
                         self._write(output_file, self.mapped_ogs[name].aa)
+                    else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
+                        self.mapped_ogs[name] = og
+                        output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
+                        self._write(output_file, self.mapped_ogs[name].aa)
                 else:  # mapping had only one that we removed
                     if self.args.keep_all_ogs:
                         self.mapped_ogs[name] = og
