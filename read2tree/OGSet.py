@@ -480,6 +480,8 @@ class OG(object):
             full_seq_completeness.append(non_n_len / full_seq_len)
         return full_seq_completeness
 
+
+
     def remove_species_records(self, species_to_remove):
         '''
         Remove species from reference sequence set
