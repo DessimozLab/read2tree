@@ -299,6 +299,10 @@ class Mapper(object):
 
             bam.close()
 
+    def _most_common(self, lst):
+        #     print(lst)
+        return max(set(lst), key=lst.count)
+
     def _build_consensus_seq(self, ref_file, bam_file):
         """
         Function to build consensus sequence by taking sequence to be mapped
@@ -321,6 +325,33 @@ class Mapper(object):
                 seq[tup[1]] = read_seq[tup[0]]
 
             new_records[read.reference_name] = ("").join(seq)
+        return new_records
+
+
+    def _build_consensus_seq_v2(self, ref_file, bam_file):
+        """
+        Function to build consensus sequence by taking sequence to be mapped
+        :param ref_file:
+        :param bam_file:
+        :return:
+        """
+        bam = pysam.AlignmentFile(bam_file)
+        references = list(set([read.reference_name for read in bam.fetch()]))
+        records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
+        new_records = {}
+        for ref in references:
+            #     print(read.qual)
+            seq = list('N' * len(records[ref]))
+            for pileup_column in bam.pileup(ref, 0, 100000):
+                #TODO: improve the selection of a column by its quality
+                # qualities = [pileupread.alignment.query_alignment_qualities[pileupread.query_position] for pileupread in
+                #        pileupcolumn.pileups if not pileupread.is_del and not pileupread.is_refskip]
+                bases = [pileupread.alignment.query_sequence[pileupread.query_position] for pileupread in
+                         pileup_column.pileups if not pileupread.is_del and not pileupread.is_refskip]
+                if bases:
+                    seq[pileup_column.pos] = self._most_common(bases)
+
+            new_records[ref] = ("").join(seq)
         return new_records
 
     def _post_process_read_mapping(self, ref_file, bam_file):
@@ -362,7 +393,7 @@ class Mapper(object):
         if self.args.debug:
             self._bin_reads(ref_file, outfile_name + '_sorted.bam')
 
-        consensus = self._build_consensus_seq(ref_file, outfile_name + '_sorted.bam')
+        consensus = self._build_consensus_seq_v2(ref_file, outfile_name + '_sorted.bam')
 
         all_consensus = []
         if consensus:
