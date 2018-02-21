@@ -24,7 +24,7 @@ logger.setLevel(logging.INFO)
 class FasttreeCLI(AbstractCLI):
     @property
     def _default_exe(self):
-        return 'fasttree'
+        return 'FastTree'
 
 
 def set_default_dna_options(treebuilder):
