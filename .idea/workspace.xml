@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change beforePath="$PROJECT_DIR$/read2tree/Mapper.py" afterPath="$PROJECT_DIR$/read2tree/Mapper.py" />
+      <change beforePath="$PROJECT_DIR$/read2tree/OGSet.py" afterPath="$PROJECT_DIR$/read2tree/OGSet.py" />
+      <change beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -31,21 +34,54 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3758">
-              <caret line="185" column="0" lean-forward="false" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
+            <state relative-caret-position="255">
+              <caret line="17" column="1" lean-forward="false" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/setup.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="10" column="94" lean-forward="false" selection-start-line="10" selection-start-column="94" selection-end-line="10" selection-end-column="94" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="62" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fasttree.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="390">
+              <caret line="26" column="22" lean-forward="false" selection-start-line="26" selection-start-column="22" selection-end-line="26" selection-end-column="22" />
               <folding>
-                <element signature="e#148#159#0" expanded="true" />
+                <element signature="e#50#64#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fasttree.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="15" lean-forward="false" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="15" />
-              <folding />
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="604">
+                <caret line="45" column="3" lean-forward="true" selection-start-line="45" selection-start-column="3" selection-end-line="45" selection-end-column="3" />
+                <folding />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -56,18 +92,6 @@
             <state relative-caret-position="1770">
               <caret line="125" column="31" lean-forward="false" selection-start-line="125" selection-start-column="24" selection-end-line="125" selection-end-column="31" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="get_seq_completeness.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/get_seq_completeness.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="19" column="21" lean-forward="false" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -84,23 +108,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4140">
-              <caret line="293" column="24" lean-forward="false" selection-start-line="293" selection-start-column="24" selection-end-line="296" selection-end-column="38" />
-              <folding>
-                <element signature="e#309#321#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="parser.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/parser.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1140">
-              <caret line="79" column="38" lean-forward="false" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="38" />
+            <state relative-caret-position="249">
+              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -126,16 +138,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Progress.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="31" column="36" lean-forward="false" selection-start-line="31" selection-start-column="36" selection-end-line="31" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -147,7 +149,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_clean_up_tmp_files_single</find>
       <find>_clean_up_read_mapping</find>
       <find>_clean_up_tmp_files</find>
       <find>_output_shell</find>
@@ -177,6 +178,7 @@
       <find>Fastawriter</find>
       <find>marker</find>
       <find>species</find>
+      <find>h5</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -206,7 +208,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/bin/pore2tree" />
         <option value="$PROJECT_DIR$/pore2tree/Reference.py" />
         <option value="$PROJECT_DIR$/pore2tree/utils/seq_utils.py" />
         <option value="$PROJECT_DIR$/pore2tree/wrappers/read_mappers/ngmlr.py" />
@@ -240,10 +241,6 @@
         <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/Coverage.py" />
         <option value="$PROJECT_DIR$/scripts/monitor_folder_size.py" />
-        <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/base_mapper.py" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" />
         <option value="$PROJECT_DIR$/read2tree/Analyzer.py" />
@@ -255,6 +252,11 @@
         <option value="$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py" />
         <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/read2tree/Progress.py" />
+        <option value="$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
         <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
       </list>
@@ -296,31 +298,6 @@
             <path>
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
-              <item name="read_mappers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
-              <item name="treebuilders" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -530,7 +507,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2662407" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4519104" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45188606" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11993646" sideWeight="0.49033818" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -719,24 +696,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="17" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/concat_alignments.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
           <caret line="20" column="24" lean-forward="false" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -751,21 +714,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1123">
           <caret line="144" column="8" lean-forward="false" selection-start-line="144" selection-start-column="8" selection-end-line="146" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="417">
-            <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          </first_editor>
-          <second_editor />
         </state>
       </provider>
     </entry>
@@ -862,6 +810,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-8">
           <caret line="87" column="65" lean-forward="false" selection-start-line="87" selection-start-column="65" selection-end-line="87" selection-end-column="65" />
+          <folding>
+            <element signature="e#0#11#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -907,16 +858,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4140">
-          <caret line="293" column="24" lean-forward="false" selection-start-line="293" selection-start-column="24" selection-end-line="296" selection-end-column="38" />
-          <folding>
-            <element signature="e#309#321#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/ReferenceSet.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1770">
@@ -925,20 +866,60 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3758">
-          <caret line="185" column="0" lean-forward="false" selection-start-line="185" selection-start-column="0" selection-end-line="185" selection-end-column="0" />
+        <state relative-caret-position="390">
+          <caret line="26" column="22" lean-forward="false" selection-start-line="26" selection-start-column="22" selection-end-line="26" selection-end-column="22" />
           <folding>
-            <element signature="e#148#159#0" expanded="true" />
+            <element signature="e#50#64#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
+    <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="15" lean-forward="false" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="15" />
+        <state relative-caret-position="150">
+          <caret line="10" column="94" lean-forward="false" selection-start-line="10" selection-start-column="94" selection-end-line="10" selection-end-column="94" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="604">
+            <caret line="45" column="3" lean-forward="true" selection-start-line="45" selection-start-column="3" selection-end-line="45" selection-end-column="3" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="1" lean-forward="false" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
         </state>
       </provider>

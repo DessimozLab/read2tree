@@ -15,9 +15,9 @@ from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.Alphabet import SingleLetterAlphabet
 from Bio.SeqIO.FastaIO import FastaWriter
-from tables import *
+#from tables import *
 # ----------- only to be used internally; requires hdf5 installation -------------------
-from pyoma.browser import db
+#from pyoma.browser import db
 
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
@@ -156,13 +156,13 @@ class OGSet(object):
             self._db = SeqIO.index(self.args.dna_reference, "fasta")
             self._db_source = 'fa'
         # ---------------- only to be used internally ----------------------
-        elif '.h5' in self.args.dna_reference:
-            print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
-            self._db = db.Database(self.args.dna_reference)
-            self._db_id_map = db.OmaIdMapper(self._db)
-            self._db_source = 'h5'
-            # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
-            # print(self._db_species_list)
+        # elif '.h5' in self.args.dna_reference:
+        #     print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
+        #     self._db = db.Database(self.args.dna_reference)
+        #     self._db_id_map = db.OmaIdMapper(self._db)
+        #     self._db_source = 'h5'
+        #     # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
+        #     # print(self._db_species_list)
         else:
             print('--- Load ogs and find their corresponding DNA seq using the REST api ---')
             self._db_source = 'REST_api'

@@ -14,7 +14,7 @@
 
 import pysam
 import tempfile
-import pyopa
+# import pyopa
 import os
 import shutil
 import glob
@@ -52,9 +52,9 @@ class Mapper(object):
             self._species_name = self.args.species_name
 
         # load pyopa related stuff
-        self.defaults = pyopa.load_default_environments()
-        self.envs = self.defaults['environments']
-        self.env = self.envs[515]
+        # self.defaults = pyopa.load_default_environments()
+        # self.envs = self.defaults['environments']
+        # self.env = self.envs[515]
         self.progress = Progress(args)
         self.all_cov = {}
         self.all_sc = {}
@@ -468,12 +468,12 @@ class Mapper(object):
                 record.description = tmp_id + " [" + species_name + "]"
                 if name in og_records.keys():
                     og_records[name].dna.append(record)
-                    aa = self._predict_best_protein_pyopa(record, og_set[name])
+                    aa = self._get_protein(record)
                     og_records[name].aa.append(aa)
                 else:
                     og_records[name] = OG()
                     og_records[name].dna.append(record)
-                    aa = self._predict_best_protein_pyopa(record, og_set[name])
+                    aa = self._get_protein(record)
                     og_records[name].aa.append(aa)
 
         return og_records
@@ -481,32 +481,43 @@ class Mapper(object):
     def _predict_best_protein_position(self):
         raise NotImplementedError
 
-    def _predict_best_protein_pyopa(self, record, og):
-        """
-        Given a list of sequences that are derived from mapped reads to multiple seq of a OG
-        we find the best corresponding mapped seq by comparing it with a representative sequence of the original OG using
-        pyopa local alignment and return the sequence with its highest score!
-        :return: 
-        """
-        ref_og_seq = og.aa[0]
-        s1 = pyopa.Sequence(str(ref_og_seq.seq))
-        best_score = 0
-        try:
-            frames = [record.seq[i:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False) for i
-                      in range(3)]
-            best_seq_idx = 0
-            for i, seq in enumerate(frames):
-                s2 = pyopa.Sequence(str(seq))
-                # calculating local and global scores for the given sequences
-                local_double = pyopa.align_double(s1, s2, self.env)
-                # print('Local score: %f' % local_double[0])
-                if local_double[0] > best_score:
-                    best_score = local_double[0]
-                    best_seq_idx = i
-            best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id=self._species_name, description=record.description, name=record.name)
-        except:
-            raise ValueError("Problem with sequence format!", ref_og_seq.seq)
+    def _get_protein(self, record):
+        '''
+
+        :param record: sequence record
+        :return: best translation
+        '''
+        frame = record.seq[0:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False)
+        best_translation = SeqRecord.SeqRecord(frame, id=self._species_name,
+                                               description=record.description, name=record.name)
         return best_translation
+
+    # def _predict_best_protein_pyopa(self, record, og):
+    #     """
+    #     Given a list of sequences that are derived from mapped reads to multiple seq of a OG
+    #     we find the best corresponding mapped seq by comparing it with a representative sequence of the original OG using
+    #     pyopa local alignment and return the sequence with its highest score!
+    #     :return:
+    #     """
+    #     ref_og_seq = og.aa[0]
+    #     s1 = pyopa.Sequence(str(ref_og_seq.seq))
+    #     best_score = 0
+    #     try:
+    #         frames = [record.seq[i:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False) for i
+    #                   in range(3)]
+    #         best_seq_idx = 0
+    #         for i, seq in enumerate(frames):
+    #             s2 = pyopa.Sequence(str(seq))
+    #             # calculating local and global scores for the given sequences
+    #             local_double = pyopa.align_double(s1, s2, self.env)
+    #             # print('Local score: %f' % local_double[0])
+    #             if local_double[0] > best_score:
+    #                 best_score = local_double[0]
+    #                 best_seq_idx = i
+    #         best_translation = SeqRecord.SeqRecord(frames[best_seq_idx], id=self._species_name, description=record.description, name=record.name)
+    #     except:
+    #         raise ValueError("Problem with sequence format!", ref_og_seq.seq)
+    #     return best_translation
 
     def write_by_og(self, output_folder):
         '''
