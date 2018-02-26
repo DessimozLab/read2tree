@@ -143,7 +143,11 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
-    species_name = args.reads[0].split("/")[-1].split(".")[0]
+
+    if args.species_name:
+        species_name = args.species_name
+    else:
+        species_name = args.reads[0].split("/")[-1].split(".")[0]
 
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)

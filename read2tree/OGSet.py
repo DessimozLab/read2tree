@@ -42,6 +42,9 @@ class OGSet(object):
             self._reads = self.args.reads[0]
             self._species_name = self._reads.split("/")[-1].split(".")[0]
 
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
         self.progress = Progress(args)
         self.mapped_ogs = {}
         self._db = None
