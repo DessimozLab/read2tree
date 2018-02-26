@@ -12,9 +12,9 @@ import requests
 
 from ete3 import Tree
 from tqdm import tqdm
-from Bio import SeqIO, Seq, SeqRecord
-from Bio.Alphabet import SingleLetterAlphabet
-from Bio.SeqIO.FastaIO import FastaWriter
+    from Bio import SeqIO, Seq, SeqRecord
+    from Bio.Alphabet import SingleLetterAlphabet
+    from Bio.SeqIO.FastaIO import FastaWriter
 #from tables import *
 # ----------- only to be used internally; requires hdf5 installation -------------------
 #from pyoma.browser import db
