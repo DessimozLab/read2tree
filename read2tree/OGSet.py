@@ -15,9 +15,9 @@ from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.Alphabet import SingleLetterAlphabet
 from Bio.SeqIO.FastaIO import FastaWriter
-from tables import *
+#from tables import *
 # ----------- only to be used internally; requires hdf5 installation -------------------
-from pyoma.browser import db
+#from pyoma.browser import db
 
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
@@ -41,6 +41,9 @@ class OGSet(object):
         else:
             self._reads = self.args.reads[0]
             self._species_name = self._reads.split("/")[-1].split(".")[0]
+
+        if self.args.species_name:
+            self._species_name = self.args.species_name
 
         self.progress = Progress(args)
         self.mapped_ogs = {}
@@ -156,13 +159,13 @@ class OGSet(object):
             self._db = SeqIO.index(self.args.dna_reference, "fasta")
             self._db_source = 'fa'
         # ---------------- only to be used internally ----------------------
-        elif '.h5' in self.args.dna_reference:
-            print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
-            self._db = db.Database(self.args.dna_reference)
-            self._db_id_map = db.OmaIdMapper(self._db)
-            self._db_source = 'h5'
-            # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
-            # print(self._db_species_list)
+        # elif '.h5' in self.args.dna_reference:
+        #     print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
+        #     self._db = db.Database(self.args.dna_reference)
+        #     self._db_id_map = db.OmaIdMapper(self._db)
+        #     self._db_source = 'h5'
+        #     # self._db_species_list = [row['UniProtSpeciesCode'].decode("utf-8") for row in self._db_id_map.genome_table]
+        #     # print(self._db_species_list)
         else:
             print('--- Load ogs and find their corresponding DNA seq using the REST api ---')
             self._db_source = 'REST_api'
@@ -480,7 +483,23 @@ class OG(object):
             full_seq_completeness.append(non_n_len / full_seq_len)
         return full_seq_completeness
 
-
+    def _get_species_id(self, description):
+        '''
+        Sequences in OMA are marked by using the first three letters of genus and the first 2 letters of species,
+        e.g. Amphiura filiformis = AMPFI. This however is not always the case and we therefore prioritize the id
+        (e.g. MOUSE over MUSMU that comes from Mus musculus).
+        :param description: SeqRecord description
+        :return: species_id
+        '''
+        species = description[description.find("[") + 1:description.find("]")]
+        if len(species.split(" ")) > 1:
+            new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
+            species = new_id.upper()
+        species_id = description[0:5]
+        if species_id in species:
+            return species
+        else:
+            return species_id
 
     def remove_species_records(self, species_to_remove):
         '''
@@ -488,25 +507,19 @@ class OG(object):
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         '''
-        index_to_remove_aa = []
-        index_to_remove_dna = []
-        for i, record in enumerate(self.aa):
-            species = record.description[record.description.find("[") + 1:record.description.find("]")]
-            if len(species.split(" ")) > 1:
-                new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
-                species = new_id.upper()
-            if species in species_to_remove:
-                index_to_remove_aa.append(i)
-        for i, record in enumerate(self.dna):
-            species = record.description[record.description.find("[") + 1:record.description.find("]")]
-            if len(species.split(" ")) > 1:
-                new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
-                species = new_id.upper()
-            if species in species_to_remove:
-                index_to_remove_dna.append(i)
+        aa = [record for i, record in enumerate(self.aa) if self._get_species_id(record.description) not in species_to_remove]
+        dna = [record for i, record in enumerate(self.dna) if self._get_species_id(record.description) not in species_to_remove]
+        # for i, record in enumerate(self.aa):
+        #     species = self._get_species_id(record.description)
+        #     if species in species_to_remove:
+        #         index_to_remove_aa.append(i)
+        # for i, record in enumerate(self.dna):
+        #     species = self._get_species_id(record.description)
+        #     if species in species_to_remove:
+        #         index_to_remove_dna.append(i)
 
-        aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove_aa]
-        dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove_dna]
+        # aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove_aa]
+        # dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove_dna]
         if len(aa) > 0 and len(dna) > 0:
             return [dna, aa]
         else:

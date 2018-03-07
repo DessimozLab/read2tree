@@ -8,7 +8,7 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
             exec(line.rstrip())
 
 requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml', 'pandas', 'tqdm',
-                'scipy', 'zoo', 'pysam', 'pyham', 'pyparsing', 'requests', 'filelock']
+                'scipy', 'zoo', 'pysam', 'pyham', 'pyparsing', 'requests', 'filelock', 'tables']
 
 # requirements = [line.strip() for line in open("requirements.txt", 'r')]
 # print(requirements)
