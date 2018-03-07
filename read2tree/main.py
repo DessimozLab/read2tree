@@ -71,11 +71,22 @@ def parse_args(argv, exe_name, desc):
                                  'pipeline. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
 
+    arg_parser.add_argument('--sc_threshold', type=float, default=0.0,
+                            help='[Default is 0.0; Range 0-1] Parameter for selection of sequences from mapping '
+                                 'by completeness compared to its reference sequence (number of ACGT basepairs '
+                                 'vs length of sequence). By default, all sequences are selected.')
+
     arg_parser.add_argument('--remove_species', default=None,
                             help='[Default is none] Remove species present in data set after '
                                  'mapping step completed and only do analysis on '
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
+
+    arg_parser.add_argument('--ngmlr_parameters', default=None,
+                            help='[Default is none] In case this parameters need to be changed all 3 values '
+                                 'have to be changed [x,subread-length,R]. The standard '
+                                 'is: ont,256,0.25. Possibilities for these parameter '
+                                 'can be found in the original documentation of ngmlr.')
 
     arg_parser.add_argument('--keep_all_species', action='store_true',
                             help='[Default is to keep all species]'
@@ -87,7 +98,12 @@ def parse_args(argv, exe_name, desc):
                             'groups are used that have the mapped sequence for alignment '
                             'and tree inference.')
 
-    arg_parser.add_argument('--species_name', default=None,
+    arg_parser.add_argument('--debug', action='store_true',
+                            help='Changes to debug mode: '
+                                 '* bam files are saved!'
+                                 '* reads are saved by mapping to OG')
+
+    arg_parser.add_argument('-s', '--species_name', default=None,
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
 
@@ -109,7 +125,7 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--single_mapping', default=None,
                             help='Single species file allowing to map in a job array.')
 
-    arg_parser.add_argument('--threads', type=int, default=None,
+    arg_parser.add_argument('--threads', type=int, default=1,
                             help='Number of threads for the mapping using ngm / ngmlr!')
 
     # Arguments to map the reads
@@ -132,7 +148,10 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
-    if args.reads:
+
+    if args.species_name:
+        species_name = args.species_name
+    else:
         species_name = args.reads[0].split("/")[-1].split(".")[0]
 
     if not os.path.exists(args.output_path):
@@ -182,7 +201,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             if concat_alignment:
-                align_output = open(os.path.join(args.output_path,"concat_"+species_name+".phy"), "w")
+                align_output = open(os.path.join(args.output_path, "concat_"+species_name+".phy"), "w")
                 AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
                 align_output.close()
             tree = TreeInference(args, concat_alignment=concat_alignment)

@@ -19,6 +19,9 @@ class Analyzer(object):
     def __init__(self, args, og_set=None):
         print('--- Alignment of OGs ---')
         self.args = args
+        self.cov = {}
+        self.seq_completeness = {}
+
         self._genome_or_transcriptome_length = args.gt_length
 
         if " " in args.reads:

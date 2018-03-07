@@ -21,6 +21,9 @@ class TreeInference(object):
             self._reads = self.args.reads[0]
             self._species_name = self._reads.split("/")[-1].split(".")[0]
 
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
         self.tree = None
         if concat_alignment is not None:
             self.tree = self._infer_tree(concat_alignment)

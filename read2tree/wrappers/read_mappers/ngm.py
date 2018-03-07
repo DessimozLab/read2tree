@@ -1,4 +1,5 @@
 import time
+import os
 import tempfile
 from Bio import SeqIO
 
@@ -28,12 +29,12 @@ def set_default_options(readmapper):
 
 class NGM(ReadMapper):
 
-    def __init__(self, reference, reads, *args, **kwargs):
+    def __init__(self, reference, reads, tmp_folder, *args, **kwargs):
         """
         :param alignment: input multiple sequence alignment. This can be either
             a filename or an biopython SeqRecord collection.
         """
-        super(NGM, self).__init__(reference, reads, *args, **kwargs)
+        super(NGM, self).__init__(reference, reads, tmp_folder, *args, **kwargs)
         set_default_options(self)
 
     def __call__(self, *args, **kwargs):
@@ -47,11 +48,11 @@ class NGM(ReadMapper):
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
                 SeqIO.write(self.ref_input, filehandle, 'fasta')
                 filehandle.seek(0)
-                output, error = self._call(filehandle.name, self.ref_input, *args, **kwargs)
-                self.result = self._read_result(error, filehandle.name)
+                output, error = self._call(filehandle.name, self.ref_input, self.tmp_folder, *args, **kwargs)
+                self.result = self._read_result(error, filehandle.name, self.tmp_folder)
         else:
-            output, error = self._call(self.ref_input, self.read_input, *args, **kwargs)
-            self.result = self._read_result(error, self.ref_input)  # store result
+            output, error = self._call(self.ref_input, self.read_input, self.tmp_folder, *args, **kwargs)
+            self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result
 
         self.stdout = output
         self.stderr = error
@@ -62,38 +63,39 @@ class NGM(ReadMapper):
         # End call
 
     # Any other accessory methods
-    def _call(self, reference, reads, *args, **kwargs):
+    def _call(self, reference, reads, tmp_folder=None, *args, **kwargs):
         """
         Call underlying low level _ngm wrapper. 
         Options are passed via *args and **kwargs
         [This only covers the simplest automatic
          case]
         """
-        self.cli('{} -r {} -1 {} -2 {} -o {}.sam'.format(self.command(), reference, reads[0], reads[1], reference), wait=True)
+        if tmp_folder is None:
+            tmp_file = './' + os.path.basename(reference)+".bam"
+        if '/' not in tmp_folder[-1]:
+            tmp_file = os.path.join(tmp_folder, os.path.basename(reference))+".bam"
+        self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(), reference, reads[0], reads[1], tmp_file), wait=True)
 
         return self.cli.get_stdout(), self.cli.get_stderr()
 
     def command(self):
         return str(self.options)
 
-    def _read_result(self, output, filename):
+    def _read_result(self, output, filename, tmp_folder):
         """
         Read back the result.
         """
 
         # TODO: change the output dictionary into a better format
-        outfile = '{}.sam'.format(filename)
+        #outfile = '{}.sam'.format(filename)
+        outfile = os.path.join(tmp_folder, os.path.basename(filename))+".bam"
         parser = NGMParser()
 
-        # Phyml outputs two outfiles, a stats file and a tree file.
-        # Sometimes it appends .txt, sometimes not. Seems to be platform-specific.
-        # Here we assume they are without .txt, but if we can't find them, try
-        # looking for the .txt onees instead
         try:
             # parser.parse(output)
             result = parser.to_dict(outfile, output)
         except IOError as ioerr:
-            logger.error('Error reading results')
+            logger.error('Error reading results', ioerr)
             result = None
         except ParseException as parseerr:
             logger.error('Other parse error', parseerr)
@@ -111,9 +113,6 @@ def get_default_options():
         # set number of threads
         IntegerOption('-t', 4, active=True),
 
-        # Automatically selects an appropriate strategy from L-INS-i, FFT-NS-i
-        # and FFT-NS-2, according to data size. Default: off (always FFT-NS-2)
-        FlagOption('--no-unal', False, active=True)
-
-
+        # makes sure that unmapped reads are not saved in bam file
+        FlagOption('--no-unal', True, active=True)
     ])

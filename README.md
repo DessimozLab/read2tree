@@ -27,6 +27,23 @@ read2tree integrates multiple software tools and allows to infer a phylogenetic 
 For mafft, fasttree, ngmlr, ngm and samtools please follow the instructions provided by the individual packages.
 Make sure that executables are in PATH.
 
+#### CONDA
+
+1. Install [miniconda](https://conda.io/miniconda.html)
+2. Setup [bioconda](https://bioconda.github.io/) channels
+```
+    conda config --add channels defaults
+    conda config --add channels conda-forge
+    conda config --add channels bioconda
+```
+3. Install required tools
+```
+    conda install mafft
+    conda install fasttree
+    conda install ngmlr
+    conda install nextgenmap
+    conda install pysam
+```
 ## Running the tests
 
 Once successfully installed you can test the package using:
@@ -34,6 +51,13 @@ Once successfully installed you can test the package using:
 python -W ignore bin/read2tree --standalone_path tests/marker_genes/ --reads ~/Research/read2tree/read2tree/tests/mapper/test3/test_1a.fq ~/Research/read2tree/read2tree/tests/mapper/test3/test_2a.fq  --output_path test/output/
 
 ```
+
+## Running on clusters
+
+### LSF
+
+
+### SGE
 
 ## Built With
 

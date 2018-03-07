@@ -29,6 +29,9 @@ class Progress(object):
         else:
             self._species_name = species_name
 
+        # if self.args.species_name:
+        #     self._species_name = self.args.species_name
+
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
         else:
