@@ -149,11 +149,6 @@ def main(argv, exe_name, desc=''):
     # Parse
     args = parse_args(argv, exe_name, desc)
 
-    if args.species_name:
-        species_name = args.species_name
-    else:
-        species_name = args.reads[0].split("/")[-1].split(".")[0]
-
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
@@ -164,6 +159,11 @@ def main(argv, exe_name, desc=''):
     progress = Progress(args)
     if args.merge_all_mappings:
         progress.status = 3
+    else:
+        if args.species_name:
+            species_name = args.species_name
+        else:
+            species_name = args.reads[0].split("/")[-1].split(".")[0]
 
     if progress.status >= 1:
         ogset = OGSet(args, load=False)
