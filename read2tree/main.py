@@ -148,7 +148,7 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
-
+    progress = Progress(args)
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
@@ -164,7 +164,7 @@ def main(argv, exe_name, desc=''):
             species_name = args.species_name
         else:
             species_name = args.reads[0].split("/")[-1].split(".")[0]
-        progress = Progress(args)
+
 
     if progress.status >= 1:
         ogset = OGSet(args, load=False)

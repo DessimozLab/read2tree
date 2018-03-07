@@ -19,18 +19,17 @@ class Progress(object):
     def __init__(self, args, species_name=None):
         self.args = args
 
-        if not species_name:
+        if not species_name and self.args.reads:
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
                 self._species_name = self._reads[0].split("/")[-1].split(".")[0]
             else:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
-        else:
+        elif species_name and not self.args.reads:
             self._species_name = species_name
-
-        # if self.args.species_name:
-        #     self._species_name = self.args.species_name
+        elif not species_name and not self.args.reads:
+            self._species_name = 'merge'
 
         if self.args.remove_species:
             self.species_to_remove = self.args.remove_species.split(",")
@@ -44,6 +43,7 @@ class Progress(object):
         self._folder_ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
         self._folder_mapping = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
         self._folder_ogs_map = os.path.join(self.args.output_path, "04_ogs_map" + self._species_name)
+
 
         self.status_file = os.path.join(self.args.output_path, 'status.txt')
         self.status = self._get_status()
