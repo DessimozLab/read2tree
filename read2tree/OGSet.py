@@ -35,15 +35,6 @@ class OGSet(object):
     def __init__(self, args, oma_output=None, load=True):
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-        else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
-
-        if self.args.species_name:
-            self._species_name = self.args.species_name
 
         self.progress = Progress(args)
         self.mapped_ogs = {}
@@ -65,6 +56,17 @@ class OGSet(object):
             self.species_to_remove = []
 
         if load and oma_output is not None:
+
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
+
+            if self.args.species_name:
+                self._species_name = self.args.species_name
+
             self.oma = oma_output
             self.ogs = oma_output.ogs
             self.oma_output_path = self.args.oma_output_path
@@ -355,7 +357,7 @@ class OGSet(object):
                 if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
                     best_record_aa = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
                     if best_record_aa:
-                        best_record_aa.id = self._species_name
+                        best_record_aa.id = species_name
                         self.mapped_ogs[name] = og
                         all_id = [rec.id for rec in self.mapped_ogs[name].aa]
                         if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG

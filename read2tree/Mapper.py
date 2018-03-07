@@ -41,12 +41,15 @@ class Mapper(object):
     def __init__(self, args, ref_set=None, og_set=None, species_name=None, load=True):
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        if not species_name:
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
         else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+            self._species_name = species_name
 
         # if self.args.species_name:
         #     self._species_name = self.args.species_name
