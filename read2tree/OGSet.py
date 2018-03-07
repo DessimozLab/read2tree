@@ -330,9 +330,6 @@ class OGSet(object):
         seqC = SeqCompleteness()
         if not species_name:
             species_name = self._species_name
-            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+species_name)
-            if not os.path.exists(ogs_with_mapped_seq):
-                os.makedirs(ogs_with_mapped_seq)
 
         print('--- Add inferred mapped sequence back to OGs ---')
 
@@ -367,25 +364,31 @@ class OGSet(object):
                             cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
                             seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
                             self.mapped_ogs[name].aa.append(best_record_aa)
-                        output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-                        self._write(output_file, self.mapped_ogs[name].aa)
                     else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
                         self.mapped_ogs[name] = og
-                        output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
-                        self._write(output_file, self.mapped_ogs[name].aa)
                 else:  # mapping had only one that we removed
                     if self.args.keep_all_ogs:
                         self.mapped_ogs[name] = og
             else:  # nothing was mapped to that og
                 if self.args.keep_all_ogs:
                     self.mapped_ogs[name] = og
-                    output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
-                    self._write(output_file, self.mapped_ogs[name].aa)
+
         cov.write_coverage_bam(os.path.join(self.args.output_path, species_name+'_all_cov.txt'))
         seqC.write_seq_completeness(os.path.join(self.args.output_path, species_name+'_all_sc.txt'))
 
+    def write_added_ogs(self, folder_name=None):
+        if folder_name is None:
+            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_" + self._species_name)
+        else:
+            ogs_with_mapped_seq = os.path.join(self.args.output_path, folder_name)
 
+        if not os.path.exists(ogs_with_mapped_seq):
+            os.makedirs(ogs_with_mapped_seq)
 
+        for name, value in self.ogs.items():
+            if name in self.mapped_ogs.keys():
+                output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
+                self._write(output_file, self.mapped_ogs[name].aa)
 
     def _get_clean_id(self, record):
         des = record.description.split(" ")[0]
