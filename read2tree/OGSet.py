@@ -328,9 +328,11 @@ class OGSet(object):
         mapped_og_set = mapper.og_records
         cov = Coverage()
         seqC = SeqCompleteness()
-        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+self._species_name)
-        if not os.path.exists(ogs_with_mapped_seq):
-            os.makedirs(ogs_with_mapped_seq)
+        if not species_name:
+            species_name = self._species_name
+            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+species_name)
+            if not os.path.exists(ogs_with_mapped_seq):
+                os.makedirs(ogs_with_mapped_seq)
 
         print('--- Add inferred mapped sequence back to OGs ---')
 
@@ -379,8 +381,11 @@ class OGSet(object):
                     self.mapped_ogs[name] = og
                     output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
                     self._write(output_file, self.mapped_ogs[name].aa)
-        cov.write_coverage_bam(os.path.join(self.args.output_path, self._species_name+'_all_cov.txt'))
-        seqC.write_seq_completeness(os.path.join(self.args.output_path, self._species_name+'_all_sc.txt'))
+        cov.write_coverage_bam(os.path.join(self.args.output_path, species_name+'_all_cov.txt'))
+        seqC.write_seq_completeness(os.path.join(self.args.output_path, species_name+'_all_sc.txt'))
+
+
+
 
     def _get_clean_id(self, record):
         des = record.description.split(" ")[0]
