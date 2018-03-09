@@ -50,13 +50,7 @@ class OGSet(object):
 
         self.min_species = self._estimate_best_number_species()
 
-        if self.args.remove_species:
-            self.species_to_remove = self.args.remove_species.split(",")
-        else:
-            self.species_to_remove = []
-
-        if load and oma_output is not None:
-
+        if self.args.reads:
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
                 self._species_name = self._reads[0].split("/")[-1].split(".")[0]
@@ -64,9 +58,18 @@ class OGSet(object):
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
 
-            if self.args.species_name:
-                self._species_name = self.args.species_name
+        if self.args.species_name:
+            self._species_name = self.args.species_name
 
+        if not self.args.reads and not self.args.species_name:
+            self._species_name = 'merge'
+
+        if self.args.remove_species:
+            self.species_to_remove = self.args.remove_species.split(",")
+        else:
+            self.species_to_remove = []
+
+        if load and oma_output is not None:
             self.oma = oma_output
             self.ogs = oma_output.ogs
             self.oma_output_path = self.args.oma_output_path
