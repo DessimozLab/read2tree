@@ -344,8 +344,9 @@ class OGSet(object):
             else:
                 og = OG()
                 filtered_og = value.remove_species_records(self.species_to_remove)
-                og.dna = filtered_og[0]
-                og.aa = filtered_og[1]
+                if filtered_og:
+                    og.dna = filtered_og[0]
+                    og.aa = filtered_og[1]
             if len(og.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name in mapped_og_set.keys():
