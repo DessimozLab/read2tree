@@ -325,7 +325,7 @@ class OGSet(object):
         tree inference
         :param mapped_og_set: set of ogs with its mapped sequences
         """
-        mapped_og_set = mapper.og_records
+        mapped_og_set = mapper.og_records # get sequences from mapping
         cov = Coverage()
         seqC = SeqCompleteness()
         if not species_name:
@@ -333,6 +333,7 @@ class OGSet(object):
 
         print('--- Add inferred mapped sequence back to OGs ---')
 
+        # iterate through all existing ogs
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from the original set
             if self.args.keep_all_species or self.args.merge_all_mappings:
@@ -342,36 +343,37 @@ class OGSet(object):
                 filtered_og = value.remove_species_records(self.species_to_remove)
                 og.dna = filtered_og[0]
                 og.aa = filtered_og[1]
-            # continue only if OG is in mapped OGs
-            if name in mapped_og_set.keys():
-                if self.species_to_remove:  # in case we decided to remove species from the mapping
-                    mapping_og = OG()
-                    filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
-                    if filtered_mapping:
-                        mapping_og.dna = filtered_mapping[0]
-                        mapping_og.aa = filtered_mapping[1]
-                else:  # nothing to remove
-                    mapping_og = mapped_og_set[name]
+            if len(og.aa) > 2:
+                # continue only if OG is in mapped OGs
+                if name in mapped_og_set.keys():
+                    if self.species_to_remove:  # in case we decided to remove species from the mapping
+                        mapping_og = OG()
+                        filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
+                        if filtered_mapping:
+                            mapping_og.dna = filtered_mapping[0]
+                            mapping_og.aa = filtered_mapping[1]
+                    else:  # nothing to remove
+                        mapping_og = mapped_og_set[name]
 
-                if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
-                    best_record_aa = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
-                    if best_record_aa:
-                        best_record_aa.id = species_name
-                        self.mapped_ogs[name] = og
-                        all_id = [rec.id for rec in self.mapped_ogs[name].aa]
-                        if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                            #print(mapper.all_cov)
-                            cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
-                            seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
-                            self.mapped_ogs[name].aa.append(best_record_aa)
-                    else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
-                        self.mapped_ogs[name] = og
-                else:  # mapping had only one that we removed
+                    if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
+                        best_record_aa = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
+                        if best_record_aa:
+                            best_record_aa.id = species_name
+                            self.mapped_ogs[name] = og
+                            all_id = [rec.id for rec in self.mapped_ogs[name].aa]
+                            if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
+                                #print(mapper.all_cov)
+                                cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
+                                seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
+                                self.mapped_ogs[name].aa.append(best_record_aa)
+                        else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
+                            self.mapped_ogs[name] = og
+                    else:  # mapping had only one that we removed
+                        if self.args.keep_all_ogs:
+                            self.mapped_ogs[name] = og
+                else:  # nothing was mapped to that og
                     if self.args.keep_all_ogs:
                         self.mapped_ogs[name] = og
-            else:  # nothing was mapped to that og
-                if self.args.keep_all_ogs:
-                    self.mapped_ogs[name] = og
 
         cov.write_coverage_bam(os.path.join(self.args.output_path, species_name+'_all_cov.txt'))
         seqC.write_seq_completeness(os.path.join(self.args.output_path, species_name+'_all_sc.txt'))
