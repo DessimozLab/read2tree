@@ -6,6 +6,7 @@
 '''
 import os
 from read2tree.wrappers.treebuilders import Fasttree
+from read2tree.wrappers.treebuilders import Iqtree
 
 
 class TreeInference(object):
@@ -32,8 +33,11 @@ class TreeInference(object):
         output_folder = self.args.output_path
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        fasttree_wrapper = Fasttree(concat_alignment, datatype="PROTEIN")
-        tree = fasttree_wrapper()
+        #fasttree_wrapper = Fasttree(concat_alignment, datatype="PROTEIN")
+        #tree = fasttree_wrapper()
+        iqtree_wrapper = Iqtree(concat_alignment, datatype="PROTEIN")
+        iqtree_wrapper.options.options['-m'].set_value('LG')
+        tree = iqtree_wrapper()
         with open(os.path.join(output_folder, "tree_" + self._species_name + ".nwk"), "w") as text_file:
             text_file.write("{};".format(tree))
         self.tree = "{};".format(tree)

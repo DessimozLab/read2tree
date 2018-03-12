@@ -5,6 +5,7 @@ import random
 from pyparsing import ParseException
 import shutil
 
+from Bio import SeqIO
 from .parsers import IqtreeParser
 from .base_treebuilder import TreeBuilder, AlignmentInput, DataType
 
@@ -21,7 +22,7 @@ logger.setLevel(logging.INFO)
 class IqtreeCLI(AbstractCLI):
     @property
     def _default_exe(self):
-        return 'iqtree-omp'
+        return 'iqtree'
 
 
 def set_default_dna_options(treebuilder):
@@ -40,13 +41,14 @@ def set_default_protein_options(treebuilder):
 
 class Iqtree(TreeBuilder):
 
-    def __init__(self, input_):
-        super(Iqtree, self).__init__(input_)
+    def __init__(self, alignment, *args, **kwargs):
         self.options = get_default_options()
-        if self.datatype == DataType.DNA:
-            set_default_dna_options(self)
-        else:
-            set_default_protein_options(self)
+        super(Iqtree, self).__init__(alignment=alignment, *args, **kwargs)
+        if self.input is not None:
+            if self.datatype == DataType.DNA:
+                set_default_dna_options(self)
+            else:
+                set_default_protein_options(self)
 
     def __call__(self, *args, **kwargs):
         """
@@ -61,12 +63,12 @@ class Iqtree(TreeBuilder):
             if self.input_type is AlignmentInput.OBJECT:  # different operation depending on what it is
                 with TempFile() as filename:
                     SeqIO.write(self.input, filename, 'phylip-relaxed') # default interleaved
-                    output, error = self._call(filename,tmpd, *args, **kwargs)
+                    output, error = self._call(filename, tmpd, *args, **kwargs)
             elif self.input_type is AlignmentInput.FILENAME:
                 filename = self.input
                 output, error = self._call(filename, tmpd, *args, **kwargs)
             else:
-                output, error = self._call(None,tmpd, *args, **kwargs)
+                output, error = self._call(None, tmpd, *args, **kwargs)
             self.result = self._read_result(tmpd)  # store result
         self.stdout = output
         self.stderr = error
