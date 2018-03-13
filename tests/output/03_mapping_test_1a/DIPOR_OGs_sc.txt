@@ -1,3 +1,0 @@
-#species,og,gene_id,partial_seq_completeness,full_seq_completeness,inferred_len,given_len,ref_len
-DIPOR,OG5,DIPOR09619,0.0676937441643324,0.0676937441643324,145,2142,2142
-DIPOR,OG2,DIPOR07854,0.12878787878787878,0.12878787878787878,102,792,792

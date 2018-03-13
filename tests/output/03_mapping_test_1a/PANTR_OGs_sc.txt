@@ -1,2 +1,0 @@
-#species,og,gene_id,partial_seq_completeness,full_seq_completeness,inferred_len,given_len,ref_len
-PANTR,OG4,PANTR02755,0.23873873873873874,0.23873873873873874,106,444,444

@@ -45,7 +45,7 @@ class OGSet(object):
         self._ham_analysis = None
         self._tree_str = None
         self._og_orthoxml = None
-        self._remove_species = False
+        self._remove_species_mapping = False
         self._marker_genes = False
 
         self.min_species = self._estimate_best_number_species()
@@ -64,10 +64,15 @@ class OGSet(object):
         if not self.args.reads and not self.args.species_name:
             self._species_name = 'merge'
 
-        if self.args.remove_species:
-            self.species_to_remove = self.args.remove_species.split(",")
+        if self.args.remove_species_mapping:
+            self.species_to_remove_mapping = self.args.remove_species_mapping.split(",")
         else:
-            self.species_to_remove = []
+            self.species_to_remove_mapping = []
+
+        if self.args.remove_species_ogs:
+            self.species_to_remove_ogs = self.args.remove_species_ogs.split(",")
+        else:
+            self.species_to_remove_ogs = []
 
         if load and oma_output is not None:
             self.oma = oma_output
@@ -91,27 +96,27 @@ class OGSet(object):
         else:
             return False
 
-    def _remove_species(self):
-        """
-        removes species of ogs that are set by user
-        :return:
-        """
-        new_ogs = []
-        for name, og in self.ogs:
-            species = og.aa.description[og.aa.description.find("[") + 1:og.aa.description.find("]")]
-            if species not in self.species_to_remove:
-                new_ogs.apped(og)
-        return new_ogs
+    # def _remove_species(self):
+    #     """
+    #     removes species of ogs that are set by user
+    #     :return:
+    #     """
+    #     new_ogs = []
+    #     for name, og in self.ogs:
+    #         species = og.aa.description[og.aa.description.find("[") + 1:og.aa.description.find("]")]
+    #         if species not in self.species_to_remove_mapping:
+    #             new_ogs.apped(og)
+    #     return new_ogs
 
-    def _has_species_to_remove(self):
-        """
-        :return: true or false depending whether species to remove are part of all the species present
-        """
-        not_included_species = []
-        for spec in self.species_to_remove:
-            if spec not in self.species_list:
-                not_included_species.append(spec)
-        return not_included_species
+    # def _has_species_to_remove(self):
+    #     """
+    #     :return: true or false depending whether species to remove are part of all the species present
+    #     """
+    #     not_included_species = []
+    #     for spec in self.species_to_remove_mapping:
+    #         if spec not in self.species_list:
+    #             not_included_species.append(spec)
+    #     return not_included_species
 
     def _get_species_list(self):
         """
@@ -140,16 +145,16 @@ class OGSet(object):
             #     ogs[name].remove_species_records(self.species_to_remove, species_in_hog)
         return ogs
 
-    def _get_num_species_after_removal(self, species_in_og):
-        in_og = 0
-        for spec in self.species_to_remove:
-            if spec in species_in_og:
-                in_og += 1
+    # def _get_num_species_after_removal(self, species_in_og):
+    #     in_og = 0
+    #     for spec in self.species_to_remove_mapping:
+    #         if spec in species_in_og:
+    #             in_og += 1
+    #
+    #     return len(species_in_og)-in_og
 
-        return len(species_in_og)-in_og
-
-    def _change_record_id(self):
-        raise NotImplementedError
+    # def _change_record_id(self):
+    #     raise NotImplementedError
 
     def _load_ogs(self):
         """
@@ -292,34 +297,6 @@ class OGSet(object):
         '''
         return Seq.Seq(re.sub('[^GATC]', 'N', str(record.seq).upper()), SingleLetterAlphabet())
 
-    def add_mapped_seq(self, mapped_og_set):
-        """
-        Add the sequence given from the read mapping to its corresponding OG
-        :param mapped_og_set: set of ogs with its mapped sequences
-        """
-        ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_"+self._species_name)
-        if not os.path.exists(ogs_with_mapped_seq):
-            os.makedirs(ogs_with_mapped_seq)
-
-        for name, value in mapped_og_set.items():
-            # remove species from initial list
-            og = OG()
-            og.dna = self.ogs[name].remove_species_records(self.species_to_remove)[0]
-            og.aa = self.ogs[name].remove_species_records(self.species_to_remove)[1]
-            # remove species that were mapped to from initial list
-            mapping_og = OG()
-            mapping_og.dna = value.remove_species_records(self.species_to_remove)[0]
-            mapping_og.aa = value.remove_species_records(self.species_to_remove)[1]
-            if len(mapping_og.aa) > 1:
-                best_record_aa = mapping_og.get_best_mapping_by_seq_completeness()
-                best_record_aa.id = self._species_name
-                self.mapped_ogs[name] = og
-                all_id = [rec.id for rec in self.mapped_ogs[name].aa]
-                if best_record_aa.id not in all_id:
-                    self.mapped_ogs[name].aa.append(best_record_aa)
-                output_file = os.path.join(ogs_with_mapped_seq, name+".fa")
-                self._write(output_file, self.mapped_ogs[name].aa)
-
 
     def add_mapped_seq_v2(self, mapper, species_name=None):
         """
@@ -341,18 +318,18 @@ class OGSet(object):
             # remove species from the original set
             if self.args.keep_all_species or self.args.merge_all_mappings:
                 og = value
-            else:
+            elif self.args.remove_species_ogs:
                 og = OG()
-                filtered_og = value.remove_species_records(self.species_to_remove)
+                filtered_og = value.remove_species_records(self.species_to_remove_ogs)
                 if filtered_og:
                     og.dna = filtered_og[0]
                     og.aa = filtered_og[1]
             if len(og.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name in mapped_og_set.keys():
-                    if self.species_to_remove:  # in case we decided to remove species from the mapping
+                    if self.species_to_remove_mapping:  # in case we decided to remove species from the mapping
                         mapping_og = OG()
-                        filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove)
+                        filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove_mapping)
                         if filtered_mapping:
                             mapping_og.dna = filtered_mapping[0]
                             mapping_og.aa = filtered_mapping[1]

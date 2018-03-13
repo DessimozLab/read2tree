@@ -76,11 +76,16 @@ def parse_args(argv, exe_name, desc):
                                  'by completeness compared to its reference sequence (number of ACGT basepairs '
                                  'vs length of sequence). By default, all sequences are selected.')
 
-    arg_parser.add_argument('--remove_species', default=None,
+    arg_parser.add_argument('--remove_species_mapping', default=None,
                             help='[Default is none] Remove species present in data set after '
                                  'mapping step completed and only do analysis on '
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
+
+    arg_parser.add_argument('--remove_species_ogs', default=None,
+                            help='[Default is none] Remove species present in data set after '
+                                 'mapping step completed to build OGs. Input is comma separated'
+                                 'list without spaces, e.g. XXX,YYY,AAA.')
 
     arg_parser.add_argument('--ngmlr_parameters', default=None,
                             help='[Default is none] In case this parameters need to be changed all 3 values '

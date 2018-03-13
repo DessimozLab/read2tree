@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-<<<<<<< HEAD
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/read2tree/Progress.py" afterPath="$PROJECT_DIR$/read2tree/Progress.py" />
-=======
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/read2tree/OGSet.py" afterPath="$PROJECT_DIR$/read2tree/OGSet.py" />
->>>>>>> consensus
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -36,13 +32,8 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-            <state relative-caret-position="-1380">
-              <caret line="369" column="0" lean-forward="false" selection-start-line="369" selection-start-column="0" selection-end-line="369" selection-end-column="0" />
-=======
             <state relative-caret-position="338">
               <caret line="525" column="23" lean-forward="true" selection-start-line="525" selection-start-column="23" selection-end-line="525" selection-end-column="23" />
->>>>>>> consensus
               <folding>
                 <element signature="e#148#159#0" expanded="true" />
               </folding>
@@ -50,43 +41,11 @@
           </provider>
         </entry>
       </file>
-<<<<<<< HEAD
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="206">
-              <caret line="171" column="87" lean-forward="false" selection-start-line="171" selection-start-column="87" selection-end-line="171" selection-end-column="87" />
-              <folding>
-                <element signature="e#614#623#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Aligner.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/Aligner.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-161">
-              <caret line="32" column="45" lean-forward="false" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
-              <folding>
-                <element signature="e#155#164#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/setup.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-=======
       <file leaf-file-name="setup.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setup.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
               <caret line="10" column="94" lean-forward="false" selection-start-line="10" selection-start-column="94" selection-end-line="10" selection-end-column="94" />
->>>>>>> consensus
               <folding />
             </state>
           </provider>
@@ -105,13 +64,8 @@
       <file leaf-file-name="fasttree.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
           <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-            <state relative-caret-position="191">
-              <caret line="63" column="50" lean-forward="false" selection-start-line="63" selection-start-column="37" selection-end-line="63" selection-end-column="50" />
-=======
             <state relative-caret-position="195">
               <caret line="26" column="22" lean-forward="false" selection-start-line="26" selection-start-column="22" selection-end-line="26" selection-end-column="22" />
->>>>>>> consensus
               <folding>
                 <element signature="e#50#64#0" expanded="true" />
               </folding>
@@ -119,14 +73,6 @@
           </provider>
         </entry>
       </file>
-<<<<<<< HEAD
-      <file leaf-file-name="ReferenceSet.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/ReferenceSet.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1650">
-              <caret line="117" column="21" lean-forward="false" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
-              <folding />
-=======
       <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
@@ -136,18 +82,12 @@
                 <folding />
               </first_editor>
               <second_editor />
->>>>>>> consensus
             </state>
           </provider>
         </entry>
       </file>
-<<<<<<< HEAD
-      <file leaf-file-name="monitor_folder_size.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/monitor_folder_size.py">
-=======
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/main.py">
->>>>>>> consensus
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="2374">
               <caret line="195" column="38" lean-forward="false" selection-start-line="195" selection-start-column="38" selection-end-line="195" selection-end-column="38" />
@@ -168,13 +108,6 @@
           </provider>
         </entry>
       </file>
-<<<<<<< HEAD
-      <file leaf-file-name="Progress.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="55" column="78" lean-forward="false" selection-start-line="55" selection-start-column="78" selection-end-line="55" selection-end-column="78" />
-=======
       <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -192,7 +125,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="195">
               <caret line="19" column="24" lean-forward="false" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
->>>>>>> consensus
               <folding>
                 <element signature="e#155#164#0" expanded="true" />
               </folding>
@@ -221,41 +153,11 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-<<<<<<< HEAD
-      <find>OG_OUTPUT_FOLDER</find>
-      <find>&quot;03_mapping&quot;</find>
-      <find>single</find>
-      <find>pore2tree</find>
-      <find>vcf</find>
-      <find>sort_by</find>
-      <find>utf</find>
-      <find>try</find>
-      <find>db.Database(</find>
-      <find>h5</find>
-      <find>self.cov</find>
-      <find>_coverage</find>
-      <find>post_proce</find>
-      <find>self.all_</find>
-      <find>coverage</find>
-      <find>mapped_og_set</find>
-      <find>_output_</find>
-      <find>pyopa</find>
-      <find>self.env</find>
-      <find>get_best_mapping_by_seq_completeness</find>
-      <find>_clean_up_tmp_files_single</find>
-      <find>_clean_up_read_mapping</find>
-      <find>_clean_up_tmp_files</find>
-=======
->>>>>>> consensus
-      <find>_output_shell</find>
-      <find>single_map</find>
       <find>set_status</find>
       <find>_find_last_completed_step</find>
-<<<<<<< HEAD
       <find>_load_ogs</find>
       <find>_species_name</find>
       <find>add_mapped_seq_v2</find>
-=======
       <find>_output_shell(</find>
       <find>all_cov</find>
       <find>all_cs</find>
@@ -282,7 +184,6 @@
       <find>h5</find>
       <find>cov</find>
       <find>merge</find>
->>>>>>> consensus
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -338,12 +239,6 @@
         <option value="$PROJECT_DIR$/scripts/map2align.py" />
         <option value="$PROJECT_DIR$/read2tree/parser/OMAOutputParser.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/ReadCoverage.py" />
-<<<<<<< HEAD
-        <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/parser.py" />
-        <option value="$PROJECT_DIR$/read2tree/Analyzer.py" />
-=======
-        <option value="$PROJECT_DIR$/read2tree/ReferenceSet.py" />
->>>>>>> consensus
         <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
         <option value="$PROJECT_DIR$/scripts/sample_from_reads.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/Coverage.py" />
@@ -362,17 +257,9 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/setup.py" />
-<<<<<<< HEAD
-        <option value="$PROJECT_DIR$/read2tree/ReferenceSet.py" />
-        <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
-        <option value="$PROJECT_DIR$/read2tree/main.py" />
-        <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
-        <option value="$PROJECT_DIR$/read2tree/Aligner.py" />
-=======
         <option value="$PROJECT_DIR$/read2tree/TreeInference.py" />
         <option value="$PROJECT_DIR$/read2tree/Aligner.py" />
         <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
->>>>>>> consensus
         <option value="$PROJECT_DIR$/read2tree/Progress.py" />
         <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
@@ -386,14 +273,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-<<<<<<< HEAD
-    <option name="x" value="-12" />
-    <option name="y" value="23" />
-    <option name="width" value="1450" />
-=======
     <option name="y" value="23" />
     <option name="width" value="1440" />
->>>>>>> consensus
     <option name="height" value="877" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -412,10 +293,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-<<<<<<< HEAD
-      <pane id="Scope" />
-=======
->>>>>>> consensus
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -432,10 +309,7 @@
           <select />
         </subPane>
       </pane>
-<<<<<<< HEAD
-=======
       <pane id="Scope" />
->>>>>>> consensus
       <pane id="Scratches" />
     </panes>
   </component>
@@ -635,27 +509,18 @@
     <frame x="0" y="23" width="1440" height="877" extended-state="6" />
     <editor active="true" />
     <layout>
-<<<<<<< HEAD
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19742489" sideWeight="0.49033818" order="0" side_tool="false" content_ui="combo" />
-=======
->>>>>>> consensus
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2454739" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="0" y="0" width="310" height="677" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2662407" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-<<<<<<< HEAD
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964131" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2806324" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-=======
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3662714" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22460657" sideWeight="0.49033818" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25250357" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
->>>>>>> consensus
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.100430414" sideWeight="0.50966185" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -776,7 +641,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/Analyzer" />
-<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -792,8 +656,6 @@
         </state>
       </provider>
     </entry>
-=======
->>>>>>> consensus
     <entry file="file://$PROJECT_DIR$/scripts/map2align.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2445">
@@ -906,9 +768,6 @@
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
-    <entry file="file://$PROJECT_DIR$/read2tree/parser/OMAOutputParser.py">
-=======
     <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
@@ -917,16 +776,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/base_mapper.py">
->>>>>>> consensus
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
           <caret line="39" column="10" lean-forward="false" selection-start-line="39" selection-start-column="10" selection-end-line="39" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-=======
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/abstract_cli.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3165">
@@ -935,7 +790,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/options.py">
->>>>>>> consensus
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -952,14 +806,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py">
       <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-        <state relative-caret-position="135">
-          <caret line="9" column="15" lean-forward="false" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="15" />
-=======
         <state relative-caret-position="360">
           <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
           <folding />
->>>>>>> consensus
         </state>
       </provider>
     </entry>
@@ -999,9 +848,6 @@
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
-    <entry file="file://$PROJECT_DIR$/scripts/concat_alignments.py">
-=======
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -1013,7 +859,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
->>>>>>> consensus
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="94" lean-forward="false" selection-start-line="10" selection-start-column="94" selection-end-line="10" selection-end-column="94" />
@@ -1063,21 +908,6 @@
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
-    <entry file="file://$PROJECT_DIR$/read2tree/ReferenceSet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1650">
-          <caret line="117" column="21" lean-forward="false" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-=======
     <entry file="file://$PROJECT_DIR$/read2tree/TreeInference.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -1093,19 +923,13 @@
           <folding>
             <element signature="e#309#321#0" expanded="true" />
           </folding>
->>>>>>> consensus
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/main.py">
       <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-        <state relative-caret-position="206">
-          <caret line="171" column="87" lean-forward="false" selection-start-line="171" selection-start-column="87" selection-end-line="171" selection-end-column="87" />
-=======
         <state relative-caret-position="2374">
           <caret line="195" column="38" lean-forward="false" selection-start-line="195" selection-start-column="38" selection-end-line="195" selection-end-column="38" />
->>>>>>> consensus
           <folding>
             <element signature="e#614#623#0" expanded="true" />
           </folding>
@@ -1113,45 +937,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
-<<<<<<< HEAD
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1380">
-          <caret line="369" column="0" lean-forward="false" selection-start-line="369" selection-start-column="0" selection-end-line="369" selection-end-column="0" />
-          <folding>
-            <element signature="e#148#159#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Aligner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-161">
-          <caret line="32" column="45" lean-forward="false" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
-          <folding>
-            <element signature="e#155#164#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="63" column="50" lean-forward="false" selection-start-line="63" selection-start-column="37" selection-end-line="63" selection-end-column="50" />
-          <folding>
-            <element signature="e#309#321#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="55" column="78" lean-forward="false" selection-start-line="55" selection-start-column="78" selection-end-line="55" selection-end-column="78" />
-=======
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="338">
           <caret line="525" column="23" lean-forward="true" selection-start-line="525" selection-start-column="23" selection-end-line="525" selection-end-column="23" />
->>>>>>> consensus
           <folding>
             <element signature="e#148#159#0" expanded="true" />
           </folding>

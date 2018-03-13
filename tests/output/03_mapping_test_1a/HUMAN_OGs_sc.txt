@@ -1,2 +1,0 @@
-#species,og,gene_id,partial_seq_completeness,full_seq_completeness,inferred_len,given_len,ref_len
-HUMAN,OG4,HUMAN04136,0.2371364653243848,0.2371364653243848,106,447,447

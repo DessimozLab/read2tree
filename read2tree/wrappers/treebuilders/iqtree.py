@@ -1,9 +1,8 @@
 import os
 import time
 import logging
-import random
+import tempfile
 from pyparsing import ParseException
-import shutil
 
 from Bio import SeqIO
 from .parsers import IqtreeParser
@@ -57,19 +56,22 @@ class Iqtree(TreeBuilder):
         Saves the stdout and stderr and returns
         """
         start = time.time()  # time the execution
+        if "TMPDIR" in os.environ:
+            tmpd = tempfile.TemporaryDirectory(prefix='iqtree', dir=os.environ.get("TMPDIR"))
+        else:
+            tmpd = tempfile.TemporaryDirectory(prefix='iqtree_')
 
-        #Need to create temp directory to put raxml output here
-        with TempDir() as tmpd:
-            if self.input_type is AlignmentInput.OBJECT:  # different operation depending on what it is
-                with TempFile() as filename:
-                    SeqIO.write(self.input, filename, 'phylip-relaxed') # default interleaved
-                    output, error = self._call(filename, tmpd, *args, **kwargs)
-            elif self.input_type is AlignmentInput.FILENAME:
-                filename = self.input
+        if self.input_type is AlignmentInput.OBJECT:  # different operation depending on what it is
+            with TempFile() as filename:
+                SeqIO.write(self.input, filename, 'phylip-relaxed')  # default interleaved
                 output, error = self._call(filename, tmpd, *args, **kwargs)
-            else:
-                output, error = self._call(None, tmpd, *args, **kwargs)
-            self.result = self._read_result(tmpd)  # store result
+        elif self.input_type is AlignmentInput.FILENAME:
+            filename = self.input
+            output, error = self._call(filename, tmpd, *args, **kwargs)
+        else:
+            output, error = self._call(None, tmpd, *args, **kwargs)
+        self.result = self._read_result(tmpd)  # store result
+
         self.stdout = output
         self.stderr = error
 
@@ -87,7 +89,7 @@ class Iqtree(TreeBuilder):
          case]
         """
         self.cli('{} -pre {tmp_path} -s {seqfile}'.format(self.command(),
-                                                          tmp_path=os.path.join(tmpd,'tmp_output'),
+                                                          tmp_path=os.path.join(tmpd, 'tmp_output'),
                                                           seqfile=filename),
                  wait=True)
         return self.cli.get_stdout(), self.cli.get_stderr()
