@@ -57,10 +57,10 @@ class Iqtree(TreeBuilder):
         """
         start = time.time()  # time the execution
         if "TMPDIR" in os.environ:
-            tmpd = tempfile.TemporaryDirectory(prefix='iqtree', dir=os.environ.get("TMPDIR"))
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='iqtree', dir=os.environ.get("TMPDIR"))
         else:
-            tmpd = tempfile.TemporaryDirectory(prefix='iqtree_')
-
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='iqtree_')
+        tmpd = tmp_output_folder.name
         if self.input_type is AlignmentInput.OBJECT:  # different operation depending on what it is
             with TempFile() as filename:
                 SeqIO.write(self.input, filename, 'phylip-relaxed')  # default interleaved

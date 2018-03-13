@@ -316,14 +316,14 @@ class OGSet(object):
         # iterate through all existing ogs
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
             # remove species from the original set
-            if self.args.keep_all_species or self.args.merge_all_mappings:
-                og = value
-            elif self.args.remove_species_ogs:
+            if self.args.remove_species_ogs:
                 og = OG()
                 filtered_og = value.remove_species_records(self.species_to_remove_ogs)
                 if filtered_og:
                     og.dna = filtered_og[0]
                     og.aa = filtered_og[1]
+            else:
+                og = value
             if len(og.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name in mapped_og_set.keys():

@@ -31,8 +31,8 @@ class Progress(object):
         elif not species_name and not self.args.reads:
             self._species_name = 'merge'
 
-        if self.args.remove_species:
-            self.species_to_remove = self.args.remove_species.split(",")
+        if self.args.remove_species_mapping:
+            self.species_to_remove = self.args.remove_species_mapping.split(",")
         else:
             self.species_to_remove = []
 
