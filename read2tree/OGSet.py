@@ -500,17 +500,6 @@ class OG(object):
         '''
         aa = [record for i, record in enumerate(self.aa) if self._get_species_id(record.description) not in species_to_remove]
         dna = [record for i, record in enumerate(self.dna) if self._get_species_id(record.description) not in species_to_remove]
-        # for i, record in enumerate(self.aa):
-        #     species = self._get_species_id(record.description)
-        #     if species in species_to_remove:
-        #         index_to_remove_aa.append(i)
-        # for i, record in enumerate(self.dna):
-        #     species = self._get_species_id(record.description)
-        #     if species in species_to_remove:
-        #         index_to_remove_dna.append(i)
-
-        # aa = [i for j, i in enumerate(self.aa) if j not in index_to_remove_aa]
-        # dna = [i for j, i in enumerate(self.dna) if j not in index_to_remove_dna]
         if len(aa) > 0 and len(dna) > 0:
             return [dna, aa]
         else:
