@@ -208,6 +208,7 @@ class OGSet(object):
                 try:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
                 except:
+                    print('This OG {} did not have any DNA'.format(name))
                     pass
                 else:
                     self._write(output_file_dna, ogs[name].dna)
@@ -252,6 +253,7 @@ class OGSet(object):
                 try:
                     oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
                 except:
+                    print('DNA not found for {}.'.format(record.id))
                     pass
                 else:
                     og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
@@ -260,6 +262,7 @@ class OGSet(object):
                 try:
                     og_cdna.append(self._db[record.id])
                 except ValueError:
+                    print('DNA not found for {}.'.format(record.id))
                     pass
             elif 'REST_api' in self._db_source:
                 try:

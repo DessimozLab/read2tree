@@ -32,7 +32,9 @@ class NGMParser(object):
             insert_size = self.inssize.parseString(stdout).asList()[0]
             computed_alignments = self.compalign.parseString(stdout).asList()[0]
         except ParseException as err:
+            print('here')
             print(stdout)
+            print('here')
             logger.error(err)
 
         return valid_pairs, insert_size, computed_alignments
