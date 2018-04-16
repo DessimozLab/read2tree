@@ -27,7 +27,7 @@ from read2tree.stats.SeqCompleteness import SeqCompleteness
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
-API_URL = 'http://omadev.cs.ucl.ac.uk/api'
+API_URL = 'http://omabrowser.org/api'
 
 
 class OGSet(object):

@@ -60,8 +60,8 @@
           <file leaf-file-name="get_reconstructed_seq_by_species.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/scripts/get_reconstructed_seq_by_species.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-68">
-                  <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+                <state relative-caret-position="-61">
+                  <caret line="5" selection-start-line="5" selection-end-line="5" />
                 </state>
               </provider>
             </entry>
@@ -133,8 +133,11 @@
           <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="270">
-                  <caret line="270" column="30" lean-forward="true" selection-start-line="270" selection-start-column="30" selection-end-line="270" selection-end-column="30" />
+                <state relative-caret-position="361">
+                  <caret line="29" column="37" selection-start-line="29" selection-start-column="37" selection-end-line="30" />
+                  <folding>
+                    <element signature="e#148#159#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -492,7 +495,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1920" y="-100" width="1920" height="1057" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
@@ -837,15 +839,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/get_reconstructed_seq_by_species.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-68">
-          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        <state relative-caret-position="-61">
+          <caret line="5" selection-start-line="5" selection-end-line="5" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="270" column="30" lean-forward="true" selection-start-line="270" selection-start-column="30" selection-end-line="270" selection-end-column="30" />
+        <state relative-caret-position="361">
+          <caret line="29" column="37" selection-start-line="29" selection-start-column="37" selection-end-line="30" />
+          <folding>
+            <element signature="e#148#159#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
