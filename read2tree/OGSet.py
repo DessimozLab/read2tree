@@ -268,6 +268,7 @@ class OGSet(object):
                 try:
                     protein = requests.get(API_URL + "/protein/" + record.id + "/")
                 except requests.exceptions.RequestException:
+                    print('DNA not found for {}.'.format(record.id))
                     pass
                 else:
                     protein = protein.json()
