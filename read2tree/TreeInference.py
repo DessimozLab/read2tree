@@ -15,15 +15,19 @@ class TreeInference(object):
         print('--- Tree inference ---')
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-        else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+        if self.args.reads:
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         if self.args.species_name:
             self._species_name = self.args.species_name
+
+        if not self.args.reads and not self.args.species_name:
+            self._species_name = 'merge'
 
         self.tree = None
         if concat_alignment is not None:
