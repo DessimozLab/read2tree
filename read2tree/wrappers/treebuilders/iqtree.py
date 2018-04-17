@@ -62,9 +62,9 @@ class Iqtree(TreeBuilder):
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='iqtree_')
         tmpd = tmp_output_folder.name
         if self.input_type is AlignmentInput.OBJECT:  # different operation depending on what it is
-            with TempFile() as filename:
-                SeqIO.write(self.input, filename, 'phylip-relaxed')  # default interleaved
-                output, error = self._call(filename, tmpd, *args, **kwargs)
+            filename = os.path.join(tmpd,'tmp_output.phy')
+            SeqIO.write(self.input, filename, 'phylip-relaxed')  # default interleaved
+            output, error = self._call(filename, tmpd, *args, **kwargs)
         elif self.input_type is AlignmentInput.FILENAME:
             filename = self.input
             output, error = self._call(filename, tmpd, *args, **kwargs)
@@ -101,7 +101,6 @@ class Iqtree(TreeBuilder):
         """
         Read back the result.
         """
-
         expected_outfiles = [os.path.join(tmpd, 'tmp_output.treefile')]
 
         parser = IqtreeParser()
@@ -125,7 +124,7 @@ class Iqtree(TreeBuilder):
 def get_default_options():
     return OptionSet([
         # Number of threads
-        IntegerOption('-nt', 2, active=True),
+        IntegerOption('-nt', 1, active=True),
 
         # Set the model for either DNA or AA alignment
         StringOption('-m', '', active=False),
