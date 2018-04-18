@@ -16,29 +16,34 @@ OMA_MARKER_GENE_EXPORT = 'marker_genes'
 
 class Progress(object):
 
-    def __init__(self, args):
+    def __init__(self, args, species_name=None):
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-        else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+        if not species_name and self.args.reads:
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
+        elif species_name and not self.args.reads:
+            self._species_name = species_name
+        elif not species_name and not self.args.reads:
+            self._species_name = 'merge'
 
-        # if self.args.species_name:
-        #     self._species_name = self.args.species_name
-
-        if self.args.remove_species:
-            self.species_to_remove = self.args.remove_species.split(",")
+        if self.args.remove_species_mapping:
+            self.species_to_remove = self.args.remove_species_mapping.split(",")
         else:
             self.species_to_remove = []
+
+
 
         self._folder_ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         self._folder_ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
         self._folder_ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
         self._folder_mapping = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
         self._folder_ogs_map = os.path.join(self.args.output_path, "04_ogs_map" + self._species_name)
+
 
         self.status_file = os.path.join(self.args.output_path, 'status.txt')
         self.status = self._get_status()
@@ -51,7 +56,7 @@ class Progress(object):
     def check_mapping(self):
         map_files = 0
         if os.path.exists(self._folder_mapping):
-            for file in glob.glob(os.path.join(self._folder_mapping, "*cov.fa")):
+            for file in glob.glob(os.path.join(self._folder_mapping, "*cov.txt")):
                 if os.path.getsize(file) > 0:
                     map_files += 1
 
@@ -73,23 +78,23 @@ class Progress(object):
             num_species = 0
         return num_species
 
-    def _get_status(self):
+    def _get_status(self, species_name=None):
+        if not species_name:
+            species_name = self._species_name
         status = 0
         if os.path.exists(self.status_file):
             self._wait_for_status_file()
             f = open(self.status_file, 'r')
-            # self._find_last_completed_step()
             for line in f:
-                # last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
                 if '01_ref_ogs_aa: OK' in line:
                     status = 1
                 elif '02_ref_dna: OK' in line:
                     status = 2
-                elif '03_mapping_' + self._species_name + ': OK' in line:
+                elif '03_mapping_' + species_name + ': OK' in line:
                     status = 3
-                elif '04_ogs_map_' + self._species_name + ': OK' in line:
+                elif '04_ogs_map_' + species_name + ': OK' in line:
                     status = 4
-                elif '05_align_' + self._species_name + ': OK' in line:
+                elif '05_align_' + species_name + ': OK' in line:
                     status = 5
             f.close()
         return status

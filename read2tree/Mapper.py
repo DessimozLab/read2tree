@@ -38,15 +38,18 @@ class Mapper(object):
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None, load=True):
+    def __init__(self, args, ref_set=None, og_set=None, species_name=None, load=True):
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        if not species_name:
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
         else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+            self._species_name = species_name
 
         # if self.args.species_name:
         #     self._species_name = self.args.species_name
@@ -75,8 +78,11 @@ class Mapper(object):
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:
-            if og_set is not None:
+            if og_set is not None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder()
+                self.og_records = self._sort_by_og(og_set)
+            elif og_set is not None and self.args.merge_all_mappings and species_name is not None:
+                self.mapped_records = self._read_mapping_from_folder(species_name=species_name)
                 self.og_records = self._sort_by_og(og_set)
 
 
@@ -146,14 +152,16 @@ class Mapper(object):
         return mapped_reads_species
 
 
-    def _read_mapping_from_folder(self):
+    def _read_mapping_from_folder(self, species_name=None):
         """
         Retrieve all the mapped consensus files from folder and add to mapper object
         :return: dictionary with key og_name and value sequences mapped to each species
         """
         print('--- Retrieve mapped consensus sequences ---')
         map_reads_species = {}
-        in_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        if not species_name:
+            species_name = self._species_name
+        in_folder = os.path.join(self.args.output_path, "03_mapping_"+species_name)
         for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
             species = file.split("/")[-1].split("_")[0]
             map_reads_species[species] = Reference()
@@ -478,8 +486,21 @@ class Mapper(object):
 
         return og_records
 
-    def _predict_best_protein_position(self):
-        raise NotImplementedError
+    def _predict_best_protein_position(self, record):
+        """
+        Given a list of sequences that are derived from mapped reads to multiple seq of a OG
+        we find the best corresponding mapped seq by comparing it with a representative sequence of the original OG using
+        pyopa local alignment and return the sequence with its highest score!
+        :return:
+        """
+        try:
+            frame = record.seq[0:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False)
+            best_translation = SeqRecord.SeqRecord(frame, id=self._species_name,
+                                                   description=record.description, name=record.name)
+        except:
+            raise ValueError("Problem with sequence format!", ref_og_seq.seq)
+        return best_translation
+
 
     def _get_protein(self, record):
         '''

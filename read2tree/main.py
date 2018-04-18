@@ -14,6 +14,7 @@
     -- David V Dylus, July--XX 2017
 '''
 import os
+import glob
 from datetime import date
 from timeit import default_timer as timer
 import read2tree
@@ -49,9 +50,9 @@ def parse_args(argv, exe_name, desc):
 
     arg_parser.add_argument('--standalone_path', default='.',
                             help='[Default is current directory] Path to '
-                                 'oma standalone directory.', required=True)
+                                 'oma standalone directory.')
 
-    arg_parser.add_argument('--reads', nargs='+', default=None, required=True,
+    arg_parser.add_argument('--reads', nargs='+', default=None,
                             help='Reads to be mapped to reference. If paired end '
                                  'add separated by space.')
 
@@ -75,11 +76,16 @@ def parse_args(argv, exe_name, desc):
                                  'by completeness compared to its reference sequence (number of ACGT basepairs '
                                  'vs length of sequence). By default, all sequences are selected.')
 
-    arg_parser.add_argument('--remove_species', default=None,
+    arg_parser.add_argument('--remove_species_mapping', default=None,
                             help='[Default is none] Remove species present in data set after '
                                  'mapping step completed and only do analysis on '
                                  'subset. Input is comma separated list without spaces, e.g. '
                                  'XXX,YYY,AAA.')
+
+    arg_parser.add_argument('--remove_species_ogs', default=None,
+                            help='[Default is none] Remove species present in data set after '
+                                 'mapping step completed to build OGs. Input is comma separated'
+                                 'list without spaces, e.g. XXX,YYY,AAA.')
 
     arg_parser.add_argument('--ngmlr_parameters', default=None,
                             help='[Default is none] In case this parameters need to be changed all 3 values '
@@ -105,6 +111,10 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('-s', '--species_name', default=None,
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
+
+    arg_parser.add_argument('--merge_all_mappings', action='store_true',
+                            help='In case multiple species were mapped to the same reference this '
+                            'allows to merge this mappings and build a tree with all included species!')
 
     # arg_parser.add_argument('--ref_og_aa_folder', default='.',
     #                         help='Path to preselected og_aa folder')
@@ -143,12 +153,7 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
-
-    if args.species_name:
-        species_name = args.species_name
-    else:
-        species_name = args.reads[0].split("/")[-1].split(".")[0]
-
+    progress = Progress(args)
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
@@ -156,7 +161,15 @@ def main(argv, exe_name, desc=''):
     # TODO: Check all given files and throw error if faulty
 
     # Read in orthologous groups
-    progress = Progress(args)
+
+    if args.merge_all_mappings:
+        progress.status = 3
+    else:
+        if args.species_name:
+            species_name = args.species_name
+        else:
+            species_name = args.reads[0].split("/")[-1].split(".")[0]
+
 
     if progress.status >= 1:
         ogset = OGSet(args, load=False)
@@ -172,12 +185,25 @@ def main(argv, exe_name, desc=''):
 
     if not args.reference:
         if progress.status >= 3:
-            mapper = Mapper(args, og_set=ogset.ogs, load=False)
+            if not args.merge_all_mappings:
+                mapper = Mapper(args, og_set=ogset.ogs, load=False)
+                ogset.add_mapped_seq_v2(mapper)
+                ogset.write_added_ogs()
+            else:
+                for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
+                    species_name = folder.split("03_mapping_")[-1]
+                    species_progress = Progress(args, species_name=species_name)
+                    if species_progress.status >= 3:
+                        print('--- Addition of {} to all ogs ---'.format(species_name))
+                        mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
+                        ogset.add_mapped_seq_v2(mapper, species_name=species_name)
+                ogset.write_added_ogs(folder_name="04_merged_OGs")
         else:
             mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
+            ogset.add_mapped_seq_v2(mapper)
+            ogset.write_added_ogs()
 
         if args.single_mapping is None:
-            ogset.add_mapped_seq_v2(mapper)
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             if concat_alignment:

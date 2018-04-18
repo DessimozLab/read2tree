@@ -6,6 +6,7 @@
 '''
 import os
 from read2tree.wrappers.treebuilders import Fasttree
+from read2tree.wrappers.treebuilders import Iqtree
 
 
 class TreeInference(object):
@@ -14,15 +15,19 @@ class TreeInference(object):
         print('--- Tree inference ---')
         self.args = args
 
-        if len(self.args.reads) == 2:
-            self._reads = self.args.reads
-            self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-        else:
-            self._reads = self.args.reads[0]
-            self._species_name = self._reads.split("/")[-1].split(".")[0]
+        if self.args.reads:
+            if len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+            else:
+                self._reads = self.args.reads[0]
+                self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         if self.args.species_name:
             self._species_name = self.args.species_name
+
+        if not self.args.reads and not self.args.species_name:
+            self._species_name = 'merge'
 
         self.tree = None
         if concat_alignment is not None:
@@ -32,8 +37,11 @@ class TreeInference(object):
         output_folder = self.args.output_path
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        fasttree_wrapper = Fasttree(concat_alignment, datatype="PROTEIN")
-        tree = fasttree_wrapper()
+        #fasttree_wrapper = Fasttree(concat_alignment, datatype="PROTEIN")
+        #tree = fasttree_wrapper()
+        iqtree_wrapper = Iqtree(concat_alignment, datatype="PROTEIN")
+        iqtree_wrapper.options.options['-m'].set_value('LG')
+        tree = iqtree_wrapper()
         with open(os.path.join(output_folder, "tree_" + self._species_name + ".nwk"), "w") as text_file:
             text_file.write("{};".format(tree))
         self.tree = "{};".format(tree)
