@@ -1,3 +1,4 @@
+import os
 import sys
 import getopt
 import glob
@@ -105,7 +106,7 @@ def is_species_mapped(species_id, output):
         if files:
             if len(files) == 10:
                 return True
-            else
+            else:
                 return False
         else:
             return False

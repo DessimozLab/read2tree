@@ -1,0 +1,2 @@
+#species,og,gene_id,partial_seq_completeness,full_seq_completeness,inferred_len,given_len,ref_len
+CIOSA,OG4,CIOSA10137,0.2948717948717949,0.2948717948717949,115,390,390
