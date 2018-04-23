@@ -256,7 +256,7 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Coturnix coturnix': 'SRR1596441', 'Crocodylus porosus': 'SRR5965270', 'Dromaius novaehollandiae':'SRR4437373', 'Falco sparverius':'SRR5270425'}
+    sra_dic = {'Archilochus colubris': 'SRR6148275', 'Limosa lapponica':' SRR6320795', 'Numida meleagris': 'SRR6305243', 'Pandion haliaetus': 'SRR3218042', 'Pelecanus occidentalis':'SRR1145758', 'Picus canus':'SRR3203240', 'Upupa epops':'SRR3203224', 'Coturnix coturnix': 'SRR1596441', 'Crocodylus porosus': 'SRR5965270', 'Dromaius novaehollandiae': 'SRR4437373', 'Falco sparverius': 'SRR5270425'}
 
     run_sge(sra_dic, out_folder)
 
