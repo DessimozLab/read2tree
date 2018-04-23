@@ -55,7 +55,7 @@ folder=%s
 cd $TMPDIR
 ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
 parallel-fastq-dump -s *.sra -t 4 -O . --split-files
-mkdir $folder/
+mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 mv *_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 mv *_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq""" % (species_id, sra, species_id)
     text_file = open('down_py_script.sh', "w")
@@ -229,7 +229,7 @@ def run_sge(sra_dic, output_folder):
                 print(p_rm.decode("utf-8"))
                 rm_jobid = p_rm.decode("utf-8").split(" ")[2]
                 time.sleep(0.1)
-           num_job_cycles += 1
+            num_job_cycles += 1
 
 def main():
 
