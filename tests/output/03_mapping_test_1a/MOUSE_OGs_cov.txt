@@ -1,6 +1,0 @@
-#species,og,gene_id,coverage,std
-MOUSE,OG1,MOUSE02300,nan,nan
-MOUSE,OG2,MOUSE14592,nan,nan
-MOUSE,OG3,MOUSE02492,nan,nan
-MOUSE,OG4,MOUSE21964,nan,nan
-MOUSE,OG5,MOUSE08260,nan,nan

@@ -113,6 +113,29 @@ def is_species_mapped(species_id, output):
     else:
         return False
 
+def output_shell(line):
+    """
+    Save output of shell line that has pipes
+    taken from: https://stackoverflow.com/questions/7389662/link-several-popen-commands-with-pipes
+    :param line:
+        :return:
+"""
+    try:
+        shell_command = subprocess.Popen(line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    except OSError:
+        return None
+    except ValueError:
+        return None
+
+    (output, err) = shell_command.communicate()
+    shell_command.wait()
+    if shell_command.returncode != 0:
+        print("Shell command failed to execute")
+        print(line)
+        return None
+
+    return output
+
 def run_sge(sra_dic, output_folder):
     num_job_cycles = 0
 
@@ -120,115 +143,80 @@ def run_sge(sra_dic, output_folder):
         species_id = get_five_letter_species_id(species)
         if not is_species_mapped(species_id, output_folder):  # check wether the mapping already exists
             if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
-                # Open a pipe to the qsub command.
-                output_download, input_download = Popen('qsub')
-
                 # Set up download string
                 job_string = get_download_string(species_id, sra)
 
-                # Send job_string to qsub
-                input_download.write(job_string)
-                input_download.close()
-
-                # Print your job and the system response to the screen as it's submitted
-                print(job_string)
-                print(output_download.read())
+                # Open a pipe to the qsub command.
+                p_download = output_shell(['qsub', job_string])
 
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
-                jobid = output_download.read().split("_")[2]
+                jobid = p_download.read().split("_")[2]
 
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa')):
-                    # Open a pipe to the qsub command.
-                    output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-
                     # Set up r2t string
-                    r2t_job_strin = get_r2t_string(species_id, ref)
+                    r2t_job_string = get_r2t_string(species_id, ref)
 
-                    # Send job_string to qsub
-                    input_r2t.write(r2t_job_strin)
-                    input_r2t.close()
+                    # Open a pipe to the qsub command.
+                    #output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
+                    p_download = output_shell(['qsub -hold_jid {}'.format(jobid), r2t_job_string])
 
-                    # Print your job and the system response to the screen as it's submitted
-                    print(r2t_job_strin)
-                    print(output_r2t.read())
-
-                    r2t_jobids.append(output_r2t.read().split("_")[2])
+                    # Append jobid of r2t
+                    r2t_jobids.append(p_download.read().split("_")[2])
 
                     time.sleep(0.1)
-
-                # Open a pipe to the qsub command.
-                output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
 
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)
 
-                # Send job_string to qsub
-                input_rm.write(rm_job_string)
-                input_rm.close()
+                # Open a pipe to the qsub command.
+                #output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
+                p_rm = output_shell(['qsub -hold_jid {}'.format(','.join(r2t_jobids)), rm_job_string])
 
                 # Print your job and the system response to the screen as it's submitted
-                print(rm_job_strin)
-                print(output_rm.read())
-                rm_jobid = output_rm.read().split("_")[2]
+                print(p_rm)
+                print(p_rm.read())
+                rm_jobid = p_rm.read().split("_")[2]
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
-                species_id = get_five_letter_species_id(species)
-                # Open a pipe to the qsub command.
-                output_download, input_download = Popen('qsub -hold_jid {}'.format(rm_jobid))
-
                 # Set up download string
                 job_string = get_download_string(species_id, sra)
 
-                # Send job_string to qsub
-                input_download.write(job_string)
-                input_download.close()
-
-                # Print your job and the system response to the screen as it's submitted
-                print(job_string)
-                print(output_download.read())
+                # Open a pipe to the qsub command.
+                p_download = output_shell(['qsub -hold_jid {}'.format(rm_jobid), job_string])
 
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
-                jobid = output_download.read().split("_")[2]
+                jobid = p_download.read().split("_")[2]
 
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa')):
-                    # Open a pipe to the qsub command.
-                    output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-
                     # Set up r2t string
-                    r2t_job_strin = get_r2t_string(species_id, ref)
+                    r2t_job_string = get_r2t_string(species_id, ref)
 
-                    # Send job_string to qsub
-                    input_r2t.write(r2t_job_strin)
-                    input_r2t.close()
+                    # Open a pipe to the qsub command.
+                    # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
+                    p_download = output_shell(['qsub -hold_jid {}'.format(jobid), r2t_job_string])
 
-                    # Print your job and the system response to the screen as it's submitted
-                    print(r2t_job_strin)
-                    print(output_r2t.read())
-
-                    r2t_jobids.append(output_r2t.read().split("_")[2])
+                    # Append jobid of r2t
+                    r2t_jobids.append(p_download.read().split("_")[2])
 
                     time.sleep(0.1)
 
-                # Open a pipe to the qsub command.
-                output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
-
                 # Set up r2t string
-                rm_job_strin = get_rm_string(species_id)
+                rm_job_string = get_rm_string(species_id)
 
-                # Send job_string to qsub
-                input_rm.write(rm_job_strin)
-                input_rm.close()
+                # Open a pipe to the qsub command.
+                # output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
+                p_rm = output_shell(['qsub -hold_jid {}'.format(','.join(r2t_jobids)), rm_job_string])
 
                 # Print your job and the system response to the screen as it's submitted
-                print(rm_job_strin)
-                print(output_rm.read())
-                rm_jobid = output_rm.read().split("_")[2]
+                print(p_rm)
+                print(p_rm.read())
+                rm_jobid = p_rm.read().split("_")[2]
                 time.sleep(0.1)
 
 def main():
