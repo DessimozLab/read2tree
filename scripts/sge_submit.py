@@ -41,55 +41,70 @@ def get_sra_dic(df):
 
 
 def get_download_string(species_id, sra):
-    download = """#!/bin/bash
-        #$ -l mem=4G
-        #$ -S /bin/bash
-        #$ -l h_rt=4:00:0
-        #$ -pe smp 4
-        #$ -l tmpfs=150G
-        #$ -j y
-        #$ -N %s
-        #$ -wd /home/ucbpdvd/Scratch/output
-        srr=%s
-        folder=%s
-        cd $TMPDIR
-        ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
-        parallel-fastq-dump -s *.sra -t 4 -O . --split-files
-        mkdir $folder/
-        mv *_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
-        mv *_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq""" % (species_id, sra, species_id)
-    return download
+    download = """
+    #!/bin/bash
+    #$ -l mem=4G
+    #$ -S /bin/bash
+    #$ -l h_rt=4:00:0
+    #$ -pe smp 4
+    #$ -l tmpfs=150G
+    #$ -j y
+    #$ -N %s
+    #$ -wd /home/ucbpdvd/Scratch/output
+    srr=%s
+    folder=%s
+    cd $TMPDIR
+    ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
+    parallel-fastq-dump -s *.sra -t 4 -O . --split-files
+    mkdir $folder/
+    mv *_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
+    mv *_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq""" % (species_id, sra, species_id)
+    text_file = open('down_py_script.sh', "w")
+    text_file.write(download)
+    text_file.close()
+    return 'down_py_script.sh'
 
 
 def get_r2t_string(species_id, reference):
-    job_string = """#!/bin/bash
-        #$ -l mem=4G
-        #$ -S /bin/bash
-        #$ -l h_rt=8:00:0
-        #$ -pe smp 4
-        #$ -l tmpfs=150G
-        #$ -j y
-        #$ -N r2t_%s
-        #$ -wd /home/ucbpdvd/Scratch/output
-        reads=/home/ucbpdvd/Scratch/avian/reads/%s
-        cd /home/ucbpdvd/Scratch/avian/r2t/
-        source activate r2t
-        python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (
+    job_string = """
+    #!/bin/bash
+    #$ -l mem=4G
+    #$ -S /bin/bash
+    #$ -l h_rt=8:00:0
+    #$ -pe smp 4
+    #$ -l tmpfs=150G
+    #$ -j y
+    #$ -N r2t_%s
+    #$ -wd /home/ucbpdvd/Scratch/output
+    reads=/home/ucbpdvd/Scratch/avian/reads/%s
+    cd /home/ucbpdvd/Scratch/avian/r2t/
+    source activate r2t
+    python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (
     species_id, species_id, species_id, species_id, reference)
-    return job_string
+
+    text_file = open('r2t_py_script.sh', "w")
+    text_file.write(job_string)
+    text_file.close()
+
+    return 'r2t_py_script.sh'
 
 
 def get_rm_string(species_id):
-    rm = """#!/bin/bash
-        #$ -l mem=4G
-        #$ -S /bin/bash
-        #$ -l h_rt=0:10:0
-        #$ -pe smp 1
-        #$ -j y
-        #$ -N rm_%s
-        #$ -wd /home/ucbpdvd/Scratch/output
-        rm -r /home/ucbpdvd/Scratch/avian/reads/%s""" % (species_id, species_id)
-    return rm
+    rm = """
+    #!/bin/bash
+    #$ -l mem=4G
+    #$ -S /bin/bash
+    #$ -l h_rt=0:10:0
+    #$ -pe smp 1
+    #$ -j y
+    #$ -N rm_%s
+    #$ -wd /home/ucbpdvd/Scratch/output
+    rm -r /home/ucbpdvd/Scratch/avian/reads/%s""" % (species_id, species_id)
+
+    text_file = open('rm_py_script.sh', "w")
+    text_file.write(rm)
+    text_file.close()
+    return 'rm_py_script.sh'
 
 
 def get_five_letter_species_id(species):
@@ -147,7 +162,7 @@ def run_sge(sra_dic, output_folder):
                 job_string = get_download_string(species_id, sra)
 
                 # Open a pipe to the qsub command.
-                p_download = output_shell(['qsub', job_string])
+                p_download = output_shell('qsub ' + job_string)
 
                 time.sleep(0.1)
 
@@ -161,7 +176,7 @@ def run_sge(sra_dic, output_folder):
 
                     # Open a pipe to the qsub command.
                     #output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell(['qsub -hold_jid {}'.format(jobid), r2t_job_string])
+                    p_download = output_shell('qsub -hold_jid {} {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
                     r2t_jobids.append(p_download.read().split("_")[2])
@@ -173,7 +188,7 @@ def run_sge(sra_dic, output_folder):
 
                 # Open a pipe to the qsub command.
                 #output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell(['qsub -hold_jid {}'.format(','.join(r2t_jobids)), rm_job_string])
+                p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 print(p_rm)
@@ -185,7 +200,7 @@ def run_sge(sra_dic, output_folder):
                 job_string = get_download_string(species_id, sra)
 
                 # Open a pipe to the qsub command.
-                p_download = output_shell(['qsub -hold_jid {}'.format(rm_jobid), job_string])
+                p_download = output_shell('qsub -hold_jid {} {}'.format(rm_jobid, job_string))
 
                 time.sleep(0.1)
 
@@ -199,7 +214,7 @@ def run_sge(sra_dic, output_folder):
 
                     # Open a pipe to the qsub command.
                     # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell(['qsub -hold_jid {}'.format(jobid), r2t_job_string])
+                    p_download = output_shell('qsub -hold_jid {} {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
                     r2t_jobids.append(p_download.read().split("_")[2])
@@ -211,7 +226,7 @@ def run_sge(sra_dic, output_folder):
 
                 # Open a pipe to the qsub command.
                 # output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell(['qsub -hold_jid {}'.format(','.join(r2t_jobids)), rm_job_string])
+                p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 print(p_rm)
