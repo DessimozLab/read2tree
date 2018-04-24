@@ -110,13 +110,19 @@ class Mapper(object):
         shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
         # call the WRAPPER here
-        if len(self._reads) == 2:
+        if len(self._reads) is 2:
             ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        else:
+        elif len(self._reads) is 1 and self.args.read_type is 'short':
+            ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+            ngm = ngm_wrapper()
+            bam_file = ngm['file']
+        elif len(self._reads) is 1 and self.args.read_type is 'long':
             ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
@@ -212,13 +218,19 @@ class Mapper(object):
             shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
             # call the WRAPPER here
-            if len(self._reads) == 2:
+            if len(self._reads) is 2 and self.args.read_type is 'short':
                 ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
-            else:
+            elif len(self._reads) is 1 and self.args.read_type is 'short':
+                ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
+                if self.args.threads is not None:
+                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+                ngm = ngm_wrapper()
+                bam_file = ngm['file']
+            elif len(self._reads) is 1 and self.args.read_type is 'long':
                 ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)

@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/read2tree/Mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/Mapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read2tree/Progress.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/Progress.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/read2tree/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/sge_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sge_submit.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -34,8 +34,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="427">
-              <caret line="205" column="35" selection-start-line="205" selection-start-column="35" selection-end-line="205" selection-end-column="35" />
+            <state relative-caret-position="354">
+              <caret line="58" column="31" selection-start-line="58" selection-start-column="31" selection-end-line="58" selection-end-column="31" />
               <folding>
                 <element signature="e#614#623#0" expanded="true" />
               </folding>
@@ -46,8 +46,8 @@
       <file leaf-file-name="Progress.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+            <state relative-caret-position="840">
+              <caret line="59" selection-start-line="59" selection-end-line="59" />
             </state>
           </provider>
         </entry>
@@ -55,7 +55,7 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3223">
+            <state relative-caret-position="7635">
               <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
               <folding>
                 <element signature="e#148#159#0" expanded="true" />
@@ -76,11 +76,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="428">
-              <caret line="74" column="53" selection-start-line="74" selection-start-column="53" selection-end-line="74" selection-end-column="53" />
+            <state relative-caret-position="2616">
+              <caret line="231" column="38" selection-start-line="231" selection-start-column="38" selection-end-line="231" selection-end-column="38" />
               <folding>
                 <element signature="e#309#321#0" expanded="true" />
               </folding>
@@ -106,14 +106,32 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="583">
-              <caret line="159" column="88" selection-start-line="159" selection-start-column="88" selection-end-line="159" selection-end-column="88" />
+            <state relative-caret-position="6154">
+              <caret line="362" lean-forward="true" selection-start-line="362" selection-end-line="362" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ngm.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="288">
+              <caret line="77" column="92" selection-start-line="77" selection-start-column="87" selection-end-line="77" selection-end-column="92" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ngmlr.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1140">
+              <caret line="87" column="65" selection-start-line="87" selection-start-column="65" selection-end-line="87" selection-end-column="65" />
             </state>
           </provider>
         </entry>
@@ -129,8 +147,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>all_cov</find>
-      <find>all_cs</find>
       <find>.dna</find>
       <find>SeqCompleteness</find>
       <find>Coverag</find>
@@ -159,6 +175,8 @@
       <find>def _output_shell(self, line):</find>
       <find>tmpfs</find>
       <find>single_mapping</find>
+      <find>sra</find>
+      <find>reads</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -180,6 +198,7 @@
       <replace>_seq_completeness</replace>
       <replace>seq_completeness</replace>
       <replace>all_sc</replace>
+      <replace>sra[0]</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -217,7 +236,6 @@
         <option value="$PROJECT_DIR$/read2tree/stats/Coverage.py" />
         <option value="$PROJECT_DIR$/scripts/monitor_folder_size.py" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/base_mapper.py" />
-        <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" />
         <option value="$PROJECT_DIR$/read2tree/Analyzer.py" />
         <option value="$PROJECT_DIR$/read2tree/stats/SeqCompletness.py" />
         <option value="$PROJECT_DIR$/scripts/adjust_mapping_names.py" />
@@ -235,10 +253,11 @@
         <option value="$PROJECT_DIR$/read2tree/Aligner.py" />
         <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
         <option value="$PROJECT_DIR$/read2tree/TreeInference.py" />
-        <option value="$PROJECT_DIR$/scripts/sge_submit.py" />
-        <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
-        <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/read2tree/Progress.py" />
+        <option value="$PROJECT_DIR$/read2tree/main.py" />
+        <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" />
+        <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
+        <option value="$PROJECT_DIR$/scripts/sge_submit.py" />
       </list>
     </option>
   </component>
@@ -271,6 +290,19 @@
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
+              <item name="wrappers" type="462c0819:PsiDirectoryNode" />
+              <item name="read_mappers" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -473,63 +505,52 @@
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="right" x="0" y="0" width="310" height="677" id="Documentation" order="6" side_tool="true" weight="0.1788269" />
+      <window_info anchor="right" x="0" y="0" width="430" height="857" id="Documentation" order="6" side_tool="true" weight="0.17944622" />
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29562435" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49033818" visible="true" weight="0.171459" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.29562435" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4941302" visible="true" weight="0.17305644" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="5" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25250357" />
+      <window_info id="Structure" order="1" sideWeight="0.5058698" side_tool="true" visible="true" weight="0.17305644" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49033818" visible="true" weight="0.171459" />
-      <window_info anchor="right" id="SciView" order="5" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="right" id="Data View" order="4" />
-      <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25250357" />
-      <window_info anchor="right" x="0" y="0" width="590" height="1217" id="Documentation" order="6" side_tool="true" weight="0.17950754" />
-      <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992327" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29562435" />
-      <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.100853786" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49033818" visible="true" weight="0.17305644" />
+      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="right" id="Data View" order="4" />
-      <window_info id="Structure" order="1" weight="0.24964131" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="5" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25250357" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Python Console" order="9" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992327" />
-      <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.23388773" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="right" id="Data View" order="4" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="right" x="0" y="0" width="430" height="857" id="Documentation" order="6" side_tool="true" visible="true" weight="0.17944622" />
+      <window_info anchor="right" id="Database" order="3" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29562435" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.2662407" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -771,20 +792,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="87" column="65" selection-start-line="87" selection-start-column="65" selection-end-line="87" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="693">
-          <caret line="90" column="41" selection-start-line="90" selection-start-column="31" selection-end-line="90" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/treebuilders/fasttree.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-552">
@@ -872,19 +879,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="583">
-          <caret line="159" column="88" selection-start-line="159" selection-start-column="88" selection-end-line="159" selection-end-column="88" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3223">
+        <state relative-caret-position="7635">
           <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
           <folding>
             <element signature="e#148#159#0" expanded="true" />
@@ -892,29 +889,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="840">
+          <caret line="59" selection-start-line="59" selection-end-line="59" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="205" column="35" selection-start-line="205" selection-start-column="35" selection-end-line="205" selection-end-column="35" />
+        <state relative-caret-position="354">
+          <caret line="58" column="31" selection-start-line="58" selection-start-column="31" selection-end-line="58" selection-end-column="31" />
           <folding>
             <element signature="e#614#623#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+        <state relative-caret-position="2616">
+          <caret line="231" column="38" selection-start-line="231" selection-start-column="38" selection-end-line="231" selection-end-column="38" />
+          <folding>
+            <element signature="e#309#321#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="428">
-          <caret line="74" column="53" selection-start-line="74" selection-start-column="53" selection-end-line="74" selection-end-column="53" />
+        <state relative-caret-position="288">
+          <caret line="77" column="92" selection-start-line="77" selection-start-column="87" selection-end-line="77" selection-end-column="92" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngmlr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1140">
+          <caret line="87" column="65" selection-start-line="87" selection-start-column="65" selection-end-line="87" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6154">
+          <caret line="362" lean-forward="true" selection-start-line="362" selection-end-line="362" />
           <folding>
-            <element signature="e#309#321#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -56,6 +56,11 @@ def parse_args(argv, exe_name, desc):
                             help='Reads to be mapped to reference. If paired end '
                                  'add separated by space.')
 
+    arg_parser.add_argument('--read_type', default='short',
+                            help='[Default is short reads] Type of reads to use for '
+                                 'mapping. Either ngm for short reads or ngmlr for long '
+                                 'will be used.')
+
     arg_parser.add_argument('--output_path', default='.', required=True,
                                 help='[Default is current directory] Path to '
                                      'output directory.')
