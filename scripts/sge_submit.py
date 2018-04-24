@@ -53,11 +53,15 @@ def get_download_string(species_id, sra):
 srr=%s
 folder=%s
 cd $TMPDIR
+echo 'In '$TMPDIR
 ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
+echo 'Finished Download'
 parallel-fastq-dump -s *.sra -t 4 -O . --split-files
+echo 'Finished Split Files'
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 mv *_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
-mv *_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq""" % (species_id, sra, species_id)
+mv *_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
+echo 'Finished moving files'""" % (species_id, sra, species_id)
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
     text_file.close()
@@ -105,7 +109,7 @@ rm -r /home/ucbpdvd/Scratch/avian/reads/%s""" % (species_id, species_id)
 
 def get_five_letter_species_id(species):
     tmp = species.split(" ")
-    new_id = tmp[0][:2].upper() + tmp[1][:3].upper()
+    new_id = tmp[0][:3].upper() + tmp[1][:2].upper()
     return new_id
 
 
@@ -159,7 +163,6 @@ def run_sge(sra_dic, output_folder):
 
                 # Open a pipe to the qsub command.
                 p_download = output_shell('qsub ' + job_string)
-                print(p_download)
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
@@ -187,8 +190,6 @@ def run_sge(sra_dic, output_folder):
                 p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
-                print(p_rm)
-                print(p_rm.decode("utf-8"))
                 rm_jobid = p_rm.decode("utf-8").split(" ")[2]
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
@@ -225,8 +226,6 @@ def run_sge(sra_dic, output_folder):
                 p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
-                print(p_rm)
-                print(p_rm.decode("utf-8"))
                 rm_jobid = p_rm.decode("utf-8").split(" ")[2]
                 time.sleep(0.1)
             num_job_cycles += 1
@@ -256,7 +255,7 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Archilochus colubris': 'SRR6148275', 'Limosa lapponica':' SRR6320795', 'Numida meleagris': 'SRR6305243', 'Pandion haliaetus': 'SRR3218042', 'Pelecanus occidentalis':'SRR1145758', 'Picus canus':'SRR3203240', 'Upupa epops':'SRR3203224', 'Coturnix coturnix': 'SRR1596441', 'Crocodylus porosus': 'SRR5965270', 'Dromaius novaehollandiae': 'SRR4437373', 'Falco sparverius': 'SRR5270425'}
+    sra_dic = {'Archilochus colubris': 'SRR6148275', 'Limosa lapponica': 'SRR6320795', 'Numida meleagris': 'SRR6305243', 'Pandion haliaetus': 'SRR3218042', 'Pelecanus occidentalis':'SRR1145758', 'Picus canus':'SRR3203240', 'Upupa epops':'SRR3203224', 'Coturnix coturnix': 'SRR1596441', 'Crocodylus porosus': 'SRR5965270', 'Dromaius novaehollandiae': 'SRR4437373', 'Falco sparverius': 'SRR5270425'}
 
     run_sge(sra_dic, out_folder)
 
