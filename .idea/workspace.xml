@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/sge_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sge_submit.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read2tree/Mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/Mapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read2tree/Progress.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/Progress.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/read2tree/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -32,8 +34,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="99">
-              <caret line="183" column="22" selection-start-line="183" selection-start-column="22" selection-end-line="183" selection-end-column="22" />
+            <state relative-caret-position="427">
+              <caret line="205" column="35" selection-start-line="205" selection-start-column="35" selection-end-line="205" selection-end-column="35" />
               <folding>
                 <element signature="e#614#623#0" expanded="true" />
               </folding>
@@ -44,44 +46,8 @@
       <file leaf-file-name="Progress.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="adjust_mapping_names.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="45" selection-start-line="45" selection-end-line="45" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="concat_alignments.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/concat_alignments.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-287">
-              <caret line="20" column="24" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="161" column="40" lean-forward="true" selection-start-line="161" selection-start-column="40" selection-end-line="161" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="get_reconstructed_seq_by_species.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/get_reconstructed_seq_by_species.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" selection-start-line="5" selection-end-line="5" />
+            <state relative-caret-position="399">
+              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
             </state>
           </provider>
         </entry>
@@ -89,7 +55,7 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1220">
+            <state relative-caret-position="3223">
               <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
               <folding>
                 <element signature="e#148#159#0" expanded="true" />
@@ -98,11 +64,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="OMAOutputParser.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read2tree/parser/OMAOutputParser.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1605">
+              <caret line="107" column="17" selection-start-line="107" selection-start-column="17" selection-end-line="107" selection-end-column="17" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="441" column="4" lean-forward="true" selection-start-line="441" selection-start-column="4" selection-end-line="462" selection-end-column="21" />
+            <state relative-caret-position="428">
+              <caret line="74" column="53" selection-start-line="74" selection-start-column="53" selection-end-line="74" selection-end-column="53" />
               <folding>
                 <element signature="e#309#321#0" expanded="true" />
               </folding>
@@ -110,23 +88,32 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Aligner.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/Aligner.py">
+      <file leaf-file-name="Coverage.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read2tree/stats/Coverage.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="19" column="24" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
-              <folding>
-                <element signature="e#155#164#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="210">
+              <caret line="15" column="26" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TreeInference.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/read2tree/TreeInference.py">
+      <file leaf-file-name="SeqCompleteness.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/read2tree/stats/SeqCompleteness.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="360">
-              <caret line="26" column="55" selection-start-line="26" selection-start-column="55" selection-end-line="26" selection-end-column="55" />
+              <caret line="25" column="8" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="583">
+              <caret line="159" column="88" selection-start-line="159" selection-start-column="88" selection-end-line="159" selection-end-column="88" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -142,7 +129,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_output_shell(</find>
       <find>all_cov</find>
       <find>all_cs</find>
       <find>.dna</find>
@@ -172,6 +158,7 @@
       <find>progress</find>
       <find>def _output_shell(self, line):</find>
       <find>tmpfs</find>
+      <find>single_mapping</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -242,16 +229,16 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
-        <option value="$PROJECT_DIR$/read2tree/Progress.py" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/treebuilders/iqtree.py" />
-        <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/scripts/get_reconstructed_seq_by_species.py" />
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/parser.py" />
         <option value="$PROJECT_DIR$/read2tree/Aligner.py" />
         <option value="$PROJECT_DIR$/read2tree/OGSet.py" />
         <option value="$PROJECT_DIR$/read2tree/TreeInference.py" />
         <option value="$PROJECT_DIR$/scripts/sge_submit.py" />
+        <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
+        <option value="$PROJECT_DIR$/read2tree/main.py" />
+        <option value="$PROJECT_DIR$/read2tree/Progress.py" />
       </list>
     </option>
   </component>
@@ -283,7 +270,7 @@
             <path>
               <item name="read2tree" type="b2602c69:ProjectViewProjectNode" />
               <item name="read2tree" type="462c0819:PsiDirectoryNode" />
-              <item name="scripts" type="462c0819:PsiDirectoryNode" />
+              <item name="read2tree" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -500,37 +487,49 @@
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49033818" visible="true" weight="0.171459" />
+      <window_info anchor="right" id="SciView" order="5" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="right" id="Data View" order="4" />
+      <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25250357" />
       <window_info anchor="right" x="0" y="0" width="590" height="1217" id="Documentation" order="6" side_tool="true" weight="0.17950754" />
+      <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992327" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29562435" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.100853786" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="right" id="Data View" order="4" />
       <window_info id="Structure" order="1" weight="0.24964131" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Python Console" order="9" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992327" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.23388773" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Python Console" order="9" />
+      <window_info id="Favorites" order="2" side_tool="true" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -572,16 +571,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_ogset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_ogset.py" />
     <entry file="file://$PROJECT_DIR$/read2tree/wrappers/read_mappers/parser.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1005">
@@ -710,8 +700,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/parser/OMAOutputParser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1545">
+        <state relative-caret-position="1605">
           <caret line="107" column="17" selection-start-line="107" selection-start-column="17" selection-end-line="107" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -858,13 +851,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/adjust_mapping_names.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="570">
@@ -886,19 +872,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/main.py">
+    <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="99">
-          <caret line="183" column="22" selection-start-line="183" selection-start-column="22" selection-end-line="183" selection-end-column="22" />
+        <state relative-caret-position="583">
+          <caret line="159" column="88" selection-start-line="159" selection-start-column="88" selection-end-line="159" selection-end-column="88" />
           <folding>
-            <element signature="e#614#623#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1220">
+        <state relative-caret-position="3223">
           <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
           <folding>
             <element signature="e#148#159#0" expanded="true" />
@@ -906,20 +892,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="441" column="4" lean-forward="true" selection-start-line="441" selection-start-column="4" selection-end-line="462" selection-end-column="21" />
+        <state relative-caret-position="427">
+          <caret line="205" column="35" selection-start-line="205" selection-start-column="35" selection-end-line="205" selection-end-column="35" />
           <folding>
-            <element signature="e#309#321#0" expanded="true" />
+            <element signature="e#614#623#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
+    <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="161" column="40" lean-forward="true" selection-start-line="161" selection-start-column="40" selection-end-line="161" selection-end-column="40" />
+        <state relative-caret-position="399">
+          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="428">
+          <caret line="74" column="53" selection-start-line="74" selection-start-column="53" selection-end-line="74" selection-end-column="53" />
+          <folding>
+            <element signature="e#309#321#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

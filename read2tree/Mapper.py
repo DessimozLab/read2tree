@@ -72,7 +72,6 @@ class Mapper(object):
                 else:
                     self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
                     self.mapped_records = self._map_reads_to_single_reference(ref_set)
-                    #self._clean_up_tmp_files_single(self.ref_species)
                     if self.progress.check_mapping():
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:

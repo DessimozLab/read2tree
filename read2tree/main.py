@@ -171,9 +171,9 @@ def main(argv, exe_name, desc=''):
             species_name = args.reads[0].split("/")[-1].split(".")[0]
 
 
-    if progress.status >= 1:
+    if progress.status >= 1 and args.single_mapping is None:
         ogset = OGSet(args, load=False)
-    else:
+    elif progress.status < 1 and args.single_mapping is None:
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output)
@@ -199,11 +199,11 @@ def main(argv, exe_name, desc=''):
                         ogset.add_mapped_seq_v2(mapper, species_name=species_name)
                 ogset.write_added_ogs(folder_name="04_merged_OGs")
         else:
-            mapper = Mapper(args, ref_set=reference.ref, og_set=ogset.ogs)
-            ogset.add_mapped_seq_v2(mapper)
-            ogset.write_added_ogs()
+            mapper = Mapper(args, ref_set=reference.ref)
 
         if args.single_mapping is None:
+            ogset.add_mapped_seq_v2(mapper)
+            ogset.write_added_ogs()
             alignments = Aligner(args, ogset.mapped_ogs)
             concat_alignment = alignments.concat_alignment()
             if concat_alignment:
