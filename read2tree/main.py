@@ -203,8 +203,10 @@ def main(argv, exe_name, desc=''):
                         mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
                         ogset.add_mapped_seq_v2(mapper, species_name=species_name)
                 ogset.write_added_ogs(folder_name="04_merged_OGs")
-        else:
+        elif progress.status < 3 and args.single_mapping:
             mapper = Mapper(args, ref_set=reference.ref)
+        else:
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
 
         if args.single_mapping is None:
             ogset.add_mapped_seq_v2(mapper)

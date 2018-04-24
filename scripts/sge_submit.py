@@ -249,7 +249,8 @@ def output_shell(line):
 
 def run_sge(sra_dic, output_folder):
     num_job_cycles = 0
-
+    rm_job_id_idx = 0
+    rm_job_id = []
     for species, sra in sra_dic.items():
         species_id = get_five_letter_species_id(species)
         if not is_species_mapped(species_id, output_folder):  # check whether the mapping already exists
@@ -287,14 +288,14 @@ def run_sge(sra_dic, output_folder):
                 p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
-                rm_jobid = p_rm.decode("utf-8").split(" ")[2]
+                rm_job_id.append(p_rm.decode("utf-8").split(" ")[2])
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
                 # Set up download string
                 job_string = get_download_string(species_id, sra[0], se_pe=sra[1])
 
                 # Open a pipe to the qsub command.
-                p_download = output_shell('qsub -hold_jid {} {}'.format(rm_jobid, job_string))
+                p_download = output_shell('qsub -hold_jid {} {}'.format(rm_job_id[rm_job_id_idx], job_string))
 
                 time.sleep(0.1)
 
@@ -323,7 +324,8 @@ def run_sge(sra_dic, output_folder):
                 p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
-                rm_jobid = p_rm.decode("utf-8").split(" ")[2]
+                rm_job_id.append(p_rm.decode("utf-8").split(" ")[2])
+                rm_job_id_idx += 1
                 time.sleep(0.1)
             num_job_cycles += 1
 
