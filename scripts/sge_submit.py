@@ -55,12 +55,12 @@ srr=%s
 folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
-cd /home/ucbpdvd/Scratch/avian/reads/$folder
+cd $TMPDIR
 wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz
 wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz
 echo 'Finished download'
-gunzip -c $srr_1.fastq.gz > $folder\_1.fq
-gunzip -c $srr_2.fastq.gz > $folder\_2fq
+gunzip -c $srr_1.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
+gunzip -c $srr_2.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
@@ -76,10 +76,10 @@ srr=%s
 folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
-cd /home/ucbpdvd/Scratch/avian/reads/$folder
+cd $TMPDIR
 wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz
 echo 'Finished download'
-gunzip -c $srr.fastq.gz > $folder\_1.fq
+gunzip -c $srr.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
@@ -354,13 +354,12 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Pelecanus occidentalis': ['SRR1145758', 'PAIRED', 'short'], 'Dromaius novaehollandiae': ['SRR4437373', 'SINGLE', 'short'],
+    sra_dic = {'Dromaius novaehollandiae': ['SRR4437373', 'SINGLE', 'short'], 'Crocodylus porosus': ['SRR5965270', 'PAIRED', 'short'],
                'Anser canagicus': ['ERR2193512', 'PAIRED', 'short'],
                'Apteryx matelli': ['ERR519287', 'PAIRED', 'short'], 'Archilochus colubris': ['SRR6148275', 'PAIRED', 'short'],
                'Limosa lapponica': ['SRR6320795', 'PAIRED', 'short'], 'Numida meleagris': ['SRR6305243', 'SINGLE', 'short'],
                'Pandion haliaetus': ['SRR3218042', 'PAIRED', 'short'], 'Picus canus': ['SRR3203240', 'PAIRED', 'short'],
                'Upupa epops': ['SRR3203224', 'PAIRED', 'short'], 'Coturnix coturnix': ['SRR1596441', 'PAIRED', 'short'],
-               'Crocodylus porosus': ['SRR5965270', 'PAIRED', 'short'],
                'Falco sparverius':['SRR5270425', 'PAIRED', 'short']}
 
     run_sge(sra_dic, out_folder)
