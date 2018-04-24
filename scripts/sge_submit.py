@@ -46,7 +46,7 @@ def get_download_string(species_id, sra):
 #$ -S /bin/bash
 #$ -l h_rt=4:00:0
 #$ -pe smp 4
-#$ -l tmpfs=150G
+#$ -l tmpfs=100G
 #$ -j y
 #$ -N %s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -55,12 +55,13 @@ folder=%s
 cd $TMPDIR
 echo 'In '$TMPDIR
 ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
-echo 'Finished Download'
-parallel-fastq-dump -s *.sra -t 4 -O . --split-files
-echo 'Finished Split Files'
+echo 'Finished download'
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
-mv *_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
-mv *_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
+echo 'Created read folder'
+parallel-fastq-dump -s *.sra -t 4 -O /home/ucbpdvd/Scratch/avian/reads/$folder/ --split-files
+echo 'Finished Split Files'
+mv /home/ucbpdvd/Scratch/avian/reads/$folder/*_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
+mv /home/ucbpdvd/Scratch/avian/reads/$folder/*_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
@@ -74,7 +75,7 @@ def get_r2t_string(species_id, reference):
 #$ -S /bin/bash
 #$ -l h_rt=8:00:0
 #$ -pe smp 4
-#$ -l tmpfs=150G
+#$ -l tmpfs=100G
 #$ -j y
 #$ -N r2t_%s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -114,9 +115,8 @@ def get_five_letter_species_id(species):
 
 
 def is_species_mapped(species_id, output):
-    mapped = [folder for folder in glob.glob(os.path.join(output, '03_*')) if species_id in folder]
-    if mapped:
-        mapped_folder = os.path.join(output, mapped_folder[0])
+    if os.path.exists(os.path.join(output, '03_mapping_'+species_id+'_1')):
+        mapped_folder = os.path.join(output, '03_mapping_'+species_id+'_1')
         files = [f for f in glob.glob(os.path.join(mapped_folder, "*.fa"))]
         if files:
             if len(files) == 10:
@@ -156,7 +156,8 @@ def run_sge(sra_dic, output_folder):
 
     for species, sra in sra_dic.items():
         species_id = get_five_letter_species_id(species)
-        if not is_species_mapped(species_id, output_folder):  # check wether the mapping already exists
+        if not is_species_mapped(species_id, output_folder):  # check whether the mapping already exists
+            print('Submitting species {} with species id {}!'.format(species, species_id))
             if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
                 job_string = get_download_string(species_id, sra)
