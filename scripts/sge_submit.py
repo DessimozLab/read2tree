@@ -56,8 +56,8 @@ folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
 cd /home/ucbpdvd/Scratch/avian/reads/$folder
-wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr_1.fastq.gz
-wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr_2.fastq.gz
+wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz
+wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz
 echo 'Finished download'
 gunzip -c $srr_1.fastq.gz > $folder\_1.fq
 gunzip -c $srr_2.fastq.gz > $folder\_2fq

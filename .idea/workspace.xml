@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/read2tree/Mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/Mapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read2tree/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/sge_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sge_submit.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -109,8 +106,8 @@
       <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6154">
-              <caret line="362" lean-forward="true" selection-start-line="362" selection-end-line="362" />
+            <state relative-caret-position="274">
+              <caret line="62" column="40" lean-forward="true" selection-start-line="62" selection-start-column="40" selection-end-line="62" selection-end-column="40" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -510,12 +507,12 @@
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.29562435" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4941302" visible="true" weight="0.17305644" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.29562435" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4939394" visible="true" weight="0.17305644" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="5" />
-      <window_info id="Structure" order="1" sideWeight="0.5058698" side_tool="true" visible="true" weight="0.17305644" />
+      <window_info id="Structure" order="1" sideWeight="0.5060606" side_tool="true" visible="true" weight="0.17305644" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -932,8 +929,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6154">
-          <caret line="362" lean-forward="true" selection-start-line="362" selection-end-line="362" />
+        <state relative-caret-position="274">
+          <caret line="62" column="40" lean-forward="true" selection-start-line="62" selection-start-column="40" selection-end-line="62" selection-end-column="40" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
