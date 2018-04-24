@@ -94,8 +94,8 @@
       <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
-              <caret line="361" column="120" selection-start-line="361" selection-start-column="120" selection-end-line="361" selection-end-column="120" />
+            <state relative-caret-position="303">
+              <caret line="59" column="181" selection-start-line="59" selection-start-column="181" selection-end-line="59" selection-end-column="181" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -932,8 +932,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="361" column="120" selection-start-line="361" selection-start-column="120" selection-end-line="361" selection-end-column="120" />
+        <state relative-caret-position="303">
+          <caret line="59" column="181" selection-start-line="59" selection-start-column="181" selection-end-line="59" selection-end-column="181" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

@@ -47,7 +47,7 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
 #$ -S /bin/bash
 #$ -l h_rt=4:00:0
 #$ -pe smp 1
-#$ -l tmpfs=15G
+#$ -l tmpfs=100G
 #$ -j y
 #$ -N %s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -56,8 +56,8 @@ folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
 cd $TMPDIR
-wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz
-wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz .
 echo 'Finished download'
 gunzip -c $srr_1.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 gunzip -c $srr_2.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
@@ -68,7 +68,7 @@ echo 'Finished moving files'""" % (species_id, sra, species_id)
 #$ -S /bin/bash
 #$ -l h_rt=4:00:0
 #$ -pe smp 1
-#$ -l tmpfs=15G
+#$ -l tmpfs=100G
 #$ -j y
 #$ -N %s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -77,7 +77,7 @@ folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
 cd $TMPDIR
-wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz .
 echo 'Finished download'
 gunzip -c $srr.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
