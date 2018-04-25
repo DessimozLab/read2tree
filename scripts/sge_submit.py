@@ -45,7 +45,7 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=4:00:0
+#$ -l h_rt=6:00:0
 #$ -pe smp 1
 #$ -l tmpfs=100G
 #$ -j y
@@ -59,14 +59,14 @@ cd $TMPDIR
 ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz .
 ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz .
 echo 'Finished download'
-gunzip -c $srr_1.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
-gunzip -c $srr_2.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
+gunzip -c $srr\_1.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
+gunzip -c $srr\_2.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=4:00:0
+#$ -l h_rt=6:00:0
 #$ -pe smp 1
 #$ -l tmpfs=100G
 #$ -j y
@@ -85,7 +85,7 @@ echo 'Finished moving files'""" % (species_id, sra, species_id)
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=4:00:0
+#$ -l h_rt=6:00:0
 #$ -pe smp 4
 #$ -l tmpfs=100G
 #$ -j y
@@ -99,16 +99,16 @@ echo 'In '$TMPDIR
 echo 'Finished download'
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
-parallel-fastq-dump -s *.sra -t 4 -O /home/ucbpdvd/Scratch/avian/reads/$folder/ --split-files
+parallel-fastq-dump -s *.sra -t 4 -O . --tmpdir . --split-files
 echo 'Finished getting fastq from sra and split files'
-mv /home/ucbpdvd/Scratch/avian/reads/$folder/*_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
-mv /home/ucbpdvd/Scratch/avian/reads/$folder/*_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
+mv *\_1.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
+mv *\_2.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=4:00:0
+#$ -l h_rt=6:00:0
 #$ -pe smp 4
 #$ -l tmpfs=100G
 #$ -j y
@@ -122,9 +122,9 @@ echo 'In '$TMPDIR
 echo 'Finished download'
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
-parallel-fastq-dump -s *.sra -t 4 -O /home/ucbpdvd/Scratch/avian/reads/$folder/
+parallel-fastq-dump -s *.sra -t 4 -O . --tmpdir .
 echo 'Finished getting fastq from sra'
-mv /home/ucbpdvd/Scratch/avian/reads/$folder/*.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
+mv *.fastq /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)
 
     text_file = open('down_py_script.sh', "w")
@@ -139,9 +139,9 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
         job_string = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=8:00:0
+#$ -l h_rt=12:00:0
 #$ -pe smp 4
-#$ -l tmpfs=100G
+#$ -l tmpfs=120G
 #$ -j y
 #$ -N r2t_%s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -153,9 +153,9 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /ho
         job_string = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=8:00:0
+#$ -l h_rt=12:00:0
 #$ -pe smp 4
-#$ -l tmpfs=100G
+#$ -l tmpfs=120G
 #$ -j y
 #$ -N r2t_%s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -168,9 +168,9 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /ho
         job_string = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=8:00:0
+#$ -l h_rt=12:00:0
 #$ -pe smp 4
-#$ -l tmpfs=100G
+#$ -l tmpfs=120G
 #$ -j y
 #$ -N r2t_%s
 #$ -wd /home/ucbpdvd/Scratch/output
@@ -354,13 +354,8 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Dromaius novaehollandiae': ['SRR4437373', 'SINGLE', 'short'], 'Crocodylus porosus': ['SRR5965270', 'PAIRED', 'short'],
-               'Anser canagicus': ['ERR2193512', 'PAIRED', 'short'],
-               'Apteryx matelli': ['ERR519287', 'PAIRED', 'short'], 'Archilochus colubris': ['SRR6148275', 'PAIRED', 'short'],
-               'Limosa lapponica': ['SRR6320795', 'PAIRED', 'short'], 'Numida meleagris': ['SRR6305243', 'SINGLE', 'short'],
-               'Pandion haliaetus': ['SRR3218042', 'PAIRED', 'short'], 'Picus canus': ['SRR3203240', 'PAIRED', 'short'],
-               'Upupa epops': ['SRR3203224', 'PAIRED', 'short'], 'Coturnix coturnix': ['SRR1596441', 'PAIRED', 'short'],
-               'Falco sparverius':['SRR5270425', 'PAIRED', 'short']}
+    sra_dic = {'Anser canagicus': ['ERR2193512', 'PAIRED', 'short'], 'Apteryx matelli': ['ERR519287', 'PAIRED', 'short'],
+               'Archilochus colubris': ['SRR6148275', 'PAIRED', 'short'], 'Numida meleagris': ['SRR6305243', 'SINGLE', 'short']}
 
     run_sge(sra_dic, out_folder)
 

@@ -384,6 +384,8 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
+        if self.args.single_mapping:
+            print("--- POSTPROCESSING MAPPING FOR {} ---".format(self._species_name.upper()))
 
         if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
             sam_file = bam_file
@@ -391,15 +393,21 @@ class Mapper(object):
             if os.path.exists(sam_file):
                 self._output_shell(
                     'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+        if self.args.single_mapping:
+            print("---- Samtools view completed for {}".format(self._species_name))
 
         if os.path.exists(bam_file):
             self._output_shell(
                 'samtools sort -m 2G  -@ ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
+        if self.args.single_mapping:
+            print("---- Samtools sort completed for {} ".format(self._species_name))
 
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
                 'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
             # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
+        if self.args.single_mapping:
+            print("---- Samtools index completed for {} ".format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
 
@@ -413,6 +421,8 @@ class Mapper(object):
             self._bin_reads(ref_file, outfile_name + '_sorted.bam')
 
         consensus = self._build_consensus_seq_v2(ref_file, outfile_name + '_sorted.bam')
+        if self.args.single_mapping:
+            print("---- Consensus sequences completed for mapping of {} against {} ---".format(self._species_name, self.args.single_mapping))
 
         all_consensus = []
         if consensus:
