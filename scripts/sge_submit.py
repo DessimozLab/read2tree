@@ -56,8 +56,8 @@ folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
 cd $TMPDIR
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz .
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/$srr/$srr\_1.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/$srr/$srr\_2.fastq.gz .
 echo 'Finished download'
 gunzip -c $srr\_1.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 gunzip -c $srr\_2.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_2.fq
@@ -77,7 +77,7 @@ folder=%s
 mkdir /home/ucbpdvd/Scratch/avian/reads/$folder
 echo 'Created read folder'
 cd $TMPDIR
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/$srr/$srr.fastq.gz .
 echo 'Finished download'
 gunzip -c $srr.fastq.gz > /home/ucbpdvd/Scratch/avian/reads/$folder/$folder\_1.fq
 echo 'Finished moving files'""" % (species_id, sra, species_id)

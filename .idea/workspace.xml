@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/read2tree/Mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/read2tree/Mapper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/lsf_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/lsf_submit.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/sge_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sge_submit.py" afterDir="false" />
     </list>
@@ -79,8 +78,8 @@
       <file leaf-file-name="lsf_submit.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1249">
-              <caret line="119" column="37" selection-start-line="119" selection-start-column="37" selection-end-line="119" selection-end-column="37" />
+            <state relative-caret-position="277">
+              <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -100,8 +99,8 @@
       <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-638">
-              <caret line="47" column="12" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+            <state relative-caret-position="-3983">
+              <caret line="79" column="153" selection-start-line="79" selection-start-column="153" selection-end-line="79" selection-end-column="153" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -147,7 +146,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Coverag</find>
       <find>shell</find>
       <find>shell comm</find>
       <find>print</find>
@@ -175,8 +173,9 @@
       <find>single_mapping</find>
       <find>sra</find>
       <find>reads</find>
-      <find>Pel</find>
       <find>%s</find>
+      <find>Pel</find>
+      <find>/home/ucbpdvd/Scratch/avian</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -198,8 +197,9 @@
       <replace>_seq_completeness</replace>
       <replace>seq_completeness</replace>
       <replace>all_sc</replace>
-      <replace>sra[0]</replace>
       <replace>{}</replace>
+      <replace>sra[0]</replace>
+      <replace>/scratch/beegfs/weekly/ddylus/avian</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -503,8 +503,8 @@
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
-      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.21356978" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49411765" visible="true" weight="0.12907068" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.21356978" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49411765" visible="true" weight="0.12907068" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="5" />
@@ -918,8 +918,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1249">
-          <caret line="119" column="37" selection-start-line="119" selection-start-column="37" selection-end-line="119" selection-end-column="37" />
+        <state relative-caret-position="277">
+          <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
@@ -928,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-638">
-          <caret line="47" column="12" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+        <state relative-caret-position="-3983">
+          <caret line="79" column="153" selection-start-line="79" selection-start-column="153" selection-end-line="79" selection-end-column="153" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

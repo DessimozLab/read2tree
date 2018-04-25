@@ -150,9 +150,9 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
-cd /home/ucbpdvd/Scratch/avian/r2t/
+cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq $reads/{}_2.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(species_id, species_id, species_id, species_id, reference)
+python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq $reads/{}_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
 #BSUB -o {}.o%J
@@ -164,9 +164,9 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /ho
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
-cd /home/ucbpdvd/Scratch/avian/r2t/
+cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(
+python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(
         species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
@@ -179,9 +179,9 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /ho
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
-cd /home/ucbpdvd/Scratch/avian/r2t/
+cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {} --threads 4 --min_species 8 --read_type long""".format(
+python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8 --read_type long""".format(
             species_id, species_id, species_id, reference)
 
     text_file = open('r2t_py_script.sh', "w")
