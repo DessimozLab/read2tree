@@ -44,8 +44,8 @@ def get_sra_dic(df):
 def get_download_string(species_id, sra, se_pe='PAIRED'):
     if 'ERR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
-#BSUB -o down_%s.o%sJ
-#BSUB -e down_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
 #BSUB -n 4
@@ -67,8 +67,8 @@ gunzip -c $srr\_2.fastq.gz > $speciesid\_2.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
-#BSUB -o down_%s.o%sJ
-#BSUB -e down_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
 #BSUB -n 4
@@ -88,8 +88,8 @@ gunzip -c $srr.fastq.gz > $speciesid\_1.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
-#BSUB -o down_%s.o%sJ
-#BSUB -e down_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
 #BSUB -n 4
@@ -112,8 +112,8 @@ mv *\_2.fastq $speciesid\_2.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
-#BSUB -o down_%s.o%sJ
-#BSUB -e down_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
 #BSUB -n 4
@@ -144,42 +144,42 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
     if se_pe is 'PAIRED' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o r2t_%s.o%sJ
-#BSUB -e r2t_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -R "rusage[mem=10000]"
+#BSUB -M 10000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o r2t_%s.o%sJ
-#BSUB -e r2t_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -R "rusage[mem=10000]"
+#BSUB -M 10000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
-#BSUB -o r2t_%s.o%sJ
-#BSUB -e r2t_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -R "rusage[mem=10000]"
+#BSUB -M 10000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
@@ -194,8 +194,8 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 
 def get_rm_string(species_id):
     rm = """#!/bin/bash
-#BSUB -o rm_%s.o%sJ
-#BSUB -e rm_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/rm_%s.o%sJ
+#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/rm_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J rm_%s
 #BSUB -n 1
@@ -362,13 +362,9 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Zosterops minutus': ['SRR2145255', 'SINGLE', 'short'],
- 'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short'],
- 'Psittirostra psittacea': ['SRR3181051', 'SINGLE', 'short'],
- 'Rhipidura javanica': ['SRR2968757', 'PAIRED', 'short'],
+    sra_dic = {'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short'],
  'Zimmerius acer': ['SRR1021717', 'PAIRED', 'short'],
  'Upupa epops': ['SRR3203224', 'PAIRED', 'short'],
- 'Zosterops inornatus': ['SRR2145254', 'SINGLE', 'short'],
  'Pinguinus impennis': ['SRR3178397', 'SINGLE', 'short'],
  'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short'],
  'Zonotrichia querula': ['SRR2937463', 'PAIRED', 'short'],
