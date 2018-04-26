@@ -291,7 +291,8 @@ def run_lsf(sra_dic, output_speciesid):
 
                 # Open a pipe to the bsub command.
                 #output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell('bsub -w "{}" < {}'.format('&&'.join('done('+r2t_jobids+')'), rm_job_string))
+                r2t_jobids_done = ['done(' + r + ')' for r in r2t_jobids]
+                p_rm = output_shell('bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
@@ -327,7 +328,8 @@ def run_lsf(sra_dic, output_speciesid):
 
                 # Open a pipe to the bsub command.
                 # output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell('bsub -w "{}" < {}'.format('&&'.join('done('+r2t_jobids+')'), rm_job_string))
+                r2t_jobids_done = ['done('+r+')' for r in r2t_jobids]
+                p_rm = output_shell('bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))

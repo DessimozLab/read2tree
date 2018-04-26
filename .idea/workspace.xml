@@ -76,8 +76,8 @@
       <file leaf-file-name="lsf_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="329" column="66" selection-start-line="329" selection-start-column="66" selection-end-line="329" selection-end-column="66" />
+            <state relative-caret-position="102">
+              <caret line="328" column="50" lean-forward="true" selection-start-line="328" selection-start-column="50" selection-end-line="328" selection-end-column="50" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -144,7 +144,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>shell com</find>
       <find>FASTAwr</find>
       <find>generic</find>
       <find>fastawri</find>
@@ -174,6 +173,7 @@
       <find>python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree</find>
       <find>Pel</find>
       <find>{}</find>
+      <find>&amp;&amp;</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -928,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="329" column="66" selection-start-line="329" selection-start-column="66" selection-end-line="329" selection-end-column="66" />
+        <state relative-caret-position="102">
+          <caret line="328" column="50" lean-forward="true" selection-start-line="328" selection-start-column="50" selection-end-line="328" selection-end-column="50" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
