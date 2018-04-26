@@ -51,17 +51,18 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-TMPDIR=/scratch/local/
 srr={}
-folder={}
-mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$folder
-echo 'Created read folder'
-cd $TMPDIR
+speciesid={}
+module add Utility/aspera_connect/3.7.4.147727
+source activate r2t
+mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
+echo 'Created read $speciesid'
+cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz .
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz .
 echo 'Finished download'
-gunzip -c $srr\_1.fastq.gz > /scratch/beegfs/weekly/ddylus/avian/reads/$folder/$folder\_1.fq
-gunzip -c $srr\_2.fastq.gz > /scratch/beegfs/weekly/ddylus/avian/reads/$folder/$folder\_2.fq
+gunzip -c $srr\_1.fastq.gz > $speciesid\_1.fq
+gunzip -c $srr\_2.fastq.gz > $speciesid\_2.fq
 echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
@@ -73,15 +74,16 @@ echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, 
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-TMPDIR=/scratch/local/
 srr={}
-folder={}
-mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$folder
-echo 'Created read folder'
-cd $TMPDIR
+speciesid={}
+module add Utility/aspera_connect/3.7.4.147727
+source activate r2t
+mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
+echo 'Created read $speciesid'
+cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz .
 echo 'Finished download'
-gunzip -c $srr.fastq.gz > /scratch/beegfs/weekly/ddylus/avian/reads/$folder/$folder\_1.fq
+gunzip -c $srr.fastq.gz > $speciesid\_1.fq
 echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
@@ -93,19 +95,19 @@ echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, 
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-TMPDIR=/scratch/local/
 srr={}
-folder={}
-cd $TMPDIR
-echo 'In '$TMPDIR
+speciesid={}
+module add Utility/aspera_connect/3.7.4.147727
+source activate r2t
+mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
+echo 'Created read $speciesid'
+cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
 echo 'Finished download'
-mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$folder
-echo 'Created read folder'
-fastq-dump --split-files *.sra
+parallel-fastq-dump -s *.sra -t 4 -O . --split-files
 echo 'Finished getting fastq from sra and split files'
-mv /scratch/beegfs/weekly/ddylus/avian/reads/$folder/*\_1.fastq /scratch/beegfs/weekly/ddylus/avian/reads/$folder/$folder\_1.fq
-mv /scratch/beegfs/weekly/ddylus/avian/reads/$folder/*\_2.fastq /scratch/beegfs/weekly/ddylus/avian/reads/$folder/$folder\_2.fq
+mv *\_1.fastq $speciesid\_1.fq
+mv *\_2.fastq $speciesid\_2.fq
 echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
@@ -117,18 +119,18 @@ echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, 
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-TMPDIR=/scratch/beegfs/weekly/ddylus/
 srr={}
-folder={}
-cd $TMPDIR
-echo 'In '$TMPDIR
+speciesid={}
+module add Utility/aspera_connect/3.7.4.147727
+source activate r2t
+mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
+echo 'Created read $speciesid'
+cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
 echo 'Finished download'
-mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$folder
-echo 'Created read folder'
-fastq-dump *.sra
+parallel-fastq-dump -s *.sra -t 4 -O .
 echo 'Finished getting fastq from sra'
-mv *.fastq /scratch/beegfs/weekly/ddylus/avian/reads/$folder/$folder\_1.fq
+mv *.fastq $speciesid\_1.fq
 echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
 
     text_file = open('down_py_script.sh', "w")
@@ -149,10 +151,11 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
+source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq $reads/{}_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(species_id, species_id, species_id, species_id, reference)
+python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq $reads/{}_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
 #BSUB -o {}.o%J
@@ -163,10 +166,11 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /sc
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
+source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(
+python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(
         species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
@@ -178,10 +182,11 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /sc
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
+source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8 --read_type long""".format(
+python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8 --read_type long""".format(
             species_id, species_id, species_id, reference)
 
     text_file = open('r2t_py_script.sh', "w")
@@ -193,14 +198,16 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /sc
 
 def get_rm_string(species_id):
     rm = """#!/bin/bash
-#$ -l mem=4G
-#$ -S /bin/bash
-#$ -l h_rt=0:10:0
-#$ -pe smp 1
-#$ -j y
-#$ -N rm_{}
+#BSUB -o {}.o%J
+#BSUB -e {}.e%J
+#BSUB -u david.dylus@unil.ch
+#BSUB -J {}
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
+#BSUB -R "rusage[mem=1000]"
+#BSUB -M 1000000
 #$ -wd /home/ucbpdvd/Scratch/output
-rm -r /scratch/beegfs/weekly/ddylus/avian/reads/{}""" % (species_id, species_id)
+rm -r /scratch/beegfs/weekly/ddylus/avian/reads/{}""".format(species_id, species_id, species_id, species_id)
 
     text_file = open('rm_py_script.sh', "w")
     text_file.write(rm)
@@ -216,8 +223,8 @@ def get_five_letter_species_id(species):
 
 def is_species_mapped(species_id, output):
     if os.path.exists(os.path.join(output, '03_mapping_'+species_id+'_1')):
-        mapped_folder = os.path.join(output, '03_mapping_'+species_id+'_1')
-        files = [f for f in glob.glob(os.path.join(mapped_folder, "*.fa"))]
+        mapped_speciesid = os.path.join(output, '03_mapping_'+species_id+'_1')
+        files = [f for f in glob.glob(os.path.join(mapped_speciesid, "*.fa"))]
         if files:
             if len(files) == 10:
                 return True
@@ -251,33 +258,33 @@ def output_shell(line):
 
     return output
 
-def run_sge(sra_dic, output_folder):
+def run_lsf(sra_dic, output_speciesid):
     num_job_cycles = 0
     rm_job_id_idx = 0
     rm_job_id = []
     for species, sra in sra_dic.items():
         species_id = get_five_letter_species_id(species)
-        if not is_species_mapped(species_id, output_folder):  # check whether the mapping already exists
+        if not is_species_mapped(species_id, output_speciesid):  # check whether the mapping already exists
             print('Submitting species {} with species id {}!'.format(species, species_id))
             if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
                 job_string = get_download_string(species_id, sra[0], se_pe=sra[1])
 
-                # Open a pipe to the qsub command.
-                p_download = output_shell('qsub ' + job_string)
+                # Open a pipe to the bsub command.
+                p_download = output_shell('bsub ' + job_string)
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
                 jobid = p_download.decode("utf-8").split(" ")[2]
 
                 r2t_jobids = []
-                for ref in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa')):
+                for ref in glob.glob(os.path.join(output_speciesid, '02_ref_dna/*.fa')):
                     # Set up r2t string
                     r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
 
-                    # Open a pipe to the qsub command.
-                    #output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('qsub -hold_jid {} {}'.format(jobid, r2t_job_string))
+                    # Open a pipe to the bsub command.
+                    #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
+                    p_download = output_shell('bsub -hold_jid {} {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
                     r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
@@ -287,9 +294,9 @@ def run_sge(sra_dic, output_folder):
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)
 
-                # Open a pipe to the qsub command.
-                #output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
+                # Open a pipe to the bsub command.
+                #output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
+                p_rm = output_shell('bsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(p_rm.decode("utf-8").split(" ")[2])
@@ -298,8 +305,8 @@ def run_sge(sra_dic, output_folder):
                 # Set up download string
                 job_string = get_download_string(species_id, sra[0], se_pe=sra[1])
 
-                # Open a pipe to the qsub command.
-                p_download = output_shell('qsub -hold_jid {} {}'.format(rm_job_id[rm_job_id_idx], job_string))
+                # Open a pipe to the bsub command.
+                p_download = output_shell('bsub -hold_jid {} {}'.format(rm_job_id[rm_job_id_idx], job_string))
 
                 time.sleep(0.1)
 
@@ -307,13 +314,13 @@ def run_sge(sra_dic, output_folder):
                 jobid = p_download.decode("utf-8").split(" ")[2]
 
                 r2t_jobids = []
-                for ref in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa')):
+                for ref in glob.glob(os.path.join(output_speciesid, '02_ref_dna/*.fa')):
                     # Set up r2t string
                     r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
 
-                    # Open a pipe to the qsub command.
-                    # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('qsub -hold_jid {} {}'.format(jobid, r2t_job_string))
+                    # Open a pipe to the bsub command.
+                    # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
+                    p_download = output_shell('bsub -hold_jid {} {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
                     r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
@@ -323,9 +330,9 @@ def run_sge(sra_dic, output_folder):
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)
 
-                # Open a pipe to the qsub command.
-                # output_rm, input_rm = Popen('qsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell('qsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
+                # Open a pipe to the bsub command.
+                # output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
+                p_rm = output_shell('bsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(p_rm.decode("utf-8").split(" ")[2])
@@ -336,37 +343,34 @@ def run_sge(sra_dic, output_folder):
 def main():
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:o:", ["sra_file=", "out_folder="])
+        opts, args = getopt.getopt(sys.argv[1:], "s:o:", ["sra_file=", "out_speciesid="])
     except getopt.GetoptError as e:
         print(str(e))
-        print('sge_submit.py -s <sra_file> -o <out_folder>')
+        print('sge_submit.py -s <sra_file> -o <out_speciesid>')
         sys.exit(2)
 
     sra_file = None
-    out_folder = None
+    out_speciesid = None
 
 
     for opt, arg in opts:
         if opt == '-h':
-            print('sge_submit.py -s <sra_file> -m <min_taxa> -o <out_folder> -d')
+            print('sge_submit.py -s <sra_file> -m <min_taxa> -o <out_speciesid> -d')
             sys.exit()
         elif opt in ("-s", "--sra_file"):
             sra_file = arg
-        elif opt in ("-o", "--out_folder"):
-            out_folder = arg
+        elif opt in ("-o", "--out_speciesid"):
+            out_speciesid = arg
         else:
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Dromaius novaehollandiae': ['SRR4437373', 'SINGLE', 'short'], 'Crocodylus porosus': ['SRR5965270', 'PAIRED', 'short'],
-               'Anser canagicus': ['ERR2193512', 'PAIRED', 'short'],
-               'Apteryx matelli': ['ERR519287', 'PAIRED', 'short'], 'Archilochus colubris': ['SRR6148275', 'PAIRED', 'short'],
-               'Limosa lapponica': ['SRR6320795', 'PAIRED', 'short'], 'Numida meleagris': ['SRR6305243', 'SINGLE', 'short'],
-               'Pandion haliaetus': ['SRR3218042', 'PAIRED', 'short'], 'Picus canus': ['SRR3203240', 'PAIRED', 'short'],
-               'Upupa epops': ['SRR3203224', 'PAIRED', 'short'], 'Coturnix coturnix': ['SRR1596441', 'PAIRED', 'short'],
-               'Falco sparverius':['SRR5270425', 'PAIRED', 'short']}
+    sra_dic = {'Zosterops minutus': ['SRR2145255', 'SINGLE', 'short'],
+ 'Caloperdix oculeus': ['SRR2952863', 'PAIRED', 'short'],
+ 'Modulatrix stictigula': ['SRR2968792', 'PAIRED', 'short'],
+ 'Francolinus bicalcaratus': ['SRR2959742', 'PAIRED', 'short']}
 
-    run_sge(sra_dic, out_folder)
+    run_lsf(sra_dic, out_speciesid)
 
 if __name__ == "__main__":
     main()

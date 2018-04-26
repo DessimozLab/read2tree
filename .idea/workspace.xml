@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3b588652-5af2-4b2f-be1a-e802b17348bd" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/lsf_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/lsf_submit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/sge_submit.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/sge_submit.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -54,7 +52,7 @@
       <file leaf-file-name="OGSet.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7635">
+            <state relative-caret-position="403">
               <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
               <folding>
                 <element signature="e#148#159#0" expanded="true" />
@@ -66,7 +64,7 @@
       <file leaf-file-name="Mapper.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1048">
+            <state relative-caret-position="868">
               <caret line="124" column="69" selection-start-line="124" selection-start-column="69" selection-end-line="124" selection-end-column="69" />
               <folding>
                 <element signature="e#309#321#0" expanded="true" />
@@ -75,11 +73,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="lsf_submit.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="lsf_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="277">
-              <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
+            <state relative-caret-position="442">
+              <caret line="184" column="19" selection-start-line="184" selection-start-column="19" selection-end-line="184" selection-end-column="19" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -96,11 +94,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3983">
-              <caret line="79" column="153" selection-start-line="79" selection-start-column="153" selection-end-line="79" selection-end-column="153" />
+            <state relative-caret-position="173">
+              <caret line="124" selection-start-line="124" selection-end-line="124" selection-end-column="38" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -146,7 +144,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>shell</find>
       <find>shell comm</find>
       <find>print</find>
       <find>shell com</find>
@@ -174,8 +171,9 @@
       <find>sra</find>
       <find>reads</find>
       <find>%s</find>
-      <find>Pel</find>
       <find>/home/ucbpdvd/Scratch/avian</find>
+      <find>folder</find>
+      <find>Pel</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -198,8 +196,9 @@
       <replace>seq_completeness</replace>
       <replace>all_sc</replace>
       <replace>{}</replace>
-      <replace>sra[0]</replace>
       <replace>/scratch/beegfs/weekly/ddylus/avian</replace>
+      <replace>speciesid</replace>
+      <replace>sra[0]</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -257,8 +256,8 @@
         <option value="$PROJECT_DIR$/read2tree/wrappers/read_mappers/ngm.py" />
         <option value="$PROJECT_DIR$/read2tree/main.py" />
         <option value="$PROJECT_DIR$/read2tree/Mapper.py" />
-        <option value="$PROJECT_DIR$/scripts/lsf_submit.py" />
         <option value="$PROJECT_DIR$/scripts/sge_submit.py" />
+        <option value="$PROJECT_DIR$/scripts/lsf_submit.py" />
       </list>
     </option>
   </component>
@@ -269,10 +268,9 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-2560" />
     <option name="y" value="23" />
-    <option name="width" value="2560" />
-    <option name="height" value="1417" />
+    <option name="width" value="1440" />
+    <option name="height" value="877" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -493,7 +491,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-2560" y="23" width="2560" height="1417" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="877" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -503,12 +501,12 @@
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.21356978" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49411765" visible="true" weight="0.12907068" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3659181" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49405548" weight="0.23247497" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="right" id="SciView" order="5" />
-      <window_info id="Structure" order="1" sideWeight="0.5058824" side_tool="true" visible="true" weight="0.12907068" />
+      <window_info id="Structure" order="1" sideWeight="0.5059445" side_tool="true" weight="0.23247497" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" sideWeight="0.50966185" side_tool="true" weight="0.100430414" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -858,16 +856,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7635">
-          <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
-          <folding>
-            <element signature="e#148#159#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/Progress.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="840">
@@ -906,9 +894,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/read2tree/OGSet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="403">
+          <caret line="509" column="23" selection-start-line="509" selection-start-column="23" selection-end-line="509" selection-end-column="23" />
+          <folding>
+            <element signature="e#148#159#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/read2tree/Mapper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1048">
+        <state relative-caret-position="868">
           <caret line="124" column="69" selection-start-line="124" selection-start-column="69" selection-end-line="124" selection-end-column="69" />
           <folding>
             <element signature="e#309#321#0" expanded="true" />
@@ -916,20 +914,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
+    <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="100" column="9" selection-start-line="100" selection-start-column="9" selection-end-line="100" selection-end-column="9" />
+        <state relative-caret-position="173">
+          <caret line="124" selection-start-line="124" selection-end-line="124" selection-end-column="38" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
+    <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3983">
-          <caret line="79" column="153" selection-start-line="79" selection-start-column="153" selection-end-line="79" selection-end-column="153" />
+        <state relative-caret-position="442">
+          <caret line="184" column="19" selection-start-line="184" selection-start-column="19" selection-end-line="184" selection-end-column="19" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
