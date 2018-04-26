@@ -76,8 +76,8 @@
       <file leaf-file-name="lsf_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="184" column="19" selection-start-line="184" selection-start-column="19" selection-end-line="184" selection-end-column="19" />
+            <state relative-caret-position="349">
+              <caret line="108" column="30" lean-forward="true" selection-start-line="108" selection-start-column="30" selection-end-line="108" selection-end-column="30" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -97,7 +97,7 @@
       <file leaf-file-name="sge_submit.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
+            <state relative-caret-position="-2988">
               <caret line="124" selection-start-line="124" selection-end-line="124" selection-end-column="38" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -144,8 +144,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>shell comm</find>
-      <find>print</find>
       <find>shell com</find>
       <find>FASTAwr</find>
       <find>generic</find>
@@ -173,7 +171,9 @@
       <find>%s</find>
       <find>/home/ucbpdvd/Scratch/avian</find>
       <find>folder</find>
+      <find>python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree</find>
       <find>Pel</find>
+      <find>{}</find>
     </findStrings>
     <replaceStrings>
       <replace>ogs</replace>
@@ -198,7 +198,9 @@
       <replace>{}</replace>
       <replace>/scratch/beegfs/weekly/ddylus/avian</replace>
       <replace>speciesid</replace>
+      <replace>python -W ignore ~/opt/read2tree/bin/read2tree</replace>
       <replace>sra[0]</replace>
+      <replace>%s</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -501,7 +503,7 @@
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.2662407" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.3659181" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.3649815" />
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49405548" weight="0.23247497" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
@@ -916,7 +918,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/sge_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
+        <state relative-caret-position="-2988">
           <caret line="124" selection-start-line="124" selection-end-line="124" selection-end-column="38" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
@@ -926,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="184" column="19" selection-start-line="184" selection-start-column="19" selection-end-line="184" selection-end-column="19" />
+        <state relative-caret-position="349">
+          <caret line="108" column="30" lean-forward="true" selection-start-line="108" selection-start-column="30" selection-end-line="108" selection-end-column="30" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

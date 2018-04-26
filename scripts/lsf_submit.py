@@ -43,16 +43,16 @@ def get_sra_dic(df):
 def get_download_string(species_id, sra, se_pe='PAIRED'):
     if 'ERR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-srr={}
-speciesid={}
+srr=%s
+speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
 source activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
@@ -63,19 +63,19 @@ ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/
 echo 'Finished download'
 gunzip -c $srr\_1.fastq.gz > $speciesid\_1.fq
 gunzip -c $srr\_2.fastq.gz > $speciesid\_2.fq
-echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-srr={}
-speciesid={}
+srr=%s
+speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
 source activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
@@ -84,19 +84,19 @@ cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz .
 echo 'Finished download'
 gunzip -c $srr.fastq.gz > $speciesid\_1.fq
-echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-srr={}
-speciesid={}
+srr=%s
+speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
 source activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
@@ -108,19 +108,19 @@ parallel-fastq-dump -s *.sra -t 4 -O . --split-files
 echo 'Finished getting fastq from sra and split files'
 mv *\_1.fastq $speciesid\_1.fq
 mv *\_2.fastq $speciesid\_2.fq
-echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
-srr={}
-speciesid={}
+srr=%s
+speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
 source activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
@@ -131,7 +131,8 @@ echo 'Finished download'
 parallel-fastq-dump -s *.sra -t 4 -O .
 echo 'Finished getting fastq from sra'
 mv *.fastq $speciesid\_1.fq
-echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, species_id)
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
+        print(donwload)
 
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
@@ -143,51 +144,46 @@ echo 'Finished moving files'""".format(species_id, species_id, species_id, sra, 
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
     if se_pe is 'PAIRED' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
-reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
+reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-source activate r2t
-python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq $reads/{}_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(species_id, species_id, species_id, species_id, reference)
+python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
-reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
+reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-source activate r2t
-python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8""".format(
-        species_id, species_id, species_id, reference)
+python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
-reads=/scratch/beegfs/weekly/ddylus/avian/reads/{}
+reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-source activate r2t
-python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/{}_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping {} --threads 4 --min_species 8 --read_type long""".format(
-            species_id, species_id, species_id, reference)
+python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
 
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
@@ -198,16 +194,15 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 
 def get_rm_string(species_id):
     rm = """#!/bin/bash
-#BSUB -o {}.o%J
-#BSUB -e {}.e%J
+#BSUB -o %s.o%sJ
+#BSUB -e %s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J {}
+#BSUB -J %s
 #BSUB -n 1
 #BSUB -R "span[ptile=1]"
 #BSUB -R "rusage[mem=1000]"
 #BSUB -M 1000000
-#$ -wd /home/ucbpdvd/Scratch/output
-rm -r /scratch/beegfs/weekly/ddylus/avian/reads/{}""".format(species_id, species_id, species_id, species_id)
+rm -r /scratch/beegfs/weekly/ddylus/avian/reads/%s""" % (species_id, '%', species_id, '%', species_id, species_id)
 
     text_file = open('rm_py_script.sh', "w")
     text_file.write(rm)
