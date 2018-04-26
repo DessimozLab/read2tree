@@ -47,7 +47,7 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
 #BSUB -o down_%s.o%sJ
 #BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J down_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -70,7 +70,7 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 #BSUB -o down_%s.o%sJ
 #BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J down_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -91,7 +91,7 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 #BSUB -o down_%s.o%sJ
 #BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J down_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -115,7 +115,7 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 #BSUB -o down_%s.o%sJ
 #BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J down_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -147,7 +147,7 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -o r2t_%s.o%sJ
 #BSUB -e r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -161,7 +161,7 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 #BSUB -o r2t_%s.o%sJ
 #BSUB -e r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -175,7 +175,7 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 #BSUB -o r2t_%s.o%sJ
 #BSUB -e r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
@@ -197,7 +197,7 @@ def get_rm_string(species_id):
 #BSUB -o rm_%s.o%sJ
 #BSUB -e rm_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
-#BSUB -J %s
+#BSUB -J rm_%s
 #BSUB -n 1
 #BSUB -R "span[ptile=1]"
 #BSUB -R "rusage[mem=1000]"
@@ -362,9 +362,85 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Grallaria erythrotis': ['SRR2912439', 'SINGLE', 'short'],
+    sra_dic = {'Zosterops minutus': ['SRR2145255', 'SINGLE', 'short'],
  'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short'],
- 'Penelopina nigra': ['SRR3630015', 'PAIRED', 'short']}
+ 'Psittirostra psittacea': ['SRR3181051', 'SINGLE', 'short'],
+ 'Rhipidura javanica': ['SRR2968757', 'PAIRED', 'short'],
+ 'Zimmerius acer': ['SRR1021717', 'PAIRED', 'short'],
+ 'Upupa epops': ['SRR3203224', 'PAIRED', 'short'],
+ 'Zosterops inornatus': ['SRR2145254', 'SINGLE', 'short'],
+ 'Pinguinus impennis': ['SRR3178397', 'SINGLE', 'short'],
+ 'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short'],
+ 'Zonotrichia querula': ['SRR2937463', 'PAIRED', 'short'],
+ 'Moho braccatus': ['SRR3180998', 'SINGLE', 'short'],
+ 'Periparus ater abietum': ['SRR1810763', 'PAIRED', 'short'],
+ 'Circus melanoleucos': ['SRR3203217', 'PAIRED', 'short'],
+ 'Zonotrichia leucophrys': ['SRR1199463', 'PAIRED', 'short'],
+ 'Elanus caeruleus': ['SRR3203227', 'PAIRED', 'short'],
+ 'Poecile palustris palustris': ['SRR1810775', 'PAIRED', 'short'],
+ 'Periparus ater ater': ['SRR1810767', 'PAIRED', 'short'],
+ 'Morus bassanus': ['SRR1145759', 'PAIRED', 'short'],
+ 'Falco subbuteo': ['SRR3203238', 'PAIRED', 'short'],
+ 'Phylloscopus trochiloides trochiloides': ['SRR3217927', 'PAIRED', 'short'],
+ 'Ptychoramphus aleuticus': ['SRR1145757', 'PAIRED', 'short'],
+ 'Mareca strepera': ['SRR3471613', 'PAIRED', 'short'],
+ 'Periparus ater sardus': ['SRR1810764', 'PAIRED', 'short'],
+ 'Anas acuta': ['SRR3471609', 'PAIRED', 'short'],
+ 'Podoces hendersoni': ['SRR765719', 'PAIRED', 'short'],
+ 'Tyto longimembris': ['SRR3203222', 'PAIRED', 'short'],
+ 'Campephilus imperialis': ['SRR3178404', 'SINGLE', 'short'],
+ 'Callipepla californica': ['SRR3630008', 'PAIRED', 'short'],
+ 'Sibirionetta formosa': ['SRR3471611', 'PAIRED', 'short'],
+ 'Nesoptilotis leucotis': ['SRR3901721', 'PAIRED', 'short'],
+ 'Macronectes giganteus': ['SRR6902605', 'PAIRED', 'short'],
+ 'Cyanistes caeruleus calamensis': ['SRR1810758', 'PAIRED', 'short'],
+ 'Sericornis frontalis': ['SRR3901710', 'PAIRED', 'short'],
+ 'Cyanistes palmensis': ['SRR1810654', 'PAIRED', 'short'],
+ 'Periparus ater atlas': ['SRR1810770', 'PAIRED', 'short'],
+ 'Falco cherrug cherrug': ['SRR671935', 'SINGLE', 'short'],
+ 'Akialoa obscura': ['SRR3181052', 'SINGLE', 'short'],
+ 'Phylloscopus trochiloides viridanus': ['SRR1172475', 'PAIRED', 'short'],
+ 'Ammodramus caudacutus': ['SRR1957204', 'PAIRED', 'short'],
+ 'Myadestes myadestinus': ['SRR3181004', 'SINGLE', 'short'],
+ 'Cyanistes flavipectus': ['SRR1810646', 'PAIRED', 'short'],
+ 'Callaeas cinereus': ['SRR3180908', 'SINGLE', 'short'],
+ 'Phylloscopus plumbeitarsus': ['SRR3223375', 'PAIRED', 'short'],
+ 'Platycercus eximius': ['SRR3901724', 'PAIRED', 'short'],
+ 'Lonchura leucosticta': ['SRR5976562', 'PAIRED', 'short'],
+ 'Bubo bubo': ['SRR3203225', 'PAIRED', 'short'],
+ 'Campylorhynchus brunneicapillus': ['SRR1145744', 'SINGLE', 'short'],
+ 'Ammodramus nelsoni': ['SRR1955654', 'PAIRED', 'short'],
+ 'Phasianidae gen. sp.': ['SRR088928', 'SINGLE', 'long'],
+ 'Pelecanus occidentalis': ['SRR1145758', 'PAIRED', 'short'],
+ 'Zonotrichia leucophrys gambelii': ['SRR1238747', 'PAIRED', 'short'],
+ 'Athene noctua': ['SRR3203242', 'PAIRED', 'short'],
+ 'Gymnopithys rufigula': ['SRR3115006', 'PAIRED', 'short'],
+ 'Machlolophus spilonotus': ['SRR765718', 'PAIRED', 'short'],
+ 'Zosterops lateralis': ['SRR2145253', 'SINGLE', 'short'],
+ 'Cnemophilus loriae': ['SRR2968794', 'PAIRED', 'short'],
+ 'Alca torda': ['SRR1145756', 'PAIRED', 'short'],
+ 'Accipiter virgatus': ['SRR3203234', 'PAIRED', 'short'],
+ 'Lanius excubitor': ['SRR2968729', 'PAIRED', 'short'],
+ 'Paradoxornis webbianus bulomachus': ['SRR392516', 'SINGLE', 'short'],
+ 'Cyanistes caeruleus caeruleus': ['SRR1810777', 'PAIRED', 'short'],
+ 'Butastur indicus': ['SRR3203233', 'PAIRED', 'short'],
+ 'Turnagra capensis': ['SRR3180914', 'SINGLE', 'short'],
+ 'Mareca falcata': ['SRR3471610', 'PAIRED', 'short'],
+ 'Nucifraga columbiana': ['SRR1166560', 'PAIRED', 'short'],
+ 'Otus scops': ['SRR3203230', 'PAIRED', 'short'],
+ 'Malurus lamberti': ['SRR3901709', 'PAIRED', 'short'],
+ 'Passer montanus': ['SRR5369936', 'PAIRED', 'short'],
+ 'Zimmerius gracilipes': ['SRR1021716', 'PAIRED', 'short'],
+ 'Heteralocha acutirostris': ['SRR3180975', 'SINGLE', 'short'],
+ 'Falco tinnunculus': ['SRR3203231', 'PAIRED', 'short'],
+ 'Cyanistes caeruleus ogliastrae': ['SRR1810757', 'PAIRED', 'short'],
+ 'Picus canus': ['SRR3203240', 'PAIRED', 'short'],
+ 'Falco peregrinus peregrinus': ['SRR671934', 'SINGLE', 'short'],
+ 'Asio otus': ['SRR3203220', 'PAIRED', 'short'],
+ 'Anser sp.': ['SRR1060398', 'PAIRED', 'short'],
+ 'Spinus cucullatus': ['SRR2895762', 'PAIRED', 'short'],
+ 'Psephotellus pulcherrimus': ['SRR3180905', 'SINGLE', 'short'],
+ 'Glyphorynchus spirurus': ['SRR3115005', 'PAIRED', 'short']}
 
     run_lsf(sra_dic, out_speciesid)
 
