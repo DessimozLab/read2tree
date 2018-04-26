@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import getopt
 import glob
@@ -132,7 +133,6 @@ parallel-fastq-dump -s *.sra -t 4 -O .
 echo 'Finished getting fastq from sra'
 mv *.fastq $speciesid\_1.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
-        print(donwload)
 
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
@@ -270,7 +270,7 @@ def run_lsf(sra_dic, output_speciesid):
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
-                jobid = p_download.decode("utf-8").split(" ")[2]
+                jobid = re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1)
 
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_speciesid, '02_ref_dna/*.fa')):
@@ -282,7 +282,7 @@ def run_lsf(sra_dic, output_speciesid):
                     p_download = output_shell('bsub -hold_jid {} {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
-                    r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
+                    r2t_jobids.append(re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
 
                     time.sleep(0.1)
 
@@ -294,7 +294,7 @@ def run_lsf(sra_dic, output_speciesid):
                 p_rm = output_shell('bsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
-                rm_job_id.append(p_rm.decode("utf-8").split(" ")[2])
+                rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
                 # Set up download string
@@ -306,7 +306,7 @@ def run_lsf(sra_dic, output_speciesid):
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
-                jobid = p_download.decode("utf-8").split(" ")[2]
+                jobid = re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1)
 
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_speciesid, '02_ref_dna/*.fa')):
@@ -318,7 +318,7 @@ def run_lsf(sra_dic, output_speciesid):
                     p_download = output_shell('bsub -hold_jid {} {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
-                    r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
+                    r2t_jobids.append(re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
 
                     time.sleep(0.1)
 
@@ -330,7 +330,7 @@ def run_lsf(sra_dic, output_speciesid):
                 p_rm = output_shell('bsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
-                rm_job_id.append(p_rm.decode("utf-8").split(" ")[2])
+                rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
                 rm_job_id_idx += 1
                 time.sleep(0.1)
             num_job_cycles += 1

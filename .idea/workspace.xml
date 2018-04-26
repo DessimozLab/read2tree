@@ -76,8 +76,8 @@
       <file leaf-file-name="lsf_submit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="349">
-              <caret line="108" column="30" lean-forward="true" selection-start-line="108" selection-start-column="30" selection-end-line="108" selection-end-column="30" />
+            <state relative-caret-position="291">
+              <caret line="135" lean-forward="true" selection-start-line="135" selection-end-line="135" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -928,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/lsf_submit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="349">
-          <caret line="108" column="30" lean-forward="true" selection-start-line="108" selection-start-column="30" selection-end-line="108" selection-end-column="30" />
+        <state relative-caret-position="291">
+          <caret line="135" lean-forward="true" selection-start-line="135" selection-end-line="135" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
