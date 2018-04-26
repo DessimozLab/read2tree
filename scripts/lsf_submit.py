@@ -266,7 +266,7 @@ def run_lsf(sra_dic, output_speciesid):
                 job_string = get_download_string(species_id, sra[0], se_pe=sra[1])
 
                 # Open a pipe to the bsub command.
-                p_download = output_shell('bsub ' + job_string)
+                p_download = output_shell('bsub < ' + job_string)
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
@@ -279,7 +279,7 @@ def run_lsf(sra_dic, output_speciesid):
 
                     # Open a pipe to the bsub command.
                     #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('bsub -hold_jid {} {}'.format(jobid, r2t_job_string))
+                    p_download = output_shell('bsub -hold_jid {} < {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
                     r2t_jobids.append(re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
@@ -291,7 +291,7 @@ def run_lsf(sra_dic, output_speciesid):
 
                 # Open a pipe to the bsub command.
                 #output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell('bsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
+                p_rm = output_shell('bsub -hold_jid {} < {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
@@ -301,7 +301,7 @@ def run_lsf(sra_dic, output_speciesid):
                 job_string = get_download_string(species_id, sra[0], se_pe=sra[1])
 
                 # Open a pipe to the bsub command.
-                p_download = output_shell('bsub -hold_jid {} {}'.format(rm_job_id[rm_job_id_idx], job_string))
+                p_download = output_shell('bsub -hold_jid {} < {}'.format(rm_job_id[rm_job_id_idx], job_string))
 
                 time.sleep(0.1)
 
@@ -315,7 +315,7 @@ def run_lsf(sra_dic, output_speciesid):
 
                     # Open a pipe to the bsub command.
                     # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('bsub -hold_jid {} {}'.format(jobid, r2t_job_string))
+                    p_download = output_shell('bsub -hold_jid {} < {}'.format(jobid, r2t_job_string))
 
                     # Append jobid of r2t
                     r2t_jobids.append(re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
@@ -327,7 +327,7 @@ def run_lsf(sra_dic, output_speciesid):
 
                 # Open a pipe to the bsub command.
                 # output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
-                p_rm = output_shell('bsub -hold_jid {} {}'.format(','.join(r2t_jobids), rm_job_string))
+                p_rm = output_shell('bsub -hold_jid {} < {}'.format(','.join(r2t_jobids), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
