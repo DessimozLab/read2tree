@@ -44,8 +44,8 @@ def get_sra_dic(df):
 def get_download_string(species_id, sra, se_pe='PAIRED'):
     if 'ERR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o down_%s.o%sJ
+#BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -67,8 +67,8 @@ gunzip -c $srr\_2.fastq.gz > $speciesid\_2.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o down_%s.o%sJ
+#BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -88,8 +88,8 @@ gunzip -c $srr.fastq.gz > $speciesid\_1.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o down_%s.o%sJ
+#BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -112,8 +112,8 @@ mv *\_2.fastq $speciesid\_2.fq
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o down_%s.o%sJ
+#BSUB -e down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -144,8 +144,8 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
     if se_pe is 'PAIRED' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o r2t_%s.o%sJ
+#BSUB -e r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -158,8 +158,8 @@ cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o r2t_%s.o%sJ
+#BSUB -e r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -172,8 +172,8 @@ cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o r2t_%s.o%sJ
+#BSUB -e r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 4
@@ -194,8 +194,8 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 
 def get_rm_string(species_id):
     rm = """#!/bin/bash
-#BSUB -o %s.o%sJ
-#BSUB -e %s.e%sJ
+#BSUB -o rm_%s.o%sJ
+#BSUB -e rm_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J %s
 #BSUB -n 1
@@ -362,10 +362,9 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Zosterops minutus': ['SRR2145255', 'SINGLE', 'short'],
- 'Caloperdix oculeus': ['SRR2952863', 'PAIRED', 'short'],
- 'Modulatrix stictigula': ['SRR2968792', 'PAIRED', 'short'],
- 'Francolinus bicalcaratus': ['SRR2959742', 'PAIRED', 'short']}
+    sra_dic = {'Grallaria erythrotis': ['SRR2912439', 'SINGLE', 'short'],
+ 'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short'],
+ 'Penelopina nigra': ['SRR3630015', 'PAIRED', 'short']}
 
     run_lsf(sra_dic, out_speciesid)
 
