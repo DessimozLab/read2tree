@@ -189,11 +189,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            if concat_alignment:
-                align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-                AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-                align_output.close()
-            tree = TreeInference(args, concat_alignment=concat_alignment)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
     elif progress.ref_ogs_01 and not progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
         ogset = OGSet(args, load=False)
@@ -207,11 +203,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            if concat_alignment:
-                align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-                AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-                align_output.close()
-            tree = TreeInference(args, concat_alignment=concat_alignment)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
     elif progress.ref_ogs_01 and progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
         if args.single_mapping:
@@ -228,11 +220,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            if concat_alignment:
-                align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-                AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-                align_output.close()
-            tree = TreeInference(args, concat_alignment=concat_alignment)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
     elif progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
         ogset = OGSet(args, load=False)
@@ -245,11 +233,7 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            if concat_alignment:
-                align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-                AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-                align_output.close()
-            tree = TreeInference(args, concat_alignment=concat_alignment)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
         else:
             for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
@@ -265,81 +249,20 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            if concat_alignment:
-                align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-                AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-                align_output.close()
-            tree = TreeInference(args, concat_alignment=concat_alignment)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
     elif progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and progress.append_ogs_04 and not progress.align_05:
         ogset = OGSet(args, load=False)
         alignments = Aligner(args, ogset.mapped_ogs, load=True)
         progress.set_status("og_align")
         concat_alignment = alignments.concat_alignment()
-        if concat_alignment:
-            align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-            AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-            align_output.close()
-        tree = TreeInference(args, concat_alignment=concat_alignment)
+        tree = TreeInference(args, concat_alignment=concat_alignment[0])
         print(tree.tree)
     elif progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and progress.append_ogs_04 and progress.align_05:
         alignments = Aligner(args,  load=False)
         progress.set_status("og_align")
         concat_alignment = alignments.concat_alignment()
-        if concat_alignment:
-            align_output = open(os.path.join(args.output_path, "concat_" + species_name + ".phy"), "w")
-            AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-            align_output.close()
-        tree = TreeInference(args, concat_alignment=concat_alignment)
+        tree = TreeInference(args, concat_alignment=concat_alignment[0])
         print(tree.tree)
-
-    # if not args.reference:
-    #     if progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:  # mapping has finished and we add new sequences to OGs
-    #         if not args.merge_all_mappings:
-    #             mapper = Mapper(args, og_set=ogset.ogs, load=False)
-    #             ogset.add_mapped_seq_v2(mapper)
-    #             ogset.write_added_ogs_aa()
-    #             ogset.write_added_ogs_dna()
-    #             # progress.set_status("re_ogs")
-    #         else:
-    #             for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
-    #                 species_name = folder.split("03_mapping_")[-1]
-    #                 species_progress = Progress(args, species_name=species_name)
-    #                 if species_progress.status >= 3:
-    #                     print('--- Addition of {} to all ogs ---'.format(species_name))
-    #                     mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
-    #                     ogset.add_mapped_seq_v2(mapper, species_name=species_name)
-    #             ogset.write_added_ogs_aa(folder_name="04_merged_OGs_aa")
-    #             ogset.write_added_ogs_dna(folder_name="04_merged_OGs_dna")
-    #             progress.set_status("re_ogs")
-    #     elif progress.ref_ogs_01 and progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05 and args.single_mapping:  # mapping using single mapping for cluster
-    #         Mapper(args, ref_set=reference.ref)
-    #     elif progress.ref_ogs_01 and progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:  # mapping using normal mode
-    #         mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
-    #         ogset.add_mapped_seq_v2(mapper)
-    #         ogset.write_added_ogs_aa()
-    #         ogset.write_added_ogs_dna()
-    #         progress.set_status("re_ogs")
-    #
-    #     if progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and progress.append_ogs_04 and progress.align_05:
-    #         alignments = Aligner(args, ogset.mapped_ogs, load=False)
-    #     else:
-    #         alignments = Aligner(args, ogset.mapped_ogs, load=True)
-    #         progress.set_status("og_align")
-    #
-    #     if alignments:
-    #         concat_alignment = alignments.concat_alignment()
-    #         if concat_alignment:
-    #             align_output = open(os.path.join(args.output_path, "concat_"+species_name+".phy"), "w")
-    #             AlignIO.write(concat_alignment, align_output, "phylip-relaxed")
-    #             align_output.close()
-    #         tree = TreeInference(args, concat_alignment=concat_alignment)
-    #         print(tree.tree)
-    # else:
-    #     print('--- Finished generating references for mapping! ---')
-    #
-    # # Map sequences to reference
-    # if reference:
-    #     pass
 
     print('Time taken {}'.format(timer() - t1))
