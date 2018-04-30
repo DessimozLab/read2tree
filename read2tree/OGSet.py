@@ -62,7 +62,7 @@ class OGSet(object):
             self._species_name = self.args.species_name
 
         if not self.args.reads and not self.args.species_name:
-            self._species_name = 'merge'
+            self._species_name = 'merged'
 
         if self.args.remove_species_mapping:
             self.species_to_remove_mapping = self.args.remove_species_mapping.split(",")
@@ -74,13 +74,19 @@ class OGSet(object):
         else:
             self.species_to_remove_ogs = []
 
-        if load and oma_output is not None:
+        if not load and self.progress.append_ogs_04:
+            print('here')
+            print("04_ogs_map_" + self._species_name)
+            self.mapped_ogs = self._reload_ogs_from_folder(folder_suffix="04_ogs_map_" + self._species_name)
+        elif not load and self.progress.ref_ogs_01:
+            self.ogs = self._reload_ogs_from_folder()
+        elif load and oma_output is not None:
             self.oma = oma_output
             self.ogs = oma_output.ogs
             self.oma_output_path = self.args.oma_output_path
             self.ogs = self._load_ogs()
-        else:
-            self.ogs = self._reload_ogs_from_folder()
+
+
 
     def og(self, name):
         return self.ogs[name]
@@ -127,15 +133,15 @@ class OGSet(object):
         t = Tree(tree_str)
         return [leaf.name for leaf in t]
 
-    def _reload_ogs_from_folder(self):
+    def _reload_ogs_from_folder(self, folder_suffix='01_ref_ogs'):
         """
         Re-load ogs if selection has finished and already exists in output folders
         :return: Dictionary with og name as key and list of SeqRecords
         """
         print('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
-        ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
-        ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
+        ref_ogs_aa = os.path.join(self.args.output_path, folder_suffix+"_aa")
+        ref_ogs_dna = os.path.join(self.args.output_path, folder_suffix+"_dna")
         for file in tqdm(zip(sorted(glob.glob(os.path.join(ref_ogs_aa, "*.fa"))), sorted(glob.glob(os.path.join(ref_ogs_dna, "*.fa")))),desc='Re-loading files',unit=' OGs'):
             name = os.path.basename(file[0]).split(".")[0]
             ogs[name] = OG()
@@ -341,8 +347,10 @@ class OGSet(object):
                         mapping_og = mapped_og_set[name]
 
                     if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
-                        best_record_aa = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
-                        if best_record_aa:
+                        best_records = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
+                        if best_records:
+                            best_record_aa = best_records[0]
+                            best_record_dna = best_records[1]
                             best_record_aa.id = species_name
                             self.mapped_ogs[name] = og
                             all_id = [rec.id for rec in self.mapped_ogs[name].aa]
@@ -351,6 +359,7 @@ class OGSet(object):
                                 cov.add_coverage(self._get_clean_id(best_record_aa), mapper.all_cov[self._get_clean_id(best_record_aa)])
                                 seqC.add_seq_completeness(self._get_clean_id(best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
                                 self.mapped_ogs[name].aa.append(best_record_aa)
+                                self.mapped_ogs[name].dna.append(best_record_dna)
                         else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
                             self.mapped_ogs[name] = og
                     else:  # mapping had only one that we removed
@@ -363,9 +372,13 @@ class OGSet(object):
         cov.write_coverage_bam(os.path.join(self.args.output_path, species_name+'_all_cov.txt'))
         seqC.write_seq_completeness(os.path.join(self.args.output_path, species_name+'_all_sc.txt'))
 
-    def write_added_ogs(self, folder_name=None):
+    def write_added_ogs_aa(self, folder_name=None):
+        '''
+        Write for each species all the DNA sequences into separate fasta files
+        :param output_folder: folder where files should be stored
+        '''
         if folder_name is None:
-            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_" + self._species_name)
+            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_" + self._species_name + "_aa")
         else:
             ogs_with_mapped_seq = os.path.join(self.args.output_path, folder_name)
 
@@ -376,6 +389,26 @@ class OGSet(object):
             if name in self.mapped_ogs.keys():
                 output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
                 self._write(output_file, self.mapped_ogs[name].aa)
+
+
+    def write_added_ogs_dna(self, folder_name=None):
+        '''
+        Write for each species all the DNA sequences into separate fasta files
+        :param output_folder: folder where files should be stored
+        '''
+        if folder_name is None:
+            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_" + self._species_name + "_dna")
+        else:
+            ogs_with_mapped_seq = os.path.join(self.args.output_path, folder_name)
+
+        if not os.path.exists(ogs_with_mapped_seq):
+            os.makedirs(ogs_with_mapped_seq)
+
+        for name, value in self.ogs.items():
+            if name in self.mapped_ogs.keys():
+                output_file = os.path.join(ogs_with_mapped_seq, name + ".fa")
+                self._write(output_file, self.mapped_ogs[name].dna)
+
 
     def _get_clean_id(self, record):
         des = record.description.split(" ")[0]
@@ -448,7 +481,7 @@ class OG(object):
         seq_completenesses = self._get_seq_completeness_v2(ref_og=ref_og)
         best_record = seq_completenesses.index(max(seq_completenesses))
         if seq_completenesses[best_record] >= threshold:
-            return self.aa[best_record]
+            return (self.aa[best_record], self.dna[best_record])
         else:
             return None
 

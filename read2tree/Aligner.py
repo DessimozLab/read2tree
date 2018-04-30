@@ -5,6 +5,7 @@
     -- David Dylus, July--XXX 2017
 '''
 import os
+import glob
 #from tables import *
 from Bio import AlignIO
 
@@ -15,7 +16,7 @@ from read2tree.utils.seq_utils import concatenate
 
 class Aligner(object):
 
-    def __init__(self, args, og_set=None):
+    def __init__(self, args, og_set=None, load=True):
         print('--- Alignment of OGs ---')
         self.args = args
 
@@ -35,8 +36,10 @@ class Aligner(object):
 
         self.alignments = {}
 
-        if og_set is not None:
+        if load and og_set is not None:
             self.alignments = self._align(og_set)
+        else:
+            self.alignments = self._reload_alignments_from_folder()
 
     def _align(self, og_set):
         align_dict = {}
@@ -55,6 +58,14 @@ class Aligner(object):
             output_handle = open(os.path.join(output_folder, og_name + ".phy"), "w")
             AlignIO.write(alignment, output_handle, "phylip-relaxed")
 
+        return align_dict
+
+    def _reload_alignments_from_folder(self):
+        align_dict = {}
+        output_folder = os.path.join(self.args.output_path, "05_align_" + self._species_name)
+        for f in tqdm(glob.glob(os.path.join(output_folder, '*.phy')), desc='Loading alignments ', unit=' Alignment'):
+            og_name = os.path.basename(f).split(".")[0]
+            align_dict[og_name] = AlignIO.read(f, format='phylip-relaxed')
         return align_dict
 
     def _adapt_id(selfs, og_set):

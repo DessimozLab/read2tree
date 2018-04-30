@@ -14,7 +14,7 @@
 
 import pysam
 import tempfile
-# import pyopa
+import time
 import os
 import shutil
 import glob
@@ -40,6 +40,7 @@ class Mapper(object):
 
     def __init__(self, args, ref_set=None, og_set=None, species_name=None, load=True):
         self.args = args
+        # self.time =
 
         if not species_name:
             if len(self.args.reads) == 2:
@@ -64,7 +65,7 @@ class Mapper(object):
 
         self.read_og_set = {}
 
-        if load:
+        if load:  # compute mapping
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
@@ -76,7 +77,7 @@ class Mapper(object):
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
-        else:
+        else:  # re-load already computed mapping
             if og_set is not None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder()
                 self.og_records = self._sort_by_og(og_set)
