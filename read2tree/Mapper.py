@@ -42,18 +42,19 @@ class Mapper(object):
         self.args = args
         # self.time =
 
-        if not species_name:
+        if self.args.reads:
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
                 self._species_name = self._reads[0].split("/")[-1].split(".")[0]
             else:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
-        else:
-            self._species_name = species_name
 
-        # if self.args.species_name:
-        #     self._species_name = self.args.species_name
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
+        if species_name:
+            self._species_name = species_name
 
         # load pyopa related stuff
         # self.defaults = pyopa.load_default_environments()
