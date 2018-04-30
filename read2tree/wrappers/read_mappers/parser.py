@@ -32,15 +32,19 @@ class NGMParser(object):
             insert_size = self.inssize.parseString(stdout).asList()[0]
             computed_alignments = self.compalign.parseString(stdout).asList()[0]
         except ParseException as err:
-            print('here')
             print(stdout)
-            print('here')
             logger.error(err)
 
         return valid_pairs, insert_size, computed_alignments
 
     def to_dict(self, file, stdout):
-        valid_pairs, insert_size, computed_alignments = self.parse(stdout)
+        try:
+            valid_pairs, insert_size, computed_alignments = self.parse(stdout)
+        except UnboundLocalError:
+            valid_pairs = None
+            insert_size = None
+            computed_alignments = None
+            pass
         samfile = pysam.AlignmentFile(file, "r")
         result = {'file': file,
                   'valid_pairs': valid_pairs,

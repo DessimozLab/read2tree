@@ -10,6 +10,7 @@ import mmap
 import glob
 import os
 import time
+import subprocess
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
@@ -19,17 +20,30 @@ class Progress(object):
     def __init__(self, args, species_name=None):
         self.args = args
 
-        if not species_name and self.args.reads:
+        # holds the status of the computation
+        self.ref_ogs_01 = False
+        self.ref_dna_02 = False
+        self.mapping_03 = False
+        self.append_ogs_04 = False
+        self.align_05 = False
+        self.tree = False
+
+        if self.args.reads:
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
                 self._species_name = self._reads[0].split("/")[-1].split(".")[0]
             else:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
-        elif species_name and not self.args.reads:
+
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
+        if not self.args.reads and not self.args.species_name:
+            self._species_name = 'merged'
+
+        if species_name:
             self._species_name = species_name
-        elif not species_name and not self.args.reads:
-            self._species_name = 'merge'
 
         if self.args.remove_species_mapping:
             self.species_to_remove = self.args.remove_species_mapping.split(",")
@@ -86,29 +100,38 @@ class Progress(object):
             for line in f:
                 if '01_ref_ogs_aa: OK' in line:
                     status = 1
+                    self.ref_ogs_01 = True
                 elif '02_ref_dna: OK' in line:
                     status = 2
+                    self.ref_dna_02 = True
                 elif '03_mapping_' + species_name + ': OK' in line:
                     status = 3
+                    self.mapping_03 = True
                 elif '04_ogs_map_' + species_name + ': OK' in line:
                     status = 4
+                    self.append_ogs_04 = True
                 elif '05_align_' + species_name + ': OK' in line:
                     status = 5
+                    self.align_05 = True
             f.close()
         return status
 
     def set_status(self, status, ref=None):
+        status_text = None
         if not os.path.exists(self.status_file):
             to_append = self._write_header()
             with open(self.status_file, "w") as myfile:
                 myfile.write(to_append)
-        if status is 'ogs' and self.status < 1:
+        if status is 'ogs' and self.ref_ogs_01 is False:
             status_text = '01_ref_ogs_dna: OK\n' \
                           '01_ref_ogs_aa: OK\n'
-        elif status is 'ref' and self.status < 2:
+            self.ref_ogs_01 = True
+        elif status is 'ref' and self.ref_dna_02 is False:
             status_text = '02_ref_dna: OK\n'
-        elif status is 'map' and self.status < 3:
+            self.ref_dna_02 = True
+        elif status is 'map' and self.mapping_03 is False:
             status_text = '03_mapping_'+self._species_name+': OK\n'
+            self.mapping_03 = True
         # elif status is 'single_map' and ref is not None and self.status < 3:
         #     last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
         #     if 'OK' in last_line:
@@ -116,11 +139,14 @@ class Progress(object):
         #         status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
         #     else:
         #         status_text = 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
-        elif status is 're_ogs':
+        elif status is 're_ogs' and self.append_ogs_04 is False:
             status_text = '04_ogs_map_'+self._species_name+': OK\n'
-        elif status is 'og_align':
+            self.append_ogs_04 = True
+        elif status is 'og_align'and self.align_05 is False:
             status_text = '05_align_'+self._species_name+': OK\n'
-        self._append_status(status_text)
+            self.align_05 = True
+        if status_text:
+            self._append_status(status_text)
 
     def _tail(self, filename, n):
         """Returns last n lines from the filename.
@@ -145,19 +171,14 @@ class Progress(object):
         return header
 
     def _append_status(self, status_text):
-        to_append = status_text
-        with open(self.status_file, "a") as myfile:
-            myfile.write(to_append)
+        with open(self.status_file) as f:
+            contents = f.read()
+        if status_text not in contents.split("\n"):
+            with open(self.status_file, "a") as myfile:
+                myfile.write(status_text)
 
     def _find_last_completed_step(self):
-        f = open(self.status_file, 'r')
-        idx_last_completed_step = 0
-        all_lines = []
-        for i, line in enumerate(f):
-            if 'OK' in line:
-                idx_last_completed_step = i
-            all_lines.append(line)
-        open(self.status_file, 'w').writelines(all_lines[0:idx_last_completed_step+1])
+        return subprocess.check_output(['tail', '-1', self.status_file])
 
     def _is_locked(self):
         """

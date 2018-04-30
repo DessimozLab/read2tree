@@ -14,7 +14,7 @@
 
 import pysam
 import tempfile
-# import pyopa
+import time
 import os
 import shutil
 import glob
@@ -40,19 +40,21 @@ class Mapper(object):
 
     def __init__(self, args, ref_set=None, og_set=None, species_name=None, load=True):
         self.args = args
+        # self.time =
 
-        if not species_name:
+        if self.args.reads:
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
                 self._species_name = self._reads[0].split("/")[-1].split(".")[0]
             else:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
-        else:
-            self._species_name = species_name
 
-        # if self.args.species_name:
-        #     self._species_name = self.args.species_name
+        if self.args.species_name:
+            self._species_name = self.args.species_name
+
+        if species_name:
+            self._species_name = species_name
 
         # load pyopa related stuff
         # self.defaults = pyopa.load_default_environments()
@@ -64,7 +66,7 @@ class Mapper(object):
 
         self.read_og_set = {}
 
-        if load:
+        if load:  # compute mapping
             if ref_set is not None:
                 if self.args.single_mapping is None:
                     self.mapped_records = self._map_reads_to_references(ref_set)
@@ -76,7 +78,7 @@ class Mapper(object):
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
-        else:
+        else:  # re-load already computed mapping
             if og_set is not None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder()
                 self.og_records = self._sort_by_og(og_set)
@@ -110,13 +112,19 @@ class Mapper(object):
         shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
         # call the WRAPPER here
-        if len(self._reads) == 2:
+        if len(self._reads) is 2:
             ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        else:
+        elif len(self._reads) is not 2 and self.args.read_type is 'short':
+            ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+            ngm = ngm_wrapper()
+            bam_file = ngm['file']
+        elif len(self._reads) is 1 and self.args.read_type is 'long':
             ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
@@ -212,13 +220,19 @@ class Mapper(object):
             shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
             # call the WRAPPER here
-            if len(self._reads) == 2:
+            if len(self._reads) is 2 and self.args.read_type is 'short':
                 ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
                 ngm = ngm_wrapper()
                 bam_file = ngm['file']
-            else:
+            elif len(self._reads) is not 2 and self.args.read_type is 'short':
+                ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
+                if self.args.threads is not None:
+                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+                ngm = ngm_wrapper()
+                bam_file = ngm['file']
+            elif len(self._reads) is 1 and self.args.read_type is 'long':
                 ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
                 if self.args.threads is not None:
                     ngm_wrapper.options.options['-t'].set_value(self.args.threads)
@@ -372,6 +386,8 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
+        if self.args.single_mapping:
+            print("--- POSTPROCESSING MAPPING FOR {} ---".format(self._species_name.upper()))
 
         if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
             sam_file = bam_file
@@ -379,15 +395,21 @@ class Mapper(object):
             if os.path.exists(sam_file):
                 self._output_shell(
                     'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+        if self.args.single_mapping:
+            print("---- Samtools view completed for {}".format(self._species_name))
 
         if os.path.exists(bam_file):
             self._output_shell(
                 'samtools sort -m 2G  -@ ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
+        if self.args.single_mapping:
+            print("---- Samtools sort completed for {} ".format(self._species_name))
 
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
                 'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
             # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
+        if self.args.single_mapping:
+            print("---- Samtools index completed for {} ".format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
 
@@ -401,6 +423,8 @@ class Mapper(object):
             self._bin_reads(ref_file, outfile_name + '_sorted.bam')
 
         consensus = self._build_consensus_seq_v2(ref_file, outfile_name + '_sorted.bam')
+        if self.args.single_mapping:
+            print("---- Consensus sequences completed for mapping of {} against {} ---".format(self._species_name, self.args.single_mapping))
 
         all_consensus = []
         if consensus:
