@@ -124,7 +124,7 @@ class Mapper(object):
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        elif len(self._reads) is 1 and self.args.read_type is 'long':
+        elif len(self._reads) is not 2 and self.args.read_type is 'long':
             ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
             if self.args.threads is not None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
