@@ -352,6 +352,7 @@ class OGSet(object):
                             best_record_aa = best_records[0]
                             best_record_dna = best_records[1]
                             best_record_aa.id = species_name
+                            best_record_dna.id = species_name
                             self.mapped_ogs[name] = og
                             all_id = [rec.id for rec in self.mapped_ogs[name].aa]
                             if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
