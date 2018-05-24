@@ -182,7 +182,7 @@ def main(argv, exe_name, desc=''):
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
         if not args.reference:
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
-            ogset.add_mapped_seq_v2(mapper)
+            ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
             progress.set_status("re_ogs")
@@ -196,7 +196,7 @@ def main(argv, exe_name, desc=''):
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)  # Generate the reference
         if not args.reference:  # just generate reference
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
-            ogset.add_mapped_seq_v2(mapper)
+            ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
             progress.set_status("re_ogs")
@@ -213,7 +213,7 @@ def main(argv, exe_name, desc=''):
             ogset = OGSet(args, load=False)
             reference = ReferenceSet(args, load=False)
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)  # Run the mapping
-            ogset.add_mapped_seq_v2(mapper)
+            ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
             progress.set_status("re_ogs")
@@ -226,7 +226,7 @@ def main(argv, exe_name, desc=''):
         ogset = OGSet(args, load=False)
         if not args.merge_all_mappings:
             mapper = Mapper(args, og_set=ogset.ogs, load=False)
-            ogset.add_mapped_seq_v2(mapper)
+            ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
             progress.set_status("re_ogs")
@@ -242,7 +242,7 @@ def main(argv, exe_name, desc=''):
                 if species_progress.status >= 3:
                     print('--- Addition of {} to all ogs ---'.format(species_name))
                     mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
-                    ogset.add_mapped_seq_v2(mapper, species_name=species_name)
+                    ogset.add_mapped_seq(mapper, species_name=species_name)
             ogset.write_added_ogs_aa(folder_name="04_merged_OGs_aa")
             ogset.write_added_ogs_dna(folder_name="04_merged_OGs_dna")
             progress.set_status("re_ogs")

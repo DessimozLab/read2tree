@@ -9,6 +9,7 @@ import os
 import re
 import pyham
 import requests
+import logging
 
 from ete3 import Tree
 from tqdm import tqdm
@@ -28,6 +29,23 @@ from read2tree.stats.SeqCompleteness import SeqCompleteness
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
 API_URL = 'http://omabrowser.org/api'
+
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+file_handler = logging.FileHandler('input.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
 
 
 class OGSet(object):
@@ -87,52 +105,6 @@ class OGSet(object):
             self.ogs = self._load_ogs()
 
 
-
-    def og(self, name):
-        return self.ogs[name]
-
-    def _check_oma_standalone_path(self):
-        """
-        :return: return true if oma standalone output path provided
-        """
-        output_path = os.path.join(self.args.standalone_path, OMA_STANDALONE_OUTPUT)
-        ortho_group_xml = os.path.getsize(os.path.join(output_path, "OrthologousGroups.orthoxml"))
-        if os.path.getsize(os.path.join(output_path, "OrthologousGroups.orthoxml")) > 0:
-            return True
-        else:
-            return False
-
-    # def _remove_species(self):
-    #     """
-    #     removes species of ogs that are set by user
-    #     :return:
-    #     """
-    #     new_ogs = []
-    #     for name, og in self.ogs:
-    #         species = og.aa.description[og.aa.description.find("[") + 1:og.aa.description.find("]")]
-    #         if species not in self.species_to_remove_mapping:
-    #             new_ogs.apped(og)
-    #     return new_ogs
-
-    # def _has_species_to_remove(self):
-    #     """
-    #     :return: true or false depending whether species to remove are part of all the species present
-    #     """
-    #     not_included_species = []
-    #     for spec in self.species_to_remove_mapping:
-    #         if spec not in self.species_list:
-    #             not_included_species.append(spec)
-    #     return not_included_species
-
-    def _get_species_list(self):
-        """
-        Use nwk string to return list of species
-        :return:
-        """
-        tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
-        t = Tree(tree_str)
-        return [leaf.name for leaf in t]
-
     def _reload_ogs_from_folder(self, folder_suffix='01_ref_ogs'):
         """
         Re-load ogs if selection has finished and already exists in output folders
@@ -140,9 +112,9 @@ class OGSet(object):
         """
         print('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
-        ref_ogs_aa = os.path.join(self.args.output_path, folder_suffix+"_aa")
-        ref_ogs_dna = os.path.join(self.args.output_path, folder_suffix+"_dna")
-        for file in tqdm(zip(sorted(glob.glob(os.path.join(ref_ogs_aa, "*.fa"))), sorted(glob.glob(os.path.join(ref_ogs_dna, "*.fa")))),desc='Re-loading files',unit=' OGs'):
+        ref_ogs_aa = sorted(glob.glob(os.path.join(os.path.join(self.args.output_path, folder_suffix+"_aa"), "*.fa")))
+        ref_ogs_dna = sorted(glob.glob(os.path.join(os.path.join(self.args.output_path, folder_suffix+"_dna"), "*.fa")))
+        for file in tqdm(zip(ref_ogs_aa, ref_ogs_dna), desc='Re-loading files', unit=' OGs'):
             name = os.path.basename(file[0]).split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = list(SeqIO.parse(file[0], format='fasta'))
@@ -151,16 +123,12 @@ class OGSet(object):
             #     ogs[name].remove_species_records(self.species_to_remove, species_in_hog)
         return ogs
 
-    # def _get_num_species_after_removal(self, species_in_og):
-    #     in_og = 0
-    #     for spec in self.species_to_remove_mapping:
-    #         if spec in species_in_og:
-    #             in_og += 1
-    #
-    #     return len(species_in_og)-in_og
+    def _make_output_path(self, prefix):
+        path = os.path.join(self.args.output_path, prefix)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return path
 
-    # def _change_record_id(self):
-    #     raise NotImplementedError
 
     def _load_ogs(self):
         """
@@ -193,13 +161,8 @@ class OGSet(object):
 
         ogs = {}
 
-        orthologous_groups_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
-        if not os.path.exists(orthologous_groups_aa):
-            os.makedirs(orthologous_groups_aa)
-
-        orthologous_groups_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        if not os.path.exists(orthologous_groups_dna):
-            os.makedirs(orthologous_groups_dna)
+        orthologous_groups_aa = self._make_output_path("01_ref_ogs_aa")
+        orthologous_groups_dna = self._make_output_path("01_ref_ogs_dna")
 
         names_og = self.ogs
 
@@ -213,17 +176,17 @@ class OGSet(object):
             if self._db_source:
                 try:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
-                except:
-                    print('This OG {} did not have any DNA'.format(name))
+                except (ValueError, TypeError):
+                    logger.debug('This OG {} did not have any DNA'.format(name))
                     pass
                 else:
                     self._write(output_file_dna, ogs[name].dna)
                     self._write(output_file_aa, ogs[name].aa)
-
             else:
                 print("DNA reference was not provided. Only amino acid sequences gathered!")
         self.progress.set_status('ogs')
         return ogs
+
 
     def _get_aa_records(self, name, records):
         """
@@ -242,6 +205,64 @@ class OGSet(object):
             records = records
         return records
 
+
+    def _get_from_h5(self, record, name):
+        '''
+
+        :param record:
+        :param name:
+        :return:
+        '''
+        try:
+            oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
+        except ValueError:
+            logger.debug('DNA not found for {}.'.format(record.id))
+            pass
+        else:
+            seq = self._db.get_cdna(oma_db_nr).decode("utf-8")
+
+            if 'X' in seq:
+                cleaned_seq = self._clean_DNA_seq(seq)
+            else:
+                cleaned_seq = seq
+
+            return SeqRecord.SeqRecord(Seq.Seq(cleaned_seq), id=record.id + "_" + name, description="")
+
+
+    def _get_from_REST(self, record, name):
+        '''
+
+        :param record:
+        :param name:
+        :return:
+        '''
+        try:
+            oma_record = requests.get(API_URL + "/protein/" + record.id + "/")
+        except requests.exceptions.RequestException:
+            logger.debug('DNA not found for {}.'.format(record.id))
+            pass
+        else:
+            dna_record = SeqRecord.SeqRecord(Seq.Seq(oma_record.json()['cdna']), id=record.id + "_" + name, description="")
+            if 'X' in str(dna_record.seq):
+                cleaned_seq = self._clean_DNA_seq(dna_record)
+            else:
+                cleaned_seq = dna_record.seq
+            return SeqRecord.SeqRecord(cleaned_seq, id=record.id + "_" + name, description="")
+
+
+    def _get_from_fasta(self, record):
+        try:
+            dna = self._db[record.id]
+        except ValueError:
+            logger.debug('DNA not found for {}.'.format(record.id))
+            pass
+        else:
+            if 'X' in str(dna.seq):
+                return SeqRecord.SeqRecord(self._clean_DNA_seq(dna), id=record.id + "_" + name, description="")
+            else:
+                return SeqRecord.SeqRecord(dna.seq,  id=record.id + "_" + name, description="")
+
+
     def _get_dna_records(self, records, name):
         """
         
@@ -250,41 +271,12 @@ class OGSet(object):
         """
         og_cdna = []
         for i, record in enumerate(records):
-            # species = record.description[record.description.find("[") + 1:record.description.find("]")]
-            # if len(species.split(" ")) > 1:
-            #     new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
-            #     species = new_id.upper()
-            #-------------- only to be used internally -----------------
             if 'h5' in self._db_source:
-                try:
-                    oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
-                except:
-                    print('DNA not found for {}.'.format(record.id))
-                    pass
-                else:
-                    og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(self._db.get_cdna(oma_db_nr).decode("utf-8")),
-                                                     id=record.id + "_" + name, description=""))
+                og_cdna.append(self._get_from_h5(record, name))
             elif 'fa' in self._db_source:
-                try:
-                    og_cdna.append(self._db[record.id])
-                except ValueError:
-                    print('DNA not found for {}.'.format(record.id))
-                    pass
+                og_cdna.append(self._get_from_fasta(record))
             elif 'REST_api' in self._db_source:
-                try:
-                    protein = requests.get(API_URL + "/protein/" + record.id + "/")
-                except requests.exceptions.RequestException:
-                    print('DNA not found for {}.'.format(record.id))
-                    pass
-                else:
-                    protein = protein.json()
-                    og_cdna.append(SeqRecord.SeqRecord(Seq.Seq(protein['cdna']),
-                                                          id=record.id + "_" + name, description=""))
-
-            if 'X' in str(og_cdna[-1].seq):
-                cleaned_seq = self._clean_DNA_seq(og_cdna[-1])
-                og_cdna[-1].seq = cleaned_seq
-
+                og_cdna.append(self._get_from_REST(record, name))
 
         return og_cdna
 
@@ -307,8 +299,40 @@ class OGSet(object):
         '''
         return Seq.Seq(re.sub('[^GATC]', 'N', str(record.seq).upper()), SingleLetterAlphabet())
 
+    def _remove_species_from_original_set(self, current_og):
+        '''
+        Removes sequence records for a species / set of species from the reference OGSet
+        :param current_og: The current OG object
+        :return: OG object with removed species
+        '''
+        if self.args.remove_species_ogs:
+            og = OG()
+            filtered_og = current_og.remove_species_records(self.species_to_remove_ogs)
+            if filtered_og:
+                og.dna = filtered_og[0]
+                og.aa = filtered_og[1]
+        else:
+            og = current_og
+        return og
 
-    def add_mapped_seq_v2(self, mapper, species_name=None):
+    def _remove_species_from_mapping_only(self, mapped_og):
+        '''
+        Removes sequence records for a species / set of species from the mapped OGSet
+        :param mapped_og: The mapped OG object
+        :return: mapped OG object with removed species
+        '''
+        if self.species_to_remove_mapping:  # in case we decided to remove species from the mapping
+            mapping_og = OG()
+            filtered_mapping = mapped_og.remove_species_records(self.species_to_remove_mapping)
+            if filtered_mapping:
+                mapping_og.dna = filtered_mapping[0]
+                mapping_og.aa = filtered_mapping[1]
+        else:  # nothing to remove
+            mapping_og = mapped_og
+        return mapping_og
+
+
+    def add_mapped_seq(self, mapper, species_name=None):
         """
         Add the sequence given from the read mapping to its corresponding OG and retain
         all OGs that do not have the mapped sequence, thus all original OGs are used for
@@ -325,26 +349,11 @@ class OGSet(object):
 
         # iterate through all existing ogs
         for name, value in tqdm(self.ogs.items(), desc='Adding mapped seq to OG', unit=' OGs'):
-            # remove species from the original set
-            if self.args.remove_species_ogs:
-                og = OG()
-                filtered_og = value.remove_species_records(self.species_to_remove_ogs)
-                if filtered_og:
-                    og.dna = filtered_og[0]
-                    og.aa = filtered_og[1]
-            else:
-                og = value
+            og = self._remove_species_from_original_set(value)
             if len(og.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name in mapped_og_set.keys():
-                    if self.species_to_remove_mapping:  # in case we decided to remove species from the mapping
-                        mapping_og = OG()
-                        filtered_mapping = mapped_og_set[name].remove_species_records(self.species_to_remove_mapping)
-                        if filtered_mapping:
-                            mapping_og.dna = filtered_mapping[0]
-                            mapping_og.aa = filtered_mapping[1]
-                    else:  # nothing to remove
-                        mapping_og = mapped_og_set[name]
+                    mapping_og = self._remove_species_from_mapping_only(mapped_og_set[name])
 
                     if len(mapping_og.aa) >= 1:  # we had at least one mapped og even after removal
                         best_records = mapping_og.get_best_mapping_by_seq_completeness(ref_og=og, threshold=self.args.sc_threshold)
@@ -369,22 +378,23 @@ class OGSet(object):
                 else:  # nothing was mapped to that og
                     if self.args.keep_all_ogs:
                         self.mapped_ogs[name] = og
+            else:
+                logger.debug('{} was left only with a single entry and hence not used for further processing'.format(name))
 
         cov.write_coverage_bam(os.path.join(self.args.output_path, species_name+'_all_cov.txt'))
         seqC.write_seq_completeness(os.path.join(self.args.output_path, species_name+'_all_sc.txt'))
 
     def write_added_ogs_aa(self, folder_name=None):
         '''
-        Write for each species all the DNA sequences into separate fasta files
-        :param output_folder: folder where files should be stored
+
+        :param self:
+        :param folder_name:
+        :return:
         '''
         if folder_name is None:
-            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_" + self._species_name + "_aa")
+            ogs_with_mapped_seq = self._make_output_path("04_ogs_map_" + self._species_name + "_aa")
         else:
-            ogs_with_mapped_seq = os.path.join(self.args.output_path, folder_name)
-
-        if not os.path.exists(ogs_with_mapped_seq):
-            os.makedirs(ogs_with_mapped_seq)
+            ogs_with_mapped_seq = self._make_output_path(folder_name)
 
         for name, value in self.ogs.items():
             if name in self.mapped_ogs.keys():
@@ -394,16 +404,15 @@ class OGSet(object):
 
     def write_added_ogs_dna(self, folder_name=None):
         '''
-        Write for each species all the DNA sequences into separate fasta files
-        :param output_folder: folder where files should be stored
+
+        :param self:
+        :param folder_name:
+        :return:
         '''
         if folder_name is None:
-            ogs_with_mapped_seq = os.path.join(self.args.output_path, "04_ogs_map_" + self._species_name + "_dna")
+            ogs_with_mapped_seq = self._make_output_path("04_ogs_map_" + self._species_name + "_dna")
         else:
-            ogs_with_mapped_seq = os.path.join(self.args.output_path, folder_name)
-
-        if not os.path.exists(ogs_with_mapped_seq):
-            os.makedirs(ogs_with_mapped_seq)
+            ogs_with_mapped_seq = self._make_output_path(folder_name)
 
         for name, value in self.ogs.items():
             if name in self.mapped_ogs.keys():
@@ -412,6 +421,11 @@ class OGSet(object):
 
 
     def _get_clean_id(self, record):
+        '''
+
+        :param record:
+        :return:
+        '''
         des = record.description.split(" ")[0]
         des = des.split("_")
         return des[0]+"_"+des[1]
@@ -419,7 +433,7 @@ class OGSet(object):
     def _write(self, file, value):
         """
         Write output to fasta file
-        :param folder: file and location of outputfile
+        :param file: file and location of outputfile
         :param value:
         :return:
         """
@@ -479,7 +493,7 @@ class OG(object):
         :param threshold: minimum sequence completeness [0.0]
         :return: best amino acid sequence
         """
-        seq_completenesses = self._get_seq_completeness_v2(ref_og=ref_og)
+        seq_completenesses = self._get_seq_completeness(ref_og=ref_og)
         best_record = seq_completenesses.index(max(seq_completenesses))
         if seq_completenesses[best_record] >= threshold:
             return (self.aa[best_record], self.dna[best_record])
@@ -496,7 +510,7 @@ class OG(object):
             dna_dict[record.id] = record
         return dna_dict
 
-    def _get_seq_completeness_v2(self, ref_og=None):
+    def _get_seq_completeness(self, ref_og=None):
         """
         TODO: this has to be changed to incorporate the expected sequence length
         :param gene_code:
