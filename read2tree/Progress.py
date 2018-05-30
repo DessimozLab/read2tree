@@ -50,14 +50,11 @@ class Progress(object):
         else:
             self.species_to_remove = []
 
-
-
         self._folder_ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
         self._folder_ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
         self._folder_ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
         self._folder_mapping = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
         self._folder_ogs_map = os.path.join(self.args.output_path, "04_ogs_map" + self._species_name)
-
 
         self.status_file = os.path.join(self.args.output_path, 'status.txt')
         self.status = self._get_status()

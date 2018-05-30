@@ -24,7 +24,7 @@ class TreeInference(object):
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         if self.args.species_name:
-            self._species_name = self.args.species_name
+            self._species_name = self.args.species_name 
 
         if not self.args.reads and not self.args.species_name:
             self._species_name = 'merge'

@@ -16,42 +16,42 @@ SPACEDWORD = Word(alphanums+' _')
 class NGMParser(object):
     """
     Simple prottest result parser.
+    [MAIN] Done (15778 reads mapped (4.14%), 365184 reads not mapped, 15778 lines written)(elapsed: 73.131973s)
     """
 
     def __init__(self):
-        self.VAILD_PAIRS = Literal('[MAIN] Valid pairs found:')
-        self.INSERT_SIZE = Literal('[MAIN] Estimated insert size:')
-        self.COMPUTED_ALIGNMENTS = Literal('[MAIN] Alignments computed:')
-        self.vp = Suppress(SkipTo(self.VAILD_PAIRS)) + Suppress(self.VAILD_PAIRS) + WORD
-        self.inssize = Suppress(SkipTo(self.INSERT_SIZE)) + Suppress(self.INSERT_SIZE) + FLOAT
-        self.compalign = Suppress(SkipTo(self.COMPUTED_ALIGNMENTS)) + Suppress(self.COMPUTED_ALIGNMENTS) + FLOAT
+        self.READS_MAPPED = Literal('[MAIN] Done (')
+        self.TOTAL_READS = Regex(r'\[MAIN\] Done \(\d+ reads mapped \(\d+\.\d+\%\), ')
+        self.MAPPING_TIME = Literal('elapsed: ')
+        self.rm = Suppress(SkipTo(self.READS_MAPPED)) + Suppress(self.READS_MAPPED) + INT
+        self.tr = Suppress(SkipTo(self.TOTAL_READS)) + Suppress(self.TOTAL_READS) + INT
+        self.mt = Suppress(SkipTo(self.MAPPING_TIME)) + Suppress(self.MAPPING_TIME) + FLOAT
 
     def parse(self, stdout):
         try:
-            valid_pairs = self.vp.parseString(stdout).asList()[0]
-            insert_size = self.inssize.parseString(stdout).asList()[0]
-            computed_alignments = self.compalign.parseString(stdout).asList()[0]
+            reads_mapped = self.rm.parseString(stdout).asList()[0]
+            total_reads = self.tr.parseString(stdout).asList()[0]
+            mapping_time = self.mt.parseString(stdout).asList()[0]
         except ParseException as err:
             print(stdout)
             logger.error(err)
-
-        return valid_pairs, insert_size, computed_alignments
+        else:
+            return reads_mapped, total_reads, mapping_time
 
     def to_dict(self, file, stdout):
         try:
-            valid_pairs, insert_size, computed_alignments = self.parse(stdout)
+            reads_mapped, total_reads, mapping_time = self.parse(stdout)
         except UnboundLocalError:
-            valid_pairs = None
-            insert_size = None
-            computed_alignments = None
+            reads_mapped = None
+            total_reads = None
+            mapping_time = None
             pass
         samfile = pysam.AlignmentFile(file, "r")
         result = {'file': file,
-                  'valid_pairs': valid_pairs,
-                  'insert_size': insert_size,
-                  'computed_alignments': computed_alignments,
+                  'reads_mapped': reads_mapped,
+                  'total_reads': total_reads,
+                  'mapping_time': mapping_time,
                   'sam': samfile}
-
         return result
 
 class NGMLRParser(object):
