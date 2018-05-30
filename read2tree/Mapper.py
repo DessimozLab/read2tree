@@ -19,11 +19,13 @@ import os
 import shutil
 import glob
 import subprocess
+import logging
 from tqdm import tqdm
 from Bio import SeqIO, SeqRecord, Seq
 from Bio.Alphabet import generic_dna
 from Bio.SeqIO.FastaIO import FastaWriter
 from read2tree.OGSet import OG
+from read2tree.Reads import Reads
 from read2tree.ReferenceSet import Reference
 from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
@@ -31,6 +33,21 @@ from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 #from tables import *
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+file_handler = logging.FileHandler('debug.log')
+file_handler.setLevel(logging.ERROR)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 class Mapper(object):
@@ -86,6 +103,37 @@ class Mapper(object):
                 self.mapped_records = self._read_mapping_from_folder(species_name=species_name)
                 self.og_records = self._sort_by_og(og_set)
 
+    def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
+
+        if len(self._reads) is 2:
+            ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+            ngm = ngm_wrapper()
+            bam_file = ngm['file']
+        elif len(self._reads) is not 2 and 'short' in self.args.read_type:
+            ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+            ngm = ngm_wrapper()
+            bam_file = ngm['file']
+        elif len(self._reads) is not 2 and 'long' in self.args.read_type:
+            ngm_wrapper = NGMLR(ref_file_handle, reads, tmp_output_folder.name)
+            if self.args.threads is not None:
+                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+            if self.args.ngmlr_parameters is not None:
+                par = self.args.ngmlr_parameters.split(',')
+                ngm_wrapper.options.options['-x'].set_value(str(par[0]))
+                ngm_wrapper.options.options['--subread-length'].set_value(int(par[1]))
+                ngm_wrapper.options.options['-R'].set_value(float(par[2]))
+            ngm = ngm_wrapper()
+            bam_file = ngm['file']
+
+        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
+        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+
+        return self._post_process_read_mapping(ref_file_handle, bam_file)
 
     def _map_reads_to_single_reference(self, ref):
         """
@@ -108,40 +156,16 @@ class Mapper(object):
             print('--- Creating tmp directory on local node ---')
 
         ref_file_handle = os.path.join(reference_path, self.ref_species + '_OGs.fa')
-        ref_tmp_file_handle = os.path.join(tmp_output_folder.name, self.ref_species + '_OGs.fa')
-        shutil.copy(ref_file_handle, ref_tmp_file_handle)
+        # ref_tmp_file_handle = os.path.join(tmp_output_folder.name, self.ref_species + '_OGs.fa')
+        # shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
-        # call the WRAPPER here
-        if len(self._reads) is 2:
-            ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
-            if self.args.threads is not None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        elif len(self._reads) is not 2 and 'short' in self.args.read_type:
-            ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
-            if self.args.threads is not None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        elif len(self._reads) is not 2 and 'long' in self.args.read_type:
-            ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
-            if self.args.threads is not None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            if self.args.ngmlr_parameters is not None:
-                par = self.args.ngmlr_parameters.split(',')
-                ngm_wrapper.options.options['-x'].set_value(str(par[0]))
-                ngm_wrapper.options.options['--subread-length'].set_value(int(par[1]))
-                ngm_wrapper.options.options['-R'].set_value(float(par[2]))
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
+        read_container = Reads(self.args)
+        reads = read_container.split_reads
 
-        self._rm_file(ref_tmp_file_handle + "-enc.2.ngm", ignore_error=True)
-        self._rm_file(ref_tmp_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
-        self._rm_file(ref_tmp_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        processed_reads = self._call_wrapper(ref_file_handle, reads, tmp_output_folder)
 
         try:
-            mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
+            mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
         except AttributeError or ValueError:
             mapped_reads = []
             pass
@@ -213,37 +237,21 @@ class Mapper(object):
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
             print('--- Creating tmp directory on local node ---')
 
+        read_container = Reads(self.args)
+        reads = read_container.split_reads
+
+
         for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
-            ref_tmp_file_handle = os.path.join(tmp_output_folder.name, species + '_OGs.fa')
-            shutil.copy(ref_file_handle, ref_tmp_file_handle)
+            # ref_tmp_file_handle = os.path.join(tmp_output_folder.name, species + '_OGs.fa')
+            # shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
             # call the WRAPPER here
-            if len(self._reads) is 2 and self.args.read_type is 'short':
-                ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
-                if self.args.threads is not None:
-                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-                ngm = ngm_wrapper()
-                bam_file = ngm['file']
-            elif len(self._reads) is not 2 and 'short' in self.args.read_type:
-                ngm_wrapper = NGM(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
-                if self.args.threads is not None:
-                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-                ngm = ngm_wrapper()
-                bam_file = ngm['file']
-            elif len(self._reads) is not 2 and 'long' in self.args.read_type:
-                ngm_wrapper = NGMLR(ref_tmp_file_handle, self._reads, tmp_output_folder.name)
-                if self.args.threads is not None:
-                    ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-                ngm = ngm_wrapper()
-                bam_file = ngm['file']
-            self._rm_file(ref_tmp_file_handle+"-enc.2.ngm", ignore_error=True)
-            self._rm_file(ref_tmp_file_handle+"-ht-13-2.2.ngm", ignore_error=True)
-            self._rm_file(ref_tmp_file_handle+"-ht-13-2.3.ngm", ignore_error=True)
+            processed_reads = self._call_wrapper(ref_file_handle, reads, tmp_output_folder)
 
             try:
-                mapped_reads = list(SeqIO.parse(self._post_process_read_mapping(ref_file_handle, bam_file), 'fasta'))
+                mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
             except AttributeError or ValueError:
                 mapped_reads = []
                 pass
@@ -262,12 +270,53 @@ class Mapper(object):
         tmp_output_folder.cleanup()
         return mapped_reads_species
 
+    def _write_read_query_aling(self, read, og_name_file, write_mode):
+        """
+
+        :param read: pysam read object
+        :param og_name_file: filename to collect reads
+        :param write_mode: either a or wt
+        """
+        if read.is_paired:
+            if read.is_read1:
+                read_id = read.query_name + '/1'
+            elif read.is_read2:
+                read_id = read.query_name + '/2'
+        else:
+            read_id = read.query_name
+        record = "@" + read_id + "\n"
+        record += read.query_alignment_sequence + "\n"
+        record += "+" + read_id + "\n"
+        record += read.qqual + "\n"
+        with open(og_name_file, write_mode) as f:
+            f.write(record)
+
+    def _write_read_full(self, read, og_name_file, write_mode):
+        """
+
+        :param read: pysam read object
+        :param og_name_file: filename to collect reads
+        :param write_mode: either a or wt
+        """
+        if read.is_paired:
+            if read.is_read1:
+                read_id = read.query_name + '/1'
+            elif read.is_read2:
+                read_id = read.query_name + '/2'
+        else:
+            read_id = read.query_name
+        record = "@" + read_id + "\n"
+        record += read.seq + "\n"
+        record += "+" + read_id + "\n"
+        record += read.qual + "\n"
+        with open(og_name_file.replace(".fq", "_full.fq"), write_mode) as f:
+            f.write(record)
+
     def _bin_reads(self, ref_file, bam_file):
         """
-        Function that will perform postprocessing of finished read mapping using the pysam functionality
-        :param ngm:
-        :param reference_file_handle:
-        :return:
+        Function that bins reads into their orthologous groups
+        :param ref_file: Current species reference file
+        :param bam_file: Mapped bam file
         """
         print("--- Binning reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path, "03_read_ogs_" + self._species_name)
@@ -282,41 +331,22 @@ class Mapper(object):
 
         if os.path.exists(bam_file):
             bam = pysam.AlignmentFile(bam_file, "rb")
-            paired = 0
             for read in bam.fetch():
                 if not read.is_unmapped:
                     og_name = read.reference_name.split("_")[-1]
-                    if os.path.exists(os.path.join(output_folder, og_name+".fa")):
-                        og = list(SeqIO.parse(os.path.join(output_folder, og_name+".fa"), 'fasta'))
-                        og_ids = [rec.id for rec in og]
+                    og_name_file = os.path.join(output_folder, og_name + ".fq")
+                    if os.path.exists(og_name_file):
+                        og = list(SeqIO.parse(og_name_file, 'fastq'))
+                        og_read_ids = [rec.id for rec in og]
+                        write_mode = 'a+'
                     else:
-                        og = []
-                        og_ids = []
+                        og_read_ids = []
+                        write_mode = 'wt'
 
-                    if read.is_paired:
-                        if paired != 1:
-                            read_id = read.query_name + "/1"
-                            paired = 1
-                        else:
-                            read_id = read.query_name + "/2"
-                            paired = 0
-                        if read_id not in og_ids:
-                            seq = Seq.Seq(read.query_alignment_sequence, generic_dna)
-                            record = SeqRecord.SeqRecord(seq, id=read_id)
-                            og.append(record)
-                    else:
-                        read_id = read.query_name
-                        if read_id not in og_ids:
-                            seq = Seq.Seq(read.query_alignment_sequence, generic_dna)
-                            record = SeqRecord.SeqRecord(seq, id=read_id)
-                            og.append(record)
-
-                    if og:
-                        handle = open(os.path.join(output_folder, og_name+".fa"), "w")
-                        writer = FastaWriter(handle, wrap=None)
-                        writer.write_file(og)
-                        handle.close()
-                    # self.read_og_set[og_name][read_id] = record
+                    read_id = read.query_name
+                    if read_id not in og_read_ids:
+                        self._write_read_query_aling(read, og_name_file, write_mode)
+                        self._write_read_full(read, og_name_file, write_mode)
 
             bam.close()
 

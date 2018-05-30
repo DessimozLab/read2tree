@@ -61,6 +61,20 @@ def parse_args(argv, exe_name, desc):
                                  'mapping. Either ngm for short reads or ngmlr for long '
                                  'will be used.')
 
+    arg_parser.add_argument('--split_reads', action='store_true',
+                            help='Splits reads as defined by split_len (400) and split_overlap (0) parameters. ')
+
+    arg_parser.add_argument('--split_len', type=int, default=400,
+                            help='[Default is 400] Parameter for selection of read split length '
+                                 'can only be used in combination with with long read option. ')
+
+    arg_parser.add_argument('--split_overlap', type=int, default=0,
+                            help='[Default is 0] Reads are split with an overlap defined by this argument.')
+
+    arg_parser.add_argument('--split_min_read_len', type=int, default=500,
+                            help='[Default is 500] Reads longer than this value are cut '
+                                 'into smaller values as defined by --split_len. ')
+
     arg_parser.add_argument('--output_path', default='.', required=True,
                                 help='[Default is current directory] Path to '
                                      'output directory.')
@@ -144,6 +158,16 @@ def parse_args(argv, exe_name, desc):
 
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
+
+    if not args.split_reads and (args.split_len != 400 or args.split_overlap != 0 or args.split_min_read_len != 500):
+        arg_parser.error(
+            'Arguments --split_len, --split_overlap and --split_min_read_len can only be set if --split_reads is set.')
+    if args.split_reads and len(args.reads) == 2:
+        arg_parser.error(
+            'Splitting reads does not work for paired end reads.')
+    if args.read_type is not 'long' and args.ngmlr_parameters:
+        arg_parser.error(
+            'Arguments for --ngmlr_parameters only work if --read_type is set to long.')
 
     return args
 

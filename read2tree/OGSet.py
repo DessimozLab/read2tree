@@ -11,7 +11,6 @@ import pyham
 import requests
 import logging
 
-from ete3 import Tree
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.Alphabet import SingleLetterAlphabet
@@ -56,17 +55,10 @@ class OGSet(object):
 
         self.progress = Progress(args)
         self.mapped_ogs = {}
-        self._db = None
-        self._db_id_map = None
-        self._db_source = None
-        self._db_species_list = None
-        self._ham_analysis = None
-        self._tree_str = None
-        self._og_orthoxml = None
         self._remove_species_mapping = False
         self._marker_genes = False
 
-        self.min_species = self._estimate_best_number_species()
+        self.min_species = 0
 
         if self.args.reads:
             if len(self.args.reads) == 2:
@@ -93,12 +85,12 @@ class OGSet(object):
             self.species_to_remove_ogs = []
 
         if not load and self.progress.append_ogs_04:
-            print('here')
             print("04_ogs_map_" + self._species_name)
             self.mapped_ogs = self._reload_ogs_from_folder(folder_suffix="04_ogs_map_" + self._species_name)
         elif not load and self.progress.ref_ogs_01:
             self.ogs = self._reload_ogs_from_folder()
         elif load and oma_output is not None:
+            self.min_species = oma_output.min_species
             self.oma = oma_output
             self.ogs = oma_output.ogs
             self.oma_output_path = self.args.oma_output_path
@@ -130,18 +122,14 @@ class OGSet(object):
         return path
 
 
-    def _load_ogs(self):
-        """
-        Using the orthoxml file select only the OGs of interest that have more species than the min_species threshold
-        :return: Dictionary with og name as key and list of SeqRecords
-        """
-
+    def _load_dna_db(self):
         if '.fa' in self.args.dna_reference or '.fasta' in self.args.dna_reference:
             print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
             print(
                 'Loading {} into memory. This might take a while . . . '.format(self.args.dna_reference.split("/")[-1]))
-            self._db = SeqIO.index(self.args.dna_reference, "fasta")
-            self._db_source = 'fa'
+            db = SeqIO.index(self.args.dna_reference, "fasta")
+            source = 'fa'
+            return db, source
         # ---------------- only to be used internally ----------------------
         # elif '.h5' in self.args.dna_reference:
         #     print('--- Load ogs and find their corresponding DNA seq from {} ---'.format(self.args.dna_reference))
@@ -152,12 +140,16 @@ class OGSet(object):
         #     # print(self._db_species_list)
         else:
             print('--- Load ogs and find their corresponding DNA seq using the REST api ---')
-            self._db_source = 'REST_api'
+            source = 'REST_api'
+            return None, source
 
-        if self.oma.mode is 'standalone':
-            self._og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
-            self._tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
-            self._ham_analysis = pyham.Ham(self._tree_str, self._og_orthoxml, use_internal_name=False)
+
+    def _load_ogs(self):
+        """
+        Using the orthoxml file select only the OGs of interest that have more species than the min_species threshold
+        :return: Dictionary with og name as key and list of SeqRecords
+        """
+        db, source = self._load_dna_db()
 
         ogs = {}
 
@@ -173,9 +165,9 @@ class OGSet(object):
             output_file_aa = os.path.join(orthologous_groups_aa, name + ".fa")
             output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
 
-            if self._db_source:
+            if source:
                 try:
-                    ogs[name].dna = self._get_dna_records(ogs[name].aa, name)
+                    ogs[name].dna = self._get_dna_records(ogs[name].aa, name, db, source)
                 except (ValueError, TypeError):
                     logger.debug('This OG {} did not have any DNA'.format(name))
                     pass
@@ -196,7 +188,10 @@ class OGSet(object):
         :return: 
         """
         if self.oma.mode is 'standalone':
-            og_ham = self._ham_analysis.get_hog_by_id(name[2:])
+            og_orthoxml = os.path.join(self.oma_output_path, 'OrthologousGroups.orthoxml')
+            tree_str = os.path.join(self.oma_output_path, 'EstimatedSpeciesTree.nwk')
+            ham_analysis = pyham.Ham(tree_str, og_orthoxml, use_internal_name=False)
+            og_ham = ham_analysis.get_hog_by_id(name[2:])
             prot_ids = [gene.prot_id.split(" | ")[0] for gene in og_ham.get_all_descendant_genes()]
             for record in records:
                 mystr = record.description
@@ -206,7 +201,7 @@ class OGSet(object):
         return records
 
 
-    def _get_from_h5(self, record, name):
+    def _get_dna_from_h5(self, record, name):
         '''
 
         :param record:
@@ -229,7 +224,7 @@ class OGSet(object):
             return SeqRecord.SeqRecord(Seq.Seq(cleaned_seq), id=record.id + "_" + name, description="")
 
 
-    def _get_from_REST(self, record, name):
+    def _get_dna_from_REST(self, record, name):
         '''
 
         :param record:
@@ -250,9 +245,9 @@ class OGSet(object):
             return SeqRecord.SeqRecord(cleaned_seq, id=record.id + "_" + name, description="")
 
 
-    def _get_from_fasta(self, record):
+    def _get_dna_from_fasta(self, record, db):
         try:
-            dna = self._db[record.id]
+            dna = db[record.id]
         except ValueError:
             logger.debug('DNA not found for {}.'.format(record.id))
             pass
@@ -263,7 +258,7 @@ class OGSet(object):
                 return SeqRecord.SeqRecord(dna.seq,  id=record.id + "_" + name, description="")
 
 
-    def _get_dna_records(self, records, name):
+    def _get_dna_records(self, records, name, db, source):
         """
         
         :param records: 
@@ -271,25 +266,14 @@ class OGSet(object):
         """
         og_cdna = []
         for i, record in enumerate(records):
-            if 'h5' in self._db_source:
-                og_cdna.append(self._get_from_h5(record, name))
-            elif 'fa' in self._db_source:
-                og_cdna.append(self._get_from_fasta(record))
-            elif 'REST_api' in self._db_source:
-                og_cdna.append(self._get_from_REST(record, name))
+            if 'h5' in source:
+                og_cdna.append(self._get_dna_from_h5(record, name))
+            elif 'fa' in source:
+                og_cdna.append(self._get_dna_from_fasta(record, db))
+            elif 'REST_api' in source:
+                og_cdna.append(self._get_dna_from_REST(record, name))
 
         return og_cdna
-
-    def _estimate_best_number_species(self):
-        """
-        Estimate min number of species such that around 1000 OGs are selected
-        :return:
-        """
-        min_species = 0
-        if self.args.min_species is not None:
-            min_species = self.args.min_species
-
-        return min_species
 
     def _clean_DNA_seq(self, record):
         '''

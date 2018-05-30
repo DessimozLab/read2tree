@@ -1,11 +1,28 @@
-import unittest
-
-from read2tree.Progress import Progress
-from read2tree.stats.Coverage import Coverage
-from read2tree.stats.SeqCompleteness import SeqCompleteness
 import os
+import unittest
+from read2tree import OGSet
+
+API_URL = 'http://omabrowser.org/api'
 
 class OGSetTest(unittest.TestCase):
+    def setUp(self):
+        arg_parser = argparse.ArgumentParser(prog='read2tree')
+
+        arg_parser.add_argument('--reads', nargs='+', default=None,
+                                help='Reads to be mapped to reference. If paired end '
+                                     'add separated by space.')
+        arg_parser.add_argument('--read_split_length', type=int, default=400,
+                                help='Set read split length.')
+        arg_parser.add_argument('--read_split_overlap', type=int, default=50,
+                                help='Set read split length overlap.')
+        arg_parser.add_argument('-s', '--species_name', default=None,
+                                help='[Default is name of read] Name of species '
+                                     'for mapped sequence.')
+
+        argv = ['--reads', 'tests/data/reads/test.fq']
+
+        args = arg_parser.parse_args(argv)
+        return OGSet(args)
 
     def test_OGSet(self):
         raise NotImplementedError
@@ -26,7 +43,7 @@ class OGSetTest(unittest.TestCase):
         raise NotImplementedError
 
     def test_rest_api_connection(self):
-        raise NotImplementedError
+        OGSet._read
 
     def test_rest_api_dna_downlaod(self):
         raise NotImplementedError

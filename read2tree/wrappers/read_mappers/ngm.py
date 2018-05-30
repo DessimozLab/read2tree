@@ -5,7 +5,7 @@ from Bio import SeqIO
 
 from .parser import NGMParser
 from ..abstract_cli import AbstractCLI
-from .base_mapper import ReadMapper, ReferenceInput
+from .base_mapper import ReadMapper, ReadInput
 import logging
 from ..options import StringOption, FlagOption, IntegerOption, FloatOption, MultiOption, OptionSet
 from pyparsing import Suppress, SkipTo, Word, Regex, Literal, OneOrMore, \
@@ -44,13 +44,19 @@ class NGM(ReadMapper):
         be specified (listed as *args and **kwargs for now).
         """
         start = time.time()  # time the execution
-        if self.ref_input_type == ReferenceInput.OBJECT:  # different operation depending on what it is
+        if self.read_input_type == ReadInput.OBJECT:  # different operation depending on what it is
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
-                SeqIO.write(self.ref_input, filehandle, 'fasta')
+                SeqIO.write(self.ref_input, filehandle, 'fastq')
                 filehandle.seek(0)
-                output, error = self._call(filehandle.name, self.ref_input, self.tmp_folder, *args, **kwargs)
-                self.result = self._read_result(error, filehandle.name, self.tmp_folder)
-        else:
+                output, error = self._call(self.read_input, filehandle.name, self.tmp_folder, *args, **kwargs)
+                self.result = self._read_result(error, self.ref_input, self.tmp_folder)
+        elif self.read_input_type == ReadInput.STRING:
+            with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
+                filehandle.write(self.read_input)
+                filehandle.seek(0)
+                output, error = self._call(self.ref_input, filehandle.name, self.tmp_folder, *args, **kwargs)
+                self.result = self._read_result(error, self.ref_input, self.tmp_folder)
+        elif self.read_input_type == ReadInput.FILENAME:
             output, error = self._call(self.ref_input, self.read_input, self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result
 
@@ -75,7 +81,8 @@ class NGM(ReadMapper):
         if '/' not in tmp_folder[-1]:
             tmp_file = os.path.join(tmp_folder, os.path.basename(reference))+".bam"
         if len(reads) is 2:
-            self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(), reference, reads[0], reads[1], tmp_file), wait=True)
+            self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(), reference, reads[0], reads[1], tmp_file),
+                     wait=True)
         elif len(reads) is not 2:
             self.cli('{} -b -r {} -q {} -o {}'.format(self.command(), reference, reads, tmp_file), wait=True)
 
@@ -114,7 +121,7 @@ def get_default_options():
         # Algorithm
 
         # set number of threads
-        IntegerOption('-t', 4, active=True),
+        IntegerOption('-t', 1, active=True),
 
         # makes sure that unmapped reads are not saved in bam file
         FlagOption('--no-unal', True, active=True)

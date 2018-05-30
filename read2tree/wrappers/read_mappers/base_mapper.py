@@ -7,8 +7,8 @@ from read2tree.wrappers import WrapperError
 import logging
 logger = logging.getLogger(__name__)
 
-ReferenceInput = Enum('ReferenceInput', 'OBJECT FILENAME')
-ReadInput = Enum('ReadInput', 'OBJECT FILENAME')
+ReferenceInput = Enum('ReferenceInput', 'OBJECT STRING FILENAME')
+ReadInput = Enum('ReadInput', 'OBJECT STRING FILENAME')
 
 class ReadMapper(object):
     """
@@ -105,7 +105,8 @@ def identify_reference(sequence):
         if isinstance(sequence, (SeqRecord, types.GeneratorType, list)):
             # `sequence` is a Biopython MultipleSequenceAlignment
             return ReferenceInput.OBJECT
-
+        if isinstance(sequence, str) and not os.path.exists(sequence):
+            return ReferenceInput.STRING
         elif isinstance(sequence, str) and os.path.exists(sequence):
             # `sequence` is a filepath
             return ReferenceInput.FILENAME
@@ -132,7 +133,8 @@ def identify_reads(reads):
         if isinstance(read, (SeqRecord, types.GeneratorType, list)):
             # `sequence` is a Biopython MultipleSequenceAlignment
             return ReadInput.OBJECT
-
+        elif isinstance(read, str) and not os.path.exists(read):
+            return ReadInput.STRING
         elif isinstance(read, str) and os.path.exists(read):
             # `sequence` is a filepath
             return ReadInput.FILENAME
