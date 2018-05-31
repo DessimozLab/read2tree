@@ -7,6 +7,8 @@
 import os
 import glob
 #from tables import *
+from multiprocessing import Pool
+from collections import ChainMap
 from Bio import AlignIO
 from Bio.Alphabet import generic_dna
 from Bio.Seq import Seq
@@ -21,7 +23,7 @@ from read2tree.utils.seq_utils import concatenate
 class Aligner(object):
 
     def __init__(self, args, og_set=None, load=True):
-        print('--- Alignment of OGs ---')
+
         self.args = args
 
         if self.args.reads:
@@ -41,6 +43,7 @@ class Aligner(object):
         self.alignments = Alignment()
 
         if load and og_set is not None:
+            print('--- Alignment of {} OGs ---'.format(len(list(og_set.keys()))))
             self.alignments = self._align(og_set)
         else:
             self.alignments = self._reload_alignments_from_folder()
@@ -80,23 +83,11 @@ class Aligner(object):
             translated_seq.append(SeqRecord(Seq("".join([codon[s] for s in str(rec.seq)]), generic_dna), id=rec.id))
         return MultipleSeqAlignment(translated_seq)
 
-    def _align(self, og_set):
-        """
-        Function that computes the alignment of a set of OGs with appended mapping functions
-        :param og_set: Object of class OGSet
-        :return: alignment dictionary containing Alignment objects with aa and dna MSAs
-        """
+    def _align_worker(self, og_set):
         align_dict = {}
-        self._adapt_id(og_set)
-
         output_folder_aa = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_aa")
         output_folder_dna = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_dna")
-        if not os.path.exists(output_folder_aa):
-            os.makedirs(output_folder_aa)
-        if not os.path.exists(output_folder_dna):
-            os.makedirs(output_folder_dna)
-
-        for key, value in tqdm(og_set.items(), desc='Aligning OGs ', unit=' OG'):
+        for key, value in og_set.items():
             mafft_wrapper = Mafft(value.aa, datatype="PROTEIN")
             mafft_wrapper.options.options['--localpair'].set_value(True)
             mafft_wrapper.options.options['--maxiterate'].set_value(1000)
@@ -113,6 +104,32 @@ class Aligner(object):
 
             output_handle2 = open(os.path.join(output_folder_dna, og_name + ".phy"), "w")
             AlignIO.write(align.dna, output_handle2, "phylip-relaxed")
+        return align_dict
+
+    def _chunkify(self, dic, n):
+        key_chunks = [list(dic.keys())[i::n] for i in range(n)]
+        return [{key: dic[key] for key in chunk} for chunk in key_chunks]
+
+    def _align(self, og_set):
+        """
+        Function that computes the alignment of a set of OGs with appended mapping functions
+        :param og_set: Object of class OGSet
+        :return: alignment dictionary containing Alignment objects with aa and dna MSAs
+        """
+        # align_dict = {}
+        self._adapt_id(og_set)
+
+        output_folder_aa = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_aa")
+        output_folder_dna = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_dna")
+        if not os.path.exists(output_folder_aa):
+            os.makedirs(output_folder_aa)
+        if not os.path.exists(output_folder_dna):
+            os.makedirs(output_folder_dna)
+
+        og_chunks = self._chunkify(og_set, self.args.threads)
+        p = Pool(self.args.threads)
+        res_align = p.map(self._align_worker, og_chunks)
+        align_dict = dict(ChainMap(*res_align))
 
         return align_dict
 
