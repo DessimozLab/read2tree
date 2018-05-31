@@ -165,7 +165,7 @@ def parse_args(argv, exe_name, desc):
     if args.split_reads and len(args.reads) == 2:
         arg_parser.error(
             'Splitting reads does not work for paired end reads.')
-    if args.read_type is not 'long' and args.ngmlr_parameters:
+    if args.read_type is 'short' and args.ngmlr_parameters:
         arg_parser.error(
             'Arguments for --ngmlr_parameters only work if --read_type is set to long.')
 
