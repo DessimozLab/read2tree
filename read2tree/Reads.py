@@ -35,6 +35,9 @@ class Reads(object):
                     self._file_handle = gzip.open(self._reads, 'rt')
                 else:
                     self._file_handle = open(self._reads, 'rt')
+            elif len(self.args.reads) == 2:
+                self._reads = self.args.reads
+                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
 
         if self.args.species_name:
             self._species_name = self.args.species_name
