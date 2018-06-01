@@ -41,6 +41,7 @@ class TreeInference(object):
         #tree = fasttree_wrapper()
         iqtree_wrapper = Iqtree(concat_alignment, datatype="PROTEIN")
         iqtree_wrapper.options.options['-m'].set_value('LG')
+        iqtree_wrapper.options.options['-nt'].set_value(self.args.threads)
         tree = iqtree_wrapper()
         with open(os.path.join(output_folder, "tree_" + self._species_name + ".nwk"), "w") as text_file:
             text_file.write("{};".format(tree))
