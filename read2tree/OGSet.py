@@ -510,7 +510,7 @@ class OG(object):
             full_seq_completeness.append(non_n_len / full_seq_len)
         return full_seq_completeness
 
-    def _get_species_id(self, description):
+    def _get_species_id(self, record):
         '''
         Sequences in OMA are marked by using the first three letters of genus and the first 2 letters of species,
         e.g. Amphiura filiformis = AMPFI. This however is not always the case and we therefore prioritize the id
@@ -518,15 +518,21 @@ class OG(object):
         :param description: SeqRecord description
         :return: species_id
         '''
-        species = description[description.find("[") + 1:description.find("]")]
-        if len(species.split(" ")) > 1:
-            new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
-            species = new_id.upper()
-        species_id = description[0:5]
-        if species_id in species:
-            return species
+        #TODO: add extension for model identifiers
+        # model_identifiers_oma = {'MUSMU': 'MOUSE', 'HOMSA': 'HUMAN', 'SARCE':' YEAST', }
+
+        sp_id = record.id
+        if sp_id[0:5].isalpha():  # >MUSMU
+            return sp_id[0:5]
         else:
-            return species_id
+            sp_description = record.description
+            species = sp_description[sp_description.find("[") + 1:sp_description.find("]")]
+            if species:  # [Mus musculus]
+                if len(species.split(" ")) > 1:
+                    new_id = species.split(" ")[0][0:3] + species.split(" ")[1][0:2]
+                    return new_id.upper()
+                else:  # [MUSMU]
+                    return species
 
     def remove_species_records(self, species_to_remove):
         '''
@@ -534,8 +540,8 @@ class OG(object):
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         '''
-        aa = [record for i, record in enumerate(self.aa) if self._get_species_id(record.description) not in species_to_remove]
-        dna = [record for i, record in enumerate(self.dna) if self._get_species_id(record.description) not in species_to_remove]
+        aa = [record for i, record in enumerate(self.aa) if self._get_species_id(record) not in species_to_remove]
+        dna = [record for i, record in enumerate(self.dna) if self._get_species_id(record) not in species_to_remove]
         if len(aa) > 0 and len(dna) > 0:
             return [dna, aa]
         else:

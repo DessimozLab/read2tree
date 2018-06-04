@@ -351,7 +351,6 @@ class Mapper(object):
             bam.close()
 
     def _most_common(self, lst):
-        #     print(lst)
         return max(set(lst), key=lst.count)
 
     def _build_consensus_seq(self, ref_file, bam_file):
@@ -401,8 +400,8 @@ class Mapper(object):
                          pileup_column.pileups if not pileupread.is_del and not pileupread.is_refskip]
                 if bases:
                     seq[pileup_column.pos] = self._most_common(bases)
-
-            new_records[ref] = ("").join(seq)
+            if len(set(seq)) > 1:  # make sure that mapped sequence contains not only N
+                new_records[ref] = ("").join(seq)
         return new_records
 
     def _post_process_read_mapping(self, ref_file, bam_file):
