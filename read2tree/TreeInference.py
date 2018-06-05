@@ -44,6 +44,6 @@ class TreeInference(object):
         iqtree_wrapper.options.options['-nt'].set_value(self.args.threads)
         tree = iqtree_wrapper()
         with open(os.path.join(output_folder, "tree_" + self._species_name + ".nwk"), "w") as text_file:
-            text_file.write("{};".format(tree))
-        self.tree = "{};".format(tree)
+            text_file.write("{}".format(tree))
+        self.tree = "{}".format(tree)
         return tree
