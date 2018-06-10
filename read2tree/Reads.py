@@ -5,18 +5,11 @@ import tqdm
 from Bio import SeqIO, SeqRecord, Seq, bgzf
 
 logger = logging.getLogger(__name__)
-
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('mapping.log')
-file_handler.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler('info.log')
 file_handler.setFormatter(formatter)
-
 stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
 stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 
 class Reads(object):
@@ -27,8 +20,15 @@ class Reads(object):
 
         if args.debug:
             logger.setLevel(logging.DEBUG)
+            file_handler.setLevel(logging.DEBUG)
+            stream_handler.setLevel(logging.DEBUG)
         else:
             logger.setLevel(logging.INFO)
+            file_handler.setLevel(logging.INFO)
+            stream_handler.setLevel(logging.INFO)
+
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
 
         self.split_len = args.split_len
         self.split_overlap = args.split_overlap
@@ -51,7 +51,7 @@ class Reads(object):
 
         if load and self.args.split_reads:
             print('--- Splitting reads from {} ---'.format(self._reads))
-            self.split_reads = self.process_reads()
+            self.split_reads, self.total_reads = self.process_reads()
         else:
             self.split_reads = self._reads
 
@@ -68,7 +68,7 @@ class Reads(object):
                                              desc='Splitting reads',
                                              unit=' read'):
                 read_id = name[1:].split(" ")[0]
-                self.logger.info("Process read {}".format(read_id))
+                logger.info("Process read {}".format(read_id))
                 if len(seq) > self.split_min_read_len:
                     x = 1
                     try:
@@ -88,7 +88,7 @@ class Reads(object):
                     out += self._get_4_line_fastq_string(read_id, None, seq,
                                                          qual)
                     total_new_reads += 1
-        return out
+        return out, total_new_reads
 
     # def write_split_reads(self, read_string):
     #     outfile = self._reads.replace('.fq', '-split.fq')

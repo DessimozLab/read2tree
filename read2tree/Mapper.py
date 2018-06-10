@@ -37,7 +37,7 @@ from read2tree.stats.SeqCompleteness import SeqCompleteness
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('mapping.log')
+file_handler = logging.FileHandler('info.log')
 file_handler.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
