@@ -65,8 +65,8 @@ cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz .
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz .
 echo 'Finished download'
-gunzip -c $srr\_1.fastq.gz > $speciesid\_1.fq
-gunzip -c $srr\_2.fastq.gz > $speciesid\_2.fq
+mv $srr\_1.fastq.gz $speciesid\_1.fq.gz
+mv $srr\_2.fastq.gz $speciesid\_2.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
@@ -87,7 +87,7 @@ echo 'Created read $speciesid'
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz .
 echo 'Finished download'
-gunzip -c $srr.fastq.gz > $speciesid\_1.fq
+mv $srr.fastq.gz $speciesid\_1.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
@@ -110,8 +110,8 @@ ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/aspe
 echo 'Finished download'
 parallel-fastq-dump -s *.sra -t 4 -O . --split-files --tmpdir .
 echo 'Finished getting fastq from sra and split files'
-mv *\_1.fastq $speciesid\_1.fq
-mv *\_2.fastq $speciesid\_2.fq
+mv *\_1.fastq $speciesid\_1.fq.gz
+mv *\_2.fastq $speciesid\_2.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
@@ -134,7 +134,7 @@ ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/aspe
 echo 'Finished download'
 parallel-fastq-dump -s *.sra -t 4 -O . --tmpdir .
 echo 'Finished getting fastq from sra'
-mv *.fastq $speciesid\_1.fq
+mv *.fastq $speciesid\_1.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
 
     text_file = open('down_py_script.sh', "w")
@@ -158,7 +158,7 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
 #BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
@@ -172,7 +172,7 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
 #BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
@@ -186,7 +186,7 @@ python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore ~/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
 
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
@@ -265,7 +265,6 @@ def run_lsf(sra_dic, output_speciesid):
     rm_job_id = []
     for species, sra in sra_dic.items():
         species_id = sra[-1]
-        print(species_id)
         # check whether the mapping already exists
         if not is_species_mapped(species_id, output_speciesid):
             print('Submitting species {} with species id {}!'.format(species, species_id))
