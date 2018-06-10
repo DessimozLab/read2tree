@@ -265,6 +265,7 @@ def run_lsf(sra_dic, output_speciesid):
     rm_job_id = []
     for species, sra in sra_dic.items():
         species_id = sra[-1]
+        print(species_id)
         # check whether the mapping already exists
         if not is_species_mapped(species_id, output_speciesid):
             print('Submitting species {} with species id {}!'.format(species, species_id))
