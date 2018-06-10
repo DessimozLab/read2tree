@@ -1,26 +1,27 @@
 #!/usr/bin/env python
 '''
-    This file contains definitions of a class that allows to map reads to a reference file!
+    This file contains definitions of a class that allows to map reads to a
+    reference file!
     Importantly the mapper function relies heavy on the following:
     ngm v0.5.4
     ngmlr v0.2.6
     samtools
     bcftools
     vcfutils.pl
-    
-    
+
+
     -- David Dylus, July--XXX 2017
 '''
 
 import pysam
 import tempfile
-import time
 import os
 import shutil
 import glob
 import subprocess
 import logging
 from tqdm import tqdm
+import functools
 from Bio import SeqIO, SeqRecord, Seq
 from Bio.Alphabet import generic_dna
 from Bio.SeqIO.FastaIO import FastaWriter
@@ -32,22 +33,14 @@ from read2tree.wrappers.read_mappers import NGMLR
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
-#from tables import *
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('debug.log')
-file_handler.setLevel(logging.ERROR)
+file_handler = logging.FileHandler('mapping.log')
 file_handler.setFormatter(formatter)
-
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 
 class Mapper(object):
@@ -55,14 +48,28 @@ class Mapper(object):
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None, species_name=None, load=True):
+    def __init__(self, args, ref_set=None, og_set=None, species_name=None,
+                 load=True):
         self.args = args
         # self.time =
+
+        if args.debug:
+            logger.setLevel(logging.DEBUG)
+            file_handler.setLevel(logging.DEBUG)
+            stream_handler.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+            file_handler.setLevel(logging.INFO)
+            stream_handler.setLevel(logging.INFO)
+
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
 
         if self.args.reads:
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
-                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+                self._species_name = \
+                    self._reads[0].split("/")[-1].split(".")[0]
             else:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
@@ -86,11 +93,14 @@ class Mapper(object):
         if load:  # compute mapping
             if ref_set is not None:
                 if self.args.single_mapping is None:
-                    self.mapped_records = self._map_reads_to_references(ref_set)
+                    self.mapped_records = \
+                        self._map_reads_to_references(ref_set)
                     self.progress.set_status('map')
                 else:
-                    self.ref_species = self.args.single_mapping.split("/")[-1].split("_")[0]
-                    self.mapped_records = self._map_reads_to_single_reference(ref_set)
+                    self.ref_species = \
+                        self.args.single_mapping.split("/")[-1].split("_")[0]
+                    self.mapped_records = \
+                        self._map_reads_to_single_reference(ref_set)
                     if self.progress.check_mapping():
                         self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
@@ -99,8 +109,10 @@ class Mapper(object):
             if og_set is not None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder()
                 self.og_records = self._sort_by_og(og_set)
-            elif og_set is not None and self.args.merge_all_mappings and species_name is not None:
-                self.mapped_records = self._read_mapping_from_folder(species_name=species_name)
+            elif (og_set is not None and
+                  self.args.merge_all_mappings and species_name is not None):
+                self.mapped_records = \
+                    self._read_mapping_from_folder(species_name=species_name)
                 self.og_records = self._sort_by_og(og_set)
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
@@ -124,11 +136,14 @@ class Mapper(object):
             if self.args.ngmlr_parameters is not None:
                 par = self.args.ngmlr_parameters.split(',')
                 ngm_wrapper.options.options['-x'].set_value(str(par[0]))
-                ngm_wrapper.options.options['--subread-length'].set_value(int(par[1]))
+                ngm_wrapper.options \
+                           .options['--subread-length'].set_value(int(par[1]))
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-
+        logger.info("{} / {} reads were \
+                    mapped".format(ngm['total_mapped_reads'],
+                                   ngm['total_reads']))
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
@@ -137,25 +152,32 @@ class Mapper(object):
 
     def _map_reads_to_single_reference(self, ref):
         """
-        Map reads to single reference species file. Allows to run each mapping in parallel on the cluster. Mapping the reads per species (=job)
+        Map reads to single reference species file. Allows to run each mapping
+        in parallel on the cluster. Mapping the reads per species (=job)
         :param ref: reference dataset
-        :return: dictionary with key og_name and value sequences mapped to each species
+        :return: dictionary with key og_name and value sequences mapped to
+        each species
         """
-        print('--- Mapping of reads to {} reference species ---'.format(self.ref_species))
+        print('--- Mapping of reads to {} reference species '
+              '---'.format(self.ref_species))
         mapped_reads_species = {}
         reference_path = os.path.join(self.args.output_path, "02_ref_dna")
 
-        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        output_folder = os.path.join(self.args.output_path,
+                                     "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
         if "TMPDIR" in os.environ:
-            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm', dir=os.environ.get("TMPDIR"))
+            tmp_output_folder = \
+                tempfile.TemporaryDirectory(prefix='ngm',
+                                            dir=os.environ.get("TMPDIR"))
         else:
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            print('--- Creating tmp directory on local node ---')
+            logger.debug('--- Creating tmp directory on local node ---')
 
-        ref_file_handle = os.path.join(reference_path, self.ref_species + '_OGs.fa')
+        ref_file_handle = os.path.join(reference_path, self.ref_species +
+                                       '_OGs.fa')
         # ref_tmp_file_handle = os.path.join(tmp_output_folder.name, self.ref_species + '_OGs.fa')
         # shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
@@ -177,23 +199,27 @@ class Mapper(object):
             mapped_reads_species[self.ref_species].dna = mapped_reads
             seqC = SeqCompleteness(ref[self.ref_species].dna)
             seqC.get_seq_completeness(mapped_reads)
-            seqC.write_seq_completeness(os.path.join(output_folder, self.ref_species + "_OGs_sc.txt"))
+            seqC.write_seq_completeness(os.path.join(output_folder,
+                                                     self.ref_species + "_OGs_sc.txt"))
 
         tmp_output_folder.cleanup()
         return mapped_reads_species
 
-
     def _read_mapping_from_folder(self, species_name=None):
         """
-        Retrieve all the mapped consensus files from folder and add to mapper object
-        :return: dictionary with key og_name and value sequences mapped to each species
+        Retrieve all the mapped consensus files from folder and add to mapper
+        object
+        :return: dictionary with key og_name and value sequences mapped to each
+                 species
         """
         print('--- Retrieve mapped consensus sequences ---')
         map_reads_species = {}
         if not species_name:
             species_name = self._species_name
         in_folder = os.path.join(self.args.output_path, "03_mapping_"+species_name)
-        for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
+        for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
+                         desc='Loading consensus read mappings ',
+                         unit=' species'):
             species = file.split("/")[-1].split("_")[0]
             map_reads_species[species] = Reference()
             map_reads_species[species].dna = list(SeqIO.parse(file, "fasta"))
@@ -203,7 +229,9 @@ class Mapper(object):
             for line in open(cov_file_name, "r"):
                 if "#" not in line:
                     values = line.split(",")
-                    cov.add_coverage(values[2]+"_"+values[1], [float(values[3]), float(values[4].replace("\n", ""))])
+                    cov.add_coverage(values[2]+"_"+values[1],
+                                     [float(values[3]),
+                                      float(values[4].replace("\n", ""))])
             self.all_cov.update(cov.coverage)
 
             seqC = SeqCompleteness()
@@ -212,7 +240,12 @@ class Mapper(object):
                 if "#" not in line:
                     values = line.split(",")
                     seqC.add_seq_completeness(values[2] + "_" + values[1],
-                                     [float(values[3]), float(values[4]), int(values[5]), int(values[6]), int(values[7].replace("\n", ""))])
+                                              [float(values[3]),
+                                               float(values[4]),
+                                               int(values[5]),
+                                               int(values[6]),
+                                               int(values[7].replace("\n",
+                                                                     ""))])
             self.all_sc.update(seqC.seq_completeness)
 
         return map_reads_species
@@ -220,35 +253,40 @@ class Mapper(object):
     def _map_reads_to_references(self, reference):
         """
         Map all the reads to reference
-        :param reference: 
-        :return: dictionary with key og_name and value sequences mapped to each species
+        :param reference:
+        :return: dictionary with key og_name and value sequences
+                 mapped to each species
         """
         print('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
         reference_path = os.path.join(self.args.output_path, "02_ref_dna")
 
-        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        output_folder = os.path.join(self.args.output_path,
+                                     "03_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
         if "TMPDIR" in os.environ:
-            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm', dir=os.environ.get("TMPDIR"))
+            tmp_output_folder = tempfile.TemporaryDirectory(
+                prefix='ngm', dir=os.environ.get("TMPDIR"))
         else:
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            print('--- Creating tmp directory on local node ---')
+            logger.debug('--- Creating tmp directory on local node ---')
 
         read_container = Reads(self.args)
         reads = read_container.split_reads
 
-
-        for species, value in tqdm(reference.items(), desc='Mapping reads to species', unit=' species'):
+        for species, value in tqdm(reference.items(),
+                                   desc='Mapping reads to species',
+                                   unit=' species'):
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
             # ref_tmp_file_handle = os.path.join(tmp_output_folder.name, species + '_OGs.fa')
             # shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
             # call the WRAPPER here
-            processed_reads = self._call_wrapper(ref_file_handle, reads, tmp_output_folder)
+            processed_reads = self._call_wrapper(ref_file_handle, reads,
+                                                 tmp_output_folder)
 
             try:
                 mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
@@ -264,7 +302,8 @@ class Mapper(object):
                 mapped_reads_species[species].dna = mapped_reads
                 seqC = SeqCompleteness(value.dna)
                 seqC.get_seq_completeness(mapped_reads)
-                seqC.write_seq_completeness(os.path.join(output_folder, species+"_OGs_sc.txt"))
+                seqC.write_seq_completeness(os.path.join(output_folder,
+                                                         species+"_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)
 
         tmp_output_folder.cleanup()
@@ -312,22 +351,45 @@ class Mapper(object):
         with open(og_name_file.replace(".fq", "_full.fq"), write_mode) as f:
             f.write(record)
 
-    def _bin_reads(self, ref_file, bam_file):
+    def _get_mapping_stats(self, bam_file):
         """
         Function that bins reads into their orthologous groups
         :param ref_file: Current species reference file
         :param bam_file: Mapped bam file
         """
-        print("--- Binning reads to {} ---".format(self._species_name))
-        output_folder = os.path.join(self.args.output_path, "03_read_ogs_" + self._species_name)
+        sfile_idx = pysam.idxstats(bam_file)
+        x = sfile_idx.rstrip('\n').split('\n')
+        mapped = functools.reduce(lambda x, y: x + y,
+                                  [eval('+'.join(l.split('\t')[2]))
+                                   for l in x])
+        all_reads = functools.reduce(lambda x, y: x + y,
+                                     [eval('+'.join(l.split('\t')[2:]))
+                                      for l in x])
+        return mapped, all_reads
+
+    def _bin_reads(self, ref_file, bam_file):
+        """
+        Function that bins reads into their  orthologous groups
+        :param ref_file: Current species reference file
+        :param bam_file: Mapped bam file
+        """
+        logger.debug("--- Binning reads to {} ---".format(self._species_name))
+        output_folder = os.path.join(self.args.output_path, "03_read_ogs_" +
+                                     self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
         tmp_folder = os.path.dirname(bam_file)
-        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
+        outfile_name = os.path.join(tmp_folder,
+                                    ref_file.split('/')[-1].split('.')[0] +
+                                    "_post")
 
-        shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam")))
+        shutil.copy(bam_file, os.path.join(output_folder,
+                                           os.path.basename(outfile_name +
+                                                            "_sorted.bam")))
         shutil.copy(bam_file + ".bai",
-                    os.path.join(output_folder, os.path.basename(outfile_name + "_sorted.bam.bai")))
+                    os.path.join(output_folder,
+                                 os.path.basename(outfile_name +
+                                                  "_sorted.bam.bai")))
 
         if os.path.exists(bam_file):
             bam = pysam.AlignmentFile(bam_file, "rb")
@@ -345,7 +407,8 @@ class Mapper(object):
 
                     read_id = read.query_name
                     if read_id not in og_read_ids:
-                        self._write_read_query_aling(read, og_name_file, write_mode)
+                        self._write_read_query_aling(read, og_name_file,
+                                                     write_mode)
                         self._write_read_full(read, og_name_file, write_mode)
 
             bam.close()
@@ -364,7 +427,7 @@ class Mapper(object):
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
         for read in bam.fetch():
-            #     print(read.qual)
+            #     logger.info(read.qual)
             read_seq = list(read.seq)
             pairs = read.get_aligned_pairs(matches_only=True, with_seq=True)
             if read.reference_name in new_records.keys():
@@ -376,7 +439,6 @@ class Mapper(object):
 
             new_records[read.reference_name] = ("").join(seq)
         return new_records
-
 
     def _build_consensus_seq_v2(self, ref_file, bam_file):
         """
@@ -390,14 +452,16 @@ class Mapper(object):
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
         for ref in references:
-            #     print(read.qual)
+            #     logger.info(read.qual)
             seq = list('N' * len(records[ref]))
             for pileup_column in bam.pileup(ref, 0, 100000):
-                #TODO: improve the selection of a column by its quality
+                # TODO: improve the selection of a column by its quality
                 # qualities = [pileupread.alignment.query_alignment_qualities[pileupread.query_position] for pileupread in
                 #        pileupcolumn.pileups if not pileupread.is_del and not pileupread.is_refskip]
-                bases = [pileupread.alignment.query_sequence[pileupread.query_position] for pileupread in
-                         pileup_column.pileups if not pileupread.is_del and not pileupread.is_refskip]
+                bases = [pileupread.alignment.query_sequence
+                         [pileupread.query_position] for pileupread in
+                         pileup_column.pileups if not pileupread.is_del and
+                         not pileupread.is_refskip]
                 if bases:
                     seq[pileup_column.pos] = self._most_common(bases)
             if len(set(seq)) > 1:  # make sure that mapped sequence contains not only N
@@ -406,54 +470,76 @@ class Mapper(object):
 
     def _post_process_read_mapping(self, ref_file, bam_file):
         """
-        Function that will perform postprocessing of finished read mapping using the pysam functionality
-        :param ngm: 
-        :param reference_file_handle: 
-        :return: 
+        Function that will perform postprocessing of finished read mapping
+        using the pysam functionality
+        :param ngm:
+        :param reference_file_handle:
+        :return:
         """
-        # print("--- Postprocessing reads to {} ---".format(self._species_name))
-        output_folder = os.path.join(self.args.output_path, "03_mapping_"+self._species_name)
+        # logger.info("--- Postprocessing reads to {} ---".format(self._species_name))
+        output_folder = os.path.join(self.args.output_path,
+                                     "03_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
-        outfile_name = os.path.join(tmp_folder, ref_file.split('/')[-1].split('.')[0] + "_post")
+        outfile_name = os.path.join(tmp_folder,
+                                    ref_file.split('/')[-1].split('.')[0] +
+                                    "_post")
         if self.args.single_mapping:
-            print("--- POSTPROCESSING MAPPING FOR {} ---".format(self._species_name.upper()))
+            logger.debug("--- POSTPROCESSING MAPPING FOR {} "
+                         "---".format(self._species_name.upper()))
 
-        if 'sam' in bam_file.split(".")[-1]:  # ngmlr doesn't have the option to write in bam file directly
+        # ngmlr doesn't have the option to write in bam file directly
+        if 'sam' in bam_file.split(".")[-1]:
             sam_file = bam_file
             bam_file = sam_file.replace(".sam", ".bam")
             if os.path.exists(sam_file):
                 self._output_shell(
-                    'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) + ' -o ' + bam_file + " " + sam_file)
+                    'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) +
+                    ' -o ' + bam_file + " " + sam_file)
         if self.args.single_mapping:
-            print("---- Samtools view completed for {}".format(self._species_name))
+            logger.debug("---- Samtools view completed for {}"
+                         .format(self._species_name))
 
         if os.path.exists(bam_file):
             self._output_shell(
-                'samtools sort -m 2G  -@ ' + str(self.args.threads) + ' -o ' + outfile_name + "_sorted.bam " + bam_file)
+                'samtools sort -m 2G  -@ ' + str(self.args.threads) +
+                ' -o ' + outfile_name + "_sorted.bam " + bam_file)
         if self.args.single_mapping:
-            print("---- Samtools sort completed for {} ".format(self._species_name))
+            logger.debug("---- Samtools sort completed for {} "
+                         .format(self._species_name))
 
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
-                'samtools index -@ ' + str(self.args.threads) + ' ' + outfile_name + "_sorted.bam")
+                'samtools index -@ ' + str(self.args.threads) + ' ' +
+                outfile_name + "_sorted.bam")
             # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
         if self.args.single_mapping:
-            print("---- Samtools index completed for {} ".format(self._species_name))
+            logger.debug("---- Samtools index completed for {} "
+                         .format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
 
         # Get effective coverage of each mapped sequence
         cov = Coverage()
         cov.get_coverage_bam(outfile_name + "_sorted.bam")
-        cov.write_coverage_bam(os.path.join(output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
+        cov.write_coverage_bam(os.path.join(
+            output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
         self.all_cov.update(cov.coverage)
 
         if self.args.debug:
             self._bin_reads(ref_file, outfile_name + '_sorted.bam')
 
-        consensus = self._build_consensus_seq_v2(ref_file, outfile_name + '_sorted.bam')
+        consensus = self._build_consensus_seq_v2(ref_file, outfile_name +
+                                                 '_sorted.bam')
+        # mapped_reads, all_reads = self._get_mapping_stats(outfile_name +
+        #                                                   '_sorted.bam')
+        #
+        # logger.info("---- Mapping of {} against {} with {} "
+        #             "of {} mapped reads completed!---"
+        #             .format(self._species_name, ref_file.split("_")[0],
+        #                     mapped_reads, all_reads))
+
         if self.args.single_mapping:
-            print("---- Consensus sequences completed for mapping of {} against {} ---".format(self._species_name, self.args.single_mapping))
+            logger.debug("---- Number of mapped reads {} ")
 
         all_consensus = []
         if consensus:
@@ -462,15 +548,20 @@ class Mapper(object):
                     seq = Seq.Seq(value, generic_dna)
                     record = SeqRecord.SeqRecord(seq, id=key, description='')
                     all_consensus.append(record)
-                handle = open(os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa'), "w")
+                handle = open(os.path.join(output_folder, ref_file.split("/")
+                                           [-1].split(".")[0] +
+                                           '_consensus.fa'), "w")
                 writer = FastaWriter(handle, wrap=None)
                 writer.write_file(all_consensus)
                 handle.close()
             except ValueError:
                 pass
 
-        if os.path.exists(os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')):
-            out_file = os.path.join(output_folder, ref_file.split("/")[-1].split(".")[0] + '_consensus.fa')
+        if os.path.exists(os.path.join(output_folder,
+                                       ref_file.split("/")[-1].split(".")[0] +
+                                       '_consensus.fa')):
+            out_file = os.path.join(output_folder, ref_file.split("/")
+                                    [-1].split(".")[0] + '_consensus.fa')
         else:
             out_file = None
 
@@ -485,21 +576,26 @@ class Mapper(object):
                     raise
 
     def _clean_up_tmp_files_single(self, species):
-        output_folder = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
-        fn_ends = ('_post.bam', '_post_consensus_call.fq', '_post_sorted.bam',  '_post_sorted.bam.bai', '.fa.fai',
-                   '.fa.sam', '.fa-ht-13-2.3.ngm', '.fa-ht-13-2.3.ngm', '.fa', '.fa-enc.2.ngm')
-        self._rm_file(*[os.path.join(output_folder, species + fn_end) for fn_end in fn_ends], ignore_error=True)
-
+        output_folder = os.path.join(self.args.output_path, "03_mapping_" +
+                                     self._species_name)
+        fn_ends = ('_post.bam', '_post_consensus_call.fq', '_post_sorted.bam',
+                   '_post_sorted.bam.bai', '.fa.fai',
+                   '.fa.sam', '.fa-ht-13-2.3.ngm', '.fa-ht-13-2.3.ngm',
+                   '.fa', '.fa-enc.2.ngm')
+        self._rm_file(*[os.path.join(output_folder, species + fn_end)
+                        for fn_end in fn_ends], ignore_error=True)
 
     def _output_shell(self, line):
         """
         Save output of shell line that has pipes
         taken from: https://stackoverflow.com/questions/7389662/link-several-popen-commands-with-pipes
-        :param line: 
-        :return: 
+        :param line:
+        :return:
         """
         try:
-            shell_command = subprocess.Popen(line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            shell_command = subprocess.Popen(
+                line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                shell=True)
         except OSError:
             return None
         except ValueError:
@@ -508,8 +604,8 @@ class Mapper(object):
         (output, err) = shell_command.communicate()
         shell_command.wait()
         if shell_command.returncode != 0:
-            print("Shell command failed to execute")
-            print(line)
+            logger.debug("Shell command failed to execute")
+            logger.debug(line)
             return None
 
         return output
@@ -540,19 +636,22 @@ class Mapper(object):
 
     def _predict_best_protein_position(self, record):
         """
-        Given a list of sequences that are derived from mapped reads to multiple seq of a OG
-        we find the best corresponding mapped seq by comparing it with a representative sequence of the original OG using
+        Given a list of sequences that are derived from mapped reads to
+        multiple seq of a OG we find the best corresponding mapped seq by
+        comparing it with a representative sequence of the original OG using
         pyopa local alignment and return the sequence with its highest score!
         :return:
         """
         try:
-            frame = record.seq[0:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False)
-            best_translation = SeqRecord.SeqRecord(frame, id=self._species_name,
-                                                   description=record.description, name=record.name)
-        except:
-            raise ValueError("Problem with sequence format!", ref_og_seq.seq)
+            frame = record.seq[0:].translate(
+                table='Standard', stop_symbol='X', to_stop=False, cds=False)
+            best_translation = \
+                SeqRecord.SeqRecord(frame, id=self._species_name,
+                                    description=record.description,
+                                    name=record.name)
+        except ValueError:
+            raise ValueError("Problem with sequence format!")
         return best_translation
-
 
     def _get_protein(self, record):
         '''
@@ -560,9 +659,11 @@ class Mapper(object):
         :param record: sequence record
         :return: best translation
         '''
-        frame = record.seq[0:].translate(table='Standard', stop_symbol='X', to_stop=False, cds=False)
+        frame = record.seq[0:].translate(
+            table='Standard', stop_symbol='X', to_stop=False, cds=False)
         best_translation = SeqRecord.SeqRecord(frame, id=self._species_name,
-                                               description=record.description, name=record.name)
+                                               description=record.description,
+                                               name=record.name)
         return best_translation
 
     # def _predict_best_protein_pyopa(self, record, og):
@@ -583,7 +684,7 @@ class Mapper(object):
     #             s2 = pyopa.Sequence(str(seq))
     #             # calculating local and global scores for the given sequences
     #             local_double = pyopa.align_double(s1, s2, self.env)
-    #             # print('Local score: %f' % local_double[0])
+    #             # logger.info('Local score: %f' % local_double[0])
     #             if local_double[0] > best_score:
     #                 best_score = local_double[0]
     #                 best_seq_idx = i
@@ -594,13 +695,17 @@ class Mapper(object):
 
     def write_by_og(self, output_folder):
         '''
-        Write for each og all the mapped sequences into separate fasta files to a specified folder
+        Write for each og all the mapped sequences into separate fasta
+        files to a specified folder
         :param output_folder: folder where files should be stored
         '''
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        for key, value in tqdm(self.og_records.items(), desc="Writing DNA seq sorted by OG", unit=" OG"):
-            handle = open(os.path.join(output_folder, 'mapped_'+key+'.fa'), "w")
+        for key, value in tqdm(self.og_records.items(),
+                               desc="Writing DNA seq sorted by OG",
+                               unit=" OG"):
+            handle = open(os.path.join(output_folder,
+                                       'mapped_'+key+'.fa'), "w")
             writer = FastaWriter(handle, wrap=None)
             writer.write_file(value)
             handle.close()

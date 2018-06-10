@@ -8,6 +8,7 @@ import subprocess
 import pandas as pd
 import numpy as np
 
+
 def get_sra_dic(df):
     all_index = []
     for organism in list(set(df.Organism)):
@@ -16,21 +17,23 @@ def get_sra_dic(df):
             print(len(data_by_organism))
             if len(data_by_organism) == 1:  # there is only one datapoint for this organism lets collect it anyway
                 if data_by_organism.MBases.values[
-                    0] > 100:  # for sure select the ones that have more than 1X coverage assuming a 1GB genome
+                        0] > 100:  # for sure select the ones that have more than 1X coverage assuming a 1GB genome
                     all_index.append(data_by_organism.index[0])
                     print(data_by_organism['MBases'])
             else:
                 # Check if there is transcriptomic data available
                 if 'TRANSCRIPTOMIC' in data_by_organism.LibrarySource:
                     data_o_t = data_by_organism[df.LibrarySource == 'TRANSCRIPTOMIC']
-                    x = data_by_organism.iloc[(data_by_organims['MBases'] - 1000).abs().argsort()[:1]]
+                    x = data_by_organism.iloc[(
+                        data_by_organims['MBases'] - 1000).abs().argsort()[:1]]
                     if x.MBases.values[
-                        0] > 1000:  # for sure select the ones that have more than 10X coverage assuming a 1GB genome
+                            0] > 1000:  # for sure select the ones that have more than 10X coverage assuming a 1GB genome
                         all_index.append(x.index[0])
                 elif 'GENOMIC' in data_by_organism.LibrarySource:
-                    x = data_by_organism.iloc[(data_by_organims['MBases'] - 10000).abs().argsort()[:1]]
+                    x = data_by_organism.iloc[(
+                        data_by_organims['MBases'] - 10000).abs().argsort()[:1]]
                     if x.MBases.values[
-                        0] > 10000:  # for sure select the ones that have more than 10X coverage assuming a 1GB genome
+                            0] > 10000:  # for sure select the ones that have more than 10X coverage assuming a 1GB genome
                         all_index.append(x.index[0])
     #                 else: #  run closest subset sum algorithm to select multiple ones that we are able to merge
     #                     data_by_organism_with_most_technology =
@@ -230,6 +233,7 @@ def is_species_mapped(species_id, output):
     else:
         return False
 
+
 def output_shell(line):
     """
     Save output of shell line that has pipes
@@ -238,7 +242,8 @@ def output_shell(line):
         :return:
 """
     try:
-        shell_command = subprocess.Popen(line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        shell_command = subprocess.Popen(
+            line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     except OSError:
         return None
     except ValueError:
@@ -253,13 +258,15 @@ def output_shell(line):
 
     return output
 
+
 def run_lsf(sra_dic, output_speciesid):
     num_job_cycles = 0
     rm_job_id_idx = 0
     rm_job_id = []
     for species, sra in sra_dic.items():
-        species_id = get_five_letter_species_id(species)
-        if not is_species_mapped(species_id, output_speciesid):  # check whether the mapping already exists
+        species_id = sra[-1]
+        # check whether the mapping already exists
+        if not is_species_mapped(species_id, output_speciesid):
             print('Submitting species {} with species id {}!'.format(species, species_id))
             if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
@@ -279,10 +286,12 @@ def run_lsf(sra_dic, output_speciesid):
 
                     # Open a pipe to the bsub command.
                     #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
+                    p_download = output_shell(
+                        'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
 
                     # Append jobid of r2t
-                    r2t_jobids.append(re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
+                    r2t_jobids.append(
+                        re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
 
                     time.sleep(0.1)
 
@@ -292,7 +301,8 @@ def run_lsf(sra_dic, output_speciesid):
                 # Open a pipe to the bsub command.
                 #output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
                 r2t_jobids_done = ['done(' + r + ')' for r in r2t_jobids]
-                p_rm = output_shell('bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
+                p_rm = output_shell(
+                    'bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
@@ -302,7 +312,8 @@ def run_lsf(sra_dic, output_speciesid):
                 job_string = get_download_string(species_id, sra[0], se_pe=sra[1])
 
                 # Open a pipe to the bsub command.
-                p_download = output_shell('bsub -w "{}" < {}'.format('done('+rm_job_id[rm_job_id_idx]+')', job_string))
+                p_download = output_shell(
+                    'bsub -w "{}" < {}'.format('done('+rm_job_id[rm_job_id_idx]+')', job_string))
 
                 time.sleep(0.1)
 
@@ -316,10 +327,12 @@ def run_lsf(sra_dic, output_speciesid):
 
                     # Open a pipe to the bsub command.
                     # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
+                    p_download = output_shell(
+                        'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
 
                     # Append jobid of r2t
-                    r2t_jobids.append(re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
+                    r2t_jobids.append(
+                        re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
 
                     time.sleep(0.1)
 
@@ -329,13 +342,15 @@ def run_lsf(sra_dic, output_speciesid):
                 # Open a pipe to the bsub command.
                 # output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
                 r2t_jobids_done = ['done('+r+')' for r in r2t_jobids]
-                p_rm = output_shell('bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
+                p_rm = output_shell(
+                    'bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
                 rm_job_id_idx += 1
                 time.sleep(0.1)
             num_job_cycles += 1
+
 
 def main():
 
@@ -349,7 +364,6 @@ def main():
     sra_file = None
     out_speciesid = None
 
-
     for opt, arg in opts:
         if opt == '-h':
             print('sge_submit.py -s <sra_file> -m <min_taxa> -o <out_speciesid> -d')
@@ -362,83 +376,93 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short'],
- 'Zimmerius acer': ['SRR1021717', 'PAIRED', 'short'],
- 'Upupa epops': ['SRR3203224', 'PAIRED', 'short'],
- 'Pinguinus impennis': ['SRR3178397', 'SINGLE', 'short'],
- 'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short'],
- 'Zonotrichia querula': ['SRR2937463', 'PAIRED', 'short'],
- 'Moho braccatus': ['SRR3180998', 'SINGLE', 'short'],
- 'Periparus ater abietum': ['SRR1810763', 'PAIRED', 'short'],
- 'Circus melanoleucos': ['SRR3203217', 'PAIRED', 'short'],
- 'Zonotrichia leucophrys': ['SRR1199463', 'PAIRED', 'short'],
- 'Elanus caeruleus': ['SRR3203227', 'PAIRED', 'short'],
- 'Poecile palustris palustris': ['SRR1810775', 'PAIRED', 'short'],
- 'Periparus ater ater': ['SRR1810767', 'PAIRED', 'short'],
- 'Morus bassanus': ['SRR1145759', 'PAIRED', 'short'],
- 'Falco subbuteo': ['SRR3203238', 'PAIRED', 'short'],
- 'Phylloscopus trochiloides trochiloides': ['SRR3217927', 'PAIRED', 'short'],
- 'Ptychoramphus aleuticus': ['SRR1145757', 'PAIRED', 'short'],
- 'Mareca strepera': ['SRR3471613', 'PAIRED', 'short'],
- 'Periparus ater sardus': ['SRR1810764', 'PAIRED', 'short'],
- 'Anas acuta': ['SRR3471609', 'PAIRED', 'short'],
- 'Podoces hendersoni': ['SRR765719', 'PAIRED', 'short'],
- 'Tyto longimembris': ['SRR3203222', 'PAIRED', 'short'],
- 'Campephilus imperialis': ['SRR3178404', 'SINGLE', 'short'],
- 'Callipepla californica': ['SRR3630008', 'PAIRED', 'short'],
- 'Sibirionetta formosa': ['SRR3471611', 'PAIRED', 'short'],
- 'Nesoptilotis leucotis': ['SRR3901721', 'PAIRED', 'short'],
- 'Macronectes giganteus': ['SRR6902605', 'PAIRED', 'short'],
- 'Cyanistes caeruleus calamensis': ['SRR1810758', 'PAIRED', 'short'],
- 'Sericornis frontalis': ['SRR3901710', 'PAIRED', 'short'],
- 'Cyanistes palmensis': ['SRR1810654', 'PAIRED', 'short'],
- 'Periparus ater atlas': ['SRR1810770', 'PAIRED', 'short'],
- 'Falco cherrug cherrug': ['SRR671935', 'SINGLE', 'short'],
- 'Akialoa obscura': ['SRR3181052', 'SINGLE', 'short'],
- 'Phylloscopus trochiloides viridanus': ['SRR1172475', 'PAIRED', 'short'],
- 'Ammodramus caudacutus': ['SRR1957204', 'PAIRED', 'short'],
- 'Myadestes myadestinus': ['SRR3181004', 'SINGLE', 'short'],
- 'Cyanistes flavipectus': ['SRR1810646', 'PAIRED', 'short'],
- 'Callaeas cinereus': ['SRR3180908', 'SINGLE', 'short'],
- 'Phylloscopus plumbeitarsus': ['SRR3223375', 'PAIRED', 'short'],
- 'Platycercus eximius': ['SRR3901724', 'PAIRED', 'short'],
- 'Lonchura leucosticta': ['SRR5976562', 'PAIRED', 'short'],
- 'Bubo bubo': ['SRR3203225', 'PAIRED', 'short'],
- 'Campylorhynchus brunneicapillus': ['SRR1145744', 'SINGLE', 'short'],
- 'Ammodramus nelsoni': ['SRR1955654', 'PAIRED', 'short'],
- 'Phasianidae gen. sp.': ['SRR088928', 'SINGLE', 'long'],
- 'Pelecanus occidentalis': ['SRR1145758', 'PAIRED', 'short'],
- 'Zonotrichia leucophrys gambelii': ['SRR1238747', 'PAIRED', 'short'],
- 'Athene noctua': ['SRR3203242', 'PAIRED', 'short'],
- 'Gymnopithys rufigula': ['SRR3115006', 'PAIRED', 'short'],
- 'Machlolophus spilonotus': ['SRR765718', 'PAIRED', 'short'],
- 'Zosterops lateralis': ['SRR2145253', 'SINGLE', 'short'],
- 'Cnemophilus loriae': ['SRR2968794', 'PAIRED', 'short'],
- 'Alca torda': ['SRR1145756', 'PAIRED', 'short'],
- 'Accipiter virgatus': ['SRR3203234', 'PAIRED', 'short'],
- 'Lanius excubitor': ['SRR2968729', 'PAIRED', 'short'],
- 'Paradoxornis webbianus bulomachus': ['SRR392516', 'SINGLE', 'short'],
- 'Cyanistes caeruleus caeruleus': ['SRR1810777', 'PAIRED', 'short'],
- 'Butastur indicus': ['SRR3203233', 'PAIRED', 'short'],
- 'Turnagra capensis': ['SRR3180914', 'SINGLE', 'short'],
- 'Mareca falcata': ['SRR3471610', 'PAIRED', 'short'],
- 'Nucifraga columbiana': ['SRR1166560', 'PAIRED', 'short'],
- 'Otus scops': ['SRR3203230', 'PAIRED', 'short'],
- 'Malurus lamberti': ['SRR3901709', 'PAIRED', 'short'],
- 'Passer montanus': ['SRR5369936', 'PAIRED', 'short'],
- 'Zimmerius gracilipes': ['SRR1021716', 'PAIRED', 'short'],
- 'Heteralocha acutirostris': ['SRR3180975', 'SINGLE', 'short'],
- 'Falco tinnunculus': ['SRR3203231', 'PAIRED', 'short'],
- 'Cyanistes caeruleus ogliastrae': ['SRR1810757', 'PAIRED', 'short'],
- 'Picus canus': ['SRR3203240', 'PAIRED', 'short'],
- 'Falco peregrinus peregrinus': ['SRR671934', 'SINGLE', 'short'],
- 'Asio otus': ['SRR3203220', 'PAIRED', 'short'],
- 'Anser sp.': ['SRR1060398', 'PAIRED', 'short'],
- 'Spinus cucullatus': ['SRR2895762', 'PAIRED', 'short'],
- 'Psephotellus pulcherrimus': ['SRR3180905', 'SINGLE', 'short'],
- 'Glyphorynchus spirurus': ['SRR3115005', 'PAIRED', 'short']}
+    sra_dic = {'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short', 'OTUBA'],
+               'Zimmerius acer': ['SRR1021717', 'PAIRED', 'short', 'ZIMAC'],
+               'Upupa epops': ['SRR3203224', 'PAIRED', 'short', 'UPUEP'],
+               'Pinguinus impennis': ['SRR3178397', 'SINGLE', 'short', 'PINIM'],
+               'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short', 'LAGLA'],
+               'Zonotrichia querula': ['SRR2937463', 'PAIRED', 'short', 'ZONQU'],
+               'Moho braccatus': ['SRR3180998', 'SINGLE', 'short', 'MOHBR'],
+               'Periparus ater abietum': ['SRR1810763', 'PAIRED', 'short', 'PERAT'],
+               'Circus melanoleucos': ['SRR3203217', 'PAIRED', 'short', 'CIRME'],
+               'Zonotrichia leucophrys': ['SRR1199463', 'PAIRED', 'short', 'ZONLE'],
+               'Elanus caeruleus': ['SRR3203227', 'PAIRED', 'short', 'ELACA'],
+               'Poecile palustris palustris': ['SRR1810775', 'PAIRED', 'short', 'POEPA'],
+               'Periparus ater ater': ['SRR1810767', 'PAIRED', 'short', 'PERA0'],
+               'Morus bassanus': ['SRR1145759', 'PAIRED', 'short', 'MORBA'],
+               'Falco subbuteo': ['SRR3203238', 'PAIRED', 'short', 'FALSU'],
+               'Phylloscopus trochiloides trochiloides': ['SRR3217927',
+                                                          'PAIRED',
+                                                          'short',
+                                                          'PHYTR'],
+               'Ptychoramphus aleuticus': ['SRR1145757', 'PAIRED', 'short', 'PTYAL'],
+               'Mareca strepera': ['SRR3471613', 'PAIRED', 'short', 'MARST'],
+               'Periparus ater sardus': ['SRR1810764', 'PAIRED', 'short', 'PERA1'],
+               'Anas acuta': ['SRR3471609', 'PAIRED', 'short', 'ANAAC'],
+               'Podoces hendersoni': ['SRR765719', 'PAIRED', 'short', 'PODHE'],
+               'Tyto longimembris': ['SRR3203222', 'PAIRED', 'short', 'TYTLO'],
+               'Campephilus imperialis': ['SRR3178404', 'SINGLE', 'short', 'CAMIM'],
+               'Callipepla californica': ['SRR3630008', 'PAIRED', 'short', 'CALCA'],
+               'Sibirionetta formosa': ['SRR3471611', 'PAIRED', 'short', 'SIBFO'],
+               'Nesoptilotis leucotis': ['SRR3901721', 'PAIRED', 'short', 'NESLE'],
+               'Macronectes giganteus': ['SRR6902605', 'PAIRED', 'short', 'MACGI'],
+               'Cyanistes caeruleus calamensis': ['SRR1810758', 'PAIRED', 'short', 'CYACA'],
+               'Sericornis frontalis': ['SRR3901710', 'PAIRED', 'short', 'SERFR'],
+               'Cyanistes palmensis': ['SRR1810654', 'PAIRED', 'short', 'CYAPA'],
+               'Periparus ater atlas': ['SRR1810770', 'PAIRED', 'short', 'PERA2'],
+               'Falco cherrug cherrug': ['SRR671935', 'SINGLE', 'short', 'FALCH'],
+               'Akialoa obscura': ['SRR3181052', 'SINGLE', 'short', 'AKIOB'],
+               'Phylloscopus trochiloides viridanus': ['SRR1172475',
+                                                       'PAIRED',
+                                                       'short',
+                                                       'PHYT0'],
+               'Ammodramus caudacutus': ['SRR1957204', 'PAIRED', 'short', 'AMMCA'],
+               'Myadestes myadestinus': ['SRR3181004', 'SINGLE', 'short', 'MYAMY'],
+               'Cyanistes flavipectus': ['SRR1810646', 'PAIRED', 'short', 'CYAFL'],
+               'Callaeas cinereus': ['SRR3180908', 'SINGLE', 'short', 'CALCI'],
+               'Phylloscopus plumbeitarsus': ['SRR3223375', 'PAIRED', 'short', 'PHYPL'],
+               'Platycercus eximius': ['SRR3901724', 'PAIRED', 'short', 'PLAEX'],
+               'Lonchura leucosticta': ['SRR5976562', 'PAIRED', 'short', 'LONLE'],
+               'Bubo bubo': ['SRR3203225', 'PAIRED', 'short', 'BUBBU'],
+               'Campylorhynchus brunneicapillus': ['SRR1145744', 'SINGLE', 'short', 'CAMBR'],
+               'Ammodramus nelsoni': ['SRR1955654', 'PAIRED', 'short', 'AMMNE'],
+               'Phasianidae gen. sp.': ['SRR088928', 'SINGLE', 'long', 'PHAGE'],
+               'Pelecanus occidentalis': ['SRR1145758', 'PAIRED', 'short', 'PELOC'],
+               'Zonotrichia leucophrys gambelii': ['SRR1238747', 'PAIRED', 'short', 'ZONL0'],
+               'Athene noctua': ['SRR3203242', 'PAIRED', 'short', 'ATHNO'],
+               'Gymnopithys rufigula': ['SRR3115006', 'PAIRED', 'short', 'GYMRU'],
+               'Machlolophus spilonotus': ['SRR765718', 'PAIRED', 'short', 'MACSP'],
+               'Zosterops lateralis': ['SRR2145253', 'SINGLE', 'short', 'ZOSLA'],
+               'Cnemophilus loriae': ['SRR2968794', 'PAIRED', 'short', 'CNELO'],
+               'Alca torda': ['SRR1145756', 'PAIRED', 'short', 'ALCTO'],
+               'Accipiter virgatus': ['SRR3203234', 'PAIRED', 'short', 'ACCVI'],
+               'Lanius excubitor': ['SRR2968729', 'PAIRED', 'short', 'LANEX'],
+               'Paradoxornis webbianus bulomachus': ['SRR392516',
+                                                     'SINGLE',
+                                                     'short',
+                                                     'PARWE'],
+               'Cyanistes caeruleus caeruleus': ['SRR1810777', 'PAIRED', 'short', 'CYAC0'],
+               'Butastur indicus': ['SRR3203233', 'PAIRED', 'short', 'BUTIN'],
+               'Turnagra capensis': ['SRR3180914', 'SINGLE', 'short', 'TURCA'],
+               'Mareca falcata': ['SRR3471610', 'PAIRED', 'short', 'MARFA'],
+               'Nucifraga columbiana': ['SRR1166560', 'PAIRED', 'short', 'NUCCO'],
+               'Otus scops': ['SRR3203230', 'PAIRED', 'short', 'OTUSC'],
+               'Malurus lamberti': ['SRR3901709', 'PAIRED', 'short', 'MALLA'],
+               'Passer montanus': ['SRR5369936', 'PAIRED', 'short', 'PASMO'],
+               'Zimmerius gracilipes': ['SRR1021716', 'PAIRED', 'short', 'ZIMGR'],
+               'Heteralocha acutirostris': ['SRR3180975', 'SINGLE', 'short', 'HETAC'],
+               'Falco tinnunculus': ['SRR3203231', 'PAIRED', 'short', 'FALTI'],
+               'Cyanistes caeruleus ogliastrae': ['SRR1810757', 'PAIRED', 'short', 'CYAC1'],
+               'Picus canus': ['SRR3203240', 'PAIRED', 'short', 'PICCA'],
+               'Falco peregrinus peregrinus': ['SRR671934', 'SINGLE', 'short', 'FALPE'],
+               'Asio otus': ['SRR3203220', 'PAIRED', 'short', 'ASIOT'],
+               'Anser sp.': ['SRR1060398', 'PAIRED', 'short', 'ANSSP'],
+               'Spinus cucullatus': ['SRR2895762', 'PAIRED', 'short', 'SPICU'],
+               'Psephotellus pulcherrimus': ['SRR3180905', 'SINGLE', 'short', 'PSEPU'],
+               'Glyphorynchus spirurus': ['SRR3115005', 'PAIRED', 'short', 'GLYSP']}
 
     run_lsf(sra_dic, out_speciesid)
+
 
 if __name__ == "__main__":
     main()

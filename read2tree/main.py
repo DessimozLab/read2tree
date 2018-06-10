@@ -25,7 +25,6 @@ from read2tree.Aligner import Aligner
 from read2tree.Progress import Progress
 from read2tree.TreeInference import TreeInference
 from read2tree.parser import OMAOutputParser
-from Bio import AlignIO
 import argparse
 
 
@@ -53,74 +52,85 @@ def parse_args(argv, exe_name, desc):
                                  'oma standalone directory.')
 
     arg_parser.add_argument('--reads', nargs='+', default=None,
-                            help='Reads to be mapped to reference. If paired end '
-                                 'add separated by space.')
+                            help='Reads to be mapped to reference. If paired '
+                            'end add separated by space.')
 
     arg_parser.add_argument('--read_type', default='short',
-                            help='[Default is short reads] Type of reads to use for '
-                                 'mapping. Either ngm for short reads or ngmlr for long '
-                                 'will be used.')
+                            help='[Default is short reads] Type of reads to '
+                            'use for mapping. Either ngm for short reads or '
+                            'ngmlr for long will be used.')
 
     arg_parser.add_argument('--split_reads', action='store_true',
-                            help='Splits reads as defined by split_len (400) and split_overlap (0) parameters. ')
+                            help='Splits reads as defined by split_len (400) '
+                            'and split_overlap (0) parameters. ')
 
     arg_parser.add_argument('--split_len', type=int, default=400,
-                            help='[Default is 400] Parameter for selection of read split length '
-                                 'can only be used in combination with with long read option. ')
+                            help='[Default is 400] Parameter for selection of '
+                            'read split length can only be used in combination'
+                            'with with long read option. ')
 
     arg_parser.add_argument('--split_overlap', type=int, default=0,
-                            help='[Default is 0] Reads are split with an overlap defined by this argument.')
+                            help='[Default is 0] Reads are split with an '
+                            'overlap defined by this argument.')
 
     arg_parser.add_argument('--split_min_read_len', type=int, default=500,
-                            help='[Default is 500] Reads longer than this value are cut '
-                                 'into smaller values as defined by --split_len. ')
+                            help='[Default is 500] Reads longer than this '
+                            'value are cut into smaller values as defined '
+                            'by --split_len. ')
 
     arg_parser.add_argument('--output_path', default='.', required=True,
-                                help='[Default is current directory] Path to '
-                                     'output directory.')
+                            help='[Default is current directory] Path to '
+                            'output directory.')
 
     arg_parser.add_argument('--dna_reference', default='',
-                            help='Reference file that contains nucleotide sequences (fasta, hdf5). '
-                                 'If not given it will use the RESTapi and retrieve sequences '
-                                 'from http://omabrowser.org directly. NOTE: internet connection '
-                                 'required!')
+                            help='Reference file that contains nucleotide '
+                            'sequences (fasta, hdf5). If not given it will use'
+                            'the RESTapi and retrieve sequences '
+                            'from http://omabrowser.org directly. '
+                            'NOTE: internet connection required!')
 
     arg_parser.add_argument('--ignore_species', default=None,
-                            help='[Default is none] Ignores species part of the OMA standalone '
-                                 'pipeline. Input is comma separated list without spaces, e.g. '
-                                 'XXX,YYY,AAA.')
+                            help='[Default is none] Ignores species part of '
+                            'the OMA standalone pipeline. Input is comma '
+                            'separated list without spaces, e.g. XXX,YYY,AAA.')
 
     arg_parser.add_argument('--sc_threshold', type=float, default=0.0,
-                            help='[Default is 0.0; Range 0-1] Parameter for selection of sequences from mapping '
-                                 'by completeness compared to its reference sequence (number of ACGT basepairs '
-                                 'vs length of sequence). By default, all sequences are selected.')
+                            help='[Default is 0.0; Range 0-1] Parameter for '
+                            'selection of sequences from mapping by '
+                            'completeness compared to its reference sequence '
+                            '(number of ACGT basepairs vs length of sequence). '
+                            'By default, all sequences are selected.')
 
     arg_parser.add_argument('--remove_species_mapping', default=None,
-                            help='[Default is none] Remove species present in data set after '
-                                 'mapping step completed and only do analysis on '
-                                 'subset. Input is comma separated list without spaces, e.g. '
-                                 'XXX,YYY,AAA.')
+                            help='[Default is none] Remove species present in '
+                            'data set after mapping step completed and only '
+                            'do analysis on subset. Input is comma separated '
+                            'list without spaces, e.g. XXX,YYY,AAA.')
 
     arg_parser.add_argument('--remove_species_ogs', default=None,
-                            help='[Default is none] Remove species present in data set after '
-                                 'mapping step completed to build OGs. Input is comma separated'
-                                 'list without spaces, e.g. XXX,YYY,AAA.')
+                            help='[Default is none] Remove species present '
+                            'in data set after mapping step completed to '
+                            'build OGs. Input is comma separated list '
+                            'without spaces, e.g. XXX,YYY,AAA.')
 
     arg_parser.add_argument('--ngmlr_parameters', default=None,
-                            help='[Default is none] In case this parameters need to be changed all 3 values '
-                                 'have to be changed [x,subread-length,R]. The standard '
-                                 'is: ont,256,0.25. Possibilities for these parameter '
-                                 'can be found in the original documentation of ngmlr.')
+                            help='[Default is none] In case this parameters '
+                            'need to be changed all 3 values have to be '
+                            'changed [x,subread-length,R]. The standard '
+                            'is: ont,256,0.25. Possibilities for these '
+                            'parameter can be found in the original '
+                            'documentation of ngmlr.')
 
     arg_parser.add_argument('--keep_all_species', action='store_true',
                             help='[Default is to keep all species]'
                                  'Remove species only from mapping set. ')
 
     arg_parser.add_argument('--keep_all_ogs', action='store_true',
-                            help='Keep all orthologs after addition of mapped seq, which means '
-                            'also the groups that have no mapped sequence. Otherwise only '
-                            'groups are used that have the mapped sequence for alignment '
-                            'and tree inference.')
+                            help='Keep all orthologs after addition of '
+                            'mapped seq, which means also the groups that '
+                            'have no mapped sequence. Otherwise only groups '
+                            'are used that have the mapped sequence for '
+                            'alignment and tree inference.')
 
     arg_parser.add_argument('--debug', action='store_true',
                             help='Changes to debug mode: '
@@ -132,47 +142,61 @@ def parse_args(argv, exe_name, desc):
                                  'for mapped sequence.')
 
     arg_parser.add_argument('--merge_all_mappings', action='store_true',
-                            help='In case multiple species were mapped to the same reference this '
-                            'allows to merge this mappings and build a tree with all included species!')
+                            help='In case multiple species were mapped to '
+                            'the same reference this allows to merge this '
+                            'mappings and build a tree with all included '
+                            'species!')
 
     # arg_parser.add_argument('--ref_og_aa_folder', default='.',
     #                         help='Path to preselected og_aa folder')
 
     # Arguments to generate the reference
     arg_parser.add_argument('-r', '--reference', action='store_true',
-                            help='Just generate the reference dataset for mapping.')
+                            help='Just generate the reference dataset for '
+                            'mapping.')
 
     arg_parser.add_argument('--min_species', type=int, default=None,
-                            help='Min number of species in selected orthologous groups. \
-                            If not selected it will be estimated such that around 1000 OGs are available.')
+                            help='Min number of species in selected '
+                            'orthologous groups. If not selected it will be '
+                            'estimated such that around 1000 OGs '
+                            'are available.')
 
     arg_parser.add_argument('--single_mapping', default=None,
-                            help='Single species file allowing to map in a job array.')
+                            help='Single species file allowing to map in a '
+                            'job array.')
 
     arg_parser.add_argument('--threads', type=int, default=1,
-                            help='Number of threads for the mapping using ngm / ngmlr!')
+                            help='Number of threads for the mapping '
+                            'using ngm / ngmlr!')
 
     # Arguments to map the reads
     arg_parser.add_argument('--ref_folder', default=None,
-                            help='Folder containing reference files with sequences sorted by species.')
+                            help='Folder containing reference files with '
+                            'sequences sorted by species.')
 
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
 
-    if not args.split_reads and (args.split_len != 400 or args.split_overlap != 0 or args.split_min_read_len != 500):
+    if not args.split_reads and (args.split_len != 400 or
+                                 args.split_overlap != 0 or
+                                 args.split_min_read_len != 500):
         arg_parser.error(
-            'Arguments --split_len, --split_overlap and --split_min_read_len can only be set if --split_reads is set.')
+            'Arguments --split_len, --split_overlap and --split_min_read_len'
+            'can only be set if --split_reads is set.')
     if args.split_reads and len(args.reads) == 2:
         arg_parser.error(
             'Splitting reads does not work for paired end reads.')
     if args.read_type is 'short' and args.ngmlr_parameters:
         arg_parser.error(
-            'Arguments for --ngmlr_parameters only work if --read_type is set to long.')
+            'Arguments for --ngmlr_parameters only work if --read_type is set '
+            'to long.')
 
     return args
 
+
 def check_execution_status():
     raise NotImplementedError
+
 
 def main(argv, exe_name, desc=''):
     '''
@@ -199,7 +223,9 @@ def main(argv, exe_name, desc=''):
         else:
             species_name = args.reads[0].split("/")[-1].split(".")[0]
 
-    if not progress.ref_ogs_01 and not progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
+    if (not progress.ref_ogs_01 and not progress.ref_dna_02 and
+        not progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output)  # Generate the OGs with their DNA sequences
@@ -215,7 +241,9 @@ def main(argv, exe_name, desc=''):
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
-    elif progress.ref_ogs_01 and not progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
+    elif (progress.ref_ogs_01 and not progress.ref_dna_02 and
+          not progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
         ogset = OGSet(args, load=False)
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)  # Generate the reference
         if not args.reference:  # just generate reference
@@ -229,7 +257,9 @@ def main(argv, exe_name, desc=''):
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
-    elif progress.ref_ogs_01 and progress.ref_dna_02 and not progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          not progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
         if args.single_mapping:
             reference = ReferenceSet(args, load=False)
             Mapper(args, ref_set=reference.ref)  # Run the mapping
@@ -246,7 +276,9 @@ def main(argv, exe_name, desc=''):
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
-    elif progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and not progress.append_ogs_04 and not progress.align_05:
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
         ogset = OGSet(args, load=False)
         if not args.merge_all_mappings:
             mapper = Mapper(args, og_set=ogset.ogs, load=False)
@@ -260,12 +292,15 @@ def main(argv, exe_name, desc=''):
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
         else:
-            for folder in glob.glob(os.path.join(args.output_path, "03_mapping_*")):
+            for folder in glob.glob(os.path.join(args.output_path,
+                                                 "03_mapping_*")):
                 species_name = folder.split("03_mapping_")[-1]
                 species_progress = Progress(args, species_name=species_name)
                 if species_progress.status >= 3:
-                    print('--- Addition of {} to all ogs ---'.format(species_name))
-                    mapper = Mapper(args, og_set=ogset.ogs, species_name=species_name, load=False)
+                    print('--- Addition of {} to all ogs '
+                          '---'.format(species_name))
+                    mapper = Mapper(args, og_set=ogset.ogs,
+                                    species_name=species_name, load=False)
                     ogset.add_mapped_seq(mapper, species_name=species_name)
             ogset.write_added_ogs_aa(folder_name="04_merged_OGs_aa")
             ogset.write_added_ogs_dna(folder_name="04_merged_OGs_dna")
@@ -275,14 +310,18 @@ def main(argv, exe_name, desc=''):
             concat_alignment = alignments.concat_alignment()
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
-    elif progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and progress.append_ogs_04 and not progress.align_05:
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and progress.append_ogs_04 and
+            not progress.align_05):
         ogset = OGSet(args, load=False)
         alignments = Aligner(args, ogset.mapped_ogs, load=True)
         progress.set_status("og_align")
         concat_alignment = alignments.concat_alignment()
         tree = TreeInference(args, concat_alignment=concat_alignment[0])
         print(tree.tree)
-    elif progress.ref_ogs_01 and progress.ref_dna_02 and progress.mapping_03 and progress.append_ogs_04 and progress.align_05:
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and progress.append_ogs_04 and
+            progress.align_05):
         alignments = Aligner(args,  load=False)
         progress.set_status("og_align")
         concat_alignment = alignments.concat_alignment()
