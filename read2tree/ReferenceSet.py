@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-    This file contains definitions of a class which allows to create 
+    This file contains definitions of a class which allows to create
     the reference orthologous groups with their DNA sequences.
 
     -- David Dylus, July--XXX 2017
@@ -11,7 +11,6 @@ import glob
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from Bio.SeqIO.FastaIO import FastaWriter
-from tables import *
 
 from read2tree.Progress import Progress
 
@@ -23,7 +22,7 @@ class ReferenceSet(object):
 
     def __init__(self, args, og_set=None, load=True):
         """
-        
+
         :param args: list of arguments from command line
         :param og_set: set of OGs used to obtain reference DNA sequences
         :param load: set to True when reference loaded from folder/file of list of arguments
@@ -36,18 +35,18 @@ class ReferenceSet(object):
         if load is False:
             self.ref = self._load_records_folder()
         elif og_set is not None and load is True:
-                self.ref = self._generate_reference(og_set)
-                self.write()
-                self.progress.set_status('ref')
+            self.ref = self._generate_reference(og_set)
+            self.write()
+            self.progress.set_status('ref')
 
         # if args.remove_species:
         #     self.ref = self._remove_species()
 
     def _read_fasta(self, ref_file):
         '''
-        
+
         :param ref_file: file that contains all the DNA sequences from the oma database
-        :return: 
+        :return:
         '''
         print('--- Reading DNA reference into memory ---')
         return SeqIO.index(ref_file, "fasta")
@@ -55,7 +54,7 @@ class ReferenceSet(object):
     def _load_records_folder(self):
         """
         Parse species with their dna sequences from folder
-        :return: 
+        :return:
         """
         ref_dict = {}
         print('--- Generating reference for mapping from folder ---')

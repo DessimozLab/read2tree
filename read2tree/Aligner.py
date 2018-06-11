@@ -6,6 +6,8 @@
 '''
 import os
 import glob
+import time
+import logging
 #from tables import *
 from multiprocessing import Pool
 from collections import ChainMap
@@ -19,12 +21,33 @@ from tqdm import tqdm
 from read2tree.wrappers.aligners import Mafft
 from read2tree.utils.seq_utils import concatenate
 
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+file_handler = logging.FileHandler('info.log')
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
 
 class Aligner(object):
 
     def __init__(self, args, og_set=None, load=True):
 
         self.args = args
+
+        self.elapsed_time = 0
+
+        if args.debug:
+            logger.setLevel(logging.DEBUG)
+            file_handler.setLevel(logging.DEBUG)
+            # stream_handler.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+            file_handler.setLevel(logging.INFO)
+            # stream_handler.setLevel(logging.INFO)
+
+        logger.addHandler(file_handler)
+        # logger.addHandler(stream_handler)
 
         if self.args.reads:
             if len(self.args.reads) == 2:
@@ -80,13 +103,16 @@ class Aligner(object):
         translated_seq = []
         for rec in alignment:
             codon = codons[rec.id]
-            translated_seq.append(SeqRecord(Seq("".join([codon[s] for s in str(rec.seq)]), generic_dna), id=rec.id))
+            translated_seq.append(
+                SeqRecord(Seq("".join([codon[s] for s in str(rec.seq)]), generic_dna), id=rec.id))
         return MultipleSeqAlignment(translated_seq)
 
     def _align_worker(self, og_set):
         align_dict = {}
-        output_folder_aa = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_aa")
-        output_folder_dna = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_dna")
+        output_folder_aa = os.path.join(
+            self.args.output_path, "05_align_" + self._species_name + "_aa")
+        output_folder_dna = os.path.join(
+            self.args.output_path, "05_align_" + self._species_name + "_dna")
         for key, value in og_set.items():
             mafft_wrapper = Mafft(value.aa, datatype="PROTEIN")
             mafft_wrapper.options.options['--localpair'].set_value(True)
@@ -117,10 +143,13 @@ class Aligner(object):
         :return: alignment dictionary containing Alignment objects with aa and dna MSAs
         """
         # align_dict = {}
+        start = time.time()
         self._adapt_id(og_set)
 
-        output_folder_aa = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_aa")
-        output_folder_dna = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_dna")
+        output_folder_aa = os.path.join(
+            self.args.output_path, "05_align_" + self._species_name + "_aa")
+        output_folder_dna = os.path.join(
+            self.args.output_path, "05_align_" + self._species_name + "_dna")
         if not os.path.exists(output_folder_aa):
             os.makedirs(output_folder_aa)
         if not os.path.exists(output_folder_dna):
@@ -130,7 +159,11 @@ class Aligner(object):
         p = Pool(self.args.threads)
         res_align = p.map(self._align_worker, og_chunks)
         align_dict = dict(ChainMap(*res_align))
-
+        end = time.time()
+        self.elapsed_time = end - start
+        logger.info('Alignment of {} OGs took {}.'.format(
+                    len(list(og_set.keys())),
+                    self.elapsed_time))
         return align_dict
 
     def _reload_alignments_from_folder(self):
@@ -139,8 +172,10 @@ class Aligner(object):
         :return: alignment dictionary containing Alignment objects with aa and dna MSAs
         """
         align_dict = {}
-        output_folder_aa = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_aa")
-        output_folder_dna = os.path.join(self.args.output_path, "05_align_" + self._species_name + "_dna")
+        output_folder_aa = os.path.join(
+            self.args.output_path, "05_align_" + self._species_name + "_aa")
+        output_folder_dna = os.path.join(
+            self.args.output_path, "05_align_" + self._species_name + "_dna")
         for f in tqdm(zip(sorted(glob.glob(os.path.join(output_folder_aa, '*.phy'))), sorted(glob.glob(os.path.join(output_folder_dna, '*.phy')))), desc='Loading alignments ', unit=' Alignment'):
             og_name = os.path.basename(f[0]).split(".")[0]
             align_dict[og_name] = Alignment()
@@ -169,12 +204,14 @@ class Aligner(object):
         concatination_dna = concatenate(alignments_dna)
 
         if concatination_aa:
-            align_output = open(os.path.join(self.args.output_path, "concat_" + self._species_name + "_aa.phy"), "w")
+            align_output = open(os.path.join(self.args.output_path,
+                                             "concat_" + self._species_name + "_aa.phy"), "w")
             AlignIO.write(concatination_aa, align_output, "phylip-relaxed")
             align_output.close()
 
         if concatination_dna:
-            align_output = open(os.path.join(self.args.output_path, "concat_" + self._species_name + "_dna.phy"), "w")
+            align_output = open(os.path.join(self.args.output_path,
+                                             "concat_" + self._species_name + "_dna.phy"), "w")
             AlignIO.write(concatination_dna, align_output, "phylip-relaxed")
             align_output.close()
 

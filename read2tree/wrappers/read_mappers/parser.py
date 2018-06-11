@@ -54,6 +54,7 @@ class NGMParser(object):
                   'sam': samfile}
         return result
 
+
 class NGMLRParser(object):
     """
     Simple prottest result parser.
@@ -66,7 +67,8 @@ class NGMLRParser(object):
         self.TOTAL_MAPPED_READS = Literal('Done (')
         self.TOTAL_READS = Literal('Processed: ')
         # These are all the models that are possible to be tested using phyml
-        self.tmr = Suppress(SkipTo(self.TOTAL_MAPPED_READS)) + Suppress(self.TOTAL_MAPPED_READS) + FLOAT
+        self.tmr = Suppress(SkipTo(self.TOTAL_MAPPED_READS)) + \
+            Suppress(self.TOTAL_MAPPED_READS) + FLOAT
         self.tr = Suppress(SkipTo(self.TOTAL_READS)) + Suppress(self.TOTAL_READS) + FLOAT
 
     def parse(self, stdout):
@@ -83,14 +85,8 @@ class NGMLRParser(object):
         total_mapped_reads, total_reads = self.parse(stdout)
         samfile = pysam.AlignmentFile(file, "r")
         result = {'file': file,
-                  'total_mapped_reads': total_mapped_reads,
+                  'reads_mapped': total_mapped_reads,
                   'total_reads': total_reads,
                   'sam': samfile}
 
         return result
-
-
-
-
-
-

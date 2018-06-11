@@ -2,6 +2,7 @@ import logging
 import gzip
 import mimetypes
 import tqdm
+import time
 from Bio import SeqIO, SeqRecord, Seq, bgzf
 
 logger = logging.getLogger(__name__)
@@ -17,18 +18,18 @@ class Reads(object):
     def __init__(self, args, load=True):
 
         self.args = args
-
+        self.elapsed_time = 0
         if args.debug:
             logger.setLevel(logging.DEBUG)
             file_handler.setLevel(logging.DEBUG)
-            stream_handler.setLevel(logging.DEBUG)
+            # stream_handler.setLevel(logging.DEBUG)
         else:
             logger.setLevel(logging.INFO)
             file_handler.setLevel(logging.INFO)
-            stream_handler.setLevel(logging.INFO)
+            # stream_handler.setLevel(logging.INFO)
 
         logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
+        # logger.addHandler(stream_handler)
 
         self.split_len = args.split_len
         self.split_overlap = args.split_overlap
@@ -63,12 +64,15 @@ class Reads(object):
         '''
         out = ''
         total_new_reads = 0
+        total_reads = 0
+        start = time.time()
         with self._file_handle as f:
             for name, seq, qual in tqdm.tqdm(self._readfq(f),
                                              desc='Splitting reads',
                                              unit=' read'):
+                total_reads += 1
                 read_id = name[1:].split(" ")[0]
-                logger.info("Process read {}".format(read_id))
+                #logger.debug("Process read {}".format(read_id))
                 if len(seq) > self.split_min_read_len:
                     x = 1
                     try:
@@ -88,6 +92,21 @@ class Reads(object):
                     out += self._get_4_line_fastq_string(read_id, None, seq,
                                                          qual)
                     total_new_reads += 1
+
+        end = time.time()
+        self.elapsed_time = end - start
+
+        logger.info('Reads larger than {} were split into {} bp long \
+                    fragments with an overlap of {} bp.'.format(
+                    self.split_min_read_len, self.split_len,
+                    self.split_overlap))
+
+        logger.info('{} reads were split into {} reads.'.format(
+                    total_reads, total_new_reads))
+
+        logger.info('Splitting of reads took {}.'.format(
+                    self.elapsed_time))
+
         return out, total_new_reads
 
     # def write_split_reads(self, read_string):

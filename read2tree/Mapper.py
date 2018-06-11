@@ -20,6 +20,7 @@ import shutil
 import glob
 import subprocess
 import logging
+import time
 from tqdm import tqdm
 import functools
 from Bio import SeqIO, SeqRecord, Seq
@@ -51,19 +52,19 @@ class Mapper(object):
     def __init__(self, args, ref_set=None, og_set=None, species_name=None,
                  load=True):
         self.args = args
-        # self.time =
+        self.elapsed_time = 0
 
         if args.debug:
             logger.setLevel(logging.DEBUG)
             file_handler.setLevel(logging.DEBUG)
-            stream_handler.setLevel(logging.DEBUG)
+            # stream_handler.setLevel(logging.DEBUG)
         else:
             logger.setLevel(logging.INFO)
             file_handler.setLevel(logging.INFO)
-            stream_handler.setLevel(logging.INFO)
+            # stream_handler.setLevel(logging.INFO)
 
         logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
+        # logger.addHandler(stream_handler)
 
         if self.args.reads:
             if len(self.args.reads) == 2:
@@ -92,17 +93,10 @@ class Mapper(object):
 
         if load:  # compute mapping
             if ref_set is not None:
-                if self.args.single_mapping is None:
-                    self.mapped_records = \
-                        self._map_reads_to_references(ref_set)
+                self.mapped_records = \
+                    self._map_reads_to_references(ref_set)
+                if self.progress.check_mapping():
                     self.progress.set_status('map')
-                else:
-                    self.ref_species = \
-                        self.args.single_mapping.split("/")[-1].split("_")[0]
-                    self.mapped_records = \
-                        self._map_reads_to_single_reference(ref_set)
-                    if self.progress.check_mapping():
-                        self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:  # re-load already computed mapping
@@ -141,69 +135,14 @@ class Mapper(object):
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        logger.info("{} / {} reads were \
-                    mapped".format(ngm['total_mapped_reads'],
-                                   ngm['total_reads']))
+        logger.info('Mapped {} / {} reads '
+                    ''.format(ngm['reads_mapped'],
+                              ngm['total_reads']+ngm['reads_mapped']))
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         return self._post_process_read_mapping(ref_file_handle, bam_file)
-
-    def _map_reads_to_single_reference(self, ref):
-        """
-        Map reads to single reference species file. Allows to run each mapping
-        in parallel on the cluster. Mapping the reads per species (=job)
-        :param ref: reference dataset
-        :return: dictionary with key og_name and value sequences mapped to
-        each species
-        """
-        print('--- Mapping of reads to {} reference species '
-              '---'.format(self.ref_species))
-        mapped_reads_species = {}
-        reference_path = os.path.join(self.args.output_path, "02_ref_dna")
-
-        output_folder = os.path.join(self.args.output_path,
-                                     "03_mapping_"+self._species_name)
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-
-        if "TMPDIR" in os.environ:
-            tmp_output_folder = \
-                tempfile.TemporaryDirectory(prefix='ngm',
-                                            dir=os.environ.get("TMPDIR"))
-        else:
-            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            logger.debug('--- Creating tmp directory on local node ---')
-
-        ref_file_handle = os.path.join(reference_path, self.ref_species +
-                                       '_OGs.fa')
-        # ref_tmp_file_handle = os.path.join(tmp_output_folder.name, self.ref_species + '_OGs.fa')
-        # shutil.copy(ref_file_handle, ref_tmp_file_handle)
-
-        read_container = Reads(self.args)
-        reads = read_container.split_reads
-
-        processed_reads = self._call_wrapper(ref_file_handle, reads, tmp_output_folder)
-
-        try:
-            mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
-        except AttributeError or ValueError:
-            mapped_reads = []
-            pass
-
-        # self.progress.set_status('single_map', ref=self.ref_species)
-        self._rm_file(ref_file_handle + ".fai", ignore_error=True)
-        if mapped_reads:
-            mapped_reads_species[self.ref_species] = Reference()
-            mapped_reads_species[self.ref_species].dna = mapped_reads
-            seqC = SeqCompleteness(ref[self.ref_species].dna)
-            seqC.get_seq_completeness(mapped_reads)
-            seqC.write_seq_completeness(os.path.join(output_folder,
-                                                     self.ref_species + "_OGs_sc.txt"))
-
-        tmp_output_folder.cleanup()
-        return mapped_reads_species
 
     def _read_mapping_from_folder(self, species_name=None):
         """
@@ -216,7 +155,8 @@ class Mapper(object):
         map_reads_species = {}
         if not species_name:
             species_name = self._species_name
-        in_folder = os.path.join(self.args.output_path, "03_mapping_"+species_name)
+        in_folder = os.path.join(self.args.output_path,
+                                 "03_mapping_"+species_name)
         for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
                          desc='Loading consensus read mappings ',
                          unit=' species'):
@@ -250,13 +190,32 @@ class Mapper(object):
 
         return map_reads_species
 
-    def _map_reads_to_references(self, reference):
+    def _make_tmpdir(self):
+        '''
+        Make tmpdir for analysis. This is important to run the code on the
+        cluster as usually scratch space can be limited and computation is
+        accelerated when parsing large files from the node drive.
+
+        '''
+        try:
+            tmp_output_folder = tempfile.TemporaryDirectory(
+                prefix='ngm', dir=os.environ.get("TMPDIR"))
+        except NotADirectoryError:
+            logger.info('Environmental variable TMPDIR not set, will use \
+                        native python tmpdir location.')
+        else:
+            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
+            logger.debug('--- Creating tmp directory on local node ---')
+        return tmp_output_folder
+
+    def _map_reads_to_references(self, ref):
         """
         Map all the reads to reference
         :param reference:
         :return: dictionary with key og_name and value sequences
                  mapped to each species
         """
+        start = time.time()
         print('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
         reference_path = os.path.join(self.args.output_path, "02_ref_dna")
@@ -266,47 +225,61 @@ class Mapper(object):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
-        if "TMPDIR" in os.environ:
-            tmp_output_folder = tempfile.TemporaryDirectory(
-                prefix='ngm', dir=os.environ.get("TMPDIR"))
-        else:
-            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            logger.debug('--- Creating tmp directory on local node ---')
+        tmp_output_folder = self._make_tmpdir()
 
+        # Get reads and perform splitting if requested
         read_container = Reads(self.args)
         reads = read_container.split_reads
 
-        for species, value in tqdm(reference.items(),
-                                   desc='Mapping reads to species',
-                                   unit=' species'):
+        if self.args.single_mapping:
+            references = [self.args
+                          .single_mapping.split("/")[-1].split("_")[0]]
+        else:
+            references = list(ref.keys())
+
+        # Going through provided references and starting mapping
+        for species in tqdm(references,
+                            desc='Mapping reads to species',
+                            unit=' species'):
+            logger.info('--- Mapping of reads to {} reference species '
+                        '---'.format(species))
+
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
-            # ref_tmp_file_handle = os.path.join(tmp_output_folder.name, species + '_OGs.fa')
-            # shutil.copy(ref_file_handle, ref_tmp_file_handle)
+            ref_tmp_file_handle = os.path.join(tmp_output_folder.name,
+                                               species + '_OGs.fa')
+            shutil.copy(ref_file_handle, ref_tmp_file_handle)
 
             # call the WRAPPER here
-            processed_reads = self._call_wrapper(ref_file_handle, reads,
+            processed_reads = self._call_wrapper(ref_tmp_file_handle, reads,
                                                  tmp_output_folder)
 
+            # postprocess mapping and build consensus
             try:
                 mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
+                mapped_reads_species[species] = Reference()
+                mapped_reads_species[species].dna = mapped_reads
+
+                # save some general statistics for mapped gene
+                seqC = SeqCompleteness(ref[species].dna)
+                seqC.get_seq_completeness(mapped_reads)
+                seqC.write_seq_completeness(os
+                                            .path.join(output_folder,
+                                                       species+"_OGs_sc.txt"))
+                self.all_sc.update(seqC.seq_completeness)
             except AttributeError or ValueError:
+                logger.debug('Reads not properly processed for further steps.')
+            else:
                 mapped_reads = []
-                pass
 
             # self.progress.set_status('single_map', ref=species)
             self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
-            if mapped_reads:
-                mapped_reads_species[species] = Reference()
-                mapped_reads_species[species].dna = mapped_reads
-                seqC = SeqCompleteness(value.dna)
-                seqC.get_seq_completeness(mapped_reads)
-                seqC.write_seq_completeness(os.path.join(output_folder,
-                                                         species+"_OGs_sc.txt"))
-                self.all_sc.update(seqC.seq_completeness)
-
         tmp_output_folder.cleanup()
+        end = time.time()
+        self.elapsed_time = end - start
+        logger.info('Mapping to {} references took {}.'.format(
+                    len(references), self.elapsed_time))
         return mapped_reads_species
 
     def _write_read_query_aling(self, read, og_name_file, write_mode):
