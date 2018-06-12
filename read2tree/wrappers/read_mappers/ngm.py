@@ -48,16 +48,19 @@ class NGM(ReadMapper):
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
                 SeqIO.write(self.ref_input, filehandle, 'fastq')
                 filehandle.seek(0)
-                output, error = self._call(self.read_input, filehandle.name, self.tmp_folder, *args, **kwargs)
+                output, error = self._call(self.read_input, filehandle.name,
+                                           self.tmp_folder, *args, **kwargs)
                 self.result = self._read_result(error, self.ref_input, self.tmp_folder)
         elif self.read_input_type == ReadInput.STRING:
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
                 filehandle.write(self.read_input)
                 filehandle.seek(0)
-                output, error = self._call(self.ref_input, filehandle.name, self.tmp_folder, *args, **kwargs)
+                output, error = self._call(self.ref_input, filehandle.name,
+                                           self.tmp_folder, *args, **kwargs)
                 self.result = self._read_result(error, self.ref_input, self.tmp_folder)
         elif self.read_input_type == ReadInput.FILENAME:
-            output, error = self._call(self.ref_input, self.read_input, self.tmp_folder, *args, **kwargs)
+            output, error = self._call(self.ref_input, self.read_input,
+                                       self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result
 
         self.stdout = output
@@ -71,7 +74,7 @@ class NGM(ReadMapper):
     # Any other accessory methods
     def _call(self, reference, reads, tmp_folder=None, *args, **kwargs):
         """
-        Call underlying low level _ngm wrapper. 
+        Call underlying low level _ngm wrapper.
         Options are passed via *args and **kwargs
         [This only covers the simplest automatic
          case]
@@ -81,10 +84,12 @@ class NGM(ReadMapper):
         if '/' not in tmp_folder[-1]:
             tmp_file = os.path.join(tmp_folder, os.path.basename(reference))+".bam"
         if len(reads) is 2:
-            self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(), reference, reads[0], reads[1], tmp_file),
+            self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(),
+                                                            reference, reads[0], reads[1], tmp_file),
                      wait=True)
         elif len(reads) is not 2:
-            self.cli('{} -b -r {} -q {} -o {}'.format(self.command(), reference, reads, tmp_file), wait=True)
+            self.cli('{} -b -r {} -q {} -o {}'.format(self.command(),
+                                                      reference, reads, tmp_file), wait=True)
 
         return self.cli.get_stdout(), self.cli.get_stderr()
 
@@ -115,6 +120,7 @@ class NGM(ReadMapper):
 
     def _init_cli(self, binary):
         return NGMCLI(executable=binary)
+
 
 def get_default_options():
     return OptionSet([

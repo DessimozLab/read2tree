@@ -70,7 +70,7 @@ class Reads(object):
         total_new_reads = 0
         total_reads = 0
         start = time.time()
-        out_file = tempfile.NamedTemporaryFile(mode='at')
+        out_file = tempfile.NamedTemporaryFile(mode='at', delete=False)
         with self._file_handle as f:
             for name, seq, qual in tqdm.tqdm(self._readfq(f),
                                              desc='Splitting reads',
