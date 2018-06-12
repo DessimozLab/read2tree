@@ -3,7 +3,9 @@ import gzip
 import mimetypes
 import tqdm
 import time
-from Bio import SeqIO, SeqRecord, Seq, bgzf
+import tempfile
+# from memory_profiler import memory_usage
+from Bio import SeqIO
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
@@ -52,7 +54,9 @@ class Reads(object):
 
         if load and self.args.split_reads:
             print('--- Splitting reads from {} ---'.format(self._reads))
-            self.split_reads, self.total_reads = self.process_reads()
+            # print(memory_usage(self.process_reads))
+            self.split_reads = self._write_to_tmp_file(self.process_reads())
+            # self.split_reads = self.process_reads()
         else:
             self.split_reads = self._reads
 
@@ -96,10 +100,10 @@ class Reads(object):
         end = time.time()
         self.elapsed_time = end - start
 
-        logger.info('Reads larger than {} were split into {} bp long \
-                    fragments with an overlap of {} bp.'.format(
-                    self.split_min_read_len, self.split_len,
-                    self.split_overlap))
+        logger.info('Reads larger than {} were split into {} bp long '
+                    'fragments with an overlap of {} bp.'.format(
+                        self.split_min_read_len, self.split_len,
+                        self.split_overlap))
 
         logger.info('{} reads were split into {} reads.'.format(
                     total_reads, total_new_reads))
@@ -107,7 +111,7 @@ class Reads(object):
         logger.info('Splitting of reads took {}.'.format(
                     self.elapsed_time))
 
-        return out, total_new_reads
+        return out
 
     # def write_split_reads(self, read_string):
     #     outfile = self._reads.replace('.fq', '-split.fq')
@@ -193,3 +197,9 @@ class Reads(object):
                 if last:  # reach EOF before reading enough quality
                     yield name, seq, None  # yield a fasta record instead
                     break
+
+    def _write_to_tmp_file(self, split_reads):
+        with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
+            filehandle.write(split_reads)
+            filehandle.seek(0)
+        return filehandle.name
