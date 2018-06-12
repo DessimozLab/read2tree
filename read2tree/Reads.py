@@ -55,8 +55,8 @@ class Reads(object):
         if load and self.args.split_reads:
             print('--- Splitting reads from {} ---'.format(self._reads))
             # print(memory_usage(self.process_reads))
-            self.split_reads = self._write_to_tmp_file(self.process_reads())
-            # self.split_reads = self.process_reads()
+            # self.split_reads = self._write_to_tmp_file(self.process_reads())
+            self.split_reads = self.process_reads()
         else:
             self.split_reads = self._reads
 
@@ -66,17 +66,18 @@ class Reads(object):
         given the provided parameters
         :return: string that contains all the read sequences separated by '\n'
         '''
-        out = ''
+        # out = ''
         total_new_reads = 0
         total_reads = 0
         start = time.time()
+        out_file = tempfile.NamedTemporaryFile(mode='at')
         with self._file_handle as f:
             for name, seq, qual in tqdm.tqdm(self._readfq(f),
                                              desc='Splitting reads',
                                              unit=' read'):
                 total_reads += 1
                 read_id = name[1:].split(" ")[0]
-                #logger.debug("Process read {}".format(read_id))
+                # logger.debug("Process read {}".format(read_id))
                 if len(seq) > self.split_min_read_len:
                     x = 1
                     try:
@@ -88,13 +89,20 @@ class Reads(object):
                     except ValueError:
                         logger.debug('Reads were not split properly!')
                     for i in zip(new_seq, new_qual):
-                        out += self._get_4_line_fastq_string(read_id, x, i[0],
-                                                             i[1])
+                        # out += self._get_4_line_fastq_string(read_id, x,
+                        #                                      i[0],
+                        #                                      i[1])
+                        out_file.write(self._get_4_line_fastq_string(read_id,
+                                                                     x, i[0],
+                                                                     i[1]))
                         x += 1
                     total_new_reads += x
                 else:
-                    out += self._get_4_line_fastq_string(read_id, None, seq,
-                                                         qual)
+                    # out += self._get_4_line_fastq_string(read_id, None, seq,
+                    #                                      qual)
+                    out_file.write(self._get_4_line_fastq_string(read_id,
+                                                                 None, seq,
+                                                                 qual))
                     total_new_reads += 1
 
         end = time.time()
@@ -110,8 +118,8 @@ class Reads(object):
 
         logger.info('Splitting of reads took {}.'.format(
                     self.elapsed_time))
-
-        return out
+        out_file.close()
+        return out_file.name
 
     # def write_split_reads(self, read_string):
     #     outfile = self._reads.replace('.fq', '-split.fq')
@@ -131,7 +139,8 @@ class Reads(object):
         '''
         out = ''
         if x:
-            new_name = "@" + read_id + "_" + str(x) + ' length=' + str(len(seq))
+            new_name = "@" + read_id + "_" + str(x) + ' length=' + \
+                str(len(seq))
         else:
             new_name = "@" + read_id + ' length=' + str(len(seq))
         out += new_name + "\n"
