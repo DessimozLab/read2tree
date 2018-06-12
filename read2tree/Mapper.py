@@ -143,7 +143,7 @@ class Mapper(object):
             if ref_set is not None:
                 self.mapped_records = \
                     self._map_reads_to_references(ref_set)
-                if self.progress.check_mapping():
+                if self.progress.get_mapping_status():
                     self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
@@ -539,14 +539,6 @@ class Mapper(object):
                          .format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
-
-        # Get effective coverage of each mapped sequence
-        cov = Coverage()
-        cov.get_coverage_bam(outfile_name + "_sorted.bam")
-        cov.write_coverage_bam(os.path.join(
-            output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
-        self.all_cov.update(cov.coverage)
-
         if self.args.debug:
             self._bin_reads(ref_file, outfile_name + '_sorted.bam')
 
@@ -586,6 +578,13 @@ class Mapper(object):
                                     [-1].split(".")[0] + '_consensus.fa')
         else:
             out_file = None
+
+        # Get effective coverage of each mapped sequence
+        cov = Coverage()
+        cov.get_coverage_bam(outfile_name + "_sorted.bam")
+        cov.write_coverage_bam(os.path.join(
+            output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
+        self.all_cov.update(cov.coverage)
 
         return out_file
 

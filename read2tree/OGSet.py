@@ -54,7 +54,6 @@ class OGSet(object):
 
         logger.addHandler(file_handler)
 
-        self.progress = Progress(args)
         self.mapped_ogs = {}
         self._remove_species_mapping = False
         self._marker_genes = False
@@ -76,6 +75,9 @@ class OGSet(object):
 
         if not self.args.reads and not self.args.species_name:
             self._species_name = 'merged'
+
+        self.progress = Progress(args)
+        self.progress.get_status(species_name=self._species_name)
 
         if self.args.remove_species_mapping:
             self.species_to_remove_mapping = self.args \

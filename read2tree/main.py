@@ -213,15 +213,11 @@ def main(argv, exe_name, desc=''):
     # TODO: Check whether all the necessary binaries are available
     # TODO: Check all given files and throw error if faulty
 
-    # Read in orthologous groups
-
-    if args.merge_all_mappings:  # in case that we merge we assume that all mapping is finished
-        progress.mapping_03 = True
+    if args.species_name:
+        species_name = args.species_name
     else:
-        if args.species_name:
-            species_name = args.species_name
-        else:
-            species_name = args.reads[0].split("/")[-1].split(".")[0]
+        species_name = args.reads[0].split("/")[-1].split(".")[0]
+    progress.get_status(species_name=species_name)
 
     if (not progress.ref_ogs_01 and not progress.ref_dna_02 and
         not progress.mapping_03 and not progress.append_ogs_04 and

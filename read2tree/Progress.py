@@ -11,16 +11,39 @@ import glob
 import os
 import time
 import subprocess
+import logging
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
+
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+file_handler = logging.FileHandler('info.log')
+file_handler.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
 
 class Progress(object):
 
     def __init__(self, args, species_name=None):
         self.args = args
 
+        if args.debug:
+            logger.setLevel(logging.DEBUG)
+            file_handler.setLevel(logging.DEBUG)
+            # stream_handler.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
+            file_handler.setLevel(logging.INFO)
+            # stream_handler.setLevel(logging.INFO)
+
+        logger.addHandler(file_handler)
+        # logger.addHandler(stream_handler)
+
         # holds the status of the computation
+        self._num_species = 0
+        self.status = 0
         self.ref_ogs_01 = False
         self.ref_dna_02 = False
         self.mapping_03 = False
@@ -50,29 +73,25 @@ class Progress(object):
         else:
             self.species_to_remove = []
 
-        self._folder_ref_ogs_aa = os.path.join(self.args.output_path, "01_ref_ogs_aa")
-        self._folder_ref_ogs_dna = os.path.join(self.args.output_path, "01_ref_ogs_dna")
-        self._folder_ref_dna = os.path.join(self.args.output_path, '02_ref_dna')
-        self._folder_mapping = os.path.join(self.args.output_path, "03_mapping_" + self._species_name)
-        self._folder_ogs_map = os.path.join(self.args.output_path, "04_ogs_map" + self._species_name)
+        self._folder_ref_ogs_aa = os.path.join(self.args.output_path,
+                                               "01_ref_ogs_aa")
+        self._folder_ref_ogs_dna = os.path.join(self.args.output_path,
+                                                "01_ref_ogs_dna")
+        self._folder_ref_dna = os.path.join(self.args.output_path,
+                                            '02_ref_dna')
+        self._folder_mapping = os.path.join(self.args.output_path,
+                                            "03_mapping_" + self._species_name)
+        self._folder_ogs_map = os.path.join(self.args.output_path,
+                                            "04_ogs_map" + self._species_name)
 
         self.status_file = os.path.join(self.args.output_path, 'status.txt')
-        self.status = self._get_status()
+
+        # self.status = self._get_status()
+
         # self.oma_output_path = self.args.oma_output_path
         # self._num_ogs = oma_output.num_selected_ogs
-        self._num_species = self._set_num_species()
 
         # self.status = self._determine_progress()
-
-    def check_mapping(self):
-        map_files = 0
-        if os.path.exists(self._folder_mapping):
-            map_files = len(glob.glob(os.path.join(self._folder_mapping, "*cov.txt")))
-
-        if map_files is self._num_species:
-            return True
-        else:
-            return False
 
     def _set_num_species(self):
         """
@@ -80,38 +99,61 @@ class Progress(object):
         """
         if self.status > 1:
             if self.species_to_remove:
-                num_species = len(os.listdir(self._folder_ref_dna)) - len(self.species_to_remove)
+                num_species = len(os.listdir(self._folder_ref_dna)) \
+                    - len(self.species_to_remove)
             else:
                 num_species = len(os.listdir(self._folder_ref_dna))
         else:
             num_species = 0
         return num_species
 
-    def _get_status(self, species_name=None):
+    def get_status(self, species_name=None):
         if not species_name:
             species_name = self._species_name
-        status = 0
+        self.status = 0
         if os.path.exists(self.status_file):
             self._wait_for_status_file()
             f = open(self.status_file, 'r')
             for line in f:
                 if '01_ref_ogs_aa: OK' in line:
-                    status = 1
+                    self.status = 1
                     self.ref_ogs_01 = True
                 elif '02_ref_dna: OK' in line:
-                    status = 2
+                    self.status = 2
+                    self._num_species = self._set_num_species()
                     self.ref_dna_02 = True
                 elif '03_mapping_' + species_name + ': OK' in line:
-                    status = 3
+                    self.status = 3
                     self.mapping_03 = True
                 elif '04_ogs_map_' + species_name + ': OK' in line:
-                    status = 4
+                    self.status = 4
                     self.append_ogs_04 = True
                 elif '05_align_' + species_name + ': OK' in line:
-                    status = 5
+                    self.status = 5
                     self.align_05 = True
             f.close()
-        return status
+
+        if self.status >= 2:
+            if self.get_mapping_status() or self.args.merge_all_mappings:
+                self.status = 3
+                self.set_status('map')
+                self.mapping_03 = True
+
+    def get_mapping_status(self):
+        computed_fasta = [f for f in
+                          glob.glob(os.path.join(self._folder_mapping, '*.fa'))
+                          if os.path.getsize(f) > 0]
+        computed_cov = [f for f in
+                        glob.glob(os.path.join(self._folder_mapping,
+                                               '*cov.txt'))]
+        if len(computed_fasta) == self._num_species or \
+                len(computed_cov) == self._num_species:
+            logger.info('Mapping completed!')
+            return True
+        else:
+            logger.info('Mapping unfinished. Mapping against {} refernces is '
+                        'computed!'.format(len(computed_cov)))
+            return False
 
     def set_status(self, status, ref=None):
         status_text = None
@@ -129,13 +171,6 @@ class Progress(object):
         elif status is 'map' and self.mapping_03 is False:
             status_text = '03_mapping_'+self._species_name+': OK\n'
             self.mapping_03 = True
-        # elif status is 'single_map' and ref is not None and self.status < 3:
-        #     last_line = self._tail(self.status_file, 1)[-1].decode("utf-8")
-        #     if 'OK' in last_line:
-        #         status_text = '----- ' + self._species_name + ' -----\n'
-        #         status_text += 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
-        #     else:
-        #         status_text = 'Mapping of ' + self._species_name + ' to ' + ref + '\n'
         elif status is 're_ogs' and self.append_ogs_04 is False:
             status_text = '04_ogs_map_'+self._species_name+': OK\n'
             self.append_ogs_04 = True
@@ -179,7 +214,8 @@ class Progress(object):
 
     def _is_locked(self):
         """
-        Taken from: https://www.calazan.com/how-to-check-if-a-file-is-locked-in-python/
+        Taken from:
+        https://www.calazan.com/how-to-check-if-a-file-is-locked-in-python/
         Checks if a file is locked by opening it in append mode.
         If no exception thrown, then the file is not locked.
         """
@@ -202,7 +238,8 @@ class Progress(object):
 
     def _wait_for_status_file(self):
         """
-        Taken from: https://www.calazan.com/how-to-check-if-a-file-is-locked-in-python/
+        Taken from:
+        https://www.calazan.com/how-to-check-if-a-file-is-locked-in-python/
         Checks if the files are ready.
         For a file to be ready it must exist and can be opened in append
         mode.
@@ -213,7 +250,3 @@ class Progress(object):
         while self._is_locked():
             print("WAITING FOR STATUS FILE!")
             time.sleep(wait_time)
-
-
-
-
