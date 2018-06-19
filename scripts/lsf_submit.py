@@ -153,8 +153,8 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=10000]"
-#BSUB -M 10000000
+#BSUB -R "rusage[mem=4000]"
+#BSUB -M 4000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
@@ -167,8 +167,8 @@ python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --st
 #BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=10000]"
-#BSUB -M 10000000
+#BSUB -R "rusage[mem=4000]"
+#BSUB -M 4000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
@@ -181,12 +181,12 @@ python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --st
 #BSUB -J r2t_%s
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=10000]"
-#BSUB -M 10000000
+#BSUB -R "rusage[mem=4000]"
+#BSUB -M 4000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long --split_reads""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
 
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
@@ -376,32 +376,14 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Otus bakkamoena': ['SRR3203243', 'PAIRED', 'short', 'OTUBA'],
-               'Zimmerius acer': ['SRR1021717', 'PAIRED', 'short', 'ZIMAC'],
-               'Upupa epops': ['SRR3203224', 'PAIRED', 'short', 'UPUEP'],
-               'Pinguinus impennis': ['SRR3178397', 'SINGLE', 'short', 'PINIM'],
-               'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short', 'LAGLA'],
-               'Zonotrichia querula': ['SRR2937463', 'PAIRED', 'short', 'ZONQU'],
-               'Moho braccatus': ['SRR3180998', 'SINGLE', 'short', 'MOHBR'],
-               'Periparus ater abietum': ['SRR1810763', 'PAIRED', 'short', 'PERAT'],
-               'Circus melanoleucos': ['SRR3203217', 'PAIRED', 'short', 'CIRME'],
+    sra_dic = {'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short', 'LAGLA'],
                'Zonotrichia leucophrys': ['SRR1199463', 'PAIRED', 'short', 'ZONLE'],
-               'Elanus caeruleus': ['SRR3203227', 'PAIRED', 'short', 'ELACA'],
-               'Poecile palustris palustris': ['SRR1810775', 'PAIRED', 'short', 'POEPA'],
                'Periparus ater ater': ['SRR1810767', 'PAIRED', 'short', 'PERA0'],
-               'Morus bassanus': ['SRR1145759', 'PAIRED', 'short', 'MORBA'],
-               'Falco subbuteo': ['SRR3203238', 'PAIRED', 'short', 'FALSU'],
                'Phylloscopus trochiloides trochiloides': ['SRR3217927',
                                                           'PAIRED',
                                                           'short',
                                                           'PHYTR'],
-               'Ptychoramphus aleuticus': ['SRR1145757', 'PAIRED', 'short', 'PTYAL'],
-               'Mareca strepera': ['SRR3471613', 'PAIRED', 'short', 'MARST'],
                'Periparus ater sardus': ['SRR1810764', 'PAIRED', 'short', 'PERA1'],
-               'Anas acuta': ['SRR3471609', 'PAIRED', 'short', 'ANAAC'],
-               'Podoces hendersoni': ['SRR765719', 'PAIRED', 'short', 'PODHE'],
-               'Tyto longimembris': ['SRR3203222', 'PAIRED', 'short', 'TYTLO'],
-               'Campephilus imperialis': ['SRR3178404', 'SINGLE', 'short', 'CAMIM'],
                'Callipepla californica': ['SRR3630008', 'PAIRED', 'short', 'CALCA'],
                'Sibirionetta formosa': ['SRR3471611', 'PAIRED', 'short', 'SIBFO'],
                'Nesoptilotis leucotis': ['SRR3901721', 'PAIRED', 'short', 'NESLE'],
