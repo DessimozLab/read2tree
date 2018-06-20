@@ -51,10 +51,10 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
+#BSUB -R "rusage[mem=2000]"
+#BSUB -M 2000000
 srr=%s
 speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
@@ -74,10 +74,10 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
+#BSUB -R "rusage[mem=2000]"
+#BSUB -M 2000000
 srr=%s
 speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
@@ -95,23 +95,24 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
+#BSUB -R "rusage[mem=2000]"
+#BSUB -M 2000000
 srr=%s
 speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
+module add UHTS/Analysis/sratoolkit/2.8.2.1
 source activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
 echo 'Finished download'
-parallel-fastq-dump -s *.sra -t 4 -O . --split-files --tmpdir .
+fastq-dump --split-files --gzip $srr.sra
 echo 'Finished getting fastq from sra and split files'
-mv *\_1.fastq $speciesid\_1.fq.gz
-mv *\_2.fastq $speciesid\_2.fq.gz
+mv *\_1.* $speciesid\_1.fq.gz
+mv *\_2.* $speciesid\_2.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
@@ -119,22 +120,23 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/down_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J down_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
-#BSUB -M 4000000
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
+#BSUB -R "rusage[mem=2000]"
+#BSUB -M 2000000
 srr=%s
 speciesid=%s
 module add Utility/aspera_connect/3.7.4.147727
+module add UHTS/Analysis/sratoolkit/2.8.2.1
 source activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
 echo 'Finished download'
-parallel-fastq-dump -s *.sra -t 4 -O . --tmpdir .
+fastq-dump --gzip *.sra
 echo 'Finished getting fastq from sra'
-mv *.fastq $speciesid\_1.fq.gz
+mv *.gz $speciesid\_1.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
 
     text_file = open('down_py_script.sh', "w")
