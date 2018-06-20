@@ -153,42 +153,42 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J r2t_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq.gz $reads/%s_2.fq.gz --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
 #BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J r2t_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq.gz --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
 #BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.o%sJ
 #BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf_out/r2t_%s.e%sJ
 #BSUB -u david.dylus@unil.ch
 #BSUB -J r2t_%s
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
+#BSUB -n 1
+#BSUB -R "span[ptile=1]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/%s
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long --split_reads""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
+python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree --standalone_path /scratch/beegfs/weekly/ddylus/avian/marker_genes/ --dna_reference /scratch/beegfs/weekly/ddylus/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq.gz --output_path /scratch/beegfs/weekly/ddylus/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long --split_reads""" % (species_id, '%', species_id, '%', species_id, species_id, species_id, reference)
 
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
@@ -378,8 +378,7 @@ def main():
             assert False, "unhandled option"
 
     # df = pd.read_csv(sra_file, sep='\t')
-    sra_dic = {'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short', 'LAGLA'],
-               'Zonotrichia leucophrys': ['SRR1199463', 'PAIRED', 'short', 'ZONLE'],
+    sra_dic = {'Zonotrichia leucophrys': ['SRR1199463', 'PAIRED', 'short', 'ZONLE'],
                'Periparus ater ater': ['SRR1810767', 'PAIRED', 'short', 'PERA0'],
                'Phylloscopus trochiloides trochiloides': ['SRR3217927',
                                                           'PAIRED',
@@ -443,6 +442,7 @@ def main():
                'Anser sp.': ['SRR1060398', 'PAIRED', 'short', 'ANSSP'],
                'Spinus cucullatus': ['SRR2895762', 'PAIRED', 'short', 'SPICU'],
                'Psephotellus pulcherrimus': ['SRR3180905', 'SINGLE', 'short', 'PSEPU'],
+               'Lagopus lagopus': ['SRR2913174', 'PAIRED', 'short', 'LAGLA'],
                'Glyphorynchus spirurus': ['SRR3115005', 'PAIRED', 'short', 'GLYSP']}
 
     run_lsf(sra_dic, out_speciesid)
