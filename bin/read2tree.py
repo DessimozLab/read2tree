@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 '''
     Wrapper to enable the user to call the installed hogprop without the '.py'
     ending.

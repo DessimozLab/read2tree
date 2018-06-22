@@ -111,6 +111,7 @@ ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/aspe
 echo 'Finished download'
 fastq-dump --split-files --gzip $srr.sra
 echo 'Finished getting fastq from sra and split files'
+rm *.sra
 mv *\_1.* $speciesid\_1.fq.gz
 mv *\_2.* $speciesid\_2.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)
@@ -135,6 +136,7 @@ cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
 echo 'Finished download'
 fastq-dump --gzip *.sra
+rm *.sra
 echo 'Finished getting fastq from sra'
 mv *.gz $speciesid\_1.fq.gz
 echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, sra, species_id)

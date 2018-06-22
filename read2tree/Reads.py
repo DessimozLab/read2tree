@@ -4,6 +4,8 @@ import mimetypes
 import tqdm
 import time
 import tempfile
+import random
+# import shutil
 # from memory_profiler import memory_usage
 from Bio import SeqIO
 
@@ -21,6 +23,7 @@ class Reads(object):
 
         self.args = args
         self.elapsed_time = 0
+        self.total_reads = 0
         if args.debug:
             logger.setLevel(logging.DEBUG)
             file_handler.setLevel(logging.DEBUG)
@@ -75,11 +78,11 @@ class Reads(object):
             for name, seq, qual in tqdm.tqdm(self._readfq(f),
                                              desc='Splitting reads',
                                              unit=' read'):
-                total_reads += 1
+                # total_reads += 1
                 read_id = name[1:].split(" ")[0]
                 # logger.debug("Process read {}".format(read_id))
                 if len(seq) > self.split_min_read_len:
-                    x = 1
+                    x = 0
                     try:
                         new_seq, new_qual = \
                             self._split_len_overlap(seq, self.split_len,
@@ -118,6 +121,61 @@ class Reads(object):
 
         logger.info('Splitting of reads took {}.'.format(
                     self.elapsed_time))
+        out_file.close()
+        self.total_reads = total_new_reads
+        # shutil.move(out_file.name, '/Users/daviddylus/Research/read2tree/tests/data/reads/split.fq')
+        return out_file.name
+
+    def _get_num_reads(self):
+        if self.total_reads > 0:
+            return self.total_reads
+        else:
+            with gzip.open(self._reads[0]) as f:
+                num_lines = sum([1 for l in f])
+            return int(num_lines / 4)
+
+    def _get_read_len(self):
+        if self.total_reads > 0:
+            return self.args.split_len
+        else:
+            with gzip.open(self._reads[0]) as f:
+                head = [next(f) for x in range(2)]
+            return len(head[-1])
+
+    def _get_num_reads_by_coverage(self):
+        read_len = self._get_read_len()
+        return self.args.genome_len * self.args.coverage // \
+            (len(self.args.reads) * read_len)
+
+    def _get_vector_random_reads(self):
+        num_reads_by_coverage = self._get_num_reads_by_coverage()
+        total_records = self._get_num_reads()
+        return set(random.sample(range(total_records + 1),
+                                 num_reads_by_coverage))
+
+    def sample_from_reads(self, read_file):
+        '''
+        Main function taking in the reads of the object and processing it
+        given the provided parameters
+        :return: string that contains all the read sequences separated by '\n'
+        '''
+        # out = ''
+        num_read = 0
+        start = time.time()
+        out_file = tempfile.NamedTemporaryFile(mode='at', delete=False)
+        idx_random = self._get_vector_random_reads()
+        with self._file_handle as f:
+            for name, seq, qual in tqdm.tqdm(self._readfq(f),
+                                             desc='Sampling from reads',
+                                             unit=' read'):
+                if num_read in idx_random:
+                    out_file.write(self._get_4_line_fastq_string(name,
+                                                                 None, seq,
+                                                                 qual))
+
+        end = time.time()
+        elapsed_time = end - start
+
         out_file.close()
         return out_file.name
 
