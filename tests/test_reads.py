@@ -2,6 +2,7 @@ import unittest
 import os
 import gzip
 import argparse
+from Bio import SeqIO
 from read2tree.Reads import Reads
 
 dirname = os.path.dirname(__file__)
@@ -33,6 +34,9 @@ class ReadTest(unittest.TestCase):
                                 help='[Default is 500] Reads longer than this '
                                 'value are cut into smaller values as defined '
                                 'by --split_len.')
+        arg_parser.add_argument('--sample_reads', action='store_true',
+                                help='Splits reads as defined by split_len (400) '
+                                'and split_overlap (0) parameters. ')
         arg_parser.add_argument('--coverage', type=float, default=10,
                                 help='[Default is 10] coverage in X.')
         arg_parser.add_argument('--genome_len', type=int, default=1000,
@@ -46,7 +50,7 @@ class ReadTest(unittest.TestCase):
         args = arg_parser.parse_args(argv)
         return Reads(args)
 
-    def setup_long_reads_paired(self):
+    def setup_reads_paired(self, sampling=False):
         arg_parser = argparse.ArgumentParser(prog='read2tree')
 
         arg_parser.add_argument('--reads', nargs='+', default=None,
@@ -70,12 +74,20 @@ class ReadTest(unittest.TestCase):
                                 help='[Default is 500] Reads longer than this '
                                 'value are cut into smaller values as defined '
                                 'by --split_len.')
+        arg_parser.add_argument('--sample_reads', action='store_true',
+                                help='Splits reads as defined by split_len (400) '
+                                'and split_overlap (0) parameters. ')
         arg_parser.add_argument('--coverage', type=float, default=10,
                                 help='[Default is 10] coverage in X.')
         arg_parser.add_argument('--genome_len', type=int, default=1000,
                                 help='[Default is 1000] Genome size in bp.')
 
-        argv = ['--reads', 'tests/data/reads/test_1a.fq.gz', 'tests/data/reads/test_2a.fq.gz']
+        if sampling:
+            argv = ['--reads', 'tests/data/reads/test_1a.fq.gz',
+                    'tests/data/reads/test_2a.fq.gz', '--sample_reads']
+        else:
+            argv = ['--reads', 'tests/data/reads/test_1a.fq.gz',
+                    'tests/data/reads/test_2a.fq.gz']
 
         args = arg_parser.parse_args(argv)
         return Reads(args)
@@ -120,39 +132,54 @@ class ReadTest(unittest.TestCase):
 
     def test_read_num_split(self):
         reads = self.setup_long_reads(split=True)
-        num_reads = reads._get_num_reads()
+        num_reads = reads._get_num_reads('tests/data/reads/test.fq.gz')
         self.assertEqual(num_reads, 18)
 
     def test_read_len_split(self):
         reads = self.setup_long_reads(split=True)
-        len_reads = reads._get_read_len()
+        len_reads = reads._get_read_len('tests/data/reads/test.fq.gz')
         self.assertEqual(len_reads, 400)
 
     def test_read_num_paired(self):
-        reads = self.setup_long_reads_paired()
-        num_reads = reads._get_num_reads()
+        reads = self.setup_reads_paired()
+        num_reads = reads._get_num_reads('tests/data/reads/test_1a.fq.gz')
         self.assertEqual(num_reads, 1000)
 
     def test_read_len_paired(self):
-        reads = self.setup_long_reads_paired()
-        num_reads = reads._get_read_len()
+        reads = self.setup_reads_paired()
+        num_reads = reads._get_read_len('tests/data/reads/test_1a.fq.gz')
         self.assertEqual(num_reads, 152)
 
     def test_read_num_by_coverage_paired(self):
-        reads = self.setup_long_reads_paired()
-        num_reads = reads._get_num_reads_by_coverage()
-        self.assertEqual(num_reads, 32)
+        reads = self.setup_reads_paired()
+        num_reads = reads._get_num_reads_by_coverage(
+            'tests/data/reads/test_1a.fq.gz')
+        self.assertEqual(num_reads, 33)
 
     def test_read_num_by_coverage_split(self):
         reads = self.setup_long_reads(split=True)
-        num_reads = reads._get_num_reads_by_coverage()
+        num_reads = reads._get_num_reads_by_coverage(
+            'tests/data/reads/test.fq.gz')
         self.assertEqual(num_reads, 25)
 
     def test_read_vec_paired(self):
-        reads = self.setup_long_reads_paired()
-        num_reads = reads._get_vector_random_reads()
-        print(num_reads)
-        self.assertEqual(len(num_reads), 32)
+        reads = self.setup_reads_paired()
+        num_reads = reads._get_vector_random_reads(
+            'tests/data/reads/test_1a.fq.gz')
+        self.assertEqual(len(num_reads), 33)
+
+    # def test_sample_reads_file(self):
+    #     reads = self.setup_reads_paired(sampling=True)
+    #     # output_sequence_sets = reads._get_vector_random_reads(
+    #     #     'tests/data/reads/test_1a.fq.gz')
+    #     # read_file = reads._sample_read_file('tests/data/reads/test_1a.fq.gz',
+    #     #                                     output_sequence_sets)
+    #     read_file = reads.reads
+    #     # print(read_file)
+    #     read_rec = list(SeqIO.parse(read_file, format="fastq"))
+    #     print(read_rec)
+    #     num_reads = reads._get_num_reads(read_file)
+    #     self.assertEqual(num_reads, 25)
 
 
 if __name__ == "__main__":

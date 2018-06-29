@@ -78,6 +78,16 @@ def parse_args(argv, exe_name, desc):
                             'value are cut into smaller values as defined '
                             'by --split_len. ')
 
+    arg_parser.add_argument('--sample_reads', action='store_true',
+                            help='Splits reads as defined by split_len (400) '
+                            'and split_overlap (0) parameters. ')
+
+    arg_parser.add_argument('--coverage', type=float, default=10,
+                            help='[Default is 10] coverage in X.')
+
+    arg_parser.add_argument('--genome_len', type=int, default=2000000,
+                            help='[Default is 2000000] Genome size in bp.')
+
     arg_parser.add_argument('--output_path', default='.', required=True,
                             help='[Default is current directory] Path to '
                             'output directory.')
@@ -183,13 +193,21 @@ def parse_args(argv, exe_name, desc):
         arg_parser.error(
             'Arguments --split_len, --split_overlap and --split_min_read_len'
             'can only be set if --split_reads is set.')
+
     if args.split_reads and len(args.reads) == 2:
         arg_parser.error(
             'Splitting reads does not work for paired end reads.')
+
     if args.read_type is 'short' and args.ngmlr_parameters:
         arg_parser.error(
             'Arguments for --ngmlr_parameters only work if --read_type is set '
             'to long.')
+
+    if not args.sample_reads and (args.coverage != 10 or
+                                  args.genome_len != 2000000):
+        arg_parser.error(
+            'Arguments --coverage and --genome_len'
+            'can only be set if --sample_reads is set.')
 
     return args
 

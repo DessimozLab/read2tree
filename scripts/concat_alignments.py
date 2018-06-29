@@ -6,7 +6,7 @@ from Bio import AlignIO, SeqIO
 from zoo.seq_utils.utils import concatenate
 
 def concatenate_alignments(folder):
-        all_og_alignments = []
+    all_og_alignments = []
     all_og_align_pos = {}
     start = 0
     for f in glob.glob(folder+'*.phy'):

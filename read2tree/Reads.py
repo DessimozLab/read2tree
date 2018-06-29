@@ -1,3 +1,4 @@
+from __future__ import division
 import logging
 import gzip
 import mimetypes
@@ -5,9 +6,11 @@ import tqdm
 import time
 import tempfile
 import random
-# import shutil
+import os
+
+from math import ceil
+import shutil
 # from memory_profiler import memory_usage
-from Bio import SeqIO
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
@@ -22,6 +25,8 @@ class Reads(object):
     def __init__(self, args, load=True):
 
         self.args = args
+        self.coverage = self.args.coverage
+        self.genome_len = self.args.genome_len
         self.elapsed_time = 0
         self.total_reads = 0
         if args.debug:
@@ -41,31 +46,43 @@ class Reads(object):
         self.split_min_read_len = args.split_min_read_len
 
         if self.args.reads:
+            if mimetypes.guess_type(self.args.reads[0])[1] in 'gzip':
+                self._file_handle = 'gzip'
+            else:
+                self._file_handle = 'txt'
+
             if len(self.args.reads) == 1:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
-                if mimetypes.guess_type(self._reads)[1] in 'gzip':
-                    self._file_handle = gzip.open(self._reads, 'rt')
-                else:
-                    self._file_handle = open(self._reads, 'rt')
             elif len(self.args.reads) == 2:
                 self._reads = self.args.reads
-                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+                self._species_name = self._reads[0].split("/")[-1] \
+                    .split(".")[0]
 
         if self.args.species_name:
             self._species_name = self.args.species_name
 
-        if load and self.args.split_reads:
-            print('--- Splitting reads from {} ---'.format(self._reads))
-            # print(memory_usage(self.process_reads))
-            # self.split_reads = self._write_to_tmp_file(self.process_reads())
-            self.split_reads = self.process_reads()
+        if load:
+            if self.args.split_reads:
+                print('--- Splitting reads from {} ---'.format(self._reads))
+                # print(memory_usage(self.process_reads))
+                # self.split_reads = self._write_to_tmp_file(self\
+                #       .process_reads())
+                self.reads = self.process_reads()
+            else:
+                self.reads = self._reads
+
+            if self.args.sample_reads:
+                print('--- Sampling reads from {} ---'.format(self.reads))
+                self.reads = self.sample_from_reads(self.reads)
+            else:
+                self.reads = self.reads
         else:
-            self.split_reads = self._reads
+            self.reads = self._reads
 
     def process_reads(self):
         '''
-        Main function taking in the reads of the object and processing it
+        Function taking in the reads of the object and processing it
         given the provided parameters
         :return: string that contains all the read sequences separated by '\n'
         '''
@@ -73,11 +90,12 @@ class Reads(object):
         total_new_reads = 0
         total_reads = 0
         start = time.time()
-        out_file = tempfile.NamedTemporaryFile(mode='at', delete=False)
-        with self._file_handle as f:
+        out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fq',
+                                               delete=False)
+        with self._open_reads(self._reads) as f:
             for name, seq, qual in tqdm.tqdm(self._readfq(f),
                                              desc='Splitting reads',
-                                             unit=' read'):
+                                             unit=' reads'):
                 # total_reads += 1
                 read_id = name[1:].split(" ")[0]
                 # logger.debug("Process read {}".format(read_id))
@@ -123,59 +141,121 @@ class Reads(object):
                     self.elapsed_time))
         out_file.close()
         self.total_reads = total_new_reads
-        # shutil.move(out_file.name, '/Users/daviddylus/Research/read2tree/tests/data/reads/split.fq')
+        self._file_handle = 'txt'
+        # shutil.move(out_file.name,
+        #             '/Users/daviddylus/Research/read2tree/tests\
+        #             /data/reads/split.fq')
         return out_file.name
 
-    def _get_num_reads(self):
-        if self.total_reads > 0:
-            return self.total_reads
-        else:
-            with gzip.open(self._reads[0]) as f:
-                num_lines = sum([1 for l in f])
-            return int(num_lines / 4)
-
-    def _get_read_len(self):
-        if self.total_reads > 0:
-            return self.args.split_len
-        else:
-            with gzip.open(self._reads[0]) as f:
-                head = [next(f) for x in range(2)]
-            return len(head[-1])
-
-    def _get_num_reads_by_coverage(self):
-        read_len = self._get_read_len()
-        return self.args.genome_len * self.args.coverage // \
-            (len(self.args.reads) * read_len)
-
-    def _get_vector_random_reads(self):
-        num_reads_by_coverage = self._get_num_reads_by_coverage()
-        total_records = self._get_num_reads()
-        return set(random.sample(range(total_records + 1),
-                                 num_reads_by_coverage))
-
-    def sample_from_reads(self, read_file):
+    def sample_from_reads(self, reads):
         '''
         Main function taking in the reads of the object and processing it
         given the provided parameters
         :return: string that contains all the read sequences separated by '\n'
         '''
-        # out = ''
-        num_read = 0
+        sampled_reads = []
         start = time.time()
-        out_file = tempfile.NamedTemporaryFile(mode='at', delete=False)
-        idx_random = self._get_vector_random_reads()
-        with self._file_handle as f:
-            for name, seq, qual in tqdm.tqdm(self._readfq(f),
-                                             desc='Sampling from reads',
-                                             unit=' read'):
-                if num_read in idx_random:
-                    out_file.write(self._get_4_line_fastq_string(name,
-                                                                 None, seq,
-                                                                 qual))
+        if len(self.args.reads) == 1:
+            idx_random = self._get_vector_random_reads(reads)
+            sampled_reads = self._sample_read_file(reads,
+                                                   idx_random)
+        elif len(self.args.reads) == 2:
+            idx_random = self._get_vector_random_reads(reads[0])
+            sampled_reads.append(self._sample_read_file(reads[0],
+                                                        idx_random))
+            sampled_reads.append(self._sample_read_file(reads[1],
+                                                        idx_random))
 
         end = time.time()
         elapsed_time = end - start
+        logger.info('Sampling of reads took {}.'.format(
+                    elapsed_time))
+        if self.args.debug:
+            shutil.copy(sampled_reads,
+                        '/Volumes/Untitled/reserach/r2t/test/split.fq')
+        return sampled_reads
 
+    def _open_reads(self, file):
+        # type = 'txt'
+        # try:
+        #     type = mimetypes.guess_type(file)[1]
+        #     if type in 'gzip':
+        #         return gzip.open(file, 'rt')
+        #     else:
+        #         return open(file, 'rt')
+        # except TypeError:
+        #     logger.debug("Type of input could not be determined!")
+        # else:
+        #     type = 'txt'
+        #     return open(file, 'rt')
+        #     print('second attempt {}'.format(type))
+        if self._file_handle in 'gzip':
+            return gzip.open(file, 'rt')
+        else:
+            return open(file, 'rt')
+
+    def _get_num_reads(self, file):
+        if self.total_reads > 0:
+            return self.total_reads
+        else:
+            with self._open_reads(file) as f:
+                num_lines = sum([1 for l in f])
+            return int(num_lines / 4)
+
+    def _get_read_len(self, file):
+        if self.total_reads > 0:
+            return self.args.split_len
+        else:
+            with self._open_reads(file) as f:
+                head = [next(f) for x in range(2)]
+            return len(head[-1])
+
+    def _get_num_reads_by_coverage(self, file):
+        read_len = self._get_read_len(file)
+        logger.info('Read length estimated to {}.'.format(
+                    read_len))
+        return int(ceil(self.args.genome_len * self.args.coverage /
+                        (len(self.args.reads) * read_len)))
+
+    def _get_vector_random_reads(self, file):
+        num_reads_by_coverage = self._get_num_reads_by_coverage(file)
+        logger.info('Number of reads {} for {}X coverage.'.format(
+                    num_reads_by_coverage, self.coverage))
+        total_records = self._get_num_reads(file)
+        logger.info('Total number of reads {}.'.format(
+                    total_records))
+        return set(random.sample(range(total_records + 1),
+                                 num_reads_by_coverage))
+
+    def _sample_read_file(self, file, output_sequence_sets):
+        initial_length = 0
+        sampling_length = 0
+
+        record_number = 0
+        # print(os.path.getsize(file))
+        out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fq',
+                                               delete=False)
+        with self._open_reads(file) as read_input:
+            for line1 in tqdm.tqdm(read_input, desc='Sampling reads from {}'
+                                   .format(os.path.basename(file)),
+                                   unit=' reads'):
+                line2 = read_input.readline()
+                initial_length += len(line2)
+                line3 = read_input.readline()
+                line4 = read_input.readline()
+                if record_number in output_sequence_sets:
+                    out_file.write(line1)
+                    out_file.write(line2)
+                    out_file.write(line3)
+                    out_file.write(line4)
+                    sampling_length += len(line2)
+                record_number += 1
+        logger.info('Cummulative length of all reads {}bp. Cummulative '
+                    'length of sampled reads {}bp'.format(initial_length,
+                                                          (sampling_length*2
+                                                           if len(self._reads)
+                                                           == 2 else
+                                                           sampling_length)))
         out_file.close()
         return out_file.name
 

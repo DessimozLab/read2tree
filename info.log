@@ -1,0 +1,714 @@
+2018-06-25 10:31:44,789:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:31:44,789:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:31:44,789:read2tree.Reads:Splitting of reads took 0.007990837097167969.
+2018-06-25 10:31:44,793:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:31:44,794:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:31:44,794:read2tree.Reads:Splitting of reads took 0.0014462471008300781.
+2018-06-25 10:31:44,808:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:31:44,809:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:31:44,809:read2tree.Reads:Splitting of reads took 0.0015277862548828125.
+2018-06-25 10:31:53,461:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:31:53,461:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:31:53,461:read2tree.Reads:Splitting of reads took 0.00673985481262207.
+2018-06-25 10:31:53,464:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:31:53,464:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:31:53,464:read2tree.Reads:Splitting of reads took 0.0011339187622070312.
+2018-06-25 10:31:53,484:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:31:53,484:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:31:53,484:read2tree.Reads:Splitting of reads took 0.001251220703125.
+2018-06-25 10:36:10,066:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:36:10,067:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:36:10,067:read2tree.Reads:Splitting of reads took 0.005964040756225586.
+2018-06-25 10:36:10,070:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:36:10,070:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:36:10,070:read2tree.Reads:Splitting of reads took 0.001260995864868164.
+2018-06-25 10:36:10,085:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:36:10,085:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:36:10,085:read2tree.Reads:Splitting of reads took 0.0014109611511230469.
+2018-06-25 10:36:52,957:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:36:52,957:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:36:52,958:read2tree.Reads:Splitting of reads took 0.006165027618408203.
+2018-06-25 10:36:52,962:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:36:52,962:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:36:52,962:read2tree.Reads:Splitting of reads took 0.0015747547149658203.
+2018-06-25 10:36:52,965:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:36:52,965:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:36:52,965:read2tree.Reads:Splitting of reads took 0.0013210773468017578.
+2018-06-25 10:38:00,483:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:38:00,483:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:38:00,483:read2tree.Reads:Splitting of reads took 0.005918025970458984.
+2018-06-25 10:38:00,485:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:38:00,488:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:38:00,488:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:38:00,488:read2tree.Reads:Splitting of reads took 0.0015187263488769531.
+2018-06-25 10:38:00,489:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:38:00,502:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:38:00,502:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:38:00,502:read2tree.Reads:Splitting of reads took 0.0012438297271728516.
+2018-06-25 10:38:00,504:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:38:00,506:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:03,817:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:40:03,818:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:40:03,818:read2tree.Reads:Splitting of reads took 0.006175994873046875.
+2018-06-25 10:40:03,819:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:03,822:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:40:03,822:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:40:03,822:read2tree.Reads:Splitting of reads took 0.0015769004821777344.
+2018-06-25 10:40:03,823:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:40:03,837:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:40:03,837:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:40:03,837:read2tree.Reads:Splitting of reads took 0.0012707710266113281.
+2018-06-25 10:40:03,839:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:03,839:read2tree.Reads:Number of reads 65789 for 10X coverage.
+2018-06-25 10:40:03,852:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:40:03,868:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:03,868:read2tree.Reads:Number of reads 65789 for 10X coverage.
+2018-06-25 10:40:03,879:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:40:43,343:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:40:43,343:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:40:43,343:read2tree.Reads:Splitting of reads took 0.006338834762573242.
+2018-06-25 10:40:43,344:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:43,346:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:40:43,346:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:40:43,346:read2tree.Reads:Splitting of reads took 0.0011942386627197266.
+2018-06-25 10:40:43,347:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:40:43,361:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:40:43,361:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:40:43,361:read2tree.Reads:Splitting of reads took 0.0014297962188720703.
+2018-06-25 10:40:43,363:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:43,363:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:40:43,375:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:40:43,377:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:40:43,377:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:40:43,388:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:41:32,010:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:41:32,010:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:41:32,010:read2tree.Reads:Splitting of reads took 0.004040956497192383.
+2018-06-25 10:41:32,012:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:41:32,014:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:41:32,014:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:41:32,015:read2tree.Reads:Splitting of reads took 0.0016591548919677734.
+2018-06-25 10:41:32,015:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:41:32,032:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:41:32,032:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:41:32,032:read2tree.Reads:Splitting of reads took 0.0012967586517333984.
+2018-06-25 10:41:32,033:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:41:32,033:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:41:32,045:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:41:32,048:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:41:32,048:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:41:32,062:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:42:09,658:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:42:09,658:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:42:09,658:read2tree.Reads:Splitting of reads took 0.006457805633544922.
+2018-06-25 10:42:09,660:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:42:09,662:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:42:09,662:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:42:09,662:read2tree.Reads:Splitting of reads took 0.0013399124145507812.
+2018-06-25 10:42:09,663:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:42:09,677:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:42:09,677:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:42:09,677:read2tree.Reads:Splitting of reads took 0.0014600753784179688.
+2018-06-25 10:42:09,679:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:42:09,679:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:42:09,690:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:42:09,695:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:42:09,695:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:42:09,708:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:42:21,239:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:42:21,239:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:42:21,239:read2tree.Reads:Splitting of reads took 0.005982398986816406.
+2018-06-25 10:42:21,241:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:42:21,243:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:42:21,243:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:42:21,243:read2tree.Reads:Splitting of reads took 0.0012118816375732422.
+2018-06-25 10:42:21,243:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:42:21,259:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:42:21,259:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:42:21,259:read2tree.Reads:Splitting of reads took 0.001605987548828125.
+2018-06-25 10:42:21,261:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:42:21,261:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:42:21,271:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:42:21,274:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:42:21,274:read2tree.Reads:Number of reads 32 for 10X coverage.
+2018-06-25 10:42:21,285:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:42:21,294:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 4864bp
+2018-06-25 10:53:44,800:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:53:44,800:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:53:44,800:read2tree.Reads:Splitting of reads took 0.006194114685058594.
+2018-06-25 10:53:44,802:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:53:44,805:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:53:44,805:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:53:44,805:read2tree.Reads:Splitting of reads took 0.002003908157348633.
+2018-06-25 10:53:44,805:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:53:44,820:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:53:44,820:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:53:44,820:read2tree.Reads:Splitting of reads took 0.001447916030883789.
+2018-06-25 10:53:44,822:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:53:44,822:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:53:44,833:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:53:44,837:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:53:44,837:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:53:44,849:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:53:44,858:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 5016bp
+2018-06-25 10:54:01,836:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:54:01,836:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:54:01,836:read2tree.Reads:Splitting of reads took 0.005892276763916016.
+2018-06-25 10:54:01,837:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:54:01,840:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:54:01,840:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:54:01,840:read2tree.Reads:Splitting of reads took 0.0012319087982177734.
+2018-06-25 10:54:01,840:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:54:01,853:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:54:01,853:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:54:01,853:read2tree.Reads:Splitting of reads took 0.0013279914855957031.
+2018-06-25 10:54:01,855:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:54:01,855:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:54:01,866:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:54:01,868:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:54:01,868:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:54:01,878:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:54:01,886:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 5016bp
+2018-06-25 10:58:31,642:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:58:31,643:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:58:31,643:read2tree.Reads:Splitting of reads took 0.006395816802978516.
+2018-06-25 10:58:31,645:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:58:31,649:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:58:31,649:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:58:31,649:read2tree.Reads:Splitting of reads took 0.001567840576171875.
+2018-06-25 10:58:31,649:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:58:31,663:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:58:31,663:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:58:31,664:read2tree.Reads:Splitting of reads took 0.001528024673461914.
+2018-06-25 10:58:31,665:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:58:31,665:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:58:31,676:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:58:31,679:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:58:31,679:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:58:31,691:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:58:31,699:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 10:58:45,915:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:58:45,915:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:58:45,915:read2tree.Reads:Splitting of reads took 0.005939006805419922.
+2018-06-25 10:58:45,917:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:58:45,919:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:58:45,919:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:58:45,920:read2tree.Reads:Splitting of reads took 0.0017049312591552734.
+2018-06-25 10:58:45,920:read2tree.Reads:Read length estimated to 400.
+2018-06-25 10:58:45,935:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 10:58:45,935:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 10:58:45,935:read2tree.Reads:Splitting of reads took 0.0014569759368896484.
+2018-06-25 10:58:45,936:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:58:45,936:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:58:45,957:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:58:45,959:read2tree.Reads:Read length estimated to 152.
+2018-06-25 10:58:45,960:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 10:58:45,971:read2tree.Reads:Total number of reads 1000.
+2018-06-25 10:58:45,980:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:04:35,971:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:04:35,971:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:04:35,971:read2tree.Reads:Splitting of reads took 0.004212379455566406.
+2018-06-25 11:04:35,975:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:04:35,975:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:04:35,975:read2tree.Reads:Splitting of reads took 0.0014090538024902344.
+2018-06-25 11:04:35,978:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:04:35,978:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:04:35,978:read2tree.Reads:Splitting of reads took 0.001210927963256836.
+2018-06-25 11:04:44,964:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:04:44,964:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:04:44,964:read2tree.Reads:Splitting of reads took 0.0042498111724853516.
+2018-06-25 11:04:44,966:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:04:44,968:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:04:44,968:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:04:44,968:read2tree.Reads:Splitting of reads took 0.001386880874633789.
+2018-06-25 11:04:44,969:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:04:44,980:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:04:44,980:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:04:44,980:read2tree.Reads:Splitting of reads took 0.001341104507446289.
+2018-06-25 11:04:44,982:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:04:44,982:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:04:44,990:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:04:44,993:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:04:44,993:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:04:45,000:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:04:45,010:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:05:34,346:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:05:34,346:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:05:34,346:read2tree.Reads:Splitting of reads took 0.005448818206787109.
+2018-06-25 11:05:34,347:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:05:34,350:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:05:34,350:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:05:34,350:read2tree.Reads:Splitting of reads took 0.0012521743774414062.
+2018-06-25 11:05:34,350:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:05:34,362:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:05:34,362:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:05:34,362:read2tree.Reads:Splitting of reads took 0.0013189315795898438.
+2018-06-25 11:05:34,364:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:05:34,364:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:05:34,372:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:05:34,375:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:05:34,375:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:05:34,382:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:05:34,391:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:06:37,046:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:06:37,046:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:06:37,046:read2tree.Reads:Splitting of reads took 0.004297018051147461.
+2018-06-25 11:06:37,047:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:06:37,049:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:06:37,050:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:06:37,050:read2tree.Reads:Splitting of reads took 0.0013039112091064453.
+2018-06-25 11:06:37,050:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:06:37,060:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:06:37,060:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:06:37,060:read2tree.Reads:Splitting of reads took 0.0013780593872070312.
+2018-06-25 11:06:37,061:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:06:37,061:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:06:37,068:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:06:37,071:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:06:37,071:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:06:37,077:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:06:37,085:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 9728bp
+2018-06-25 11:06:41,739:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:06:41,739:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:06:41,740:read2tree.Reads:Splitting of reads took 0.005747079849243164.
+2018-06-25 11:06:41,741:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:06:41,743:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:06:41,743:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:06:41,743:read2tree.Reads:Splitting of reads took 0.0012638568878173828.
+2018-06-25 11:06:41,744:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:06:41,755:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:06:41,755:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:06:41,755:read2tree.Reads:Splitting of reads took 0.0015270709991455078.
+2018-06-25 11:06:41,756:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:06:41,756:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:06:41,764:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:06:41,766:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:06:41,766:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:06:41,774:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:06:41,782:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:09:40,017:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:09:40,017:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:09:40,017:read2tree.Reads:Splitting of reads took 0.0040950775146484375.
+2018-06-25 11:09:40,019:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:09:40,021:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:09:40,021:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:09:40,021:read2tree.Reads:Splitting of reads took 0.001302957534790039.
+2018-06-25 11:09:40,022:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:09:40,032:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:09:40,033:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:09:40,033:read2tree.Reads:Splitting of reads took 0.0014078617095947266.
+2018-06-25 11:09:40,034:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:09:40,034:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:09:40,042:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:09:40,045:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:09:40,045:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:09:40,052:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:09:40,062:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:14:09,798:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:14:09,799:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:14:09,799:read2tree.Reads:Splitting of reads took 0.006064176559448242.
+2018-06-25 11:14:09,800:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:14:09,804:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:14:09,804:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:14:09,804:read2tree.Reads:Splitting of reads took 0.0018391609191894531.
+2018-06-25 11:14:09,804:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:14:09,814:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:14:09,814:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:14:09,814:read2tree.Reads:Splitting of reads took 0.0013089179992675781.
+2018-06-25 11:14:09,816:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:14:09,816:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:14:09,823:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:14:09,826:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:14:09,826:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:14:09,834:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:14:09,844:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:14:43,324:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:14:43,325:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:14:43,325:read2tree.Reads:Splitting of reads took 0.004626035690307617.
+2018-06-25 11:14:43,326:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:14:43,329:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:14:43,330:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:14:43,330:read2tree.Reads:Splitting of reads took 0.0019598007202148438.
+2018-06-25 11:14:43,330:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:14:43,340:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:14:43,340:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:14:43,340:read2tree.Reads:Splitting of reads took 0.001287221908569336.
+2018-06-25 11:14:43,342:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:14:43,342:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:14:43,350:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:14:43,352:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:14:43,352:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:14:43,361:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:14:43,372:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:16:56,638:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:16:56,639:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:16:56,639:read2tree.Reads:Splitting of reads took 0.004530191421508789.
+2018-06-25 11:16:56,641:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:16:56,644:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:16:56,644:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:16:56,644:read2tree.Reads:Splitting of reads took 0.0015120506286621094.
+2018-06-25 11:16:56,644:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:16:56,656:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:16:56,656:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:16:56,656:read2tree.Reads:Splitting of reads took 0.0016372203826904297.
+2018-06-25 11:16:56,658:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:16:56,658:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:16:56,667:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:16:56,670:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:16:56,670:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:16:56,678:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:16:56,689:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:18:02,830:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:18:02,830:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:18:02,830:read2tree.Reads:Splitting of reads took 0.005769252777099609.
+2018-06-25 11:18:02,832:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:18:02,835:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:18:02,836:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:18:02,836:read2tree.Reads:Splitting of reads took 0.0023560523986816406.
+2018-06-25 11:18:02,836:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:18:02,846:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:18:02,847:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:18:02,847:read2tree.Reads:Splitting of reads took 0.001371145248413086.
+2018-06-25 11:18:02,848:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:18:02,848:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:18:02,855:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:18:02,858:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:18:02,858:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:18:02,866:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:18:02,977:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:18:24,297:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:18:24,298:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:18:24,298:read2tree.Reads:Splitting of reads took 0.004515886306762695.
+2018-06-25 11:18:24,299:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:18:24,302:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:18:24,302:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:18:24,302:read2tree.Reads:Splitting of reads took 0.0015349388122558594.
+2018-06-25 11:18:24,303:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:18:24,313:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:18:24,313:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:18:24,313:read2tree.Reads:Splitting of reads took 0.0012049674987792969.
+2018-06-25 11:18:24,315:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:18:24,315:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:18:24,322:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:18:24,325:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:18:24,325:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:18:24,332:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:18:24,342:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:19:31,227:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:19:31,228:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:19:31,228:read2tree.Reads:Splitting of reads took 0.0043849945068359375.
+2018-06-25 11:19:31,229:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:19:31,232:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:19:31,232:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:19:31,232:read2tree.Reads:Splitting of reads took 0.0014011859893798828.
+2018-06-25 11:19:31,233:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:19:31,243:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:19:31,243:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:19:31,243:read2tree.Reads:Splitting of reads took 0.0013451576232910156.
+2018-06-25 11:19:31,245:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:19:31,245:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:19:31,253:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:19:31,255:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:19:31,255:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:19:31,262:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:19:31,271:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:23:29,376:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:23:29,376:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:23:29,376:read2tree.Reads:Splitting of reads took 0.004310131072998047.
+2018-06-25 11:23:29,378:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:23:29,381:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:23:29,381:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:23:29,381:read2tree.Reads:Splitting of reads took 0.0012788772583007812.
+2018-06-25 11:23:29,381:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:23:29,391:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:23:29,391:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:23:29,391:read2tree.Reads:Splitting of reads took 0.001338958740234375.
+2018-06-25 11:23:29,392:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:23:29,393:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:23:29,400:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:24:10,255:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:24:10,255:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:24:10,255:read2tree.Reads:Splitting of reads took 0.005883693695068359.
+2018-06-25 11:24:10,257:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:24:10,260:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:24:10,260:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:24:10,260:read2tree.Reads:Splitting of reads took 0.001390218734741211.
+2018-06-25 11:24:10,260:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:24:10,271:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:24:10,271:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:24:10,271:read2tree.Reads:Splitting of reads took 0.0014958381652832031.
+2018-06-25 11:24:10,273:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:24:10,273:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:24:10,280:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:24:48,570:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:24:48,570:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:24:48,570:read2tree.Reads:Splitting of reads took 0.006886959075927734.
+2018-06-25 11:24:48,572:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:24:48,575:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:24:48,575:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:24:48,575:read2tree.Reads:Splitting of reads took 0.002431154251098633.
+2018-06-25 11:24:48,576:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:24:48,588:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:24:48,588:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:24:48,588:read2tree.Reads:Splitting of reads took 0.0017631053924560547.
+2018-06-25 11:24:48,589:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:24:48,590:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:24:48,598:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:24:48,602:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:24:48,602:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:24:48,611:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:24:48,620:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 11:26:05,653:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:26:05,654:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:26:05,654:read2tree.Reads:Splitting of reads took 0.00506901741027832.
+2018-06-25 11:26:05,655:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:26:05,657:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:26:05,658:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:26:05,658:read2tree.Reads:Splitting of reads took 0.0013298988342285156.
+2018-06-25 11:26:05,658:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:26:05,669:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:26:05,669:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:26:05,669:read2tree.Reads:Splitting of reads took 0.0012929439544677734.
+2018-06-25 11:26:05,671:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:26:05,671:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:26:05,679:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:26:05,682:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:26:05,682:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:26:05,689:read2tree.Reads:Total number of reads 1000.
+2018-06-25 11:26:05,700:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 9728bp
+2018-06-25 11:27:39,539:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:27:39,539:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:27:39,539:read2tree.Reads:Splitting of reads took 0.0061910152435302734.
+2018-06-25 11:27:39,541:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:27:39,544:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:27:39,544:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:27:39,544:read2tree.Reads:Splitting of reads took 0.0017518997192382812.
+2018-06-25 11:27:39,545:read2tree.Reads:Read length estimated to 400.
+2018-06-25 11:27:39,555:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 11:27:39,555:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 11:27:39,555:read2tree.Reads:Splitting of reads took 0.0014870166778564453.
+2018-06-25 11:27:39,557:read2tree.Reads:Read length estimated to 152.
+2018-06-25 11:27:39,557:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 11:27:39,565:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:04:31,812:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:04:31,813:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:04:31,813:read2tree.Reads:Splitting of reads took 0.004827976226806641.
+2018-06-25 13:04:31,815:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:04:31,817:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:04:31,817:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:04:31,817:read2tree.Reads:Splitting of reads took 0.0015411376953125.
+2018-06-25 13:04:31,818:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:04:31,828:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:04:31,828:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:04:31,828:read2tree.Reads:Splitting of reads took 0.0012421607971191406.
+2018-06-25 13:04:31,830:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:04:31,830:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:04:31,839:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:04:31,842:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:04:31,842:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:04:31,849:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:04:31,858:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:04:31,886:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:04:31,886:read2tree.Reads:Sampling of reads took 0.044721126556396484.
+2018-06-25 13:05:06,582:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:06,582:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:06,582:read2tree.Reads:Splitting of reads took 0.004248142242431641.
+2018-06-25 13:05:06,583:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:06,586:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:06,586:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:06,586:read2tree.Reads:Splitting of reads took 0.0012390613555908203.
+2018-06-25 13:05:06,586:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:05:06,597:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:06,597:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:06,597:read2tree.Reads:Splitting of reads took 0.0017490386962890625.
+2018-06-25 13:05:06,599:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:06,599:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:05:06,606:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:05:06,609:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:06,610:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:05:06,616:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:05:06,625:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:05:06,635:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:05:06,635:read2tree.Reads:Sampling of reads took 0.026216983795166016.
+2018-06-25 13:05:19,230:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:19,230:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:19,230:read2tree.Reads:Splitting of reads took 0.006623983383178711.
+2018-06-25 13:05:19,232:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:19,234:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:19,234:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:19,234:read2tree.Reads:Splitting of reads took 0.0012402534484863281.
+2018-06-25 13:05:19,234:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:05:19,246:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:19,246:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:19,246:read2tree.Reads:Splitting of reads took 0.0015919208526611328.
+2018-06-25 13:05:19,248:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:19,248:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:05:19,255:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:05:19,258:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:19,258:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:05:19,266:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:05:19,274:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:05:19,282:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:05:19,283:read2tree.Reads:Sampling of reads took 0.024592876434326172.
+2018-06-25 13:05:30,792:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:30,792:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:30,792:read2tree.Reads:Splitting of reads took 0.004469156265258789.
+2018-06-25 13:05:30,794:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:30,797:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:30,797:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:30,797:read2tree.Reads:Splitting of reads took 0.0016739368438720703.
+2018-06-25 13:05:30,798:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:05:30,808:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:05:30,808:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:05:30,809:read2tree.Reads:Splitting of reads took 0.001516103744506836.
+2018-06-25 13:05:30,810:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:30,810:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:05:30,817:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:05:30,820:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:05:30,820:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:05:30,827:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:05:30,837:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:05:30,846:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:05:30,847:read2tree.Reads:Sampling of reads took 0.0269930362701416.
+2018-06-25 13:06:41,082:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:06:41,082:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:06:41,082:read2tree.Reads:Splitting of reads took 0.006459951400756836.
+2018-06-25 13:06:41,084:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:06:41,086:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:06:41,087:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:06:41,087:read2tree.Reads:Splitting of reads took 0.0015439987182617188.
+2018-06-25 13:06:41,087:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:06:41,098:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:06:41,098:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:06:41,098:read2tree.Reads:Splitting of reads took 0.0018880367279052734.
+2018-06-25 13:06:41,100:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:06:41,100:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:06:41,107:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:06:41,110:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:06:41,110:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:06:41,117:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:06:41,126:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 9728bp
+2018-06-25 13:06:41,135:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 9728bp
+2018-06-25 13:06:41,136:read2tree.Reads:Sampling of reads took 0.026525020599365234.
+2018-06-25 13:06:45,297:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:06:45,297:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:06:45,297:read2tree.Reads:Splitting of reads took 0.006384134292602539.
+2018-06-25 13:06:45,299:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:06:45,302:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:06:45,302:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:06:45,302:read2tree.Reads:Splitting of reads took 0.001744985580444336.
+2018-06-25 13:06:45,302:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:06:45,313:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:06:45,313:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:06:45,313:read2tree.Reads:Splitting of reads took 0.0020220279693603516.
+2018-06-25 13:06:45,315:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:06:45,315:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:06:45,322:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:06:45,325:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:06:45,325:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:06:45,332:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:06:45,340:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 9728bp
+2018-06-25 13:06:45,349:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 9728bp
+2018-06-25 13:06:45,350:read2tree.Reads:Sampling of reads took 0.024956703186035156.
+2018-06-25 13:25:46,055:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:25:46,055:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:25:46,055:read2tree.Reads:Splitting of reads took 0.006681203842163086.
+2018-06-25 13:25:46,057:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:25:46,059:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:25:46,059:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:25:46,059:read2tree.Reads:Splitting of reads took 0.0012459754943847656.
+2018-06-25 13:25:46,059:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:25:46,069:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:25:46,069:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:25:46,069:read2tree.Reads:Splitting of reads took 0.0012500286102294922.
+2018-06-25 13:25:46,070:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:25:46,070:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:25:46,079:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:25:46,083:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:25:46,083:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:25:46,092:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:25:46,100:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:25:46,109:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:25:46,110:read2tree.Reads:Sampling of reads took 0.027475833892822266.
+2018-06-25 13:26:31,773:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:26:31,773:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:26:31,773:read2tree.Reads:Splitting of reads took 0.004139900207519531.
+2018-06-25 13:26:31,775:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:26:31,778:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:26:31,778:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:26:31,778:read2tree.Reads:Splitting of reads took 0.0016770362854003906.
+2018-06-25 13:26:31,778:read2tree.Reads:Read length estimated to 400.
+2018-06-25 13:26:31,789:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 13:26:31,789:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 13:26:31,789:read2tree.Reads:Splitting of reads took 0.0017979145050048828.
+2018-06-25 13:26:31,790:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:26:31,791:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:26:31,798:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:26:31,801:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:26:31,801:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:26:31,808:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:26:31,817:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:26:31,826:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 13:26:31,826:read2tree.Reads:Sampling of reads took 0.025642871856689453.
+2018-06-25 13:26:31,827:read2tree.Reads:Read length estimated to 152.
+2018-06-25 13:26:31,827:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 13:26:31,834:read2tree.Reads:Total number of reads 1000.
+2018-06-25 13:26:31,844:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 16:40:47,460:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 16:40:47,460:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 16:40:47,460:read2tree.Reads:Splitting of reads took 0.011812925338745117.
+2018-06-25 16:40:47,462:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:40:47,464:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 16:40:47,464:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 16:40:47,464:read2tree.Reads:Splitting of reads took 0.0011930465698242188.
+2018-06-25 16:40:47,464:read2tree.Reads:Read length estimated to 400.
+2018-06-25 16:40:47,475:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 16:40:47,475:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 16:40:47,475:read2tree.Reads:Splitting of reads took 0.001280069351196289.
+2018-06-25 16:40:47,476:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:40:47,476:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 16:40:47,484:read2tree.Reads:Total number of reads 1000.
+2018-06-25 16:40:47,487:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:40:47,487:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 16:40:47,494:read2tree.Reads:Total number of reads 1000.
+2018-06-25 16:40:47,503:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 16:40:47,526:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 16:40:47,526:read2tree.Reads:Sampling of reads took 0.03969693183898926.
+2018-06-25 16:40:47,526:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:40:47,526:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 16:40:47,534:read2tree.Reads:Total number of reads 1000.
+2018-06-25 16:40:47,544:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 16:41:33,295:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 16:41:33,295:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 16:41:33,295:read2tree.Reads:Splitting of reads took 0.007110118865966797.
+2018-06-25 16:41:33,297:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:41:33,300:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 16:41:33,300:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 16:41:33,300:read2tree.Reads:Splitting of reads took 0.00150299072265625.
+2018-06-25 16:41:33,300:read2tree.Reads:Read length estimated to 400.
+2018-06-25 16:41:33,310:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 16:41:33,310:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 16:41:33,311:read2tree.Reads:Splitting of reads took 0.0012347698211669922.
+2018-06-25 16:41:33,312:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:41:33,312:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 16:41:33,318:read2tree.Reads:Total number of reads 1000.
+2018-06-25 16:41:33,322:read2tree.Reads:Read length estimated to 152.
+2018-06-25 16:41:33,322:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 16:41:33,330:read2tree.Reads:Total number of reads 1000.
+2018-06-25 16:41:33,339:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 16:41:33,349:read2tree.Reads:Cummulative length of all reads 152000bp. Cummulative length of sampled reads 10032bp
+2018-06-25 16:41:33,350:read2tree.Reads:Sampling of reads took 0.02838587760925293.
+2018-06-25 17:17:35,988:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 17:17:35,988:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 17:17:35,988:read2tree.Reads:Splitting of reads took 0.0052530765533447266.
+2018-06-25 17:17:35,990:read2tree.Reads:Read length estimated to 152.
+2018-06-25 17:17:35,992:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 17:17:35,993:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 17:17:35,993:read2tree.Reads:Splitting of reads took 0.0015521049499511719.
+2018-06-25 17:17:35,993:read2tree.Reads:Read length estimated to 400.
+2018-06-25 17:17:36,004:read2tree.Reads:Reads larger than 500 were split into 400 bp long fragments with an overlap of 50 bp.
+2018-06-25 17:17:36,004:read2tree.Reads:0 reads were split into 18 reads.
+2018-06-25 17:17:36,004:read2tree.Reads:Splitting of reads took 0.0015919208526611328.
+2018-06-25 17:17:36,005:read2tree.Reads:Read length estimated to 152.
+2018-06-25 17:17:36,006:read2tree.Reads:Number of reads 33 for 10X coverage.
+2018-06-25 17:17:36,013:read2tree.Reads:Total number of reads 1000.

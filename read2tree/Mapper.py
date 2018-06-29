@@ -277,8 +277,8 @@ class Mapper(object):
 
         # Get reads and perform splitting if requested
         read_container = Reads(self.args)
-        reads = read_container.split_reads
-        # print(sizeof(reads))
+        reads = read_container.reads
+        # print(os.path.getsize(reads[0]))
 
         if self.args.single_mapping:
             references = [self.args

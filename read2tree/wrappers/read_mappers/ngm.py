@@ -82,14 +82,18 @@ class NGM(ReadMapper):
         if tmp_folder is None:
             tmp_file = './' + os.path.basename(reference)+".bam"
         if '/' not in tmp_folder[-1]:
-            tmp_file = os.path.join(tmp_folder, os.path.basename(reference))+".bam"
+            tmp_file = os.path.join(tmp_folder,
+                                    os.path.basename(reference))+".bam"
         if len(reads) is 2:
             self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(),
-                                                            reference, reads[0], reads[1], tmp_file),
+                                                            reference,
+                                                            reads[0], reads[1],
+                                                            tmp_file),
                      wait=True)
         elif len(reads) is not 2:
             self.cli('{} -b -r {} -q {} -o {}'.format(self.command(),
-                                                      reference, reads, tmp_file), wait=True)
+                                                      reference, reads,
+                                                      tmp_file), wait=True)
 
         return self.cli.get_stdout(), self.cli.get_stderr()
 
@@ -102,7 +106,7 @@ class NGM(ReadMapper):
         """
 
         # TODO: change the output dictionary into a better format
-        #outfile = '{}.sam'.format(filename)
+        # outfile = '{}.sam'.format(filename)
         outfile = os.path.join(tmp_folder, os.path.basename(filename))+".bam"
         parser = NGMParser()
 
