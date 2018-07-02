@@ -27,7 +27,6 @@ from read2tree.TreeInference import TreeInference
 from read2tree.parser import OMAOutputParser
 import argparse
 
-
 COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 
 
@@ -36,6 +35,7 @@ def parse_args(argv, exe_name, desc):
         Parses the arguments from the terminal.
     '''
     is_standalone = (exe_name == 'read2tree')
+
     arg_parser = argparse.ArgumentParser(prog=exe_name,
                                          description=desc,
                                          epilog=read2tree.__copyright__)
@@ -224,6 +224,7 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
+
     progress = Progress(args)
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)

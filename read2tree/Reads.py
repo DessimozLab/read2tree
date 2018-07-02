@@ -9,7 +9,6 @@ import random
 import os
 
 from math import ceil
-import shutil
 # from memory_profiler import memory_usage
 
 logger = logging.getLogger(__name__)
@@ -29,6 +28,7 @@ class Reads(object):
         self.genome_len = self.args.genome_len
         self.elapsed_time = 0
         self.total_reads = 0
+
         if args.debug:
             logger.setLevel(logging.DEBUG)
             file_handler.setLevel(logging.DEBUG)
@@ -46,7 +46,7 @@ class Reads(object):
         self.split_min_read_len = args.split_min_read_len
 
         if self.args.reads:
-            if mimetypes.guess_type(self.args.reads[0])[1] in 'gzip':
+            if 'gzip' in mimetypes.guess_type(self.args.reads[0])[1]:
                 self._file_handle = 'gzip'
             else:
                 self._file_handle = 'txt'
@@ -65,6 +65,8 @@ class Reads(object):
         if load:
             if self.args.split_reads:
                 print('--- Splitting reads from {} ---'.format(self._reads))
+                logger.info('--- Splitting reads from {} ---'
+                            .format(self._reads))
                 # print(memory_usage(self.process_reads))
                 # self.split_reads = self._write_to_tmp_file(self\
                 #       .process_reads())
@@ -74,6 +76,8 @@ class Reads(object):
 
             if self.args.sample_reads:
                 print('--- Sampling reads from {} ---'.format(self.reads))
+                logger.info('--- Sampling reads from {} ---'
+                            .format(self.reads))
                 self.reads = self.sample_from_reads(self.reads)
             else:
                 self.reads = self.reads
@@ -113,6 +117,8 @@ class Reads(object):
                         # out += self._get_4_line_fastq_string(read_id, x,
                         #                                      i[0],
                         #                                      i[1])
+                        # write output directly to file to reduce memory
+                        # footprint
                         out_file.write(self._get_4_line_fastq_string(read_id,
                                                                      x, i[0],
                                                                      i[1]))
@@ -157,22 +163,28 @@ class Reads(object):
         start = time.time()
         if len(self.args.reads) == 1:
             idx_random = self._get_vector_random_reads(reads)
-            sampled_reads = self._sample_read_file(reads,
-                                                   idx_random)
+            if idx_random:
+                sampled_reads = self._sample_read_file(reads,
+                                                       idx_random)
+            else:
+                sampled_reads = reads
         elif len(self.args.reads) == 2:
             idx_random = self._get_vector_random_reads(reads[0])
-            sampled_reads.append(self._sample_read_file(reads[0],
-                                                        idx_random))
-            sampled_reads.append(self._sample_read_file(reads[1],
-                                                        idx_random))
+            if idx_random:
+                sampled_reads.append(self._sample_read_file(reads[0],
+                                                            idx_random))
+                sampled_reads.append(self._sample_read_file(reads[1],
+                                                            idx_random))
+            else:
+                sampled_reads = reads
 
         end = time.time()
         elapsed_time = end - start
         logger.info('Sampling of reads took {}.'.format(
                     elapsed_time))
-        if self.args.debug:
-            shutil.copy(sampled_reads,
-                        '/Volumes/Untitled/reserach/r2t/test/split.fq')
+        # if self.args.debug:
+        #     shutil.copy(sampled_reads,
+        #                 '/Volumes/Untitled/reserach/r2t/test/split.fq')
         return sampled_reads
 
     def _open_reads(self, file):
@@ -212,20 +224,23 @@ class Reads(object):
 
     def _get_num_reads_by_coverage(self, file):
         read_len = self._get_read_len(file)
-        logger.info('Read length estimated to {}.'.format(
+        logger.info('Average read length estimated to {}.'.format(
                     read_len))
         return int(ceil(self.args.genome_len * self.args.coverage /
                         (len(self.args.reads) * read_len)))
 
     def _get_vector_random_reads(self, file):
         num_reads_by_coverage = self._get_num_reads_by_coverage(file)
-        logger.info('Number of reads {} for {}X coverage.'.format(
-                    num_reads_by_coverage, self.coverage))
         total_records = self._get_num_reads(file)
-        logger.info('Total number of reads {}.'.format(
-                    total_records))
-        return set(random.sample(range(total_records + 1),
-                                 num_reads_by_coverage))
+        logger.info('Sampling {} / {} reads for {}X coverage.'.format(
+                    num_reads_by_coverage, total_records, self.coverage))
+        if num_reads_by_coverage > total_records:
+            logger.info("Not enough reads available for sampling, using"
+                        "them all.")
+            return None
+        else:
+            return set(random.sample(range(total_records + 1),
+                                     num_reads_by_coverage))
 
     def _sample_read_file(self, file, output_sequence_sets):
         initial_length = 0
@@ -252,10 +267,7 @@ class Reads(object):
                 record_number += 1
         logger.info('Cummulative length of all reads {}bp. Cummulative '
                     'length of sampled reads {}bp'.format(initial_length,
-                                                          (sampling_length*2
-                                                           if len(self._reads)
-                                                           == 2 else
-                                                           sampling_length)))
+                                                          sampling_length))
         out_file.close()
         return out_file.name
 
