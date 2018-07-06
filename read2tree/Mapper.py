@@ -183,8 +183,8 @@ class Mapper(object):
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        logger.info('Mapped {} / {} reads '
-                    ''.format(ngm['reads_mapped'],
+        logger.info('{}: Mapped {} / {} reads '
+                    ''.format(self._species_name, ngm['reads_mapped'],
                               ngm['total_reads']+ngm['reads_mapped']))
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
@@ -249,8 +249,9 @@ class Mapper(object):
             tmp_output_folder = tempfile.TemporaryDirectory(
                 prefix='ngm', dir=os.environ.get("TMPDIR"))
         except NotADirectoryError:
-            logger.info('Environmental variable TMPDIR not set, will use \
-                        native python tmpdir location.')
+            logger.info('{}: Environmental variable TMPDIR not set, will use \
+                        native python tmpdir location.'
+                        .format(self._species_name))
         else:
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
             logger.debug('--- Creating tmp directory on local node ---')
@@ -290,8 +291,8 @@ class Mapper(object):
         for species in tqdm(references,
                             desc='Mapping reads to species',
                             unit=' species'):
-            logger.info('--- Mapping of reads to {} reference species '
-                        '---'.format(species))
+            logger.info('{}: --- Mapping of reads to {} reference species '
+                        '---'.format(self._species_name, species))
 
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
@@ -310,7 +311,11 @@ class Mapper(object):
                 mapped_reads_species[species].dna = mapped_reads
 
                 # save some general statistics for mapped gene
-                seqC = SeqCompleteness(ref[species].dna)
+                if self.args.remove_species_ogs:
+                    seqC = SeqCompleteness(mapped_ref=ref[species].dna,
+                                           tested_ref=ref[self.args.remove_species_ogs].dna)
+                else:
+                    seqC = SeqCompleteness(mapped_ref=ref[species].dna)
                 seqC.get_seq_completeness(mapped_reads)
                 seqC.write_seq_completeness(os
                                             .path.join(output_folder,
@@ -327,8 +332,9 @@ class Mapper(object):
         tmp_output_folder.cleanup()
         end = time.time()
         self.elapsed_time = end - start
-        logger.info('Mapping to {} references took {}.'.format(
-                    len(references), self.elapsed_time))
+        logger.info('{}: Mapping to {} references took {}.'
+                    .format(self._species_name, len(references),
+                            self.elapsed_time))
         return mapped_reads_species
 
     def _write_read_query_aling(self, read, og_name_file, write_mode):
@@ -652,7 +658,6 @@ class Mapper(object):
                     og_records[name].dna.append(record)
                     aa = self._get_protein(record)
                     og_records[name].aa.append(aa)
-
         return og_records
 
     def _predict_best_protein_position(self, record):
@@ -682,7 +687,7 @@ class Mapper(object):
         '''
         frame = record.seq[0:].translate(
             table='Standard', stop_symbol='X', to_stop=False, cds=False)
-        best_translation = SeqRecord.SeqRecord(frame, id=self._species_name,
+        best_translation = SeqRecord.SeqRecord(frame, id=record.id,
                                                description=record.description,
                                                name=record.name)
         return best_translation

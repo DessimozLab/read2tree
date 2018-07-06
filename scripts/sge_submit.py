@@ -4,7 +4,6 @@ import getopt
 import glob
 import time
 import subprocess
-import pandas as pd
 import numpy as np
 
 
@@ -48,100 +47,98 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=6:00:0
+#$ -l h_rt=10:00:0
 #$ -pe smp 1
 #$ -l tmpfs=100G
 #$ -j y
-#$ -N %s
-#$ -wd /home/ucbpdvd/Scratch/output
-srr=%s
-speciesid=%s
+#$ -N down_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+srr={sra}
+speciesid={species_id}
 source activate r2t
 mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_1.fastq.gz .
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr\_2.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{sra_p}/002/$srr/$srr\_1.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{sra_p}/002/$srr/$srr\_2.fastq.gz .
 echo 'Finished download'
 mv $srr\_1.fastq.gz $speciesid\_1.fq.gz
 mv $srr\_2.fastq.gz $speciesid\_2.fq.gz
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%',
-                                   species_id, sra, species_id)
+echo 'Finished moving files'""".format(species_id=species_id, sra=sra,
+                                       sra_p=sra[0:6])
     if 'ERR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=6:00:0
+#$ -l h_rt=10:00:0
 #$ -pe smp 1
 #$ -l tmpfs=100G
 #$ -j y
-#$ -N %s
-#$ -wd /home/ucbpdvd/Scratch/output
-srr=%s
-speciesid=%s
+#$ -N down_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+srr={sra}
+speciesid={species_id}
 source activate r2t
 mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${srr:0:6}/002/$srr/$srr.fastq.gz .
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/{sra_p}/002/$srr/$srr.fastq.gz .
 echo 'Finished download'
 mv $srr.fastq.gz $speciesid\_1.fq.gz
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%',
-                                   species_id, sra, species_id)
+echo 'Finished moving files'""".format(species_id=species_id, sra=sra,
+                                       sra_p=sra[0:6])
     elif 'SRR' in sra and se_pe is 'PAIRED':
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=6:00:0
+#$ -l h_rt=10:00:0
 #$ -pe smp 4
 #$ -l tmpfs=100G
 #$ -j y
-#$ -N %s
-#$ -wd /home/ucbpdvd/Scratch/output
-srr=%s
-speciesid=%s
-module add Utility/aspera_connect/3.7.4.147727
-module add UHTS/Analysis/sratoolkit/2.8.2.1
+#$ -N down_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+srr={sra}
+speciesid={species_id}
 source activate r2t
 mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /home/ucbpdvd/Scratch/avian/reads/$speciesid
-~/.aspera/connect/bin/ascp  -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
+~/.aspera/connect/bin/ascp  -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/{sra_p}/$srr/$srr.sra ./
 echo 'Finished download'
 fastq-dump --split-files --gzip $srr.sra
 echo 'Finished getting fastq from sra and split files'
 rm *.sra
 mv *\_1.* $speciesid\_1.fq.gz
 mv *\_2.* $speciesid\_2.fq.gz
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%',
-                                   species_id, sra, species_id)
+echo 'Finished moving files'""".format(species_id=species_id, sra=sra,
+                                       sra_p=sra[0:6])
 
     elif 'SRR' in sra and se_pe is 'SINGLE':
         download = """#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
-#$ -l h_rt=6:00:0
+#$ -l h_rt=10:00:0
 #$ -pe smp 4
 #$ -l tmpfs=100G
 #$ -j y
-#$ -N %s
-#$ -wd /home/ucbpdvd/Scratch/output
-srr=%s
-speciesid=%s
-module add Utility/aspera_connect/3.7.4.147727
-module add UHTS/Analysis/sratoolkit/2.8.2.1
+#$ -N down_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+srr={sra}
+speciesid={species_id}
 source activate r2t
 mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /home/ucbpdvd/Scratch/avian/reads/$speciesid
-~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${srr:0:6}/$srr/$srr.sra ./
+~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i \
+~/.aspera/connect/etc/asperaweb_id_dsa.openssh \
+anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/{sra_p}/$srr/$srr.sra ./
 echo 'Finished download'
 fastq-dump --gzip *.sra
 rm *.sra
 echo 'Finished getting fastq from sra'
 mv *.gz $speciesid\_1.fq.gz
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%',
-                                   species_id, sra, species_id)
+echo 'Finished moving files'""".format(species_id=species_id, sra=sra,
+                                       sra_p=sra[0:6])
 
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
@@ -152,49 +149,62 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%',
 
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
     if se_pe is 'PAIRED' and read_type is 'short':
-        job_string = """#!/bin/bash
+        job_string = '''#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
 #$ -l h_rt=12:00:0
 #$ -pe smp 4
 #$ -l tmpfs=120G
 #$ -j y
-#$ -N r2t_%s
-#$ -wd /home/ucbpdvd/Scratch/output
-reads=/home/ucbpdvd/Scratch/avian/reads/%s
+#$ -N r2t_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
 cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq $reads/%s_2.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --sample_reads --genome_len 1500000000 --coverage 10""" % (species_id, species_id, species_id, species_id, reference)
+python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
+--reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
+--output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
+--threads 4 --min_species 8 --read_type short --sample_reads \
+--genome_len 1500000000 --coverage 10'''.format(species_id=species_id,
+                                                reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
-        job_string = """#!/bin/bash
+        job_string = '''#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
 #$ -l h_rt=12:00:0
 #$ -pe smp 4
 #$ -l tmpfs=120G
 #$ -j y
-#$ -N r2t_%s
-#$ -wd /home/ucbpdvd/Scratch/output
-reads=/home/ucbpdvd/Scratch/avian/reads/%s
+#$ -N r2t_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
 cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --sample_reads --genome_len 1500000000 --coverage 10""" % (
-            species_id, species_id, species_id, reference)
+python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree  \
+--reads $reads/{species_id}_1.fq \
+--output_path /home/ucbpdvd/Scratch/avian/r2t/ \
+--single_mapping {reference} --threads 4 --min_species 8 --sample_reads \
+--genome_len 1500000000 --coverage 10'''.format(species_id=species_id,
+                                                reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
-        job_string = """#!/bin/bash
+        job_string = '''#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
 #$ -l h_rt=12:00:0
 #$ -pe smp 4
 #$ -l tmpfs=120G
 #$ -j y
-#$ -N r2t_%s
-#$ -wd /home/ucbpdvd/Scratch/output
-reads=/home/ucbpdvd/Scratch/avian/reads/%s
+#$ -N r2t_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
 cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
-python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /home/ucbpdvd/Scratch/avian/marker_genes/ --dna_reference /home/ucbpdvd/Scratch/avian/eukaryotes.cdna.fa --reads $reads/%s_1.fq --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping %s --threads 4 --min_species 8 --read_type long --split_reads --sample_reads --genome_len 1500000000 --coverage 10""" % (
-            species_id, species_id, species_id, reference)
+python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
+--reads $reads/{species_id}_1.fq \
+--output_path /home/ucbpdvd/Scratch/avian/r2t/ \
+--single_mapping {reference} --threads 4 --min_species 8 --read_type long \
+--split_reads --sample_reads --genome_len 1500000000 \
+--coverage 10'''.format(species_id=species_id, reference=reference)
 
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
@@ -204,15 +214,16 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree --standalone_path /ho
 
 
 def get_rm_string(species_id):
-    rm = """#!/bin/bash
+    rm = '''#!/bin/bash
 #$ -l mem=4G
 #$ -S /bin/bash
 #$ -l h_rt=0:10:0
 #$ -pe smp 1
 #$ -j y
-#$ -N rm_%s
-#$ -wd /home/ucbpdvd/Scratch/output
-rm -r /home/ucbpdvd/Scratch/avian/reads/%s""" % (species_id, species_id)
+#$ -N rm_{species_id}
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+rm -r \
+/home/ucbpdvd/Scratch/avian/reads/{species_id}'''.format(species_id=species_id)
 
     text_file = open('rm_py_script.sh', "w")
     text_file.write(rm)

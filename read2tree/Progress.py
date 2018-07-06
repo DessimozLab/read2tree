@@ -146,13 +146,15 @@ class Progress(object):
         computed_cov = [f for f in
                         glob.glob(os.path.join(self._folder_mapping,
                                                '*cov.txt'))]
-        if len(computed_fasta) == self._num_species or \
-                len(computed_cov) == self._num_species:
-            logger.info('Mapping completed!')
+        if len(computed_fasta) >= self._num_species or \
+                len(computed_cov) >= self._num_species:
+            logger.info('{}: Mapping completed!'.format(self._species_name))
             return True
         else:
-            logger.info('Mapping unfinished. Mapping against {} refernces is '
-                        'computed!'.format(len(computed_cov)))
+            logger.info('{}: Mapping unfinished. Mapping of {} / {} '
+                        'references are computed!'.format(self._species_name,
+                                                          len(computed_cov),
+                                                          self._num_species))
             return False
 
     def set_status(self, status, ref=None):

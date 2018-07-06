@@ -7,6 +7,7 @@ import time
 import tempfile
 import random
 import os
+import numpy as np
 
 from math import ceil
 # from memory_profiler import memory_usage
@@ -46,8 +47,10 @@ class Reads(object):
         self.split_min_read_len = args.split_min_read_len
 
         if self.args.reads:
-            if 'gzip' in mimetypes.guess_type(self.args.reads[0])[1]:
-                self._file_handle = 'gzip'
+            guessed_type = mimetypes.guess_type(self.args.reads[0])[1]
+            if guessed_type:
+                if 'gzip' in guessed_type:
+                    self._file_handle = 'gzip'
             else:
                 self._file_handle = 'txt'
 
@@ -65,8 +68,8 @@ class Reads(object):
         if load:
             if self.args.split_reads:
                 print('--- Splitting reads from {} ---'.format(self._reads))
-                logger.info('--- Splitting reads from {} ---'
-                            .format(self._reads))
+                logger.info('{}: --- Splitting reads from {} ---'
+                            .format(self._species_name, self._reads))
                 # print(memory_usage(self.process_reads))
                 # self.split_reads = self._write_to_tmp_file(self\
                 #       .process_reads())
@@ -76,8 +79,8 @@ class Reads(object):
 
             if self.args.sample_reads:
                 print('--- Sampling reads from {} ---'.format(self.reads))
-                logger.info('--- Sampling reads from {} ---'
-                            .format(self.reads))
+                logger.info('{}: --- Sampling reads from {} ---'
+                            .format(self._species_name, self.reads))
                 self.reads = self.sample_from_reads(self.reads)
             else:
                 self.reads = self.reads
@@ -135,16 +138,17 @@ class Reads(object):
         end = time.time()
         self.elapsed_time = end - start
 
-        logger.info('Reads larger than {} were split into {} bp long '
+        logger.info('{}: Reads larger than {} were split into {} bp long '
                     'fragments with an overlap of {} bp.'.format(
-                        self.split_min_read_len, self.split_len,
+                        self.species_name, self.split_min_read_len,
+                        self.split_len,
                         self.split_overlap))
 
-        logger.info('{} reads were split into {} reads.'.format(
-                    total_reads, total_new_reads))
+        logger.info('{}: {} reads were split into {} reads.'
+                    .format(self._species_name, total_reads, total_new_reads))
 
-        logger.info('Splitting of reads took {}.'.format(
-                    self.elapsed_time))
+        logger.info('{}: Splitting of reads took {}.'
+                    .format(self._species_name, self.elapsed_time))
         out_file.close()
         self.total_reads = total_new_reads
         self._file_handle = 'txt'
@@ -180,8 +184,8 @@ class Reads(object):
 
         end = time.time()
         elapsed_time = end - start
-        logger.info('Sampling of reads took {}.'.format(
-                    elapsed_time))
+        logger.info('{}: Sampling of reads took {}.'
+                    .format(self._species_name, elapsed_time))
         # if self.args.debug:
         #     shutil.copy(sampled_reads,
         #                 '/Volumes/Untitled/reserach/r2t/test/split.fq')
@@ -219,24 +223,31 @@ class Reads(object):
             return self.args.split_len
         else:
             with self._open_reads(file) as f:
-                head = [next(f) for x in range(2)]
-            return len(head[-1])
+                collect_line_len = [len(l) for i, l in enumerate(f)
+                                    if (i) % 4 == 1]
+                mean_len = np.mean(collect_line_len)
+                median_len = np.median(collect_line_len)
+            logger.info('{}: The reads have a mean length of {} '
+                        'and a median length of {}.'
+                        .format(self._species_name, mean_len, median_len))
+            return mean_len
 
     def _get_num_reads_by_coverage(self, file):
         read_len = self._get_read_len(file)
-        logger.info('Average read length estimated to {}.'.format(
-                    read_len))
+        logger.info('{}: Average read length estimated to {}.'
+                    .format(self._species_name, read_len))
         return int(ceil(self.args.genome_len * self.args.coverage /
                         (len(self.args.reads) * read_len)))
 
     def _get_vector_random_reads(self, file):
         num_reads_by_coverage = self._get_num_reads_by_coverage(file)
         total_records = self._get_num_reads(file)
-        logger.info('Sampling {} / {} reads for {}X coverage.'.format(
-                    num_reads_by_coverage, total_records, self.coverage))
+        logger.info('{}: Sampling {} / {} reads for {}X coverage.'
+                    .format(self._species_name, num_reads_by_coverage,
+                            total_records, self.coverage))
         if num_reads_by_coverage > total_records:
-            logger.info("Not enough reads available for sampling, using"
-                        "them all.")
+            logger.info("{}: Not enough reads available for sampling, using "
+                        "them all.".format(self._species_name))
             return None
         else:
             return set(random.sample(range(total_records + 1),
@@ -265,9 +276,10 @@ class Reads(object):
                     out_file.write(line4)
                     sampling_length += len(line2)
                 record_number += 1
-        logger.info('Cummulative length of all reads {}bp. Cummulative '
-                    'length of sampled reads {}bp'.format(initial_length,
-                                                          sampling_length))
+        logger.info('{}: Cummulative length of all reads {}bp. Cummulative '
+                    'length of sampled reads {}bp'
+                    .format(self._species_name, initial_length,
+                            sampling_length))
         out_file.close()
         return out_file.name
 

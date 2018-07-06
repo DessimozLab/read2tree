@@ -75,7 +75,7 @@ class ReferenceSet(object):
         for name, og in tqdm(og_set.items(), desc="Loading records", unit=" record"):
             for record in og.aa:
                 species = record.id[0:5]
-                record.id = record.id+"_"+name
+                record.id = record.id  # +"_"+name
                 if species in ref_set.keys():
                     ref_set[species].aa.append(record)
                 else:
@@ -84,7 +84,7 @@ class ReferenceSet(object):
 
             for record in og.dna:
                 species = record.id[0:5]
-                record.id = record.id + "_" + name
+                record.id = record.id  # + "_" + name
                 if species in ref_set.keys():
                     ref_set[species].dna.append(record)
                 else:
