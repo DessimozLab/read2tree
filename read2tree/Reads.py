@@ -2,7 +2,6 @@ from __future__ import division
 import logging
 import gzip
 import mimetypes
-import tqdm
 import time
 import tempfile
 import random
@@ -10,6 +9,10 @@ import os
 import numpy as np
 
 from math import ceil
+from tqdm import tqdm
+
+from read2tree.FastxReader import FastxReader
+
 # from memory_profiler import memory_usage
 
 logger = logging.getLogger(__name__)
@@ -99,10 +102,11 @@ class Reads(object):
         start = time.time()
         out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fq',
                                                delete=False)
-        with self._open_reads(self._reads) as f:
-            for name, seq, qual in tqdm.tqdm(self._readfq(f),
-                                             desc='Splitting reads',
-                                             unit=' reads'):
+        fastq_reader = FastxReader(self._reads)
+        with fastq_reader.open_fastx() as f:
+            for name, seq, qual in tqdm(fastq_reader.readfx(f),
+                                        desc='Splitting reads',
+                                        unit=' reads'):
                 # total_reads += 1
                 read_id = name[1:].split(" ")[0]
                 # logger.debug("Process read {}".format(read_id))
@@ -191,30 +195,12 @@ class Reads(object):
         #                 '/Volumes/Untitled/reserach/r2t/test/split.fq')
         return sampled_reads
 
-    def _open_reads(self, file):
-        # type = 'txt'
-        # try:
-        #     type = mimetypes.guess_type(file)[1]
-        #     if type in 'gzip':
-        #         return gzip.open(file, 'rt')
-        #     else:
-        #         return open(file, 'rt')
-        # except TypeError:
-        #     logger.debug("Type of input could not be determined!")
-        # else:
-        #     type = 'txt'
-        #     return open(file, 'rt')
-        #     print('second attempt {}'.format(type))
-        if self._file_handle in 'gzip':
-            return gzip.open(file, 'rt')
-        else:
-            return open(file, 'rt')
-
     def _get_num_reads(self, file):
         if self.total_reads > 0:
             return self.total_reads
         else:
-            with self._open_reads(file) as f:
+            fastq_reader = FastxReader(file)
+            with fastq_reader.open_fastx() as f:
                 num_lines = sum([1 for l in f])
             return int(num_lines / 4)
 
@@ -222,7 +208,8 @@ class Reads(object):
         if self.total_reads > 0:
             return self.args.split_len
         else:
-            with self._open_reads(file) as f:
+            fastq_reader = FastxReader(file)
+            with fastq_reader.open_fastx() as f:
                 collect_line_len = [len(l) for i, l in enumerate(f)
                                     if (i) % 4 == 1]
                 mean_len = np.mean(collect_line_len)
@@ -261,10 +248,11 @@ class Reads(object):
         # print(os.path.getsize(file))
         out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fq',
                                                delete=False)
-        with self._open_reads(file) as read_input:
-            for line1 in tqdm.tqdm(read_input, desc='Sampling reads from {}'
-                                   .format(os.path.basename(file)),
-                                   unit=' reads'):
+        fastq_reader = FastxReader(file)
+        with fastq_reader.open_fastx() as read_input:
+            for line1 in tqdm(read_input, desc='Sampling reads from {}'
+                              .format(os.path.basename(file)),
+                              unit=' reads'):
                 line2 = read_input.readline()
                 initial_length += len(line2)
                 line3 = read_input.readline()
@@ -327,47 +315,6 @@ class Reads(object):
             return split_seqs[:last_short_value + 1]
         else:
             return split_seqs
-
-    def _readfq(self, fp):  # this is a generator function
-        '''
-        This function was copy and pasted from https://github.com/lh3/readfq
-        Readfq is a fast implementation of a read iterator and provides a
-        massive spead up compared to regular
-        implementations
-        :param fp: is a filehandle
-        :return: name, seq, quality
-        '''
-        last = None  # this is a buffer keeping the last unprocessed line
-        while True:  # mimic closure; is it a bad idea?
-            if not last:  # the first record or a record following a fastq
-                for l in fp:  # search for the start of the next record
-                    if l[0] in '>@':  # fasta/q header line
-                        last = l[:-1]  # save this line
-                        break
-            if not last:
-                break
-            name, seqs, last = last, [], None
-            for l in fp:  # read the sequence
-                if l[0] in '@+>':
-                    last = l[:-1]
-                    break
-                seqs.append(l[:-1])
-            if not last or last[0] != '+':  # this is a fasta record
-                yield name, ''.join(seqs), None  # yield a fasta record
-                if not last:
-                    break
-            else:  # this is a fastq record
-                seq, leng, seqs = ''.join(seqs), 0, []
-                for l in fp:  # read the quality
-                    seqs.append(l[:-1])
-                    leng += len(l) - 1
-                    if leng >= len(seq):  # have read enough quality
-                        last = None
-                        yield name, seq, ''.join(seqs)  # yield a fastq record
-                        break
-                if last:  # reach EOF before reading enough quality
-                    yield name, seq, None  # yield a fasta record instead
-                    break
 
     def _write_to_tmp_file(self, split_reads):
         with tempfile.NamedTemporaryFile(mode='wt') as filehandle:

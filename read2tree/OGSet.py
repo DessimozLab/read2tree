@@ -24,6 +24,7 @@ from Bio.SeqIO.FastaIO import FastaWriter
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
+from read2tree.FastxReader import FastxReader
 
 
 OMA_STANDALONE_OUTPUT = 'Output'
@@ -144,12 +145,19 @@ class OGSet(object):
     def _load_dna_db(self):
         if '.fa' in self.args.dna_reference or \
            '.fasta' in self.args.dna_reference:
+            db = {}
             print('--- Load ogs and find their corresponding '
                   'DNA seq from {} ---'.format(self.args.dna_reference))
             print(
                 'Loading {} into memory. This might take a '
                 'while . . . '.format(self.args.dna_reference.split("/")[-1]))
-            db = SeqIO.index(self.args.dna_reference, "fasta")
+            fasta_reader = FastxReader(self.args.dna_reference)
+            with fasta_reader.open_fastx() as f:
+                for name, seq, qual in tqdm(fasta_reader.readfx(f),
+                                            desc='Loading db', unit=' seq'):
+                    seq_id = name.lstrip('>')
+                    db[seq_id] = seq
+            # db = SeqIO.index(self.args.dna_reference, "fasta")
             source = 'fa'
             return db, source
         # ---------------- only to be used internally ----------------------
@@ -289,17 +297,17 @@ class OGSet(object):
 
     def _get_dna_from_fasta(self, record, db):
         try:
-            dna = db[record.id]
+            dna = db[record.id.split("_")[0]]
         except ValueError:
             logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
-            if 'X' in str(dna.seq):
+            if 'X' in str(dna):
                 return SeqRecord.SeqRecord(self._clean_DNA_seq(dna),
                                            id=record.id,
                                            description="")
             else:
-                return SeqRecord.SeqRecord(dna.seq,  id=record.id,
+                return SeqRecord.SeqRecord(Seq.Seq(dna.upper()),  id=record.id,
                                            description="")
 
     def _get_dna_records(self, records, name, db, source):
@@ -325,8 +333,12 @@ class OGSet(object):
         :param record: Biopython SeqRecord object
         :return: Biopython seq object with Ns instead of Xs
         """
-        return Seq.Seq(re.sub('[^GATC]', 'N', str(record.seq).upper()),
-                       SingleLetterAlphabet())
+        if isinstance(record, str):
+            return Seq.Seq(re.sub('[^GATC]', 'N', record.upper()),
+                           SingleLetterAlphabet())
+        else:
+            return Seq.Seq(re.sub('[^GATC]', 'N', str(record.seq).upper()),
+                           SingleLetterAlphabet())
 
     def _remove_species_from_original_set(self, current_og):
         """
