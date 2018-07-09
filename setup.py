@@ -7,8 +7,9 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
         if line.startswith('__version__'):
             exec(line.rstrip())
 
-requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml', 'pandas', 'tqdm',
-                'scipy', 'zoo', 'pysam', 'pyham', 'pyparsing', 'requests', 'filelock', 'tables']
+requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml',
+                'tqdm', 'scipy', 'pysam', 'pyham', 'pyparsing', 'requests',
+                'filelock']
 
 # requirements = [line.strip() for line in open("requirements.txt", 'r')]
 # print(requirements)
@@ -19,7 +20,8 @@ setup(
     author='David Dylus and Fritz Sedlaczek',
     author_email='david.dylus@unil.ch',
     description='read2tree allows to build high quality phylogenetic trees '
-                'using reads and a reference set of orthologous groups (DNA + Protein).',
+                'using reads and a reference set of orthologous groups '
+                '(DNA + Protein).',
     packages=find_packages(".", exclude=["scripts", "tests"]),
     install_requires=requirements,
     license='Proprietary',
