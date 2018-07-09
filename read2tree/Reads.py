@@ -144,7 +144,7 @@ class Reads(object):
 
         logger.info('{}: Reads larger than {} were split into {} bp long '
                     'fragments with an overlap of {} bp.'.format(
-                        self.species_name, self.split_min_read_len,
+                        self._species_name, self.split_min_read_len,
                         self.split_len,
                         self.split_overlap))
 

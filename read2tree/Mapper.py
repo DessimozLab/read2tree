@@ -332,9 +332,14 @@ class Mapper(object):
         tmp_output_folder.cleanup()
         end = time.time()
         self.elapsed_time = end - start
-        logger.info('{}: Mapping to {} references took {}.'
-                    .format(self._species_name, len(references),
-                            self.elapsed_time))
+        if len(references) == 1:
+            logger.info('{}: Mapping to {} references took {}.'
+                        .format(self._species_name, references[0],
+                                self.elapsed_time))
+        else:
+            logger.info('{}: Mapping to all references took {}.'
+                        .format(self._species_name,
+                                self.elapsed_time))
         return mapped_reads_species
 
     def _write_read_query_aling(self, read, og_name_file, write_mode):
