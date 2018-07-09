@@ -155,7 +155,7 @@ class OGSet(object):
             with fasta_reader.open_fastx() as f:
                 for name, seq, qual in tqdm(fasta_reader.readfx(f),
                                             desc='Loading db', unit=' seq'):
-                    seq_id = name.lstrip('>')
+                    seq_id = name.lstrip('>').lstrip().rstrip()
                     db[seq_id] = seq
             # db = SeqIO.index(self.args.dna_reference, "fasta")
             source = 'fa'

@@ -1,0 +1,4 @@
+--- Computation Status ---
+01_ref_ogs_dna: OK
+01_ref_ogs_aa: OK
+02_ref_dna: OK
