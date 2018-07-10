@@ -655,8 +655,6 @@ class OG(object):
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         """
-        logger.info("Removing of species {} from reference set!"
-                    .format(species_to_remove))
         aa = [record for i, record in enumerate(
             self.aa) if self._get_species_id(record) not in species_to_remove]
         dna = [record for i, record in enumerate(

@@ -69,6 +69,12 @@ class Reads(object):
             self._species_name = self.args.species_name
 
         if load:
+            if len(self.args.reads) == 2:
+                mate_pairs = self.check_read_consistency(self._reads)
+                if mate_pairs:
+                    self._reads = self.select_mates_from_reads(self._reads,
+                                                               mate_pairs)
+
             if self.args.split_reads:
                 print('--- Splitting reads from {} ---'.format(self._reads))
                 logger.info('{}: --- Splitting reads from {} ---'
@@ -127,16 +133,18 @@ class Reads(object):
                         # write output directly to file to reduce memory
                         # footprint
                         out_file.write(self._get_4_line_fastq_string(read_id,
-                                                                     x, i[0],
-                                                                     i[1]))
+                                                                     i[0],
+                                                                     i[1],
+                                                                     x=x))
                         x += 1
                     total_new_reads += x
                 else:
                     # out += self._get_4_line_fastq_string(read_id, None, seq,
                     #                                      qual)
                     out_file.write(self._get_4_line_fastq_string(read_id,
-                                                                 None, seq,
-                                                                 qual))
+                                                                 seq,
+                                                                 qual,
+                                                                 x=None))
                     total_new_reads += 1
 
         end = time.time()
@@ -160,6 +168,56 @@ class Reads(object):
         #             '/Users/daviddylus/Research/read2tree/tests\
         #             /data/reads/split.fq')
         return out_file.name
+
+    def check_read_consistency(self, reads):
+        '''
+        Function that checks whether all mate pairs are present and if not
+        uses only reads for which mate pairs exist.
+        '''
+        print('--- Checking for consistent mate pairing ---')
+        left_read = FastxReader(reads[0])
+        with left_read.open_fastx() as read_input:
+            left_ids = sorted([i[0].split(" ")[0] for i
+                               in left_read.readfx(read_input)])
+        right_read = FastxReader(reads[1])
+        with right_read.open_fastx() as read_input:
+            right_ids = sorted([i[0].split(" ")[0] for i
+                                in right_read.readfx(read_input)])
+
+        all_ids = sorted(set(left_ids).intersection(set(right_ids)))
+        if all_ids == right_ids and all_ids == left_ids:
+            print('----> Mate pairing consitent! ---')
+            logger.info('{}: Mate pairs are consistent.'
+                        .format(self._species_name))
+            return None
+        else:
+            print('----> Mate pairing not consitent! ---')
+            logger.info('{}: Inconsistent number of mate pairs! '
+                        'Will use only reads that have mate pair.'
+                        .format(self._species_name))
+            return list(all_ids)
+
+    def select_mates_from_reads(self, reads, mates):
+        '''
+        Main function taking in the reads of the object and processing it
+        given the provided parameters
+        :return: string that contains all the read sequences separated by '\n'
+        '''
+        sampled_reads = []
+        start = time.time()
+        sampled_reads.append(self._sample_read_file(reads[0],
+                                                    mates))
+        sampled_reads.append(self._sample_read_file(reads[1],
+                                                    mates))
+
+        end = time.time()
+        elapsed_time = end - start
+        logger.info('{}: Selecting of reads with mates took {}.'
+                    .format(self._species_name, elapsed_time))
+        # if self.args.debug:
+        #     shutil.copy(sampled_reads,
+        #                 '/Volumes/Untitled/reserach/r2t/test/split.fq')
+        return sampled_reads
 
     def sample_from_reads(self, reads):
         '''
@@ -240,7 +298,7 @@ class Reads(object):
             return set(random.sample(range(total_records + 1),
                                      num_reads_by_coverage))
 
-    def _sample_read_file(self, file, output_sequence_sets):
+    def _sample_read_file(self, file, select_idx):
         initial_length = 0
         sampling_length = 0
 
@@ -250,19 +308,17 @@ class Reads(object):
                                                delete=False)
         fastq_reader = FastxReader(file)
         with fastq_reader.open_fastx() as read_input:
-            for line1 in tqdm(read_input, desc='Sampling reads from {}'
-                              .format(os.path.basename(file)),
-                              unit=' reads'):
-                line2 = read_input.readline()
-                initial_length += len(line2)
-                line3 = read_input.readline()
-                line4 = read_input.readline()
-                if record_number in output_sequence_sets:
-                    out_file.write(line1)
-                    out_file.write(line2)
-                    out_file.write(line3)
-                    out_file.write(line4)
-                    sampling_length += len(line2)
+            for name, seq, qual in tqdm(fastq_reader.readfx(read_input),
+                                        desc='Selecting reads from {}'
+                                        .format(os.path.basename(file)),
+                                        unit=' reads'):
+                initial_length += len(seq)
+                if record_number in select_idx or \
+                        name.split(" ")[0] in select_idx:
+                    seq_record_str = self._get_4_line_fastq_string(name,
+                                                                   seq, qual)
+                    out_file.write(seq_record_str)
+                    sampling_length += len(seq)
                 record_number += 1
         logger.info('{}: Cummulative length of all reads {}bp. Cummulative '
                     'length of sampled reads {}bp'
@@ -271,12 +327,7 @@ class Reads(object):
         out_file.close()
         return out_file.name
 
-    # def write_split_reads(self, read_string):
-    #     outfile = self._reads.replace('.fq', '-split.fq')
-    #     with gzip.open(outfile, "wt") as f:
-    #         f.write(read_string)
-
-    def _get_4_line_fastq_string(self, read_id, x, seq, qual):
+    def _get_4_line_fastq_string(self, read_id, seq, qual, x=None):
         '''
         Transform 4 lines of read string to new read string providing the
         split information

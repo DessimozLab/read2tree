@@ -74,7 +74,7 @@ class TreeInference(object):
         self.tree = "{}".format(tree)
         end = time.time()
         self.elapsed_time = end - start
-        logger.info('Tree inference took {}.'.format(
-                    self.elapsed_time))
+        logger.info('{}: Tree inference took {}.'.format(self._species_name,
+                                                         self.elapsed_time))
 
         return tree

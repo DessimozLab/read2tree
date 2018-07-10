@@ -161,7 +161,8 @@ class Aligner(object):
         align_dict = dict(ChainMap(*res_align))
         end = time.time()
         self.elapsed_time = end - start
-        logger.info('Alignment of {} OGs took {}.'.format(
+        logger.info('{}: Alignment of {} OGs took {}.'.format(
+                    self._species_name,
                     len(list(og_set.keys())),
                     self.elapsed_time))
         return align_dict
