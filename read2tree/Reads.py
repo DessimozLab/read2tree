@@ -5,11 +5,13 @@ import mimetypes
 import time
 import tempfile
 import random
+import re
 import os
 import numpy as np
 
 from math import ceil
 from tqdm import tqdm
+from natsort import natsorted
 
 from read2tree.FastxReader import FastxReader
 
@@ -72,8 +74,9 @@ class Reads(object):
             if len(self.args.reads) == 2:
                 mate_pairs = self.check_read_consistency(self._reads)
                 if mate_pairs:
-                    self._reads = self.select_mates_from_reads(self._reads,
-                                                               mate_pairs)
+                    tmp = self.select_mates_from_reads(self._reads,
+                                                       mate_pairs)
+                    self._reads = tmp
 
             if self.args.split_reads:
                 print('--- Splitting reads from {} ---'.format(self._reads))
@@ -177,14 +180,14 @@ class Reads(object):
         print('--- Checking for consistent mate pairing ---')
         left_read = FastxReader(reads[0])
         with left_read.open_fastx() as read_input:
-            left_ids = sorted([i[0].split(" ")[0] for i
-                               in left_read.readfx(read_input)])
+            left_ids = [i[0].split(" ")[0] for i
+                        in left_read.readfx(read_input)]
         right_read = FastxReader(reads[1])
         with right_read.open_fastx() as read_input:
-            right_ids = sorted([i[0].split(" ")[0] for i
-                                in right_read.readfx(read_input)])
+            right_ids = [i[0].split(" ")[0] for i
+                         in right_read.readfx(read_input)]
 
-        all_ids = sorted(set(left_ids).intersection(set(right_ids)))
+        all_ids = set(left_ids).intersection(set(right_ids))
         if all_ids == right_ids and all_ids == left_ids:
             print('----> Mate pairing consitent! ---')
             logger.info('{}: Mate pairs are consistent.'
@@ -193,9 +196,12 @@ class Reads(object):
         else:
             print('----> Mate pairing not consitent! ---')
             logger.info('{}: Inconsistent number of mate pairs! '
-                        'Will use only reads that have mate pair.'
-                        .format(self._species_name))
-            return list(all_ids)
+                        'Will use only reads that have mate pair. '
+                        'Consistent {} of {} total reads.'
+                        .format(self._species_name,
+                                2*len(all_ids),
+                                len(right_ids)+len(left_ids)))
+            return natsorted(list(all_ids))
 
     def select_mates_from_reads(self, reads, mates):
         '''
@@ -295,8 +301,8 @@ class Reads(object):
                         "them all.".format(self._species_name))
             return None
         else:
-            return set(random.sample(range(total_records + 1),
-                                     num_reads_by_coverage))
+            return list(set(random.sample(range(total_records + 1),
+                                          num_reads_by_coverage)))
 
     def _sample_read_file(self, file, select_idx):
         initial_length = 0
@@ -308,17 +314,21 @@ class Reads(object):
                                                delete=False)
         fastq_reader = FastxReader(file)
         with fastq_reader.open_fastx() as read_input:
+            i = 0
             for name, seq, qual in tqdm(fastq_reader.readfx(read_input),
                                         desc='Selecting reads from {}'
                                         .format(os.path.basename(file)),
                                         unit=' reads'):
                 initial_length += len(seq)
-                if record_number in select_idx or \
-                        name.split(" ")[0] in select_idx:
+                # print(name.split(" ")[0])
+                # print(select_idx[i])
+                if record_number == select_idx[i] or \
+                        name.split(" ")[0] == select_idx[i]:
                     seq_record_str = self._get_4_line_fastq_string(name,
                                                                    seq, qual)
                     out_file.write(seq_record_str)
                     sampling_length += len(seq)
+                    i += 1
                 record_number += 1
         logger.info('{}: Cummulative length of all reads {}bp. Cummulative '
                     'length of sampled reads {}bp'
