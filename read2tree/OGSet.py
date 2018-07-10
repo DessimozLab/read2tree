@@ -389,6 +389,29 @@ class OGSet(object):
         else:
             return none
 
+    def _generate_seq_completeness(self, seqC, mapper, og, best_record_dna):
+        if self.args.remove_species_ogs:
+            tested_rec = [
+                rec for rec in og.dna if
+                self.args.remove_species_ogs
+                in rec.id]
+            if tested_rec:
+                seqC2 = SeqCompleteness(
+                    mapped_ref=[best_record_dna],
+                    tested_ref=tested_rec)
+            else:
+                seqC2 = SeqCompleteness(
+                    mapped_ref=[best_record_dna])
+            seqC2.get_seq_completeness([best_record_dna])
+            # print(seqC2.seq_completeness)
+            seqC.add_seq_completeness(
+                self._get_clean_id(best_record_dna),
+                seqC2.seq_completeness[best_record_dna.id])
+        else:
+            seqC.add_seq_completeness(
+                self._get_clean_id(best_record_dna),
+                mapper.all_sc[self._get_clean_id(best_record_dna)])
+
     def add_mapped_seq(self, mapper, species_name=None):
         """
         Add the sequence given from the read mapping to its corresponding
@@ -425,28 +448,28 @@ class OGSet(object):
                         if best_records:
                             best_record_aa = best_records[0]
                             best_record_dna = best_records[1]
+                            self._generate_seq_completeness(seqC, mapper,
+                                                            og, best_record_dna)
+                            cov.add_coverage(self._get_clean_id(best_record_aa),
+                                             mapper.all_cov[self._get_clean_id(best_record_aa)])
                             best_record_aa.id = species_name
                             best_record_dna.id = species_name
                             self.mapped_ogs[name_og] = og_filt
                             all_id = [rec.id
                                       for rec in self.mapped_ogs[name_og].aa]
                             if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                                cov.add_coverage(self._get_clean_id(best_record_aa),
-                                                 mapper.all_cov[self._get_clean_id(best_record_aa)])
-                                seqC.add_seq_completeness(self._get_clean_id(
-                                    best_record_aa), mapper.all_sc[self._get_clean_id(best_record_aa)])
                                 self.mapped_ogs[name_og] \
                                     .aa.append(best_record_aa)
                                 self.mapped_ogs[name_og] \
                                     .dna.append(best_record_dna)
                         else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
-                            self.mapped_ogs[name_og] = og
+                            self.mapped_ogs[name_og] = og_filt
                     else:  # mapping had only one that we removed
                         if self.args.keep_all_ogs:
-                            self.mapped_ogs[name_og] = og
+                            self.mapped_ogs[name_og] = og_filt
                 else:  # nothing was mapped to that og
                     if self.args.keep_all_ogs:
-                        self.mapped_ogs[name_og] = og
+                        self.mapped_ogs[name_og] = og_filt
             else:
                 logger.debug('{} was left only with a single entry '
                              'and hence not used for further '
@@ -632,6 +655,8 @@ class OG(object):
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         """
+        logger.info("Removing of species {} from reference set!"
+                    .format(species_to_remove))
         aa = [record for i, record in enumerate(
             self.aa) if self._get_species_id(record) not in species_to_remove]
         dna = [record for i, record in enumerate(

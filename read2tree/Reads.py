@@ -107,7 +107,7 @@ class Reads(object):
             for name, seq, qual in tqdm(fastq_reader.readfx(f),
                                         desc='Splitting reads',
                                         unit=' reads'):
-                # total_reads += 1
+                total_reads += 1
                 read_id = name[1:].split(" ")[0]
                 # logger.debug("Process read {}".format(read_id))
                 if len(seq) > self.split_min_read_len:

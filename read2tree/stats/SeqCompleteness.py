@@ -43,7 +43,6 @@ class SeqCompleteness(object):
             ref_seq = str(ref_record.seq).upper()
         else:
             ref_seq = map_ref_seq
-
         if gene_code is 'dna':
             ref_seq_len = len(ref_seq)
             map_seq_len = len(map_ref_seq)
@@ -56,8 +55,8 @@ class SeqCompleteness(object):
             non_n_len = len(map_seq) - str(map_seq).count('X')
             map_seq_completeness = non_n_len / map_seq_len
             ref_seq_completeness = non_n_len / ref_seq_len
-        return (map_seq_completeness, ref_seq_completeness,
-                non_n_len, map_seq_len, ref_seq_len)
+        return [map_seq_completeness, ref_seq_completeness,
+                non_n_len, map_seq_len, ref_seq_len]
 
     def _get_og_dict(self, ref_og):
         dna_dict = {}
