@@ -180,14 +180,14 @@ class Reads(object):
         print('--- Checking for consistent mate pairing ---')
         left_read = FastxReader(reads[0])
         with left_read.open_fastx() as read_input:
-            left_ids = [i[0].split(" ")[0] for i
-                        in left_read.readfx(read_input)]
+            left_ids = natsorted([i[0].split(" ")[0] for i
+                                  in left_read.readfx(read_input)])
         right_read = FastxReader(reads[1])
         with right_read.open_fastx() as read_input:
-            right_ids = [i[0].split(" ")[0] for i
-                         in right_read.readfx(read_input)]
+            right_ids = natsorted([i[0].split(" ")[0] for i
+                                   in right_read.readfx(read_input)])
 
-        all_ids = set(left_ids).intersection(set(right_ids))
+        all_ids = natsorted(list(set(left_ids).intersection(set(right_ids))))
         if all_ids == right_ids and all_ids == left_ids:
             print('----> Mate pairing consitent! ---')
             logger.info('{}: Mate pairs are consistent.'
