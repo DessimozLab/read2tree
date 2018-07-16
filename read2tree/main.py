@@ -201,7 +201,7 @@ def parse_args(argv, exe_name, desc):
     if args.read_type is 'short' and args.ngmlr_parameters:
         arg_parser.error(
             'Arguments for --ngmlr_parameters only work if --read_type is set '
-            'to long.')
+            'to "long".')
 
     if not args.sample_reads and (args.coverage != 10 or
                                   args.genome_len != 2000000):
@@ -310,8 +310,9 @@ def main(argv, exe_name, desc=''):
             for folder in glob.glob(os.path.join(args.output_path,
                                                  "03_mapping_*")):
                 species_name = folder.split("03_mapping_")[-1]
-                species_progress = Progress(args, species_name=species_name)
-                if species_progress.status >= 3:
+                species_progress = Progress(args)
+                species_progress.get_status(species_name=species_name)
+                if species_progress.mapping_03:
                     print('--- Addition of {} to all ogs '
                           '---'.format(species_name))
                     mapper = Mapper(args, og_set=ogset.ogs,
