@@ -55,9 +55,11 @@ class Progress(object):
             if len(self.args.reads) == 2:
                 self._reads = self.args.reads
                 self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+                self._mapping_name = self._reads[0].split("/")[-1].split(".")[0]
             else:
                 self._reads = self.args.reads[0]
                 self._species_name = self._reads.split("/")[-1].split(".")[0]
+                self._mapping_name = self._reads.split("/")[-1].split(".")[0]
 
         if self.args.species_name:
             self._species_name = self.args.species_name
@@ -80,7 +82,7 @@ class Progress(object):
         self._folder_ref_dna = os.path.join(self.args.output_path,
                                             '02_ref_dna')
         self._folder_mapping = os.path.join(self.args.output_path,
-                                            "03_mapping_" + self._species_name)
+                                            "03_mapping_" + self._mapping_name)
         self._folder_ogs_map = os.path.join(self.args.output_path,
                                             "04_ogs_map" + self._species_name)
 
@@ -122,7 +124,7 @@ class Progress(object):
                     self.status = 2
                     self._num_species = self._set_num_species()
                     self.ref_dna_02 = True
-                elif '03_mapping_' + species_name + ': OK' in line:
+                elif '03_mapping_' + self._mapping_name + ': OK' in line:
                     self.status = 3
                     self.mapping_03 = True
                 elif '04_ogs_map_' + species_name + ': OK' in line:
@@ -172,7 +174,7 @@ class Progress(object):
             self.ref_dna_02 = True
         elif status is 'map' and self.mapping_03 is False and \
                 self.get_mapping_status() is True:
-            status_text = '03_mapping_'+self._species_name+': OK\n'
+            status_text = '03_mapping_'+self._mapping_name+': OK\n'
             self.mapping_03 = True
         elif status is 're_ogs' and self.append_ogs_04 is False:
             status_text = '04_ogs_map_'+self._species_name+': OK\n'
