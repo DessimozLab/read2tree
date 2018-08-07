@@ -132,6 +132,12 @@ def get_default_options():
         # If set to true will assume sequential format
         #FlagOption('-q', False, active=False),
 
+        # Limit memory needs to 4G
+        StringOption('-mem', '4G', active=True),
+
+        # Set seed to 12345
+        IntegerOption('-seed', 12345, active=False),
+
         # Ultrafast bootstrap (>=1000)
         IntegerOption('-bb', 0, active=False),
 
