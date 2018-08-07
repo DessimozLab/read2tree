@@ -170,7 +170,8 @@ class Progress(object):
         elif status is 'ref' and self.ref_dna_02 is False:
             status_text = '02_ref_dna: OK\n'
             self.ref_dna_02 = True
-        elif status is 'map' and self.mapping_03 is False:
+        elif status is 'map' and self.mapping_03 is False and \
+                self.get_mapping_status() is True:
             status_text = '03_mapping_'+self._species_name+': OK\n'
             self.mapping_03 = True
         elif status is 're_ogs' and self.append_ogs_04 is False:

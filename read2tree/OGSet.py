@@ -285,15 +285,17 @@ class OGSet(object):
             logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
-            dna_record = SeqRecord.SeqRecord(
-                Seq.Seq(oma_record.json()['cdna']),
-                id=record.id, description="")
+            seq = oma_record.json()['cdna']
+            rec_id = oma_record.json()['omaid']
+            dna_record = SeqRecord.SeqRecord(Seq.Seq(seq),
+                                             id=rec_id,
+                                             description="", name='')
             if 'X' in str(dna_record.seq):
                 cleaned_seq = self._clean_DNA_seq(dna_record)
             else:
                 cleaned_seq = dna_record.seq
-            return SeqRecord.SeqRecord(cleaned_seq, id=record.id,
-                                       description="")
+            return SeqRecord.SeqRecord(cleaned_seq, rec_id,
+                                       description="", name="")
 
     def _get_dna_from_fasta(self, record, db):
         try:
