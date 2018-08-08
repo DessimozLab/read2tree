@@ -348,7 +348,7 @@ class Mapper(object):
                                 self.elapsed_time))
         return mapped_reads_species
 
-        def _write_read_query_aling(self, read, og_name_file, write_mode):
+    def _write_read_query_aling(self, read, og_name_file, write_mode):
         """
 
         :param read: pysam read object
