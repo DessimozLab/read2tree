@@ -131,10 +131,6 @@ def parse_args(argv, exe_name, desc):
                             'parameter can be found in the original '
                             'documentation of ngmlr.')
 
-    arg_parser.add_argument('--keep_all_species', action='store_true',
-                            help='[Default is to keep all species]'
-                                 'Remove species only from mapping set. ')
-
     arg_parser.add_argument('--keep_all_ogs', action='store_true',
                             help='Keep all orthologs after addition of '
                             'mapped seq, which means also the groups that '
@@ -311,7 +307,8 @@ def main(argv, exe_name, desc=''):
                                                  "03_mapping_*")):
                 species_name = folder.split("03_mapping_")[-1]
                 species_progress = Progress(args)
-                species_progress.get_status(species_name=species_name)
+                species_progress.get_status(species_name=species_name,
+                                            mapping_name=species_name)
                 if species_progress.mapping_03:
                     print('--- Addition of {} to all ogs '
                           '---'.format(species_name))

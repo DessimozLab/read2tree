@@ -109,9 +109,10 @@ class Progress(object):
             num_species = 0
         return num_species
 
-    def get_status(self, species_name=None):
+    def get_status(self, species_name=None, mapping_name=None):
         if not species_name:
             species_name = self._species_name
+            mapping_name = self._mapping_name
         self.status = 0
         if os.path.exists(self.status_file):
             self._wait_for_status_file()
@@ -124,7 +125,7 @@ class Progress(object):
                     self.status = 2
                     self._num_species = self._set_num_species()
                     self.ref_dna_02 = True
-                elif '03_mapping_' + self._mapping_name + ': OK' in line:
+                elif '03_mapping_' + mapping_name + ': OK' in line:
                     self.status = 3
                     self.mapping_03 = True
                 elif '04_ogs_map_' + species_name + ': OK' in line:
