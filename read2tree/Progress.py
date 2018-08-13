@@ -66,6 +66,7 @@ class Progress(object):
 
         if not self.args.reads and not self.args.species_name:
             self._species_name = 'merged'
+            self._mapping_name = 'merged'
 
         if species_name:
             self._species_name = species_name
@@ -109,10 +110,12 @@ class Progress(object):
             num_species = 0
         return num_species
 
-    def get_status(self, species_name=None, mapping_name=None):
+    def get_status(self, species_name=None):
         if not species_name:
             species_name = self._species_name
-            mapping_name = self._mapping_name
+            mapping_name = self._species_name
+        else:
+            mapping_name = species_name
         self.status = 0
         if os.path.exists(self.status_file):
             self._wait_for_status_file()
@@ -142,9 +145,15 @@ class Progress(object):
                 self.set_status('map')
                 self.mapping_03 = True
 
-    def get_mapping_status(self):
+    def get_mapping_status(self, species_name=None):
+        if not species_name:
+            mapping_folder = os.path.join(self.args.output_path,
+                                          "03_mapping_" + self._species_name)
+        else:
+            mapping_folder = os.path.join(self.args.output_path,
+                                          "03_mapping_" + species_name)
         computed_fasta = [f for f in
-                          glob.glob(os.path.join(self._folder_mapping, '*.fa'))
+                          glob.glob(os.path.join(mapping_folder, '*.fa'))
                           if os.path.getsize(f) > 0]
         computed_cov = [f for f in
                         glob.glob(os.path.join(self._folder_mapping,

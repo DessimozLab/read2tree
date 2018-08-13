@@ -230,8 +230,10 @@ def main(argv, exe_name, desc=''):
 
     if args.species_name:
         species_name = args.species_name
-    else:
+    elif args.reads:
         species_name = args.reads[0].split("/")[-1].split(".")[0]
+    else:
+        species_name = 'merge'
     progress.get_status(species_name=species_name)
 
     if (not progress.ref_ogs_01 and not progress.ref_dna_02 and
@@ -307,16 +309,15 @@ def main(argv, exe_name, desc=''):
                                                  "03_mapping_*")):
                 species_name = folder.split("03_mapping_")[-1]
                 species_progress = Progress(args)
-                species_progress.get_status(species_name=species_name,
-                                            mapping_name=species_name)
+                species_progress.get_status(species_name=species_name)
                 if species_progress.mapping_03:
                     print('--- Addition of {} to all ogs '
                           '---'.format(species_name))
                     mapper = Mapper(args, og_set=ogset.ogs,
                                     species_name=species_name, load=False)
                     ogset.add_mapped_seq(mapper, species_name=species_name)
-            ogset.write_added_ogs_aa(folder_name="04_merged_OGs_aa")
-            ogset.write_added_ogs_dna(folder_name="04_merged_OGs_dna")
+            ogset.write_added_ogs_aa(folder_name="04_merge_OGs_aa")
+            ogset.write_added_ogs_dna(folder_name="04_merge_OGs_dna")
             progress.set_status("re_ogs")
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")

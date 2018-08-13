@@ -57,7 +57,5 @@ def main():
         AlignIO.write(alignment, align_output, "phylip-relaxed")
         align_output.close()
 
-
-
 if __name__ == "__main__":
     main()
