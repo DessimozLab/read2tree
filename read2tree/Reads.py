@@ -71,7 +71,7 @@ class Reads(object):
             self._species_name = self.args.species_name
 
         if load:
-            if len(self.args.reads) == 2:
+            if len(self.args.reads) == 2 and self.args.check_mate_pairing:
                 mate_pairs = self.check_read_consistency(self._reads)
                 if mate_pairs:
                     tmp = self.select_mates_from_reads(self._reads,
@@ -179,16 +179,18 @@ class Reads(object):
         '''
         print('--- Checking for consistent mate pairing ---')
         left_read = FastxReader(reads[0])
-        with left_read.open_fastx() as read_input:
-            left_ids = natsorted([i[0].split(" ")[0] for i
-                                  in left_read.readfx(read_input)])
         right_read = FastxReader(reads[1])
-        with right_read.open_fastx() as read_input:
-            right_ids = natsorted([i[0].split(" ")[0] for i
-                                   in right_read.readfx(read_input)])
 
-        all_ids = natsorted(list(set(left_ids).intersection(set(right_ids))))
-        if all_ids == right_ids and all_ids == left_ids:
+        with left_read.open_fastx() as read_input:
+            left_ids = (i[0].split(" ")[0] for i
+                        in left_read.readfx(read_input))
+
+        with right_read.open_fastx() as read_input:
+            with_mate_pair = (i[0].split(" ")[0] for i
+                              in right_read.readfx(read_input)
+                              if i[0].split(" ")[0] in left_ids)
+
+        if len(list(left_ids)) == len(list(with_mate_pair)):
             print('----> Mate pairing consitent! ---')
             logger.info('{}: Mate pairs are consistent.'
                         .format(self._species_name))
@@ -199,9 +201,9 @@ class Reads(object):
                         'Will use only reads that have mate pair. '
                         'Consistent {} of {} total reads.'
                         .format(self._species_name,
-                                2*len(all_ids),
-                                len(right_ids)+len(left_ids)))
-            return natsorted(list(all_ids))
+                                2*len(with_mate_pairs),
+                                len(left_ids)+len(left_ids)))
+            return with_mate_pairs
 
     def select_mates_from_reads(self, reads, mates):
         '''

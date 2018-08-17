@@ -138,6 +138,13 @@ def parse_args(argv, exe_name, desc):
                             'are used that have the mapped sequence for '
                             'alignment and tree inference.')
 
+    arg_parser.add_argument('--check_mate_pairing', action='store_true',
+                            help='Check whether in case of paired end '
+                            'reads we have consistent mate pairing. Setting '
+                            'this option will automatically select the '
+                            'overlapping reads and do not consider single '
+                            'reads.')
+
     arg_parser.add_argument('--debug', action='store_true',
                             help='Changes to debug mode: '
                                  '* bam files are saved!'
