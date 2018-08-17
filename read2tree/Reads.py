@@ -181,16 +181,15 @@ class Reads(object):
         left_read = FastxReader(reads[0])
         right_read = FastxReader(reads[1])
 
-        with left_read.open_fastx() as read_input:
-            left_ids = (i[0].split(" ")[0] for i
-                        in left_read.readfx(read_input))
+        with left_read.open_fastx() as left_input:
+            with right_read.open_fastx() as right_input:
+                with_mate_pairs = set(left_read.readfx_id(left_input)) \
+                    .intersection(right_read.readfx_id(right_input))
 
-        with right_read.open_fastx() as read_input:
-            with_mate_pair = (i[0].split(" ")[0] for i
-                              in right_read.readfx(read_input)
-                              if i[0].split(" ")[0] in left_ids)
+        with left_read.open_fastx() as left_input:
+            len_left = len(set(left_read.readfx_id(left_input)))
 
-        if len(list(left_ids)) == len(list(with_mate_pair)):
+        if len_left == len(with_mate_pairs):
             print('----> Mate pairing consitent! ---')
             logger.info('{}: Mate pairs are consistent.'
                         .format(self._species_name))
@@ -202,7 +201,7 @@ class Reads(object):
                         'Consistent {} of {} total reads.'
                         .format(self._species_name,
                                 2*len(with_mate_pairs),
-                                len(left_ids)+len(left_ids)))
+                                len_left+len_left))
             return with_mate_pairs
 
     def select_mates_from_reads(self, reads, mates):
