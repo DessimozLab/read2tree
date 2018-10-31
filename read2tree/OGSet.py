@@ -285,15 +285,17 @@ class OGSet(object):
             logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
-            dna_record = SeqRecord.SeqRecord(
-                Seq.Seq(oma_record.json()['cdna']),
-                id=record.id, description="")
+            seq = oma_record.json()['cdna']
+            rec_id = oma_record.json()['omaid']
+            dna_record = SeqRecord.SeqRecord(Seq.Seq(seq),
+                                             id=rec_id,
+                                             description="", name='')
             if 'X' in str(dna_record.seq):
                 cleaned_seq = self._clean_DNA_seq(dna_record)
             else:
                 cleaned_seq = dna_record.seq
-            return SeqRecord.SeqRecord(cleaned_seq, id=record.id,
-                                       description="")
+            return SeqRecord.SeqRecord(cleaned_seq, rec_id,
+                                       description="", name="")
 
     def _get_dna_from_fasta(self, record, db):
         try:
@@ -403,7 +405,6 @@ class OGSet(object):
                 seqC2 = SeqCompleteness(
                     mapped_ref=[best_record_dna])
             seqC2.get_seq_completeness([best_record_dna])
-            # print(seqC2.seq_completeness)
             seqC.add_seq_completeness(
                 self._get_clean_id(best_record_dna),
                 seqC2.seq_completeness[best_record_dna.id])
@@ -411,6 +412,13 @@ class OGSet(object):
             seqC.add_seq_completeness(
                 self._get_clean_id(best_record_dna),
                 mapper.all_sc[self._get_clean_id(best_record_dna)])
+
+    def _get_id_rec(self,record):
+        parts = record.id.split('_')
+        if len(parts) > 2:
+            return record.id.split('_')[0]+'_'+record.id.split('_')[1]
+        else:
+            return record.id
 
     def add_mapped_seq(self, mapper, species_name=None):
         """
@@ -433,14 +441,16 @@ class OGSet(object):
         for name_og, og in tqdm(self.ogs.items(),
                                 desc='Adding mapped seq to OG', unit=' OGs'):
             og_filt = self._remove_species_from_original_set(og)
-            og_sc = {rec.id: mapper.all_sc[rec.id]
-                     for rec in og_filt.aa if rec.id in mapper.all_sc.keys()}
+            #og_sc = {rec.id: mapper.all_sc[rec.id]
+            #         for rec in og_filt.aa if rec.id in mapper.all_sc.keys()}
             if len(og_filt.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name_og in cons_og_set.keys():
                     cons_og_filt = self \
                         ._remove_species_from_mapping_only(cons_og_set[name_og])
-
+                    og_sc = {self._get_id_rec(rec): mapper.all_sc[self._get_id_rec(rec)]
+                             for rec in cons_og_filt.aa
+                             if self._get_id_rec(rec) in mapper.all_sc.keys()}
                     if len(cons_og_filt.aa) >= 1:  # we had at least one mapped og even after removal
                         best_records = cons_og_filt \
                             .get_best_consensus_by_seq_completeness(
@@ -600,9 +610,9 @@ class OG(object):
             dna_dict[record.id] = record
         return dna_dict
 
-    def _get_record_by_id(self, records, id):
+    def _get_record_by_id(self, records, idx):
         for rec in records:
-            if id in rec.id:
+            if idx in rec.id:
                 return rec
 
     def get_best_consensus_by_seq_completeness(self, sc,
@@ -612,12 +622,15 @@ class OG(object):
         :param threshold: minimum sequence completeness [0.0]
         :return: best amino acid sequence
         """
-        sc_ordered = OrderedDict(sorted(sc.items(), key=lambda t: t[0]))
-        best_record_id = sc_ordered.popitem(last=False)[0]
-        seq_completenesses = sc[best_record_id][1]
-        if seq_completenesses >= threshold:
-            return (self._get_record_by_id(self.aa, best_record_id),
-                    self._get_record_by_id(self.dna, best_record_id))
+        if sc:
+            sc_ordered = OrderedDict(sorted(sc.items(), key=lambda t: t[-1]))
+            best_record_id = list(sc_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
         else:
             return None
 

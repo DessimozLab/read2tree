@@ -66,6 +66,7 @@ class Progress(object):
 
         if not self.args.reads and not self.args.species_name:
             self._species_name = 'merged'
+            self._mapping_name = 'merged'
 
         if species_name:
             self._species_name = species_name
@@ -112,6 +113,9 @@ class Progress(object):
     def get_status(self, species_name=None):
         if not species_name:
             species_name = self._species_name
+            mapping_name = self._species_name
+        else:
+            mapping_name = species_name
         self.status = 0
         if os.path.exists(self.status_file):
             self._wait_for_status_file()
@@ -124,7 +128,7 @@ class Progress(object):
                     self.status = 2
                     self._num_species = self._set_num_species()
                     self.ref_dna_02 = True
-                elif '03_mapping_' + self._mapping_name + ': OK' in line:
+                elif '03_mapping_' + mapping_name + ': OK' in line:
                     self.status = 3
                     self.mapping_03 = True
                 elif '04_ogs_map_' + species_name + ': OK' in line:
@@ -141,9 +145,15 @@ class Progress(object):
                 self.set_status('map')
                 self.mapping_03 = True
 
-    def get_mapping_status(self):
+    def get_mapping_status(self, species_name=None):
+        if not species_name:
+            mapping_folder = os.path.join(self.args.output_path,
+                                          "03_mapping_" + self._species_name)
+        else:
+            mapping_folder = os.path.join(self.args.output_path,
+                                          "03_mapping_" + species_name)
         computed_fasta = [f for f in
-                          glob.glob(os.path.join(self._folder_mapping, '*.fa'))
+                          glob.glob(os.path.join(mapping_folder, '*.fa'))
                           if os.path.getsize(f) > 0]
         computed_cov = [f for f in
                         glob.glob(os.path.join(self._folder_mapping,
@@ -172,7 +182,8 @@ class Progress(object):
         elif status is 'ref' and self.ref_dna_02 is False:
             status_text = '02_ref_dna: OK\n'
             self.ref_dna_02 = True
-        elif status is 'map' and self.mapping_03 is False:
+        elif status is 'map' and self.mapping_03 is False and \
+                self.get_mapping_status() is True:
             status_text = '03_mapping_'+self._mapping_name+': OK\n'
             self.mapping_03 = True
         elif status is 're_ogs' and self.append_ogs_04 is False:

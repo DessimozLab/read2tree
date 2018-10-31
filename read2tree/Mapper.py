@@ -35,6 +35,7 @@ from read2tree.wrappers.read_mappers import NGMLR
 from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
+from read2tree.FastxReader import FastxReader
 
 
 logger = logging.getLogger(__name__)
@@ -143,8 +144,8 @@ class Mapper(object):
             if ref_set is not None:
                 self.mapped_records = \
                     self._map_reads_to_references(ref_set)
-                if self.progress.get_mapping_status():
-                    self.progress.set_status('map')
+                #if self.progress.get_mapping_status():
+                #    self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
                 self.og_records = self._sort_by_og(og_set)
         else:  # re-load already computed mapping
@@ -210,7 +211,13 @@ class Mapper(object):
                          unit=' species'):
             species = file.split("/")[-1].split("_")[0]
             map_reads_species[species] = Reference()
-            map_reads_species[species].dna = list(SeqIO.parse(file, "fasta"))
+            fasta_reader = FastxReader(file)
+            records = []
+            with fasta_reader.open_fastx() as f:
+                for name, seqstr, qual in fasta_reader.readfx(f):
+                    seq = Seq.Seq(seqstr, generic_dna)
+                    records.append(SeqRecord.SeqRecord(seq, id=name.lstrip(">"), description='', name=''))
+                    map_reads_species[species].dna = records
 
             cov = Coverage()
             cov_file_name = os.path.join(in_folder, species + "_OGs_cov.txt")
@@ -235,7 +242,6 @@ class Mapper(object):
                                                int(values[7].replace("\n",
                                                                      ""))])
             self.all_sc.update(seqC.seq_completeness)
-
         return map_reads_species
 
     def _make_tmpdir(self):
