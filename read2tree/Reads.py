@@ -135,19 +135,18 @@ class Reads(object):
                         #                                      i[1])
                         # write output directly to file to reduce memory
                         # footprint
-                        out_file.write(self._get_4_line_fastq_string(read_id,
+                        out_file.write(self._get_2_line_fasta_string(read_id,
                                                                      i[0],
-                                                                     i[1],
                                                                      x=x))
                         x += 1
                     total_new_reads += x
                 else:
                     # out += self._get_4_line_fastq_string(read_id, None, seq,
                     #                                      qual)
-                    out_file.write(self._get_4_line_fastq_string(read_id,
+                    out_file.write(self._get_2_line_fasta_string(read_id,
                                                                  seq,
-                                                                 qual,
                                                                  x=None))
+
                     total_new_reads += 1
 
         end = time.time()
@@ -337,6 +336,26 @@ class Reads(object):
                             sampling_length))
         out_file.close()
         return out_file.name
+
+    def _get_2_line_fasta_string(self, read_id, seq, x=None):
+        '''
+        Transform 2 lines of read string to new read string providing the
+        split information
+        :param read_id: Read ID in the form of SRR00001
+        :param read_num: Number of read usually after the read ID
+        :param x: Numerical iterator
+        :param seq: Sequence string
+        :return: 2 lines that correspond to one read with adapted ID
+        '''
+        out = ''
+        if x:
+            new_name = ">" + read_id + "_" + str(x) + ' length=' + \
+                str(len(seq))
+        else:
+            new_name = ">" + read_id + ' length=' + str(len(seq))
+        out += new_name + "\n"
+        out += seq + "\n"
+        return out
 
     def _get_4_line_fastq_string(self, read_id, seq, qual, x=None):
         '''

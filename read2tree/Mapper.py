@@ -316,6 +316,7 @@ class Mapper(object):
                 mapped_reads_species[species] = Reference()
                 mapped_reads_species[species].dna = mapped_reads
 
+
                 # save some general statistics for mapped gene
                 if self.args.remove_species_ogs:
                     seqC = SeqCompleteness(mapped_ref=ref[species].dna,
@@ -327,8 +328,12 @@ class Mapper(object):
                                             .path.join(output_folder,
                                                        species+"_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)
-            except AttributeError or ValueError:
+            except AttributeError as a:
                 logger.debug('Reads not properly processed for further steps.')
+                logger.debug('AttributeError: {}'.format(a))
+            except ValueError as v:
+                logger.debug('Reads not properly processed for further steps.')
+                logger.debug('ValueError: {}'.format(v))
             else:
                 mapped_reads = []
 
