@@ -369,8 +369,8 @@ class Mapper(object):
             read_id = read.query_name
         record = "@" + read_id + "\n"
         record += read.query_alignment_sequence + "\n"
-        record += "+" + read_id + "\n"
-        record += read.qqual + "\n"
+        # record += "+" + read_id + "\n"
+        # record += read.qqual + "\n"
         with open(og_name_file, write_mode) as f:
             f.write(record)
 
@@ -437,6 +437,7 @@ class Mapper(object):
 
         if os.path.exists(bam_file):
             bam = pysam.AlignmentFile(bam_file, "rb")
+            #TODO: add left/right read discrimination
             for read in bam.fetch():
                 if not read.is_unmapped:
                     og_name = read.reference_name.split("_")[-1]
