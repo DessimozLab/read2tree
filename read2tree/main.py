@@ -24,6 +24,8 @@ from read2tree.Mapper import Mapper
 from read2tree.Aligner import Aligner
 from read2tree.Progress import Progress
 from read2tree.TreeInference import TreeInference
+from read2tree.stats.Coverage import Coverage
+from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.parser import OMAOutputParser
 import argparse
 
@@ -250,13 +252,14 @@ def main(argv, exe_name, desc=''):
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output)  # Generate the OGs with their DNA sequences
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
+        alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
-            ogset.add_mapped_seq(mapper)
-            ogset.write_added_ogs_aa()
-            ogset.write_added_ogs_dna()
-            progress.set_status("re_ogs")
-            alignments = Aligner(args, ogset.mapped_ogs, load=True)
+            alignments.add_mapped_seq(mapper)
+            alignments.write_added_ogs_aa()
+            alignments.write_added_ogs_dna()
+            # progress.set_status("re_ogs")
+            # alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
             #tree = TreeInference(args, concat_alignment=concat_alignment[0])

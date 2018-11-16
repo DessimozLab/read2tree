@@ -20,6 +20,8 @@ from Bio.Align import MultipleSeqAlignment
 from tqdm import tqdm
 from read2tree.wrappers.aligners import Mafft
 from read2tree.utils.seq_utils import concatenate
+from read2tree.stats.Coverage import Coverage
+from read2tree.stats.SeqCompleteness import SeqCompleteness
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
@@ -72,6 +74,81 @@ class Aligner(object):
             self.alignments = self._reload_alignments_from_folder()
 
         # print(self._get_codon_dict_og(og_set))
+
+    def add_mapped_seq(self, mapper, species_name=None):
+        """
+        Add the sequence given from the read mapping to its corresponding
+        OG and retain
+        all OGs that do not have the mapped sequence, thus all original OGs
+        are used for tree inference
+        :param cons_og_set: set of ogs with its mapped sequences
+        """
+        start = time.time()
+        cons_og_set = mapper.og_records  # get sequences from mapping
+        cov = Coverage()
+        seqC = SeqCompleteness()
+        if not species_name:
+            species_name = self._species_name
+
+        print('--- Add inferred mapped sequence back to OGs ---')
+
+        # iterate through all existing ogs
+        for name_og, align in tqdm(self.alignments.items(),
+                                desc='Adding mapped seq to OG', unit=' OGs'):
+            #og_sc = {rec.id: mapper.all_sc[rec.id]
+            #         for rec in og_filt.aa if rec.id in mapper.all_sc.keys()}
+            if len(align.aa) > 2:
+                # continue only if OG is in mapped OGs
+                if name_og in cons_og_set.keys():
+                    cons_og_filt = cons_og_set[name_og]
+                    og_sc = {cons_og_filt._get_id_rec(rec): mapper.all_sc[cons_og_filt._get_id_rec(rec)]
+                             for rec in cons_og_filt.aa
+                             if cons_og_filt._get_id_rec(rec) in mapper.all_sc.keys()}
+                    if len(cons_og_filt.aa) >= 1:  # we had at least one mapped og even after removal
+                        best_records = cons_og_filt \
+                            .get_best_consensus_by_seq_completeness(
+                                og_sc, threshold=self.args.sc_threshold)
+                        if best_records:
+                            best_record_aa = best_records[0]
+                            best_record_dna = best_records[1]
+                            best_record_dna._generate_seq_completeness(seqC, mapper,
+                                                            og, best_record_dna)
+                            cov.add_coverage(self._get_clean_id(best_record_aa),
+                                             mapper.all_cov[self._get_clean_id(best_record_aa)])
+                            best_record_aa.id = species_name
+                            best_record_dna.id = species_name
+                            self.mapped_ogs[name_og] = og_filt
+                            all_id = [rec.id
+                                      for rec in self.mapped_ogs[name_og].aa]
+                            if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
+                                self.mapped_ogs[name_og] \
+                                    .aa.append(best_record_aa)
+                                self.mapped_ogs[name_og] \
+                                    .dna.append(best_record_dna)
+                        else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
+                            self.mapped_ogs[name_og] = og_filt
+                    else:  # mapping had only one that we removed
+                        if self.args.keep_all_ogs:
+                            self.mapped_ogs[name_og] = og_filt
+                else:  # nothing was mapped to that og
+                    if self.args.keep_all_ogs:
+                        self.mapped_ogs[name_og] = og_filt
+            else:
+                logger.debug('{} was left only with a single entry '
+                             'and hence not used for further '
+                             'processing'.format(name_og))
+
+        cov.write_coverage_bam(os.path.join(self.args.output_path,
+                                            species_name+'_all_cov.txt'))
+        seqC.write_seq_completeness(os.path.join(self.args.output_path,
+                                                 species_name+'_all_sc.txt'))
+        end = time.time()
+        self.elapsed_time = end-start
+        logger.info('{}: Appending {} reconstructed sequences to present OG '
+                    'took {}.'
+                    .format(self._species_name,
+                            len(list(cons_og_set.keys())),
+                            self.elapsed_time))
 
     def _get_codon_dict(self, aa_seq, dna_seq):
         """
@@ -218,6 +295,16 @@ class Aligner(object):
 
         return (concatination_aa, concatination_dna)
 
+    def add_to_alignment(self, mapper):
+        """
+        Add the sequence given from the read mapping to its corresponding
+        OG and retain
+        all OGs that do not have the mapped sequence, thus all original OGs
+        are used for tree inference
+        :param cons_og_set: set of ogs with its mapped sequences
+        """
+        start = time.time()
+        cons_og_set = mapper.og_records  # get sequences from mapping
 
 class Alignment(object):
 

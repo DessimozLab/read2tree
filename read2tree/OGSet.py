@@ -342,6 +342,7 @@ class OGSet(object):
             return Seq.Seq(re.sub('[^GATC]', 'N', str(record.seq).upper()),
                            SingleLetterAlphabet())
 
+    #TODO: this has to be moved to OG not to OGSet
     def _remove_species_from_original_set(self, current_og):
         """
         Removes sequence records for a species / set of
@@ -413,7 +414,7 @@ class OGSet(object):
                 self._get_clean_id(best_record_dna),
                 mapper.all_sc[self._get_clean_id(best_record_dna)])
 
-    def _get_id_rec(self,record):
+    def _get_id_rec(self, record):
         parts = record.id.split('_')
         if len(parts) > 2:
             return record.id.split('_')[0]+'_'+record.id.split('_')[1]
@@ -676,3 +677,10 @@ class OG(object):
             return [dna, aa]
         else:
             return None
+
+    def _get_id_rec(self, record):
+        parts = record.id.split('_')
+        if len(parts) > 2:
+            return record.id.split('_')[0]+'_'+record.id.split('_')[1]
+        else:
+            return record.id
