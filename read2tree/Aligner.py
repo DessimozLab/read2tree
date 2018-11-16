@@ -69,6 +69,7 @@ class Aligner(object):
 
         if load and og_set is not None:
             print('--- Alignment of {} OGs ---'.format(len(list(og_set.keys()))))
+            self._og_set = og_set
             self.alignments = self._align(og_set)
         else:
             self.alignments = self._reload_alignments_from_folder()
@@ -97,6 +98,7 @@ class Aligner(object):
                                 desc='Adding mapped seq to OG', unit=' OGs'):
             #og_sc = {rec.id: mapper.all_sc[rec.id]
             #         for rec in og_filt.aa if rec.id in mapper.all_sc.keys()}
+            og = self._og_set[name_og]
             if len(align.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name_og in cons_og_set.keys():
@@ -117,22 +119,22 @@ class Aligner(object):
                                              mapper.all_cov[self._get_clean_id(best_record_aa)])
                             best_record_aa.id = species_name
                             best_record_dna.id = species_name
-                            self.mapped_ogs[name_og] = og_filt
+                            self.aligned_mapped[name_og] = og_filt
                             all_id = [rec.id
-                                      for rec in self.mapped_ogs[name_og].aa]
+                                      for rec in self.aligned_mapped[name_og].aa]
                             if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                                self.mapped_ogs[name_og] \
+                                self.aligned_mapped[name_og] \
                                     .aa.append(best_record_aa)
-                                self.mapped_ogs[name_og] \
+                                self.aligned_mapped[name_og] \
                                     .dna.append(best_record_dna)
                         else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
-                            self.mapped_ogs[name_og] = og_filt
+                            self.aligned_mapped[name_og] = align
                     else:  # mapping had only one that we removed
                         if self.args.keep_all_ogs:
-                            self.mapped_ogs[name_og] = og_filt
+                            self.aligned_mapped[name_og] = align
                 else:  # nothing was mapped to that og
                     if self.args.keep_all_ogs:
-                        self.mapped_ogs[name_og] = og_filt
+                        self.aligned_mapped[name_og] = align
             else:
                 logger.debug('{} was left only with a single entry '
                              'and hence not used for further '
