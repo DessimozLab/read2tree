@@ -51,22 +51,22 @@ class Progress(object):
         self.align_05 = False
         self.tree = False
 
-        if self.args.reads:
-            if len(self.args.reads) == 2:
-                self._reads = self.args.reads
-                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-                self._mapping_name = self._reads[0].split("/")[-1].split(".")[0]
-            else:
-                self._reads = self.args.reads[0]
-                self._species_name = self._reads.split("/")[-1].split(".")[0]
-                self._mapping_name = self._reads.split("/")[-1].split(".")[0]
-
-        if self.args.species_name:
-            self._species_name = self.args.species_name
-
-        if not self.args.reads and not self.args.species_name:
-            self._species_name = 'merged'
-            self._mapping_name = 'merged'
+        self._reads = self.args.reads
+        self._species_name = self.args.species_name
+        #
+        # if self.args.reads:
+        #     if len(self.args.reads) == 2:
+        #         self._reads = self.args.reads
+        #         self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        #     else:
+        #         self._reads = self.args.reads[0]
+        #         self._species_name = self._reads.split("/")[-1].split(".")[0]
+        #
+        # if self.args.species_name:
+        #     self._species_name = self.args.species_name
+        #
+        # if not self.args.reads and not self.args.species_name:
+        #     self._species_name = 'merged'
 
         if species_name:
             self._species_name = species_name
@@ -83,7 +83,7 @@ class Progress(object):
         self._folder_ref_dna = os.path.join(self.args.output_path,
                                             '02_ref_dna')
         self._folder_mapping = os.path.join(self.args.output_path,
-                                            "03_mapping_" + self._mapping_name)
+                                            "03_mapping_" + self._species_name)
         self._folder_ogs_map = os.path.join(self.args.output_path,
                                             "04_ogs_map" + self._species_name)
 
@@ -109,6 +109,22 @@ class Progress(object):
         else:
             num_species = 0
         return num_species
+
+    def _count_files(self, dir):
+        '''
+        https://stackoverflow.com/questions/2632205/how-to-count-the-number-of-files-in-a-directory-using-python/16865840
+        '''
+        return len([1 for x in list(os.scandir(dir)) if x.is_file()])
+
+    def _extract_numbers(self):
+        '''
+        Extract number of expected OGs and number of expected species from existing folder or info.log file
+        '''
+        # if os.path.exists(os.path.join(self.args.output,'info.log')):
+        raise NotImplementedError
+
+    def _get_og_status(self, dir):
+        raise NotImplementedError
 
     def get_status(self, species_name=None):
         if not species_name:
@@ -184,7 +200,7 @@ class Progress(object):
             self.ref_dna_02 = True
         elif status is 'map' and self.mapping_03 is False and \
                 self.get_mapping_status() is True:
-            status_text = '03_mapping_'+self._mapping_name+': OK\n'
+            status_text = '03_mapping_'+self._species_name+': OK\n'
             self.mapping_03 = True
         elif status is 're_ogs' and self.append_ogs_04 is False:
             status_text = '04_ogs_map_'+self._species_name+': OK\n'

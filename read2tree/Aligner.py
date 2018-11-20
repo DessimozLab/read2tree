@@ -8,7 +8,6 @@ import os
 import glob
 import time
 import logging
-#from tables import *
 from multiprocessing import Pool
 from collections import ChainMap
 from Bio import AlignIO
@@ -23,12 +22,8 @@ from read2tree.utils.seq_utils import concatenate
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('Aligner.py')
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('info.log')
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
 
 
 class Aligner(object):
@@ -38,6 +33,13 @@ class Aligner(object):
         self.args = args
 
         self.elapsed_time = 0
+
+        # looging cannot be initalized with object due to multiprocessing and has to be done as it is here
+        file_handler = logging.FileHandler(os.path.join(args.output_path,
+                                                        'info.log'))
+        file_handler.setFormatter(formatter)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
 
         if args.debug:
             logger.setLevel(logging.DEBUG)
@@ -76,7 +78,7 @@ class Aligner(object):
 
         # print(self._get_codon_dict_og(og_set))
 
-    def add_mapped_seq(self, mapper, species_name=None):
+    def add_mapped_seq(self, og, species_name=None):
         """
         Add the sequence given from the read mapping to its corresponding
         OG and retain
@@ -307,6 +309,7 @@ class Aligner(object):
         """
         start = time.time()
         cons_og_set = mapper.og_records  # get sequences from mapping
+
 
 class Alignment(object):
 

@@ -36,61 +36,7 @@ from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
-
-
-logger = logging.getLogger(__name__)
-formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('info.log')
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-
-# def sizeof(obj):
-#     """APPROXIMATE memory taken by some Python objects in
-#     the current 32-bit CPython implementation.
-#
-#     Excludes the space used by items in containers; does not
-#     take into account overhead of memory allocation from the
-#     operating system, or over-allocation by lists and dicts.
-#     """
-#     T = type(obj)
-#     if T is int:
-#         kind = "fixed"
-#         container = False
-#         size = 4
-#     elif T is list or T is tuple:
-#         kind = "variable"
-#         container = True
-#         size = 4*len(obj)
-#     elif T is dict:
-#         kind = "variable"
-#         container = True
-#         size = 144
-#         if len(obj) > 8:
-#             size += 12*(len(obj)-8)
-#     elif T is str:
-#         kind = "variable"
-#         container = False
-#         size = len(obj) + 1
-#     else:
-#         raise TypeError("don't know about this kind of object")
-#     if kind == "fixed":
-#         overhead = 8
-#     else:  # "variable"
-#         overhead = 12
-#     if container:
-#         garbage_collector = 8
-#     else:
-#         garbage_collector = 0
-#     malloc = 8  # in most cases
-#     size = size + overhead + garbage_collector + malloc
-#     # Round to nearest multiple of 8 bytes
-#     x = size % 8
-#     if x != 0:
-#         size += 8-x
-#         size = (size + 8)
-#     return size
+from read2tree.LoggingHandler import LoggingHandler
 
 
 class Mapper(object):
@@ -103,26 +49,20 @@ class Mapper(object):
         self.args = args
         self.elapsed_time = 0
 
-        if args.debug:
-            logger.setLevel(logging.DEBUG)
-            file_handler.setLevel(logging.DEBUG)
-            # stream_handler.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-            file_handler.setLevel(logging.INFO)
-            # stream_handler.setLevel(logging.INFO)
+        lhandler = LoggingHandler(args, 'Mapper.py')
+        self._log = lhandler.logger
 
-        logger.addHandler(file_handler)
-        # logger.addHandler(stream_handler)
+        self._reads = self.args.reads
+        self._species_name = self.args.speciesname
 
-        if self.args.reads:
-            if len(self.args.reads) == 2:
-                self._reads = self.args.reads
-                self._species_name = \
-                    self._reads[0].split("/")[-1].split(".")[0]
-            else:
-                self._reads = self.args.reads[0]
-                self._species_name = self._reads.split("/")[-1].split(".")[0]
+        # if self.args.reads:
+        #     if len(self.args.reads) == 2:
+        #         self._reads = self.args.reads
+        #         self._species_name = \
+        #             self._reads[0].split("/")[-1].split(".")[0]
+        #     else:
+        #         self._reads = self.args.reads[0]
+        #         self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         #if self.args.species_name:
         #    self._species_name = self.args.species_name
@@ -184,7 +124,7 @@ class Mapper(object):
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        logger.info('{}: Mapped {} / {} reads '
+        self._log.info('{}: Mapped {} / {} reads '
                     ''.format(self._species_name, ngm['reads_mapped'],
                               ngm['total_reads']+ngm['reads_mapped']))
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
@@ -255,12 +195,12 @@ class Mapper(object):
             tmp_output_folder = tempfile.TemporaryDirectory(
                 prefix='ngm', dir=os.environ.get("TMPDIR"))
         except NotADirectoryError:
-            logger.info('{}: Environmental variable TMPDIR not set, will use \
+            self._log.info('{}: Environmental variable TMPDIR not set, will use \
                         native python tmpdir location.'
                         .format(self._species_name))
         else:
             tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            logger.debug('--- Creating tmp directory on local node ---')
+            self._log.debug('--- Creating tmp directory on local node ---')
         return tmp_output_folder
 
     def _map_reads_to_references(self, ref):
@@ -297,7 +237,7 @@ class Mapper(object):
         for species in tqdm(references,
                             desc='Mapping reads to species',
                             unit=' species'):
-            logger.info('{}: --- Mapping of reads to {} reference species '
+            self._log.info('{}: --- Mapping of reads to {} reference species '
                         '---'.format(self._species_name, species))
 
             # write reference into temporary file
@@ -329,11 +269,11 @@ class Mapper(object):
                                                        species+"_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)
             except AttributeError as a:
-                logger.debug('Reads not properly processed for further steps.')
-                logger.debug('AttributeError: {}'.format(a))
+                self._log.debug('Reads not properly processed for further steps.')
+                self._log.debug('AttributeError: {}'.format(a))
             except ValueError as v:
-                logger.debug('Reads not properly processed for further steps.')
-                logger.debug('ValueError: {}'.format(v))
+                self._log.debug('Reads not properly processed for further steps.')
+                self._log.debug('ValueError: {}'.format(v))
             else:
                 mapped_reads = []
 
@@ -344,11 +284,11 @@ class Mapper(object):
         end = time.time()
         self.elapsed_time = end - start
         if len(references) == 1:
-            logger.info('{}: Mapping to {} references took {}.'
+            self._log.info('{}: Mapping to {} references took {}.'
                         .format(self._species_name, references[0],
                                 self.elapsed_time))
         else:
-            logger.info('{}: Mapping to all references took {}.'
+            self._log.info('{}: Mapping to all references took {}.'
                         .format(self._species_name,
                                 self.elapsed_time))
         return mapped_reads_species
@@ -417,7 +357,7 @@ class Mapper(object):
         :param ref_file: Current species reference file
         :param bam_file: Mapped bam file
         """
-        logger.debug("--- Binning reads to {} ---".format(self._species_name))
+        self._log.debug("--- Binning reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path, "03_read_ogs_" +
                                      self._species_name)
         if not os.path.exists(output_folder):
@@ -472,7 +412,7 @@ class Mapper(object):
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
         for read in bam.fetch():
-            #     logger.info(read.qual)
+            #     self._log.info(read.qual)
             read_seq = list(read.seq)
             pairs = read.get_aligned_pairs(matches_only=True, with_seq=True)
             if read.reference_name in new_records.keys():
@@ -497,7 +437,7 @@ class Mapper(object):
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
         for ref in references:
-            #     logger.info(read.qual)
+            #     self._log.info(read.qual)
             seq = list('N' * len(records[ref]))
             for pileup_column in bam.pileup(ref, 0, 100000):
                 # TODO: improve the selection of a column by its quality
@@ -521,7 +461,7 @@ class Mapper(object):
         :param reference_file_handle:
         :return:
         """
-        # logger.info("--- Postprocessing reads to {} ---".format(self._species_name))
+        # self._log.info("--- Postprocessing reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path,
                                      "03_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
@@ -529,7 +469,7 @@ class Mapper(object):
                                     ref_file.split('/')[-1].split('.')[0] +
                                     "_post")
         if self.args.single_mapping:
-            logger.debug("--- POSTPROCESSING MAPPING FOR {} "
+            self._log.debug("--- POSTPROCESSING MAPPING FOR {} "
                          "---".format(self._species_name.upper()))
 
         # ngmlr doesn't have the option to write in bam file directly
@@ -541,7 +481,7 @@ class Mapper(object):
                     'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) +
                     ' -o ' + bam_file + " " + sam_file)
         if self.args.single_mapping:
-            logger.debug("---- Samtools view completed for {}"
+            self._log.debug("---- Samtools view completed for {}"
                          .format(self._species_name))
 
         if os.path.exists(bam_file):
@@ -549,7 +489,7 @@ class Mapper(object):
                 'samtools sort -m 2G  -@ ' + str(self.args.threads) +
                 ' -o ' + outfile_name + "_sorted.bam " + bam_file)
         if self.args.single_mapping:
-            logger.debug("---- Samtools sort completed for {} "
+            self._log.debug("---- Samtools sort completed for {} "
                          .format(self._species_name))
 
         if os.path.exists(outfile_name + "_sorted.bam"):
@@ -558,7 +498,7 @@ class Mapper(object):
                 outfile_name + "_sorted.bam")
             # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
         if self.args.single_mapping:
-            logger.debug("---- Samtools index completed for {} "
+            self._log.debug("---- Samtools index completed for {} "
                          .format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
@@ -570,13 +510,13 @@ class Mapper(object):
         # mapped_reads, all_reads = self._get_mapping_stats(outfile_name +
         #                                                   '_sorted.bam')
         #
-        # logger.info("---- Mapping of {} against {} with {} "
+        # self._log.info("---- Mapping of {} against {} with {} "
         #             "of {} mapped reads completed!---"
         #             .format(self._species_name, ref_file.split("_")[0],
         #                     mapped_reads, all_reads))
 
         if self.args.single_mapping:
-            logger.debug("---- Number of mapped reads {} ")
+            self._log.debug("---- Number of mapped reads {} ")
 
         all_consensus = []
         if consensus:
@@ -648,8 +588,8 @@ class Mapper(object):
         (output, err) = shell_command.communicate()
         shell_command.wait()
         if shell_command.returncode != 0:
-            logger.debug("Shell command failed to execute")
-            logger.debug(line)
+            self._log.debug("Shell command failed to execute")
+            self._log.debug(line)
             return None
 
         return output
@@ -727,7 +667,7 @@ class Mapper(object):
     #             s2 = pyopa.Sequence(str(seq))
     #             # calculating local and global scores for the given sequences
     #             local_double = pyopa.align_double(s1, s2, self.env)
-    #             # logger.info('Local score: %f' % local_double[0])
+    #             # self._log.info('Local score: %f' % local_double[0])
     #             if local_double[0] > best_score:
     #                 best_score = local_double[0]
     #                 best_seq_idx = i

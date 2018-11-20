@@ -4,7 +4,7 @@ import gzip
 import argparse
 from Bio import SeqIO
 from read2tree.Reads import Reads
-
+from read2tree.FastxReader import FastxReader
 dirname = os.path.dirname(__file__)
 
 
@@ -41,6 +41,12 @@ class ReadTest(unittest.TestCase):
                                 help='[Default is 10] coverage in X.')
         arg_parser.add_argument('--genome_len', type=int, default=1000,
                                 help='[Default is 1000] Genome size in bp.')
+        arg_parser.add_argument('--check_mate_pairing', action='store_true',
+                                help='Check whether in case of paired end '
+                                'reads we have consistent mate pairing. Setting '
+                                'this option will automatically select the '
+                                'overlapping reads and do not consider single '
+                                'reads.')
 
         if split:
             argv = ['--reads', 'tests/data/reads/test.fq.gz', '--split_reads']
@@ -56,9 +62,9 @@ class ReadTest(unittest.TestCase):
         arg_parser.add_argument('--reads', nargs='+', default=None,
                                 help='Reads to be mapped to reference.'
                                 'If paired end add separated by space.')
-        arg_parser.add_argument('--split_len', type=int, default=400,
+        arg_parser.add_argument('--split_len', type=int, default=200,
                                 help='Set read split length.')
-        arg_parser.add_argument('--split_overlap', type=int, default=50,
+        arg_parser.add_argument('--split_overlap', type=int, default=0,
                                 help='Set read split length overlap.')
         arg_parser.add_argument('-s', '--species_name', default=None,
                                 help='[Default is name of read] Name of '
@@ -70,17 +76,23 @@ class ReadTest(unittest.TestCase):
         arg_parser.add_argument('--split_reads', action='store_true',
                                 help='Splits reads as defined by split_len '
                                 '(400) and split_overlap (0) parameters. ')
-        arg_parser.add_argument('--split_min_read_len', type=int, default=500,
-                                help='[Default is 500] Reads longer than this '
+        arg_parser.add_argument('--split_min_read_len', type=int, default=200,
+                                help='[Default is 200] Reads longer than this '
                                 'value are cut into smaller values as defined '
                                 'by --split_len.')
         arg_parser.add_argument('--sample_reads', action='store_true',
-                                help='Splits reads as defined by split_len (400) '
+                                help='Splits reads as defined by split_len (200) '
                                 'and split_overlap (0) parameters. ')
         arg_parser.add_argument('--coverage', type=float, default=10,
                                 help='[Default is 10] coverage in X.')
         arg_parser.add_argument('--genome_len', type=int, default=1000,
                                 help='[Default is 1000] Genome size in bp.')
+        arg_parser.add_argument('--check_mate_pairing', action='store_true',
+                                help='Check whether in case of paired end '
+                                'reads we have consistent mate pairing. Setting '
+                                'this option will automatically select the '
+                                'overlapping reads and do not consider single '
+                                'reads.')
 
         if sampling:
             argv = ['--reads', 'tests/data/reads/test_1a.fq.gz',
@@ -110,24 +122,14 @@ class ReadTest(unittest.TestCase):
         # print(reads._split_len_overlap('TTTTTAGAGAGGAGGGGTTT', 10, 5))
         self.assertEqual(expected, obtained)
 
-    def test_readfq(self):
-        reads = self.setup_long_reads()
-        entry = []
-        with gzip.open(os.path.join(dirname, "data/reads/test.fq.gz"), 'rt') \
-                as f:
-            for name, seq, qual in reads._readfq(f):
-                entry.append(name)
-        self.assertEqual(entry[-1], '@SRR5314792.33 length=1041')
-
     def test_get_4_line_fastq_string(self):
         reads = self.setup_long_reads()
         expected = '@SRR00001 length=16\nACGTTTGGGAAGGTTT\n+SRR00001 ' \
                    'length=16\n????????????????\n'
         read_id = 'SRR00001'
-        x = 0
         seq = 'ACGTTTGGGAAGGTTT'
         qual = '????????????????'
-        name = reads._get_4_line_fastq_string(read_id, x, seq, qual)
+        name = reads._get_4_line_fastq_string(read_id, seq, qual, x=0)
         self.assertEqual(name, expected)
 
     def test_read_num_split(self):

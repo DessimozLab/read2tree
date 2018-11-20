@@ -13,6 +13,7 @@ from Bio import SeqIO, Seq, SeqRecord
 from Bio.SeqIO.FastaIO import FastaWriter
 
 from read2tree.Progress import Progress
+from read2tree.LoggingHandler import LoggingHandler
 
 
 class ReferenceSet(object):
@@ -31,6 +32,9 @@ class ReferenceSet(object):
         self.load = load
         self.args = args
         self.progress = Progress(args)
+
+        lhandler = LoggingHandler(args, 'Reference.py')
+        self._log = lhandler.logger
 
         if load is False:
             self.ref = self._load_records_folder()
@@ -90,7 +94,8 @@ class ReferenceSet(object):
                 else:
                     ref_set[species] = Reference()
                     ref_set[species].dna.append(record)
-
+        self._log.info('Extracted {} reference species form {} ogs'
+                       .format(len(ref_set.keys()), len(og_set.keys())))
         return ref_set
 
     def write(self):

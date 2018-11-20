@@ -212,6 +212,23 @@ def parse_args(argv, exe_name, desc):
             'Arguments --coverage and --genome_len'
             'can only be set if --sample_reads is set.')
 
+    if args.reads:
+        if len(args.reads) == 2:
+            _reads = args.reads
+            _species_name = _reads[0].split("/")[-1].split(".")[0]
+        else:
+            _reads = args.reads[0]
+            _species_name = _reads.split("/")[-1].split(".")[0]
+
+    if args.species_name:
+        _species_name = args.species_name
+
+    if not args.reads and not args.species_name:
+        _species_name = 'merge'
+
+    args.reads = _reads
+    args.species_name = _species_name
+
     return args
 
 

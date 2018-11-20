@@ -4,17 +4,10 @@ import gzip
 import mimetypes
 # from memory_profiler import memory_usage
 
-logger = logging.getLogger(__name__)
-formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('info.log')
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-
 class FastxReader(object):
 
     def __init__(self, file):
+
         self._file = file
         guessed_type = mimetypes.guess_type(file)[1]
         if guessed_type:
