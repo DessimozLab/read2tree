@@ -99,7 +99,7 @@ class Mafft(Aligner):
         else:
             output, error = self._call(self.input, *args, **kwargs)
         
-        logger.debug('Output of Mafft: stdout={}; stderr={}'.format(output, error))
+        #logger.debug('Output of Mafft: stdout={}; stderr={}'.format(output, error))
         if len(output)==0 and len(error)>0:
             logger.warning('is MAFFT_BINARIES set correctly: {}'.format(os.getenv('MAFFT_BINARIES','')))
             raise WrapperError('Mafft did not compute any alignments. StdErr: {}'.format(error))

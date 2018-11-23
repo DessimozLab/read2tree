@@ -16,30 +16,11 @@ import logging
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
 
-logger = logging.getLogger(__name__)
-formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('info.log')
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
 
 class Progress(object):
 
     def __init__(self, args, species_name=None):
         self.args = args
-
-        if args.debug:
-            logger.setLevel(logging.DEBUG)
-            file_handler.setLevel(logging.DEBUG)
-            # stream_handler.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-            file_handler.setLevel(logging.INFO)
-            # stream_handler.setLevel(logging.INFO)
-
-        logger.addHandler(file_handler)
-        # logger.addHandler(stream_handler)
 
         # holds the status of the computation
         self._num_species = 0
@@ -53,20 +34,8 @@ class Progress(object):
 
         self._reads = self.args.reads
         self._species_name = self.args.species_name
-        #
-        # if self.args.reads:
-        #     if len(self.args.reads) == 2:
-        #         self._reads = self.args.reads
-        #         self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-        #     else:
-        #         self._reads = self.args.reads[0]
-        #         self._species_name = self._reads.split("/")[-1].split(".")[0]
-        #
-        # if self.args.species_name:
-        #     self._species_name = self.args.species_name
-        #
-        # if not self.args.reads and not self.args.species_name:
-        #     self._species_name = 'merged'
+
+        self.logger = logging.getLogger(__name__)
 
         if species_name:
             self._species_name = species_name
@@ -120,7 +89,6 @@ class Progress(object):
         '''
         Extract number of expected OGs and number of expected species from existing folder or info.log file
         '''
-        # if os.path.exists(os.path.join(self.args.output,'info.log')):
         raise NotImplementedError
 
     def _get_og_status(self, dir):
@@ -176,10 +144,10 @@ class Progress(object):
                                                '*cov.txt'))]
         if len(computed_fasta) >= self._num_species or \
                 len(computed_cov) >= self._num_species:
-            logger.info('{}: Mapping completed!'.format(self._species_name))
+            self.logger.info('{}: Mapping completed!'.format(self._species_name))
             return True
         else:
-            logger.info('{}: Mapping unfinished. Mapping of {} / {} '
+            self.logger.info('{}: Mapping unfinished. Mapping of {} / {} '
                         'references are computed!'.format(self._species_name,
                                                           len(computed_cov),
                                                           self._num_species))

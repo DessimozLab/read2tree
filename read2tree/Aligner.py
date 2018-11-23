@@ -22,9 +22,7 @@ from read2tree.utils.seq_utils import concatenate
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 
-logger = logging.getLogger('Aligner.py')
-formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-
+logger = logging.getLogger(__name__)
 
 class Aligner(object):
 
@@ -34,38 +32,8 @@ class Aligner(object):
 
         self.elapsed_time = 0
 
-        # looging cannot be initalized with object due to multiprocessing and has to be done as it is here
-        file_handler = logging.FileHandler(os.path.join(args.output_path,
-                                                        'info.log'))
-        file_handler.setFormatter(formatter)
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(formatter)
-
-        if args.debug:
-            logger.setLevel(logging.DEBUG)
-            file_handler.setLevel(logging.DEBUG)
-            # stream_handler.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-            file_handler.setLevel(logging.INFO)
-            # stream_handler.setLevel(logging.INFO)
-
-        logger.addHandler(file_handler)
-        # logger.addHandler(stream_handler)
-
-        if self.args.reads:
-            if len(self.args.reads) == 2:
-                self._reads = self.args.reads
-                self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-            else:
-                self._reads = self.args.reads[0]
-                self._species_name = self._reads.split("/")[-1].split(".")[0]
-
-        if self.args.species_name:
-            self._species_name = self.args.species_name
-
-        if not self.args.reads and not self.args.species_name:
-            self._species_name = 'merge'
+        self._reads = self.args.reads
+        self._species_name = self.args.species_name
 
         self.alignments = Alignment()
 

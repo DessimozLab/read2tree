@@ -15,6 +15,7 @@
 '''
 import os
 import glob
+import logging
 from datetime import date
 from timeit import default_timer as timer
 import read2tree
@@ -244,6 +245,8 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
+    if not os.path.exists(args.output_path):
+        os.makedirs(args.output_path)
 
     progress = Progress(args)
     if not os.path.exists(args.output_path):

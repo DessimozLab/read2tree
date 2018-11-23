@@ -25,7 +25,6 @@ from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
-from read2tree.LoggingHandler import LoggingHandler
 
 OMA_STANDALONE_OUTPUT = 'Output'
 OMA_MARKER_GENE_EXPORT = 'marker_genes'
@@ -37,9 +36,7 @@ class OGSet(object):
     def __init__(self, args, oma_output=None, load=True):
         self.args = args
 
-        lhandler = LoggingHandler(args, 'OGSet.py')
-        self._log = lhandler.logger
-
+        self.logger = logging.getLogger(__name__)
         self.mapped_ogs = {}
         self._remove_species_mapping = False
         self._marker_genes = False
@@ -49,21 +46,6 @@ class OGSet(object):
 
         self._reads = self.args.reads
         self._species_name = self.args.species_name
-        #
-        # if self.args.reads:
-        #     if len(self.args.reads) == 2:
-        #         self._reads = self.args.reads
-        #         self._species_name = self._reads[0] \
-        #             .split("/")[-1].split(".")[0]
-        #     else:
-        #         self._reads = self.args.reads[0]
-        #         self._species_name = self._reads.split("/")[-1].split(".")[0]
-        #
-        # if self.args.species_name:
-        #     self._species_name = self.args.species_name
-        #
-        # if not self.args.reads and not self.args.species_name:
-        #     self._species_name = 'merged'
 
         self.progress = Progress(args)
         self.progress.get_status(species_name=self._species_name)
@@ -194,19 +176,19 @@ class OGSet(object):
                     ogs[name].dna = self._get_dna_records(ogs[name].aa,
                                                           name, db, source)
                 except (ValueError, TypeError):
-                    self._log.debug('This OG {} did not have '
+                    self.logger.debug('This OG {} did not have '
                                  'any DNA'.format(name))
                     pass
                 else:
                     self._write(output_file_dna, ogs[name].dna)
                     self._write(output_file_aa, ogs[name].aa)
             else:
-                self._log.debug('DNA reference was not provided. '
+                self.logger.debug('DNA reference was not provided. '
                              'Only amino acid sequences gathered!')
         self.progress.set_status('ogs')
         end = time.time()
         self.elapsed_time = end-start
-        self._log.info('{}: Gathering of DNA seq for OGs took {}.'
+        self.logger.info('{}: Gathering of DNA seq for OGs took {}.'
                     .format(self._species_name, self.elapsed_time))
         return ogs
 
@@ -245,7 +227,7 @@ class OGSet(object):
         try:
             oma_db_nr = self._db_id_map.omaid_to_entry_nr(record.id)
         except ValueError:
-            self._log.debug('DNA not found for {}.'.format(record.id))
+            self.logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
             seq = self._db.get_cdna(oma_db_nr).decode("utf-8")
@@ -269,7 +251,7 @@ class OGSet(object):
         try:
             oma_record = requests.get(API_URL + "/protein/" + record.id + "/")
         except requests.exceptions.RequestException:
-            self._log.debug('DNA not found for {}.'.format(record.id))
+            self.logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
             seq = oma_record.json()['cdna']
@@ -288,7 +270,7 @@ class OGSet(object):
         try:
             dna = db[record.id.split("_")[0]]
         except ValueError:
-            self._log.debug('DNA not found for {}.'.format(record.id))
+            self.logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
             if 'X' in str(dna):
@@ -469,7 +451,7 @@ class OGSet(object):
                     if self.args.keep_all_ogs:
                         self.mapped_ogs[name_og] = og_filt
             else:
-                self._log.debug('{} was left only with a single entry '
+                self.logger.debug('{} was left only with a single entry '
                              'and hence not used for further '
                              'processing'.format(name_og))
 
@@ -479,7 +461,7 @@ class OGSet(object):
                                                  species_name+'_all_sc.txt'))
         end = time.time()
         self.elapsed_time = end-start
-        self._log.info('{}: Appending {} reconstructed sequences to present OG '
+        self.logger.info('{}: Appending {} reconstructed sequences to present OG '
                     'took {}.'
                     .format(self._species_name,
                             len(list(cons_og_set.keys())),

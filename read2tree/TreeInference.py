@@ -12,11 +12,6 @@ from read2tree.wrappers.treebuilders import Iqtree
 
 
 logger = logging.getLogger(__name__)
-formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-file_handler = logging.FileHandler('info.log')
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
 
 
 class TreeInference(object):
@@ -27,18 +22,6 @@ class TreeInference(object):
         self.args = args
 
         self.elapsed_time = 0
-
-        if args.debug:
-            logger.setLevel(logging.DEBUG)
-            file_handler.setLevel(logging.DEBUG)
-            # stream_handler.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-            file_handler.setLevel(logging.INFO)
-            # stream_handler.setLevel(logging.INFO)
-
-        logger.addHandler(file_handler)
-        # logger.addHandler(stream_handler)
 
         if self.args.reads:
             if len(self.args.reads) == 2:
