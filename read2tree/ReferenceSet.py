@@ -42,7 +42,7 @@ class ReferenceSet(object):
         elif og_set is not None and load is True:
             self.ref = self._generate_reference(og_set)
             self.write()
-            self.progress.set_status('ref')
+            # self.progress.set_status('ref')
 
         # if args.remove_species:
         #     self.ref = self._remove_species()

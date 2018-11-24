@@ -30,6 +30,7 @@ import argparse
 
 COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 
+logger = logging.getLogger(__name__)
 
 def parse_args(argv, exe_name, desc):
     '''
@@ -65,8 +66,8 @@ def parse_args(argv, exe_name, desc):
                             help='Splits reads as defined by split_len (400) '
                             'and split_overlap (0) parameters. ')
 
-    arg_parser.add_argument('--split_len', type=int, default=400,
-                            help='[Default is 400] Parameter for selection of '
+    arg_parser.add_argument('--split_len', type=int, default=200,
+                            help='[Default is 200] Parameter for selection of '
                             'read split length can only be used in combination'
                             'with with long read option. ')
 
@@ -74,13 +75,13 @@ def parse_args(argv, exe_name, desc):
                             help='[Default is 0] Reads are split with an '
                             'overlap defined by this argument.')
 
-    arg_parser.add_argument('--split_min_read_len', type=int, default=500,
-                            help='[Default is 500] Reads longer than this '
+    arg_parser.add_argument('--split_min_read_len', type=int, default=200,
+                            help='[Default is 200] Reads longer than this '
                             'value are cut into smaller values as defined '
                             'by --split_len. ')
 
     arg_parser.add_argument('--sample_reads', action='store_true',
-                            help='Splits reads as defined by split_len (400) '
+                            help='Splits reads as defined by split_len (200) '
                             'and split_overlap (0) parameters. ')
 
     arg_parser.add_argument('--coverage', type=float, default=10,
@@ -134,8 +135,8 @@ def parse_args(argv, exe_name, desc):
 
     arg_parser.add_argument('--keep_all_ogs', action='store_true',
                             help='Keep all orthologs after addition of '
-                            'mapped seq, which means also the groups that '
-                            'have no mapped sequence. Otherwise only groups '
+                            'mapped seq, which means also the OGs that '
+                            'have no mapped sequence. Otherwise only OGs '
                             'are used that have the mapped sequence for '
                             'alignment and tree inference.')
 
@@ -160,9 +161,6 @@ def parse_args(argv, exe_name, desc):
                             'the same reference this allows to merge this '
                             'mappings and build a tree with all included '
                             'species!')
-
-    # arg_parser.add_argument('--ref_og_aa_folder', default='.',
-    #                         help='Path to preselected og_aa folder')
 
     # Arguments to generate the reference
     arg_parser.add_argument('-r', '--reference', action='store_true',
@@ -191,9 +189,29 @@ def parse_args(argv, exe_name, desc):
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
 
-    if not args.split_reads and (args.split_len != 400 or
+    if not os.path.exists(args.output_path):
+        os.makedirs(args.output_path)
+
+    if args.reads:
+        if len(args.reads) == 2:
+            _reads = args.reads
+            _species_name = _reads[0].split("/")[-1].split(".")[0]
+        else:
+            _reads = args.reads[0]
+            _species_name = _reads.split("/")[-1].split(".")[0]
+
+    if args.species_name:
+        _species_name = args.species_name
+
+    if args.merge_all_mappings:
+        _species_name = 'merge'
+
+    args.reads = _reads
+    args.species_name = _species_name
+
+    if not args.split_reads and (args.split_len != 200 or
                                  args.split_overlap != 0 or
-                                 args.split_min_read_len != 500):
+                                 args.split_min_read_len != 200):
         arg_parser.error(
             'Arguments --split_len, --split_overlap and --split_min_read_len'
             'can only be set if --split_reads is set.')
@@ -210,25 +228,13 @@ def parse_args(argv, exe_name, desc):
     if not args.sample_reads and (args.coverage != 10 or
                                   args.genome_len != 2000000):
         arg_parser.error(
-            'Arguments --coverage and --genome_len'
+            'Arguments --coverage and --genome_len '
             'can only be set if --sample_reads is set.')
 
-    if args.reads:
-        if len(args.reads) == 2:
-            _reads = args.reads
-            _species_name = _reads[0].split("/")[-1].split(".")[0]
-        else:
-            _reads = args.reads[0]
-            _species_name = _reads.split("/")[-1].split(".")[0]
-
-    if args.species_name:
-        _species_name = args.species_name
-
-    if not args.reads and not args.species_name:
-        _species_name = 'merge'
-
-    args.reads = _reads
-    args.species_name = _species_name
+    progress = Progress(args)
+    if progress.num_completed_mappings <= 1 and args.merge_all_mappings:
+        arg_parser.error('The number of completed mappings ({}) is too '
+                         'little to perform a merge.'.format(progress.num_completed_mappings))
 
     return args
 
@@ -243,10 +249,9 @@ def main(argv, exe_name, desc=''):
     '''
 
     t1 = timer()
+    logger.info('------- NEW RUN -------')
     # Parse
     args = parse_args(argv, exe_name, desc)
-    if not os.path.exists(args.output_path):
-        os.makedirs(args.output_path)
 
     progress = Progress(args)
     if not os.path.exists(args.output_path):
@@ -255,14 +260,6 @@ def main(argv, exe_name, desc=''):
     # TODO: Check whether all the necessary binaries are available
     # TODO: Check all given files and throw error if faulty
 
-    if args.species_name:
-        species_name = args.species_name
-    elif args.reads:
-        species_name = args.reads[0].split("/")[-1].split(".")[0]
-    else:
-        species_name = 'merge'
-    progress.get_status(species_name=species_name)
-
     if (not progress.ref_ogs_01 and not progress.ref_dna_02 and
         not progress.mapping_03 and not progress.append_ogs_04 and
             not progress.align_05):
@@ -270,104 +267,90 @@ def main(argv, exe_name, desc=''):
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output)  # Generate the OGs with their DNA sequences
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
-        alignments = Aligner(args, ogset.ogs, load=True)
+        # alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
-            alignments.add_mapped_seq(mapper)
-            alignments.write_added_aligns_aa()
-            alignments.write_added_aligns_dna()
-            # progress.set_status("re_ogs")
-            # alignments = Aligner(args, ogset.mapped_ogs, load=True)
-            progress.set_status("og_align")
+            ogset.add_mapped_seq(mapper)
+            ogset.write_added_ogs_aa()
+            ogset.write_added_ogs_dna()
+            alignments = Aligner(args, ogset.mapped_ogs, load=True)
+            concat_alignment = alignments.concat_alignment()
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
+    elif (progress.ref_ogs_01 and not progress.ref_dna_02 and
+          not progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
+        ogset = OGSet(args, load=False)
+        reference = ReferenceSet(args, og_set=ogset.ogs, load=True)  # Generate the reference
+        if not args.reference:  # just generate reference
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
+            ogset.add_mapped_seq(mapper)
+            ogset.write_added_ogs_aa()
+            ogset.write_added_ogs_dna()
+            alignments = Aligner(args, ogset.mapped_ogs, load=True)
             concat_alignment = alignments.concat_alignment()
             #tree = TreeInference(args, concat_alignment=concat_alignment[0])
             #print(tree.tree)
-    # elif (progress.ref_ogs_01 and not progress.ref_dna_02 and
-    #       not progress.mapping_03 and not progress.append_ogs_04 and
-    #         not progress.align_05):
-    #     ogset = OGSet(args, load=False)
-    #     reference = ReferenceSet(args, og_set=ogset.ogs, load=True)  # Generate the reference
-    #     if not args.reference:  # just generate reference
-    #         mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
-    #         ogset.add_mapped_seq(mapper)
-    #         ogset.write_added_ogs_aa()
-    #         ogset.write_added_ogs_dna()
-    #         progress.set_status("re_ogs")
-    #         alignments = Aligner(args, ogset.mapped_ogs, load=True)
-    #         progress.set_status("og_align")
-    #         concat_alignment = alignments.concat_alignment()
-    #         #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-    #         #print(tree.tree)
-    # elif (progress.ref_ogs_01 and progress.ref_dna_02 and
-    #       not progress.mapping_03 and not progress.append_ogs_04 and
-    #         not progress.align_05):
-    #     if args.single_mapping:
-    #         reference = ReferenceSet(args, load=False)
-    #         Mapper(args, ref_set=reference.ref)  # Run the mapping
-    #     else:
-    #         ogset = OGSet(args, load=False)
-    #         reference = ReferenceSet(args, load=False)
-    #         mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)  # Run the mapping
-    #         ogset.add_mapped_seq(mapper)
-    #         ogset.write_added_ogs_aa()
-    #         ogset.write_added_ogs_dna()
-    #         progress.set_status("re_ogs")
-    #         alignments = Aligner(args, ogset.mapped_ogs, load=True)
-    #         progress.set_status("og_align")
-    #         concat_alignment = alignments.concat_alignment()
-    #         #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-    #         #print(tree.tree)
-    # elif (progress.ref_ogs_01 and progress.ref_dna_02 and
-    #       progress.mapping_03 and not progress.append_ogs_04 and
-    #         not progress.align_05):
-    #     ogset = OGSet(args, load=False)
-    #     if not args.merge_all_mappings:
-    #         mapper = Mapper(args, og_set=ogset.ogs, load=False)
-    #         ogset.add_mapped_seq(mapper)
-    #         ogset.write_added_ogs_aa()
-    #         ogset.write_added_ogs_dna()
-    #         progress.set_status("re_ogs")
-    #         alignments = Aligner(args, ogset.mapped_ogs, load=True)
-    #         progress.set_status("og_align")
-    #         concat_alignment = alignments.concat_alignment()
-    #         #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-    #         #print(tree.tree)
-    #     else:
-    #         for folder in glob.glob(os.path.join(args.output_path,
-    #                                              "03_mapping_*")):
-    #             species_name = folder.split("03_mapping_")[-1]
-    #             species_progress = Progress(args)
-    #             species_progress.get_status(species_name=species_name)
-    #             if species_progress.mapping_03:
-    #                 print('--- Addition of {} to all ogs '
-    #                       '---'.format(species_name))
-    #                 mapper = Mapper(args, og_set=ogset.ogs,
-    #                                 species_name=species_name, load=False)
-    #                 ogset.add_mapped_seq(mapper, species_name=species_name)
-    #         ogset.write_added_ogs_aa(folder_name="04_merge_OGs_aa")
-    #         ogset.write_added_ogs_dna(folder_name="04_merge_OGs_dna")
-    #         progress.set_status("re_ogs")
-    #         alignments = Aligner(args, ogset.mapped_ogs, load=True)
-    #         progress.set_status("og_align")
-    #         concat_alignment = alignments.concat_alignment()
-    #         #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-    #         #print(tree.tree)
-    # elif (progress.ref_ogs_01 and progress.ref_dna_02 and
-    #       progress.mapping_03 and progress.append_ogs_04 and
-    #         not progress.align_05):
-    #     ogset = OGSet(args, load=False)
-    #     alignments = Aligner(args, ogset.mapped_ogs, load=True)
-    #     progress.set_status("og_align")
-    #     concat_alignment = alignments.concat_alignment()
-    #     #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-    #     #print(tree.tree)
-    # elif (progress.ref_ogs_01 and progress.ref_dna_02 and
-    #       progress.mapping_03 and progress.append_ogs_04 and
-    #         progress.align_05):
-    #     alignments = Aligner(args,  load=False)
-    #     progress.set_status("og_align")
-    #     concat_alignment = alignments.concat_alignment()
-    #     #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-    #     #print(tree.tree)
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          not progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
+        if args.single_mapping:
+            reference = ReferenceSet(args, load=False)
+            Mapper(args, ref_set=reference.ref)  # Run the mapping
+        else:
+            ogset = OGSet(args, load=False)
+            reference = ReferenceSet(args, load=False)
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)  # Run the mapping
+            ogset.add_mapped_seq(mapper)
+            ogset.write_added_ogs_aa()
+            ogset.write_added_ogs_dna()
+            alignments = Aligner(args, ogset.mapped_ogs, load=True)
+            concat_alignment = alignments.concat_alignment()
+            #tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            #print(tree.tree)
+    elif (args.merge_all_mappings and progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
+        ogset = OGSet(args, load=False)
+        for mapping in progress._get_finished_mapping_folders(args.output_path):
+            species_name = mapping.split("03_mapping_")[-1]
+            logger.info('--- Addition of {} to all ogs '
+                        '---'.format(species_name))
+            mapper = Mapper(args, og_set=ogset.ogs,
+                            species_name=species_name, load=False)
+            ogset.add_mapped_seq(mapper, species_name=species_name)
+        ogset.write_added_ogs_aa(folder_name="04_merge_OGs_aa")
+        ogset.write_added_ogs_dna(folder_name="04_merge_OGs_dna")
+        alignments = Aligner(args, ogset.mapped_ogs, load=True)
+        concat_alignment = alignments.concat_alignment()
+        tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        print(tree.tree)
+    elif (not args.merge_all_mappings and progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and not progress.append_ogs_04 and
+            not progress.align_05):
+        ogset = OGSet(args, load=False)
+        mapper = Mapper(args, og_set=ogset.ogs, load=False)
+        ogset.add_mapped_seq(mapper)
+        ogset.write_added_ogs_aa()
+        ogset.write_added_ogs_dna()
+        alignments = Aligner(args, ogset.mapped_ogs, load=True)
+        concat_alignment = alignments.concat_alignment()
+        #tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        #print(tree.tree)
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and progress.append_ogs_04 and
+            not progress.align_05):
+        ogset = OGSet(args, load=False)
+        alignments = Aligner(args, ogset.mapped_ogs, load=True)
+        concat_alignment = alignments.concat_alignment()
+        #tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        #print(tree.tree)
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.mapping_03 and progress.append_ogs_04 and
+            progress.align_05):
+        alignments = Aligner(args,  load=False)
+        concat_alignment = alignments.concat_alignment()
+        #tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        #print(tree.tree)
 
-    print('Time taken {}'.format(timer() - t1))
+    logger.info('Time taken {}'.format(timer() - t1))

@@ -48,7 +48,7 @@ class OGSet(object):
         self._species_name = self.args.species_name
 
         self.progress = Progress(args)
-        self.progress.get_status(species_name=self._species_name)
+        # self.progress.get_status(species_name=self._species_name)
 
         if self.args.remove_species_mapping:
             self.species_to_remove_mapping = self.args \
@@ -185,11 +185,11 @@ class OGSet(object):
             else:
                 self.logger.debug('DNA reference was not provided. '
                              'Only amino acid sequences gathered!')
-        self.progress.set_status('ogs')
+        # self.progress.set_status('ogs')
         end = time.time()
         self.elapsed_time = end-start
-        self.logger.info('{}: Gathering of DNA seq for OGs took {}.'
-                    .format(self._species_name, self.elapsed_time))
+        self.logger.info('{}: Gathering of DNA seq for {} OGs took {}.'
+                    .format(self._species_name, len(names_og.keys()), self.elapsed_time))
         return ogs
 
     def _get_aa_records(self, name, records):
