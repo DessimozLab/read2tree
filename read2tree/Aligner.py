@@ -29,7 +29,7 @@ class Aligner(object):
     def __init__(self, args, og_set=None, load=True):
 
         self.args = args
-
+        self.mapped_aligns = {}
         self.elapsed_time = 0
 
         self._reads = self.args.reads
@@ -46,7 +46,76 @@ class Aligner(object):
 
         # print(self._get_codon_dict_og(og_set))
 
-    def add_mapped_seq(self, og, species_name=None):
+    def _remove_species_from_alignment(self, current_align):
+        """
+                Removes sequence records for a species / set of
+                species from the reference OGSet
+                :param current_og: The current OG object
+                :return: OG object with removed species
+                """
+        if self.args.remove_species_ogs:
+            align = Alignment()
+            filtered_align = current_align \
+                .remove_species_records(self.species_to_remove_ogs)
+            if filtered_align:
+                align.dna = filtered_align[0]
+                align.aa = filtered_align[1]
+        else:
+            align = current_align
+        return align
+
+    def _make_output_path(self, prefix):
+        path = os.path.join(self.args.output_path, prefix)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return path
+
+    def _get_placement_dic(self, alignment, ref_species):
+        placement_dic = {}
+        ref_rec = None
+        for r in alignment:
+            if ref_species in r.id:
+                ref_rec = r
+                k = 0
+                for i, aa in enumerate(list(r.seq)):
+                    if "-" not in aa:
+                        placement_dic[i] = k
+                        k = k + 1
+                    else:
+                        placement_dic[i] = k
+        return placement_dic, ref_rec
+
+    def _add_mapseq_align(self, alignment,  map_record, ref_species, species_name):
+        placement_dic, ref_rec = self._get_placement_dic(alignment, ref_species)
+        new = [map_record[placement_dic[i]] if '-' not in v else '-' for i, v in enumerate(list(ref_rec.seq))]
+        alignment.add_sequence(species_name, ''.join(new))
+        return alignment
+
+    def _get_species_id(self, record):
+        """
+        Sequences in OMA are marked by using the first three letters of genus
+        and the first 2 letters of species, e.g. Amphiura filiformis = AMPFI.
+        This however is not always the case and we therefore prioritize the id
+        (e.g. MOUSE over MUSMU that comes from Mus musculus).
+        :param description: SeqRecord description
+        :return: species_id
+        """
+        # TODO: add extension for model identifiers
+        # model_identifiers_oma = {'MUSMU': 'MOUSE', 'HOMSA': 'HUMAN',
+        #                          'SARCE': 'YEAST'}
+
+        sp_description = record.description
+        species = sp_description[sp_description.find("[") +
+                                     1:sp_description.find("]")]
+        if species:  # [Mus musculus]
+            if len(species.split(" ")) > 1:
+                new_id = species.split(" ")[0][0:3] + \
+                    species.split(" ")[1][0:2]
+                return new_id.upper()
+            else:  # [MUSMU]
+                return species
+
+    def add_mapped_seq(self, ogset_add, species_name=None):
         """
         Add the sequence given from the read mapping to its corresponding
         OG and retain
@@ -55,72 +124,32 @@ class Aligner(object):
         :param cons_og_set: set of ogs with its mapped sequences
         """
         start = time.time()
-        cons_og_set = mapper.og_records  # get sequences from mapping
-        cov = Coverage()
-        seqC = SeqCompleteness()
         if not species_name:
             species_name = self._species_name
-
-        print('--- Add inferred mapped sequence back to OGs ---')
+        print('--- Add inferred mapped sequence back to alignment ---')
 
         # iterate through all existing ogs
         for name_og, align in tqdm(self.alignments.items(),
-                                desc='Adding mapped seq to OG', unit=' OGs'):
-            #og_sc = {rec.id: mapper.all_sc[rec.id]
-            #         for rec in og_filt.aa if rec.id in mapper.all_sc.keys()}
-            og = self._og_set[name_og]
-            if len(align.aa) > 2:
-                # continue only if OG is in mapped OGs
-                if name_og in cons_og_set.keys():
-                    cons_og_filt = cons_og_set[name_og]
-                    og_sc = {cons_og_filt._get_id_rec(rec): mapper.all_sc[cons_og_filt._get_id_rec(rec)]
-                             for rec in cons_og_filt.aa
-                             if cons_og_filt._get_id_rec(rec) in mapper.all_sc.keys()}
-                    if len(cons_og_filt.aa) >= 1:  # we had at least one mapped og even after removal
-                        best_records = cons_og_filt \
-                            .get_best_consensus_by_seq_completeness(
-                                og_sc, threshold=self.args.sc_threshold)
-                        if best_records:
-                            best_record_aa = best_records[0]
-                            best_record_dna = best_records[1]
-                            best_record_dna._generate_seq_completeness(seqC, mapper,
-                                                            og, best_record_dna)
-                            cov.add_coverage(self._get_clean_id(best_record_aa),
-                                             mapper.all_cov[self._get_clean_id(best_record_aa)])
-                            best_record_aa.id = species_name
-                            best_record_dna.id = species_name
-                            self.aligned_mapped[name_og] = og_filt
-                            all_id = [rec.id
-                                      for rec in self.aligned_mapped[name_og].aa]
-                            if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                                self.aligned_mapped[name_og] \
-                                    .aa.append(best_record_aa)
-                                self.aligned_mapped[name_og] \
-                                    .dna.append(best_record_dna)
-                        else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
-                            self.aligned_mapped[name_og] = align
-                    else:  # mapping had only one that we removed
-                        if self.args.keep_all_ogs:
-                            self.aligned_mapped[name_og] = align
-                else:  # nothing was mapped to that og
-                    if self.args.keep_all_ogs:
-                        self.aligned_mapped[name_og] = align
-            else:
-                logger.debug('{} was left only with a single entry '
-                             'and hence not used for further '
-                             'processing'.format(name_og))
-
-        cov.write_coverage_bam(os.path.join(self.args.output_path,
-                                            species_name+'_all_cov.txt'))
-        seqC.write_seq_completeness(os.path.join(self.args.output_path,
-                                                 species_name+'_all_sc.txt'))
+                                   desc='Adding mapped seq to OG', unit=' OGs'):
+            align_filt = self._remove_species_from_alignment(align)
+            if len(align_filt.aa) > 2:
+                # get all species that are not mapped from original alignment
+                ref_species = [r.id for r in align_filt.aa if 'ass' not in r.id]
+                # find mapped records from appended records in OGSet
+                map_records_aa = [r for r in ogset_add[name_og].aa if r.id[0:5] not in ref_species and r.id[0:5] in species_name]
+                map_records_dna = [r for r in ogset_add[name_og].dna if r.id[0:5] not in ref_species and r.id[0:5] in species_name]
+                for r_aa, r_dna in zip(map_records_aa, map_records_dna):
+                    ref_species = self._get_species_id(r_aa)
+                    self.mapped_aligns[name_og] = Alignment()
+                    self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, r_aa, ref_species, species_name)
+                    self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, r_dna, ref_species, species_name)
         end = time.time()
         self.elapsed_time = end-start
-        logger.info('{}: Appending {} reconstructed sequences to present OG '
-                    'took {}.'
-                    .format(self._species_name,
-                            len(list(cons_og_set.keys())),
-                            self.elapsed_time))
+        # logger.info('{}: Appending {} reconstructed sequences to present Alignments '
+        #             'took {}.'
+        #             .format(self._species_name,
+        #                     len(list(cons_og_set.keys())),
+        #                     self.elapsed_time))
 
     def _get_codon_dict(self, aa_seq, dna_seq):
         """
@@ -156,12 +185,50 @@ class Aligner(object):
                 SeqRecord(Seq("".join([codon[s] for s in str(rec.seq)]), generic_dna), id=rec.id))
         return MultipleSeqAlignment(translated_seq)
 
+    def write_added_align_aa(self, folder_name=None):
+        """
+
+        :param self:
+        :param folder_name:
+        :return:
+        """
+        if folder_name is None:
+            align_with_mapped_seq = self._make_output_path("06_align_" +
+                                                         self._species_name +
+                                                         "_aa")
+        else:
+            align_with_mapped_seq = self._make_output_path(folder_name)
+
+        for name, value in self.alignments.items():
+            if name in self.mapped_aligns.keys():
+                output_file = os.path.join(align_with_mapped_seq, name + ".fa")
+                self._write(output_file, self.mapped_aligns[name].aa)
+
+    def write_added_align_dna(self, folder_name=None):
+        """
+
+        :param self:
+        :param folder_name:
+        :return:
+        """
+        if folder_name is None:
+            align_with_mapped_seq = self._make_output_path("06_align_" +
+                                                         self._species_name +
+                                                         "_dna")
+        else:
+            align_with_mapped_seq = self._make_output_path(folder_name)
+
+        for name, value in self.alignments.items():
+            if name in self.mapped_aligns.keys():
+                output_file = os.path.join(align_with_mapped_seq, name + ".fa")
+                self._write(output_file, self.mapped_aligns[name].dna)
+
     def _align_worker(self, og_set):
         align_dict = {}
         output_folder_aa = os.path.join(
-            self.args.output_path, "05_align_" + self._species_name + "_aa")
+            self.args.output_path, "03_align_aa")
         output_folder_dna = os.path.join(
-            self.args.output_path, "05_align_" + self._species_name + "_dna")
+            self.args.output_path, "03_align_dna")
         for key, value in og_set.items():
             mafft_wrapper = Mafft(value.aa, datatype="PROTEIN")
             mafft_wrapper.options.options['--localpair'].set_value(True)
@@ -196,9 +263,9 @@ class Aligner(object):
         self._adapt_id(og_set)
 
         output_folder_aa = os.path.join(
-            self.args.output_path, "05_align_" + self._species_name + "_aa")
+            self.args.output_path, "03_align_aa")
         output_folder_dna = os.path.join(
-            self.args.output_path, "05_align_" + self._species_name + "_dna")
+            self.args.output_path, "03_align_dna")
         if not os.path.exists(output_folder_aa):
             os.makedirs(output_folder_aa)
         if not os.path.exists(output_folder_dna):
@@ -223,9 +290,9 @@ class Aligner(object):
         """
         align_dict = {}
         output_folder_aa = os.path.join(
-            self.args.output_path, "05_align_" + self._species_name + "_aa")
+            self.args.output_path, "03_align_aa")
         output_folder_dna = os.path.join(
-            self.args.output_path, "05_align_" + self._species_name + "_dna")
+            self.args.output_path, "03_align_dna")
         for f in tqdm(zip(sorted(glob.glob(os.path.join(output_folder_aa, '*.phy'))), sorted(glob.glob(os.path.join(output_folder_dna, '*.phy')))), desc='Loading alignments ', unit=' Alignment'):
             og_name = os.path.basename(f[0]).split(".")[0]
             align_dict[og_name] = Alignment()
@@ -278,9 +345,35 @@ class Aligner(object):
         start = time.time()
         cons_og_set = mapper.og_records  # get sequences from mapping
 
+    def _write(self, file, value):
+        """
+        Write output to fasta file
+        :param file: file and location of outputfile
+        :param value:
+        :return:
+        """
+        output_handle = open(file, "w")
+        AlignIO.write(value, output_handle, "phylip-relaxed")
+        output_handle.close()
+
 
 class Alignment(object):
 
     def __init__(self):
-        self.aa = None
-        self.dna = None
+        self.aa = []
+        self.dna = []
+
+    def remove_species_records(self, species_to_remove):
+        """
+        Remove species from reference sequence set
+        :param species_to_remove: list of species to be removed
+        :param all_species: list of all species present in analysis
+        """
+        aa = [record for i, record in enumerate(
+            self.aa) if self._get_species_id(record) not in species_to_remove]
+        dna = [record for i, record in enumerate(
+            self.dna) if self._get_species_id(record) not in species_to_remove]
+        if len(aa) > 0 and len(dna) > 0:
+            return [dna, aa]
+        else:
+            return None

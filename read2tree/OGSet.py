@@ -62,10 +62,11 @@ class OGSet(object):
         else:
             self.species_to_remove_ogs = []
 
-        if not load and self.progress.append_ogs_04:
-            print("04_ogs_map_" + self._species_name)
+        if not load and self.progress.append_ogs_05:
+            print("05_ogs_map_" + self._species_name)
             self.mapped_ogs = self._reload_ogs_from_folder(
-                folder_suffix="04_ogs_map_" + self._species_name)
+                folder_suffix="05_ogs_map_" + self._species_name)
+            self.ogs = self.mapped_ogs
         elif not load and self.progress.ref_ogs_01:
             self.ogs = self._reload_ogs_from_folder()
         elif load and oma_output is not None:
@@ -96,10 +97,10 @@ class OGSet(object):
             ogs[name_og].dna = list(SeqIO.parse(file[1], format='fasta'))
             # ensure backward compatibility
             aa_ids = [r.id for r in ogs[name_og].aa if name_og in r.id]
-            if not aa_ids:
-                for r in ogs[name_og].aa:
-                    tmp = r.id + "_" + name_og
-                    r.id = tmp
+            # if not aa_ids:
+            #     for r in ogs[name_og].aa:
+            #         tmp = r.id + "_" + name_og
+            #         r.id = tmp
             # if self._remove_species:
             # ogs[name].remove_species_records(self.species_to_remove,
             #                                  species_in_hog)
@@ -475,7 +476,7 @@ class OGSet(object):
         :return:
         """
         if folder_name is None:
-            ogs_with_mapped_seq = self._make_output_path("04_ogs_map_" +
+            ogs_with_mapped_seq = self._make_output_path("05_ogs_map_" +
                                                          self._species_name +
                                                          "_aa")
         else:
@@ -495,7 +496,7 @@ class OGSet(object):
         """
         if folder_name is None:
             ogs_with_mapped_seq = self._make_output_path(
-                "04_ogs_map_" + self._species_name + "_dna")
+                "05_ogs_map_" + self._species_name + "_dna")
         else:
             ogs_with_mapped_seq = self._make_output_path(folder_name)
 

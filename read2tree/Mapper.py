@@ -125,7 +125,7 @@ class Mapper(object):
         if not species_name:
             species_name = self._species_name
         in_folder = os.path.join(self.args.output_path,
-                                 "03_mapping_"+species_name)
+                                 "04_mapping_"+species_name)
         for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
                          desc='Loading consensus read mappings ',
                          unit=' species'):
@@ -196,7 +196,7 @@ class Mapper(object):
         reference_path = os.path.join(self.args.output_path, "02_ref_dna")
 
         output_folder = os.path.join(self.args.output_path,
-                                     "03_mapping_"+self._species_name)
+                                     "04_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
@@ -362,7 +362,7 @@ class Mapper(object):
         :param bam_file: Mapped bam file
         """
         self.logger.debug("--- Binning reads to {} ---".format(self._species_name))
-        output_folder = os.path.join(self.args.output_path, "03_read_ogs_" +
+        output_folder = os.path.join(self.args.output_path, "04_read_ogs_" +
                                      self._species_name)
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
@@ -467,7 +467,7 @@ class Mapper(object):
         """
         # self.logger.info("--- Postprocessing reads to {} ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path,
-                                     "03_mapping_"+self._species_name)
+                                     "04_mapping_"+self._species_name)
         tmp_folder = os.path.dirname(bam_file)
         outfile_name = os.path.join(tmp_folder,
                                     ref_file.split('/')[-1].split('.')[0] +
@@ -564,7 +564,7 @@ class Mapper(object):
                     raise
 
     def _clean_up_tmp_files_single(self, species):
-        output_folder = os.path.join(self.args.output_path, "03_mapping_" +
+        output_folder = os.path.join(self.args.output_path, "04_mapping_" +
                                      self._species_name)
         fn_ends = ('_post.bam', '_post_consensus_call.fq', '_post_sorted.bam',
                    '_post_sorted.bam.bai', '.fa.fai',

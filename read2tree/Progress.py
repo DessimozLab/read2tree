@@ -34,32 +34,35 @@ class Progress(object):
             self.species_to_remove = []
 
         self._folder_ref_ogs_aa = os.path.join(self.args.output_path,
-                                               "01_ref_ogs_aa")
+                                               '01_ref_ogs_aa')
         self._folder_ref_ogs_dna = os.path.join(self.args.output_path,
-                                                "01_ref_ogs_dna")
+                                                '01_ref_ogs_dna')
         self._folder_ref_dna = os.path.join(self.args.output_path,
                                             '02_ref_dna')
         self._folder_mapping = os.path.join(self.args.output_path,
-                                            "03_mapping_" + self._species_name)
-        self._folder_ogs_map = os.path.join(self.args.output_path,
-                                            "04_ogs_map" + self._species_name)
+                                            '04_mapping_' + self._species_name)
         self._folder_align_aa = os.path.join(self.args.output_path,
-                                            "05_align" + self._species_name + '_aa')
+                                            '03_align_aa')
         self._folder_align_dna = os.path.join(self.args.output_path,
-                                            "05_align" + self._species_name + '_dna')
+                                            '03_align_dna')
         self._folder_append_og_aa = os.path.join(self.args.output_path,
-                                             "04_ogs_map_" + self._species_name + '_aa')
+                                             '05_ogs_map_' + self._species_name + '_aa')
         self._folder_append_og_dna = os.path.join(self.args.output_path,
-                                              "04_ogs_map_" + self._species_name + '_dna')
+                                              '05_ogs_map_' + self._species_name + '_dna')
+        self._folder_align_append_aa = os.path.join(self.args.output_path,
+                                             '06_align_' + self._species_name + '_aa')
+        self._folder_align_append_dna = os.path.join(self.args.output_path,
+                                              '06_align_' + self._species_name + '_dna')
 
 
         # holds the status of the computation
         self._num_species = self._get_number_of_references()
         self.ref_ogs_01 = self._get_og_set_status()
         self.ref_dna_02 = self._get_reference_status()
-        self.mapping_03 = self._get_mapping_status()
-        self.append_ogs_04 = self._get_append_og_set_status()
-        self.align_05 = self._get_alignment_status()
+        self.ref_align_03 = self._get_alignment_status()
+        self.mapping_04 = self._get_mapping_status()
+        self.append_ogs_05 = self._get_append_og_set_status()
+        self.align_06 = self._get_append_alignment_status()
         self.num_completed_mappings = len(self._get_finished_mapping_folders(self.args.output_path))
         self.tree = False
 
@@ -226,10 +229,26 @@ class Progress(object):
         else:
             return False
 
+    def _get_append_alignment_status(self):
+        '''
+        Get OG status
+        :return:
+        '''
+        num_aligns_expected = self._get_number_of_alignments()
+        if os.path.exists(self._folder_align_append_aa) and os.path.exists(self._folder_align_append_dna):
+            num_align_aa = self._count_files(self._folder_align_append_aa, '*phy')
+            num_align_dna = self._count_files(self._folder_align_append_dna, '*phy')
+            if (num_aligns_expected-num_align_aa) == 0 and (num_aligns_expected-num_align_dna) == 0:
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def _get_finished_mapping_folders(self, path):
         mapping_folders_finished = []
         num_expected_mappings = self._get_number_of_references()
-        mapping_folders = [x for x in os.listdir(path) if '03' in x]
+        mapping_folders = [x for x in os.listdir(path) if '04' in x]
         for folder in mapping_folders:
             # NOTE: we are calculating the number of completed mappings as the number of existing cov files,
             # because these are written even if the mapping step did not find any reads to map to a particular reference
