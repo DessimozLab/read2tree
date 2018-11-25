@@ -21,7 +21,6 @@ from Bio.SeqIO.FastaIO import FastaWriter
 # ----------- only to be used internally; requires hdf5 installation -------------------
 #from pyoma.browser import db
 
-from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader

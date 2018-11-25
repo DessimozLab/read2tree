@@ -32,11 +32,9 @@ from read2tree.Reads import Reads
 from read2tree.ReferenceSet import Reference
 from read2tree.wrappers.read_mappers import NGM
 from read2tree.wrappers.read_mappers import NGMLR
-from read2tree.Progress import Progress
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
-from read2tree.LoggingHandler import LoggingHandler
 
 
 class Mapper(object):

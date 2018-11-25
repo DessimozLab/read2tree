@@ -19,8 +19,6 @@ from Bio.Align import MultipleSeqAlignment
 from tqdm import tqdm
 from read2tree.wrappers.aligners import Mafft
 from read2tree.utils.seq_utils import concatenate
-from read2tree.stats.Coverage import Coverage
-from read2tree.stats.SeqCompleteness import SeqCompleteness
 
 logger = logging.getLogger(__name__)
 
