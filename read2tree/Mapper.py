@@ -44,7 +44,7 @@ class Mapper(object):
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None, species_name=None,
+    def __init__(self, args, ref_set=None, og_set=None, species_name=None, progress=None,
                  load=True):
         self.args = args
         self.elapsed_time = 0
@@ -54,7 +54,7 @@ class Mapper(object):
         self._reads = self.args.reads
         self._species_name = self.args.species_name
 
-        self.progress = Progress(args)
+        self.progress = progress
         self.all_cov = {}
         self.all_sc = {}
 

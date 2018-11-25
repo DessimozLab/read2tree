@@ -265,11 +265,11 @@ def main(argv, exe_name, desc=''):
         not progress.append_ogs_05 and not progress.align_06):
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
-        ogset = OGSet(args, oma_output=oma_output)  # Generate the OGs with their DNA sequences
+        ogset = OGSet(args, oma_output=oma_output, progress=progress)  # Generate the OGs with their DNA sequences
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:
-            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -283,11 +283,11 @@ def main(argv, exe_name, desc=''):
     elif (progress.ref_ogs_01 and not progress.ref_dna_02 and
           not progress.ref_align_03 and not progress.mapping_04 and
           not progress.append_ogs_05 and not progress.align_06):
-        ogset = OGSet(args, load=False)
+        ogset = OGSet(args, load=False, progress=progress)
         reference = ReferenceSet(args, og_set=ogset.ogs, load=True)  # Generate the reference
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:  # just generate reference
-            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -304,10 +304,10 @@ def main(argv, exe_name, desc=''):
             reference = ReferenceSet(args, load=False)
             Mapper(args, ref_set=reference.ref)  # Run the mapping
         else:
-            ogset = OGSet(args, load=False)
+            ogset = OGSet(args, load=False, progress=progress)
             reference = ReferenceSet(args, load=False)
             alignments = Aligner(args, load=False)
-            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref)  # Run the mapping
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)  # Run the mapping
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -320,14 +320,14 @@ def main(argv, exe_name, desc=''):
     elif (args.merge_all_mappings and progress.ref_ogs_01 and progress.ref_dna_02 and
           progress.ref_align_03 and progress.mapping_04 and
           not progress.append_ogs_05 and not progress.align_06):
-        ogset = OGSet(args, load=False)
+        ogset = OGSet(args, load=False, progress=progress)
         alignments = Aligner(args, load=False)
         for mapping in progress._get_finished_mapping_folders(args.output_path):
             species_name = mapping.split("04_mapping_")[-1]
             logger.info('--- Addition of {} to all ogs '
                         '---'.format(species_name))
             mapper = Mapper(args, og_set=ogset.ogs,
-                            species_name=species_name, load=False)
+                            species_name=species_name, load=False, progress=progress)
             ogset.add_mapped_seq(mapper, species_name=species_name)
         ogset.write_added_ogs_aa(folder_name="05_merge_OGs_aa")
         ogset.write_added_ogs_dna(folder_name="05_merge_OGs_dna")
@@ -344,9 +344,9 @@ def main(argv, exe_name, desc=''):
     elif (not args.merge_all_mappings and progress.ref_ogs_01 and progress.ref_dna_02 and
           progress.ref_align_03 and progress.mapping_04 and
           (not progress.append_ogs_05 or not progress.align_06)):
-        ogset = OGSet(args, load=False)
+        ogset = OGSet(args, load=False, progress=progress)
         alignments = Aligner(args, load=False)
-        mapper = Mapper(args, og_set=ogset.ogs, load=False)
+        mapper = Mapper(args, og_set=ogset.ogs, load=False, progress=progress)
         ogset.add_mapped_seq(mapper)
         ogset.write_added_ogs_aa()
         ogset.write_added_ogs_dna()

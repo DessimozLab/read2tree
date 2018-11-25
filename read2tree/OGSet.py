@@ -33,7 +33,7 @@ API_URL = 'http://omabrowser.org/api'
 
 class OGSet(object):
 
-    def __init__(self, args, oma_output=None, load=True):
+    def __init__(self, args, oma_output=None, load=True, progress=None):
         self.args = args
 
         self.logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class OGSet(object):
         self._reads = self.args.reads
         self._species_name = self.args.species_name
 
-        self.progress = Progress(args)
+        self.progress = progress
         # self.progress.get_status(species_name=self._species_name)
 
         if self.args.remove_species_mapping:
@@ -62,12 +62,12 @@ class OGSet(object):
         else:
             self.species_to_remove_ogs = []
 
-        if not load and self.progress.append_ogs_05:
-            print("05_ogs_map_" + self._species_name)
-            self.mapped_ogs = self._reload_ogs_from_folder(
-                folder_suffix="05_ogs_map_" + self._species_name)
-            self.ogs = self.mapped_ogs
-        elif not load and self.progress.ref_ogs_01:
+        # if not load and self.progress.append_ogs_05:
+        #     print("05_ogs_map_" + self._species_name)
+        #     self.mapped_ogs = self._reload_ogs_from_folder(
+        #         folder_suffix="05_ogs_map_" + self._species_name)
+        #     self.ogs = self.mapped_ogs
+        if not load and self.progress.ref_ogs_01:
             self.ogs = self._reload_ogs_from_folder()
         elif load and oma_output is not None:
             self.min_species = oma_output.min_species

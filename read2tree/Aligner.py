@@ -35,6 +35,12 @@ class Aligner(object):
         self._reads = self.args.reads
         self._species_name = self.args.species_name
 
+        if self.args.remove_species_ogs:
+            self.species_to_remove_ogs = self.args \
+                .remove_species_ogs.split(",")
+        else:
+            self.species_to_remove_ogs = []
+
         self.alignments = Alignment()
 
         if load and og_set is not None:
@@ -124,32 +130,41 @@ class Aligner(object):
         :param cons_og_set: set of ogs with its mapped sequences
         """
         start = time.time()
+        num_append_seq = 0
         if not species_name:
             species_name = self._species_name
         print('--- Add inferred mapped sequence back to alignment ---')
 
         # iterate through all existing ogs
         for name_og, align in tqdm(self.alignments.items(),
-                                   desc='Adding mapped seq to OG', unit=' OGs'):
+                                   desc='Adding mapped seq to alignments', unit=' alignments'):
+            # print(align.aa)
             align_filt = self._remove_species_from_alignment(align)
+            # print(align_filt.aa)
             if len(align_filt.aa) > 2:
                 # get all species that are not mapped from original alignment
-                ref_species = [r.id for r in align_filt.aa if 'ass' not in r.id]
+                # ref_species = [r.id for r in align_filt.aa]
                 # find mapped records from appended records in OGSet
-                map_records_aa = [r for r in ogset_add[name_og].aa if r.id[0:5] not in ref_species and r.id[0:5] in species_name]
-                map_records_dna = [r for r in ogset_add[name_og].dna if r.id[0:5] not in ref_species and r.id[0:5] in species_name]
-                for r_aa, r_dna in zip(map_records_aa, map_records_dna):
-                    ref_species = self._get_species_id(r_aa)
+                map_record_aa = [r for r in ogset_add[name_og].aa if species_name in r.id]
+                # print(map_records_aa)
+                map_record_dna = [r for r in ogset_add[name_og].dna if species_name in r.id]
+                if map_record_aa and map_record_dna:
+                    ref_species = self._get_species_id(map_record_aa[0])
                     self.mapped_aligns[name_og] = Alignment()
-                    self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, r_aa, ref_species, species_name)
-                    self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, r_dna, ref_species, species_name)
+                    self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name)
+                    self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
+                    num_append_seq = num_append_seq + 1
+                elif self.args.keep_all_ogs:
+                    self.mapped_aligns[name_og] = Alignment()
+                    self.mapped_aligns[name_og].aa = align_filt.aa
+                    self.mapped_aligns[name_og].dna = align_filt.dna
         end = time.time()
         self.elapsed_time = end-start
-        # logger.info('{}: Appending {} reconstructed sequences to present Alignments '
-        #             'took {}.'
-        #             .format(self._species_name,
-        #                     len(list(cons_og_set.keys())),
-        #                     self.elapsed_time))
+        logger.info('{}: Appending {} reconstructed sequences to present Alignments '
+                    'took {}.'
+                    .format(self._species_name,
+                            num_append_seq,
+                            self.elapsed_time))
 
     def _get_codon_dict(self, aa_seq, dna_seq):
         """
@@ -312,9 +327,14 @@ class Aligner(object):
                 record.id = s
 
     def concat_alignment(self):
+
+        if self.mapped_aligns:
+            use_alignments = self.mapped_aligns
+        else:
+            use_alignments = self.alignments
         alignments_aa = []
         alignments_dna = []
-        for key, value in self.alignments.items():
+        for key, value in use_alignments.items():
             alignments_aa.append(value.aa)
             alignments_dna.append(value.dna)
         concatination_aa = concatenate(alignments_aa)
@@ -369,11 +389,46 @@ class Alignment(object):
         :param species_to_remove: list of species to be removed
         :param all_species: list of all species present in analysis
         """
-        aa = [record for i, record in enumerate(
-            self.aa) if self._get_species_id(record) not in species_to_remove]
-        dna = [record for i, record in enumerate(
-            self.dna) if self._get_species_id(record) not in species_to_remove]
+        aa = MultipleSeqAlignment([record for i, record in enumerate(
+            self.aa) if self._get_species_id(record) not in species_to_remove])
+        dna = MultipleSeqAlignment([record for i, record in enumerate(
+            self.dna) if self._get_species_id(record) not in species_to_remove])
         if len(aa) > 0 and len(dna) > 0:
             return [dna, aa]
         else:
             return None
+
+    def _get_id_rec(self, record):
+        parts = record.id.split('_')
+        if len(parts) > 2:
+            return record.id.split('_')[0]+'_'+record.id.split('_')[1]
+        else:
+            return record.id
+
+    def _get_species_id(self, record):
+        """
+        Sequences in OMA are marked by using the first three letters of genus
+        and the first 2 letters of species, e.g. Amphiura filiformis = AMPFI.
+        This however is not always the case and we therefore prioritize the id
+        (e.g. MOUSE over MUSMU that comes from Mus musculus).
+        :param description: SeqRecord description
+        :return: species_id
+        """
+        # TODO: add extension for model identifiers
+        # model_identifiers_oma = {'MUSMU': 'MOUSE', 'HOMSA': 'HUMAN',
+        #                          'SARCE': 'YEAST'}
+
+        sp_id = record.id
+        if sp_id[0:5].isalpha():  # >MUSMU
+            return sp_id[0:5]
+        else:
+            sp_description = record.description
+            species = sp_description[sp_description.find("[") +
+                                     1:sp_description.find("]")]
+            if species:  # [Mus musculus]
+                if len(species.split(" ")) > 1:
+                    new_id = species.split(" ")[0][0:3] + \
+                             species.split(" ")[1][0:2]
+                    return new_id.upper()
+                else:  # [MUSMU]
+                    return species
