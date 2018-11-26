@@ -100,7 +100,7 @@ class OGSet(object):
             aa_ids = [r.id for r in ogs[name_og].aa if name_og in r.id]
             # if not aa_ids:
             #     for r in ogs[name_og].aa:
-            #         tmp = r.id + "_" + name_og
+                #         tmp = r.id + q + name_og
             #         r.id = tmp
             # if self._remove_species:
             # ogs[name].remove_species_records(self.species_to_remove,
@@ -186,14 +186,14 @@ class OGSet(object):
             if source:
                 try:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa,
-                                                          name, db, source)
+                                                          db, source)
                 except (ValueError, TypeError):
                     self.logger.debug('This OG {} did not have '
                                  'any DNA'.format(name))
                     pass
                 else:
-                    self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna, translate=False)
-                    # self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna, translate=True)
+                    print(ogs[name].dna)
+                    self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna)
                     self._write(output_file_dna, ogs[name].dna)
                     self._write(output_file_aa, ogs[name].aa)
             else:
@@ -204,8 +204,10 @@ class OGSet(object):
         self.elapsed_time = end-start
         self.logger.info('{}: Gathering of DNA seq for {} OGs took {}.'
                          .format(self._species_name, len(names_og.keys()), self.elapsed_time))
-        db.clear()
-        self._ham_analysis = None
+        if db:
+            db.clear()
+        if self._ham_analysis:
+            self._ham_analysis = None
         return ogs
 
     def _get_aa_records(self, name, records):
@@ -273,11 +275,8 @@ class OGSet(object):
         else:
             seq = oma_record.json()['cdna']
             rec_id = oma_record.json()['omaid']
-            dna_record = SeqRecord.SeqRecord(Seq.Seq(seq),
-                                             id=rec_id,
-                                             description="", name='')
-            # if 'X' in str(dna_record.seq):
-            cleaned_seq = self._clean_DNA_seq(dna_record)
+
+            cleaned_seq = self._clean_DNA_seq(seq)
             # else:
             #     cleaned_seq = dna_record.seq
             return SeqRecord.SeqRecord(cleaned_seq, rec_id,
@@ -304,14 +303,9 @@ class OGSet(object):
                 # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
                 seq = memb['cdna']
                 rec_id = memb['omaid']
-                dna_record = SeqRecord.SeqRecord(Seq.Seq(seq),
-                                                 id=rec_id,
-                                                 description="", name='')
-                # if 'X' in str(dna_record.seq):
-                cleaned_seq = self._clean_DNA_seq(dna_record)
-                # else:
-                #     cleaned_seq = dna_record.seq
-                dna_records.append(SeqRecord.SeqRecord(cleaned_seq, rec_id,
+                cleaned_seq = self._clean_DNA_seq(seq)
+                # print(cleaned_seq)
+                dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,
                                        description="", name=""))
         return dna_records
 
@@ -329,9 +323,9 @@ class OGSet(object):
             #     return SeqRecord.SeqRecord(Seq.Seq(dna.upper()),  id=record.id,
             #                                description="")
 
-    def _check_dna_aa_length_consistency(self, og_name, aa, dna, translate=False):
-        dna_dic = {r.id.split()[0]: r for r in dna}
-        aa_dic = {r.id.split()[0]: r for r in aa}
+    def _check_dna_aa_length_consistency(self, og_name, aa, dna):
+        dna_dic = {r.id.split("_")[0]: r for r in dna}
+        aa_dic = {r.id.split("_")[0]: r for r in aa}
         for k, r_dna in dna_dic.items():
             r_aa = aa_dic[k]
             if (3*len(r_aa.seq)) != len(r_dna.seq):
@@ -341,9 +335,9 @@ class OGSet(object):
                     #     '{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name + " " + k,
                     #                                                        3 * len(r_aa.seq), len(r_dna.seq)))
                 # else:
-                self.logger.info('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
+                self.logger.debug('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
 
-    def _get_dna_records(self, records, name, db, source):
+    def _get_dna_records(self, records, db, source):
         """
 
         :param records:
@@ -351,15 +345,15 @@ class OGSet(object):
         """
         og_cdna = []
         if 'REST_api' in source:
-            return self._get_dna_from_REST_bulk(records, name)
+            return self._get_dna_from_REST_bulk(records)
         else:
             for i, record in enumerate(records):
                 if 'h5' in source:
-                    og_cdna.append(self._get_dna_from_h5(record, name))
+                    og_cdna.append(self._get_dna_from_h5(record))
                 elif 'fa' in source:
                     og_cdna.append(self._get_dna_from_fasta(record, db))
                 # elif 'REST_api' in source:
-                #     og_cdna.append(self._get_dna_from_REST(record, name))
+                #     og_cdna.append(self._get_dna_from_REST(record))
 
             return og_cdna
 
@@ -377,7 +371,7 @@ class OGSet(object):
             seq = str(record.seq).upper()
         outseq = re.sub('[^GATC]', 'N', seq)
         # remove stopcodon nucleotides
-        if 'TGA' in outseq[-3:] or 'TAA' in outseq[-3:] or 'TAG' in outseq[-3:] or 'N' in outseq[-3:]:
+        if 'TGA' in outseq[-3:] or 'TAA' in outseq[-3:] or 'TAG' in outseq[-3:] or 'NNN' in outseq[-3:]:
             outseq = outseq[:-3]
 
         return Seq.Seq(outseq, SingleLetterAlphabet())
@@ -658,9 +652,9 @@ class OG(object):
     def _get_og_dict(self, ref_og):
         dna_dict = {}
         for record in ref_og.dna:
-            # if '_' in record.id:
-            #     tmp = record.id.split("_")[0]
-            #     record.id = tmp
+            if '_' in record.id:
+                tmp = record.id.split("_")[0]
+                record.id = tmp
 
             dna_dict[record.id] = record
         return dna_dict
