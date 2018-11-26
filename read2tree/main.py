@@ -14,7 +14,6 @@
     -- David V Dylus, July--XX 2017
 '''
 import os
-import glob
 import logging
 from datetime import date
 from timeit import default_timer as timer
@@ -64,7 +63,7 @@ def parse_args(argv, exe_name, desc):
                             'ngmlr for long will be used.')
 
     arg_parser.add_argument('--split_reads', action='store_true',
-                            help='Splits reads as defined by split_len (400) '
+                            help='Splits reads as defined by split_len (200) '
                             'and split_overlap (0) parameters. ')
 
     arg_parser.add_argument('--split_len', type=int, default=200,
@@ -107,7 +106,7 @@ def parse_args(argv, exe_name, desc):
                             'the OMA standalone pipeline. Input is comma '
                             'separated list without spaces, e.g. XXX,YYY,AAA.')
 
-    arg_parser.add_argument('--sc_threshold', type=float, default=0.0,
+    arg_parser.add_argument('--sc_threshold', type=float, default=0.25,
                             help='[Default is 0.0; Range 0-1] Parameter for '
                             'selection of sequences from mapping by '
                             'completeness compared to its reference sequence '
@@ -134,7 +133,7 @@ def parse_args(argv, exe_name, desc):
                             'parameter can be found in the original '
                             'documentation of ngmlr.')
 
-    arg_parser.add_argument('--keep_all_ogs', action='store_true',
+    arg_parser.add_argument('--keep_all_ogs', action='store_true', default=True,
                             help='Keep all orthologs after addition of '
                             'mapped seq, which means also the OGs that '
                             'have no mapped sequence. Otherwise only OGs '
