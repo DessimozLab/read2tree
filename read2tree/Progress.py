@@ -139,7 +139,7 @@ class Progress(object):
         2018-11-23 12:13:53,688 - read2tree.OGSet - INFO - ass: Gathering of DNA seq for 5 OGs took 0.004261970520019531.
         :return: Number of OGs
         '''
-        log_list = self._extract_line_from_log('Aligner', 'mplog.log')
+        log_list = self._extract_line_from_log('Alignment', 'mplog.log')
         if log_list:
             return int(log_list[10])
         else:
