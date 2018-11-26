@@ -141,17 +141,17 @@ class Aligner(object):
             # print(align_filt.aa)
             if len(align_filt.aa) > 2:
                 # get all species that are not mapped from original alignment
-                # ref_species = [r.id for r in align_filt.aa]
-                # find mapped records from appended records in OGSet
-                map_record_aa = [r for r in ogset_add[name_og].aa if species_name in r.id]
-                # print(map_records_aa)
-                map_record_dna = [r for r in ogset_add[name_og].dna if species_name in r.id]
-                if map_record_aa and map_record_dna:
-                    ref_species = self._get_species_id(map_record_aa[0])
-                    self.mapped_aligns[name_og] = Alignment()
-                    self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name)
-                    self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
-                    num_append_seq = num_append_seq + 1
+                if name_og in ogset_add.keys():
+                    # find mapped records from appended records in OGSet
+                    map_record_aa = [r for r in ogset_add[name_og].aa if species_name in r.id]
+                    # print(map_records_aa)
+                    map_record_dna = [r for r in ogset_add[name_og].dna if species_name in r.id]
+                    if map_record_aa and map_record_dna:
+                        ref_species = self._get_species_id(map_record_aa[0])
+                        self.mapped_aligns[name_og] = Alignment()
+                        self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name)
+                        self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
+                        num_append_seq = num_append_seq + 1
                 elif self.args.keep_all_ogs:
                     self.mapped_aligns[name_og] = Alignment()
                     self.mapped_aligns[name_og].aa = align_filt.aa

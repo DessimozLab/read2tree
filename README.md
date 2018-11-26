@@ -56,7 +56,10 @@ python -W ignore bin/read2tree --standalone_path tests/marker_genes/ --reads ~/R
 
 #### Prerequisites
 
-• Make sure that species names are clearly identifieable by a 5 letter code (e.g. Amphiura filiformis = AMPFI)
+* Make sure that species names are clearly labeled by a 5 letter code (e.g. Amphiura filiformis = AMPFI)
+* Needs either OMA standalone export or OMA marker gene export as reference input
+* 
+
 
 #### Using OMA Standalone RUN
 
