@@ -298,6 +298,23 @@ def main(argv, exe_name, desc=''):
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             print(tree.tree)
     elif (progress.ref_ogs_01 and progress.ref_dna_02 and
+          not progress.ref_align_03 and not progress.mapping_04 and
+          not progress.append_ogs_05 and not progress.align_06):
+        ogset = OGSet(args, load=False, progress=progress)
+        reference = ReferenceSet(args, load=False, progress=progress)
+        alignments = Aligner(args, ogset.ogs, load=True)
+        if not args.reference:  # just generate reference
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
+            ogset.add_mapped_seq(mapper)
+            ogset.write_added_ogs_aa()
+            ogset.write_added_ogs_dna()
+            alignments.add_mapped_seq(ogset.mapped_ogs)
+            alignments.write_added_align_aa()
+            alignments.write_added_align_dna()
+            concat_alignment = alignments.concat_alignment()
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
+    elif (progress.ref_ogs_01 and progress.ref_dna_02 and
           progress.ref_align_03 and not progress.mapping_04 and
           not progress.append_ogs_05 and not progress.align_06):
         if args.single_mapping:
