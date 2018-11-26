@@ -1,0 +1,67 @@
+2018-11-26 15:46:40,332 - read2tree.main - INFO - assho: ------- NEW RUN -------
+2018-11-26 15:46:40,334 - read2tree.main - INFO - assho: Progress: ogs_dna False | ref False | ref_align False | mapping False | append_ogs False | align False 
+2018-11-26 15:46:40,352 - read2tree.OGSet - INFO - assho: Gathering of DNA seq for 5 OGs took 0.0046269893646240234.
+2018-11-26 15:46:40,353 - read2tree.ReferenceSet - INFO - assho: Extracted 6 reference species form 5 ogs took 0.0008080005645751953
+2018-11-26 15:46:40,385 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp_0v7wepk
+2018-11-26 15:46:40,386 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmptsm2rg0f
+2018-11-26 15:46:40,388 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp7ylniyxh
+2018-11-26 15:46:40,389 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpxg2g574n
+2018-11-26 15:46:41,150 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmprj84naov
+2018-11-26 15:46:41,416 - read2tree.Aligner - INFO - assho: Alignment of 5 OGs took 1.0603768825531006.
+2018-11-26 15:46:41,419 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-11-26 15:46:41,420 - read2tree.Mapper - INFO - assho: --- Mapping of reads to DIPOR reference species ---
+2018-11-26 15:46:41,422 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/DIPOR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/DIPOR_OGs.fa.bam
+2018-11-26 15:46:49,844 - read2tree.Mapper - INFO - assho: Mapped 3 / 2000 reads 
+2018-11-26 15:46:49,933 - read2tree.Mapper - INFO - assho: --- Mapping of reads to MOUSE reference species ---
+2018-11-26 15:46:49,935 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/MOUSE_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/MOUSE_OGs.fa.bam
+2018-11-26 15:46:57,828 - read2tree.Mapper - INFO - assho: Mapped 0 / 2000 reads 
+2018-11-26 15:46:57,888 - read2tree.Mapper - DEBUG - Reads not properly processed for further steps.
+2018-11-26 15:46:57,888 - read2tree.Mapper - DEBUG - AttributeError: 'NoneType' object has no attribute 'readline'
+2018-11-26 15:46:57,889 - read2tree.Mapper - INFO - assho: --- Mapping of reads to CIOSA reference species ---
+2018-11-26 15:46:57,890 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/CIOSA_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/CIOSA_OGs.fa.bam
+2018-11-26 15:47:05,732 - read2tree.Mapper - INFO - assho: Mapped 2 / 2000 reads 
+2018-11-26 15:47:05,797 - read2tree.Mapper - INFO - assho: --- Mapping of reads to HUMAN reference species ---
+2018-11-26 15:47:05,798 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/HUMAN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/HUMAN_OGs.fa.bam
+2018-11-26 15:47:13,335 - read2tree.Mapper - INFO - assho: Mapped 1 / 2000 reads 
+2018-11-26 15:47:13,406 - read2tree.Mapper - DEBUG - Reads not properly processed for further steps.
+2018-11-26 15:47:13,406 - read2tree.Mapper - DEBUG - AttributeError: 'NoneType' object has no attribute 'readline'
+2018-11-26 15:47:13,408 - read2tree.Mapper - INFO - assho: --- Mapping of reads to CIOIN reference species ---
+2018-11-26 15:47:13,411 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/CIOIN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_sozz2ynu/CIOIN_OGs.fa.bam
+2018-11-26 15:47:17,032 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)
+2018-11-26 15:48:15,106 - read2tree.main - INFO - assho: ------- NEW RUN -------
+2018-11-26 15:48:15,110 - read2tree.main - INFO - assho: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2018-11-26 15:48:15,125 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-11-26 15:48:15,133 - read2tree.Mapper - INFO - assho: --- Mapping of reads to CIOIN reference species ---
+2018-11-26 15:48:15,134 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_oezrdwjx/CIOIN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_oezrdwjx/CIOIN_OGs.fa.bam
+2018-11-26 15:48:18,596 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)
+2018-11-26 15:48:41,337 - read2tree.main - INFO - assho: ------- NEW RUN -------
+2018-11-26 15:48:41,340 - read2tree.main - INFO - assho: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2018-11-26 15:48:41,361 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-11-26 15:48:41,369 - read2tree.Mapper - INFO - assho: --- Mapping of reads to DIPOR reference species ---
+2018-11-26 15:48:41,371 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/DIPOR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/DIPOR_OGs.fa.bam
+2018-11-26 15:48:49,042 - read2tree.Mapper - INFO - assho: Mapped 3 / 2000 reads 
+2018-11-26 15:48:49,103 - read2tree.Mapper - INFO - assho: --- Mapping of reads to CIOSA reference species ---
+2018-11-26 15:48:49,105 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/CIOSA_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/CIOSA_OGs.fa.bam
+2018-11-26 15:48:56,901 - read2tree.Mapper - INFO - assho: Mapped 2 / 2000 reads 
+2018-11-26 15:48:56,960 - read2tree.Mapper - INFO - assho: --- Mapping of reads to CIOIN reference species ---
+2018-11-26 15:48:56,961 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/CIOIN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/CIOIN_OGs.fa.bam
+2018-11-26 15:49:04,430 - read2tree.Mapper - INFO - assho: Mapped 3 / 2000 reads 
+2018-11-26 15:49:04,491 - read2tree.Mapper - INFO - assho: --- Mapping of reads to MOUSE reference species ---
+2018-11-26 15:49:04,493 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/MOUSE_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/MOUSE_OGs.fa.bam
+2018-11-26 15:49:12,019 - read2tree.Mapper - INFO - assho: Mapped 0 / 2000 reads 
+2018-11-26 15:49:12,062 - read2tree.Mapper - DEBUG - Reads not properly processed for further steps.
+2018-11-26 15:49:12,062 - read2tree.Mapper - DEBUG - AttributeError: 'NoneType' object has no attribute 'readline'
+2018-11-26 15:49:12,063 - read2tree.Mapper - INFO - assho: --- Mapping of reads to PANTR reference species ---
+2018-11-26 15:49:12,065 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/PANTR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/PANTR_OGs.fa.bam
+2018-11-26 15:49:19,559 - read2tree.Mapper - INFO - assho: Mapped 1 / 2000 reads 
+2018-11-26 15:49:19,614 - read2tree.Mapper - DEBUG - Reads not properly processed for further steps.
+2018-11-26 15:49:19,614 - read2tree.Mapper - DEBUG - AttributeError: 'NoneType' object has no attribute 'readline'
+2018-11-26 15:49:19,615 - read2tree.Mapper - INFO - assho: --- Mapping of reads to HUMAN reference species ---
+2018-11-26 15:49:19,617 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/HUMAN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_vua3jqo8/HUMAN_OGs.fa.bam
+2018-11-26 15:49:27,112 - read2tree.Mapper - INFO - assho: Mapped 1 / 2000 reads 
+2018-11-26 15:49:27,166 - read2tree.Mapper - DEBUG - Reads not properly processed for further steps.
+2018-11-26 15:49:27,166 - read2tree.Mapper - DEBUG - AttributeError: 'NoneType' object has no attribute 'readline'
+2018-11-26 15:49:27,169 - read2tree.Mapper - INFO - assho: Mapping to all references took 45.813145875930786.
+2018-11-26 15:49:27,174 - read2tree.OGSet - INFO - assho: Appending 2 reconstructed sequences to present OG took 0.0018699169158935547.
+2018-11-26 15:49:27,182 - read2tree.Aligner - INFO - assho: Appending 1 reconstructed sequences to present Alignments took 0.0033719539642333984.
+2018-11-26 15:49:27,226 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/iqtree -mem 4G -nt 4 -m LG -pre /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/iqtreevu7e3f2y/tmp_output -s /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/iqtreevu7e3f2y/tmp_output.phy

@@ -192,7 +192,6 @@ class OGSet(object):
                                  'any DNA'.format(name))
                     pass
                 else:
-                    print(ogs[name].dna)
                     self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna)
                     self._write(output_file_dna, ogs[name].dna)
                     self._write(output_file_aa, ogs[name].aa)
@@ -224,7 +223,8 @@ class OGSet(object):
             for record in records:
                 mystr = record.description
                 record.id = [x for x in prot_ids if mystr[mystr.find(
-                    "[") + 1:mystr.find("]")] in x[0:5]][0]
+                    "[") + 1:mystr.find("]")] in x[0:5]][0]+"_"+name
+                # Remove of stop codon
                 if 'X' in record.seq[-1]:
                     tmp_seq = record.seq[0:-1]
                     record.seq = tmp_seq
