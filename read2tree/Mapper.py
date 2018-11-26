@@ -102,9 +102,8 @@ class Mapper(object):
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        self.logger.info('{}: Mapped {} / {} reads to {}'
-                    ''.format(self._species_name, ngm['reads_mapped'],
-                              ngm['total_reads']+ngm['reads_mapped']), os.path.basename(ref_file_handle))
+        self.logger.info('{}: Mapped {} / {} reads to {}'.format(self._species_name, ngm['reads_mapped'],
+                         ngm['total_reads']+ngm['reads_mapped'], os.path.basename(ref_file_handle)))
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
