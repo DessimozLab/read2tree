@@ -266,7 +266,7 @@ def main(argv, exe_name, desc=''):
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output, progress=progress)  # Generate the OGs with their DNA sequences
-        reference = ReferenceSet(args, og_set=ogset.ogs, load=True)
+        reference = ReferenceSet(args, og_set=ogset.ogs, load=True, progress=progress)
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
@@ -284,7 +284,7 @@ def main(argv, exe_name, desc=''):
           not progress.ref_align_03 and not progress.mapping_04 and
           not progress.append_ogs_05 and not progress.align_06):
         ogset = OGSet(args, load=False, progress=progress)
-        reference = ReferenceSet(args, og_set=ogset.ogs, load=True)  # Generate the reference
+        reference = ReferenceSet(args, og_set=ogset.ogs, load=True, progress=progress)  # Generate the reference
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:  # just generate reference
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
@@ -301,11 +301,11 @@ def main(argv, exe_name, desc=''):
           progress.ref_align_03 and not progress.mapping_04 and
           not progress.append_ogs_05 and not progress.align_06):
         if args.single_mapping:
-            reference = ReferenceSet(args, load=False)
+            reference = ReferenceSet(args, load=False, progress=progress)
             Mapper(args, ref_set=reference.ref)  # Run the mapping
         else:
             ogset = OGSet(args, load=False, progress=progress)
-            reference = ReferenceSet(args, load=False)
+            reference = ReferenceSet(args, load=False, progress=progress)
             alignments = Aligner(args, load=False)
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)  # Run the mapping
             ogset.add_mapped_seq(mapper)

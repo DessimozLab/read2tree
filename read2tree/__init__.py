@@ -10,7 +10,7 @@ __version__ = '0.1.2'
 __copyright__ = 'read2tree (C) 2017-{:d} David Dylus' \
                 .format(date.today().year)
 
-path = 'read2tree/log.yaml'
+path = './log.yaml'
 if os.path.exists(path):
     with open(path, 'rt') as f:
         config = yaml.load(f.read())

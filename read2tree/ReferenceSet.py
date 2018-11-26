@@ -22,7 +22,7 @@ class ReferenceSet(object):
     Structure for reference
     '''
 
-    def __init__(self, args, og_set=None, load=True):
+    def __init__(self, args, og_set=None, load=True, progress=progress):
         """
 
         :param args: list of arguments from command line
@@ -32,7 +32,7 @@ class ReferenceSet(object):
         self.ref = {}
         self.load = load
         self.args = args
-        self.progress = Progress(args)
+        self.progress = progress
 
         self.logger = logging.getLogger(__name__)
         self._species_name = self.args.species_name

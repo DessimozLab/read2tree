@@ -46,6 +46,8 @@ class OGSet(object):
         self._reads = self.args.reads
         self._species_name = self.args.species_name
 
+        self._ham_analysis = None
+
         self.progress = progress
         # self.progress.get_status(species_name=self._species_name)
 
@@ -111,6 +113,15 @@ class OGSet(object):
             os.makedirs(path)
         return path
 
+    def _load_orthoxml(self):
+        if self.oma.mode is 'standalone':
+            og_orthoxml = os.path.join(self.oma_output_path,
+                                       'OrthologousGroups.orthoxml')
+            tree_str = os.path.join(self.oma_output_path,
+                                    'EstimatedSpeciesTree.nwk')
+            self._ham_analysis = pyham.Ham(tree_str, og_orthoxml,
+                                     use_internal_name=False)
+
     def _load_dna_db(self):
         if '.fa' in self.args.dna_reference or \
            '.fasta' in self.args.dna_reference:
@@ -153,6 +164,7 @@ class OGSet(object):
         :return: Dictionary with og name as key and list of SeqRecords
         """
         db, source = self._load_dna_db()
+        self._load_orthoxml()
         start = time.time()
         ogs = {}
 
@@ -184,12 +196,14 @@ class OGSet(object):
                     self._write(output_file_aa, ogs[name].aa)
             else:
                 self.logger.debug('DNA reference was not provided. '
-                             'Only amino acid sequences gathered!')
+                                  'Only amino acid sequences gathered!')
         # self.progress.set_status('ogs')
         end = time.time()
         self.elapsed_time = end-start
         self.logger.info('{}: Gathering of DNA seq for {} OGs took {}.'
-                    .format(self._species_name, len(names_og.keys()), self.elapsed_time))
+                         .format(self._species_name, len(names_og.keys()), self.elapsed_time))
+        db.clear()
+        self._ham_analysis = None
         return ogs
 
     def _get_aa_records(self, name, records):
@@ -200,13 +214,7 @@ class OGSet(object):
         :return:
         """
         if self.oma.mode is 'standalone':
-            og_orthoxml = os.path.join(self.oma_output_path,
-                                       'OrthologousGroups.orthoxml')
-            tree_str = os.path.join(self.oma_output_path,
-                                    'EstimatedSpeciesTree.nwk')
-            ham_analysis = pyham.Ham(tree_str, og_orthoxml,
-                                     use_internal_name=False)
-            og_ham = ham_analysis.get_hog_by_id(name[2:])
+            og_ham = self._ham_analysis.get_hog_by_id(name[2:])
             prot_ids = [gene.prot_id.split(" | ")[0]
                         for gene in og_ham.get_all_descendant_genes()]
             for record in records:
