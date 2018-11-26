@@ -186,7 +186,7 @@ class OGSet(object):
             if source:
                 try:
                     ogs[name].dna = self._get_dna_records(ogs[name].aa,
-                                                          db, source)
+                                                          db, source, name)
                 except (ValueError, TypeError):
                     self.logger.debug('This OG {} did not have '
                                  'any DNA'.format(name))
@@ -282,7 +282,7 @@ class OGSet(object):
             return SeqRecord.SeqRecord(cleaned_seq, rec_id,
                                        description="", name="")
 
-    def _get_dna_from_REST_bulk(self, records):
+    def _get_dna_from_REST_bulk(self, records, og_name):
         """
 
         :param record:
@@ -302,7 +302,7 @@ class OGSet(object):
             for memb in group_members:
                 # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
                 seq = memb['cdna']
-                rec_id = memb['omaid']
+                rec_id = memb['omaid']+"_"+og_name
                 cleaned_seq = self._clean_DNA_seq(seq)
                 # print(cleaned_seq)
                 dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,
@@ -337,7 +337,7 @@ class OGSet(object):
                 # else:
                 self.logger.debug('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
 
-    def _get_dna_records(self, records, db, source):
+    def _get_dna_records(self, records, db, source, og_name):
         """
 
         :param records:
@@ -345,7 +345,7 @@ class OGSet(object):
         """
         og_cdna = []
         if 'REST_api' in source:
-            return self._get_dna_from_REST_bulk(records)
+            return self._get_dna_from_REST_bulk(records, og_name)
         else:
             for i, record in enumerate(records):
                 if 'h5' in source:
