@@ -102,9 +102,9 @@ class Mapper(object):
                 ngm_wrapper.options.options['-R'].set_value(float(par[2]))
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        self.logger.info('{}: Mapped {} / {} reads '
+        self.logger.info('{}: Mapped {} / {} reads to {}'
                     ''.format(self._species_name, ngm['reads_mapped'],
-                              ngm['total_reads']+ngm['reads_mapped']))
+                              ngm['total_reads']+ngm['reads_mapped']), os.path.basename(ref_file_handle))
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
@@ -359,7 +359,7 @@ class Mapper(object):
         :param ref_file: Current species reference file
         :param bam_file: Mapped bam file
         """
-        self.logger.debug("--- Binning reads to {} ---".format(self._species_name))
+        self.logger.debug("{}: --- Binning reads ---".format(self._species_name))
         output_folder = os.path.join(self.args.output_path, "04_read_ogs_" +
                                      self._species_name)
         if not os.path.exists(output_folder):
@@ -471,8 +471,8 @@ class Mapper(object):
                                     ref_file.split('/')[-1].split('.')[0] +
                                     "_post")
         if self.args.single_mapping:
-            self.logger.debug("--- POSTPROCESSING MAPPING FOR {} "
-                         "---".format(self._species_name.upper()))
+            self.logger.debug("{}: --- POSTPROCESSING MAPPING "
+                         "---".format(self._species_name))
 
         # ngmlr doesn't have the option to write in bam file directly
         if 'sam' in bam_file.split(".")[-1]:
@@ -483,7 +483,7 @@ class Mapper(object):
                     'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) +
                     ' -o ' + bam_file + " " + sam_file)
         if self.args.single_mapping:
-            self.logger.debug("---- Samtools view completed for {}"
+            self.logger.debug("{}: ---- Samtools view completed"
                          .format(self._species_name))
 
         if os.path.exists(bam_file):
@@ -491,7 +491,7 @@ class Mapper(object):
                 'samtools sort -m 2G  -@ ' + str(self.args.threads) +
                 ' -o ' + outfile_name + "_sorted.bam " + bam_file)
         if self.args.single_mapping:
-            self.logger.debug("---- Samtools sort completed for {} "
+            self.logger.debug("{}: ---- Samtools sort completed"
                          .format(self._species_name))
 
         if os.path.exists(outfile_name + "_sorted.bam"):
@@ -500,7 +500,7 @@ class Mapper(object):
                 outfile_name + "_sorted.bam")
             # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
         if self.args.single_mapping:
-            self.logger.debug("---- Samtools index completed for {} "
+            self.logger.debug("{}: ---- Samtools index completed"
                          .format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
@@ -517,8 +517,8 @@ class Mapper(object):
         #             .format(self._species_name, ref_file.split("_")[0],
         #                     mapped_reads, all_reads))
 
-        if self.args.single_mapping:
-            self.logger.debug("---- Number of mapped reads {} ")
+        # if self.args.single_mapping:
+        #     self.logger.debug("---- Number of mapped reads {} ")
 
         all_consensus = []
         if consensus:
