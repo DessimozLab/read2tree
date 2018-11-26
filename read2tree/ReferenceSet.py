@@ -22,7 +22,7 @@ class ReferenceSet(object):
     Structure for reference
     '''
 
-    def __init__(self, args, og_set=None, load=True, progress=progress):
+    def __init__(self, args, og_set=None, load=True, progress=None):
         """
 
         :param args: list of arguments from command line
