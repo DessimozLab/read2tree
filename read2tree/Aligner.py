@@ -139,7 +139,7 @@ class Aligner(object):
             # print(align.aa)
             align_filt = self._remove_species_from_alignment(align)
             # print(align_filt.aa)
-            if len(align_filt.aa) > 2:
+            if len(align_filt.aa) >= 2:
                 # get all species that are not mapped from original alignment
                 if name_og in ogset_add.keys():
                     # find mapped records from appended records in OGSet
@@ -216,6 +216,9 @@ class Aligner(object):
             if name in self.mapped_aligns.keys():
                 output_file = os.path.join(align_with_mapped_seq, name + ".fa")
                 self._write(output_file, self.mapped_aligns[name].aa)
+            elif self.args.keep_all_ogs:
+                output_file = os.path.join(align_with_mapped_seq, name + ".fa")
+                self._write(output_file, value.aa)
 
     def write_added_align_dna(self, folder_name=None):
         """
@@ -235,6 +238,9 @@ class Aligner(object):
             if name in self.mapped_aligns.keys():
                 output_file = os.path.join(align_with_mapped_seq, name + ".fa")
                 self._write(output_file, self.mapped_aligns[name].dna)
+            elif self.args.keep_all_ogs:
+                output_file = os.path.join(align_with_mapped_seq, name + ".fa")
+                self._write(output_file, value.dna)
 
     def _align_worker(self, og_set):
         align_dict = {}
