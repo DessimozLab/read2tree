@@ -152,6 +152,10 @@ class Aligner(object):
                         self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name)
                         self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
                         num_append_seq = num_append_seq + 1
+                    elif self.args.keep_all_ogs:
+                        self.mapped_aligns[name_og] = Alignment()
+                        self.mapped_aligns[name_og].aa = align_filt.aa
+                        self.mapped_aligns[name_og].dna = align_filt.dna
                 elif self.args.keep_all_ogs:
                     self.mapped_aligns[name_og] = Alignment()
                     self.mapped_aligns[name_og].aa = align_filt.aa
