@@ -60,7 +60,7 @@ class Progress(object):
         self.ref_ogs_01 = self._get_og_set_status()
         self.ref_dna_02 = self._get_reference_status()
         self.ref_align_03 = self._get_alignment_status()
-        self.mapping_04 = self._get_mapping_status()
+        self.mapping_04 = self._get_mapping_status()  # add here True for species removal test
         self.append_ogs_05 = self._get_append_og_set_status()
         self.align_06 = self._get_append_alignment_status()
         self.num_completed_mappings = len(self._get_finished_mapping_folders(self.args.output_path))

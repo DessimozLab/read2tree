@@ -50,7 +50,17 @@ class Mapper(object):
         self.logger = logging.getLogger(__name__)
 
         self._reads = self.args.reads
-        self._species_name = self.args.species_name
+        if not species_name:
+            self._species_name = self.args.species_name
+        else:
+            self._species_name = species_name
+
+        # #------- uncomment this for species removal test ---------
+        # if args.reads:
+        #     if len(args.reads) == 2:
+        #         self._species_name = self._reads[0].split("/")[-1].split(".")[0]
+        #     else:
+        #         self._species_name = self._reads.split("/")[-1].split(".")[0]
 
         self.progress = progress
         self.all_cov = {}
