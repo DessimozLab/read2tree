@@ -192,6 +192,9 @@ def parse_args(argv, exe_name, desc):
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
+    _reads = None
+    _species_name = None
+
     if args.reads:
         if len(args.reads) == 2:
             _reads = args.reads
