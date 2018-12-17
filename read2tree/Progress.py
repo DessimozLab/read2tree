@@ -268,11 +268,14 @@ class Progress(object):
 
     def _get_mapping_status(self):
         mapping_folders = self._get_finished_mapping_folders(self.args.output_path)
-        if len(mapping_folders) > 0:
-            self.num_completed_mappings = len(mapping_folders)
-            # self.logger.info('{}: Mapping completed!'.format(self._species_name))
-            return True
+        if mapping_folders:
+            if len(mapping_folders) > 0:
+                self.num_completed_mappings = len(mapping_folders)
+                # self.logger.info('{}: Mapping completed!'.format(self._species_name))
+                return True
+            else:
+                self.num_completed_mappings = 0
+                # self.logger.info('{}: Mapping not completed!'.format(self._species_name))
+                return False
         else:
-            self.num_completed_mappings = 0
-            # self.logger.info('{}: Mapping not completed!'.format(self._species_name))
             return False

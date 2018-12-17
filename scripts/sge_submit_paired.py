@@ -32,7 +32,7 @@ def get_name_to_id(df):
         else:
             index = 0
             use_id = new_id
-        name_to_id[ogr] = new_id
+        name_to_id[ogr] = use_id
     return name_to_id
 
 
