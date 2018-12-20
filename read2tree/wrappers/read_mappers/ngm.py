@@ -46,19 +46,22 @@ class NGM(ReadMapper):
         start = time.time()  # time the execution
         if self.read_input_type == ReadInput.OBJECT:  # different operation depending on what it is
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
+                print('here')
                 SeqIO.write(self.ref_input, filehandle, 'fastq')
                 filehandle.seek(0)
                 output, error = self._call(self.read_input, filehandle.name,
                                            self.tmp_folder, *args, **kwargs)
                 self.result = self._read_result(error, self.ref_input, self.tmp_folder)
         elif self.read_input_type == ReadInput.STRING:
-            with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
-                filehandle.write(self.read_input)
-                filehandle.seek(0)
-                output, error = self._call(self.ref_input, filehandle.name,
+            #with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
+            #    print('da')
+            #    SeqIO.write(self.ref_input, filehandle, 'fastq')
+            #    filehandle.seek(0)
+            output, error = self._call(self.ref_input, self.read_input,
                                            self.tmp_folder, *args, **kwargs)
-                self.result = self._read_result(error, self.ref_input, self.tmp_folder)
+            self.result = self._read_result(error, self.ref_input, self.tmp_folder)
         elif self.read_input_type == ReadInput.FILENAME:
+            print('dort')
             output, error = self._call(self.ref_input, self.read_input,
                                        self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result

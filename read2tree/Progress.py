@@ -268,6 +268,7 @@ class Progress(object):
 
     def _get_mapping_status(self):
         mapping_folders = self._get_finished_mapping_folders(self.args.output_path)
+        print(mapping_folders)
         if mapping_folders:
             if len(mapping_folders) > 0:
                 self.num_completed_mappings = len(mapping_folders)

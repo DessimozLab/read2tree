@@ -136,7 +136,7 @@ class OGSet(object):
                 for name, seq, qual in tqdm(fasta_reader.readfx(f),
                                             desc='Loading db', unit=' seq'):
                     seq_id = name.lstrip('>').lstrip().rstrip()
-                    db[seq_id] = seq
+                    db[seq_id.split()[0]] = seq
             # db = SeqIO.index(self.args.dna_reference, "fasta")
             source = 'fa'
             return db, source
@@ -268,11 +268,13 @@ class OGSet(object):
         :return:
         """
         try:
-            oma_record = requests.get(API_URL + "/protein/" + record.id + "/")
+            print(record)
+            oma_record = requests.get(API_URL + "/protein/" + record.id.split("_")[0] + "/")
         except requests.exceptions.RequestException:
             self.logger.debug('DNA not found for {}.'.format(record.id))
             pass
         else:
+            print(oma_record.json())
             seq = oma_record.json()['cdna']
             rec_id = oma_record.json()['omaid']
 
@@ -310,8 +312,13 @@ class OGSet(object):
         return dna_records
 
     def _get_dna_from_fasta(self, record, db):
+        print(db.keys())
         try:
-            dna = db[record.id.split("_")[0]]
+            if record.id.split("_")[0] not in db.keys():
+                print('here we are')
+                return self._get_dna_from_REST(record)
+            else:
+                dna = db[record.id.split("_")[0]]
         except ValueError:
             self.logger.debug('DNA not found for {}.'.format(record.id))
             pass
