@@ -268,9 +268,9 @@ class OGSet(object):
         :return:
         """
         try:
-            oma_record = requests.get(API_URL + "/protein/" + record.id + "/")
+            oma_record = requests.get(API_URL + "/protein/" + record.id.split("_")[0] + "/")
         except requests.exceptions.RequestException:
-            self.logger.debug('DNA not found for {}.'.format(record.id))
+            self.logger.debug('DNA not found for {}.'.format(record.id.split("_")[0]))
             pass
         else:
             seq = oma_record.json()['cdna']
@@ -281,6 +281,7 @@ class OGSet(object):
             #     cleaned_seq = dna_record.seq
             return SeqRecord.SeqRecord(cleaned_seq, rec_id,
                                        description="", name="")
+
 
     def _get_dna_from_REST_bulk(self, records, og_name):
         """
@@ -311,7 +312,10 @@ class OGSet(object):
 
     def _get_dna_from_fasta(self, record, db):
         try:
-            dna = db[record.id.split("_")[0]]
+            if record.id.split("_")[0] not in db.keys():
+                return self._get_dna_from_REST(record)
+            else:
+                dna = db[record.id.split("_")[0]]
         except ValueError:
             self.logger.debug('DNA not found for {}.'.format(record.id))
             pass
