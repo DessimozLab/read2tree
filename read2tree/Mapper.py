@@ -455,9 +455,9 @@ class Mapper(object):
                 # qualities = [pileupread.alignment.query_alignment_qualities[pileupread.query_position] for pileupread in
                 #        pileupcolumn.pileups if not pileupread.is_del and not pileupread.is_refskip]
                 bases = [pileupread.alignment.query_sequence
-                         [pileupread.query_position] for pileupread in
-                         pileup_column.pileups if not pileupread.is_del and
-                         not pileupread.is_refskip]
+                     [pileupread.query_position] for pileupread in
+                     pileup_column.pileups if not pileupread.is_del and
+                     not pileupread.is_refskip and pileup_column.n >= self.args.min_cons_coverage]
                 if bases:
                     seq[pileup_column.pos] = self._most_common(bases)
             if len(set(seq)) > 1:  # make sure that mapped sequence contains not only N

@@ -312,7 +312,6 @@ class OGSet(object):
         return dna_records
 
     def _get_dna_from_fasta(self, record, db):
-        print(db.keys())
         try:
             if record.id.split("_")[0] not in db.keys():
                 return self._get_dna_from_REST(record)

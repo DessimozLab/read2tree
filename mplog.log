@@ -1,0 +1,60 @@
+2018-12-20 17:28:35,186 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2018-12-20 17:28:35,188 - read2tree.main - INFO - test_1b: Progress: ogs_dna False | ref False | ref_align False | mapping False | append_ogs False | align False 
+2018-12-20 17:28:35,224 - read2tree.OGSet - INFO - test_1b: Gathering of DNA seq for 5 OGs took 0.01160883903503418.
+2018-12-20 17:28:35,226 - read2tree.ReferenceSet - INFO - test_1b: Extracted 6 reference species form 5 ogs took 0.0010199546813964844
+2018-12-20 17:28:35,266 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp928qot61
+2018-12-20 17:29:29,102 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2018-12-20 17:29:29,103 - read2tree.main - INFO - test_1b: Progress: ogs_dna False | ref False | ref_align False | mapping False | append_ogs False | align False 
+2018-12-20 17:29:29,138 - read2tree.OGSet - INFO - test_1b: Gathering of DNA seq for 5 OGs took 0.0220029354095459.
+2018-12-20 17:29:29,140 - read2tree.ReferenceSet - INFO - test_1b: Extracted 6 reference species form 5 ogs took 0.001300811767578125
+2018-12-20 17:29:29,183 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpo7g_mqyg
+2018-12-20 17:29:29,185 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp243evvpf
+2018-12-20 17:29:29,187 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpzfn_rerc
+2018-12-20 17:29:29,188 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpw8b3z4_t
+2018-12-20 17:30:43,110 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2018-12-20 17:30:43,112 - read2tree.main - INFO - test_1b: Progress: ogs_dna False | ref False | ref_align False | mapping False | append_ogs False | align False 
+2018-12-20 17:30:43,130 - read2tree.OGSet - INFO - test_1b: Gathering of DNA seq for 5 OGs took 0.003921985626220703.
+2018-12-20 17:30:43,132 - read2tree.ReferenceSet - INFO - test_1b: Extracted 6 reference species form 5 ogs took 0.0015158653259277344
+2018-12-20 17:30:43,172 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmppigqjpit
+2018-12-20 17:30:43,171 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmppqjgp4m0
+2018-12-20 17:30:43,170 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp3glfpury
+2018-12-20 17:30:43,175 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpz6q5xeip
+2018-12-20 17:34:18,352 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2018-12-20 17:34:18,354 - read2tree.main - INFO - test_1b: Progress: ogs_dna False | ref False | ref_align False | mapping False | append_ogs False | align False 
+2018-12-20 17:34:18,378 - read2tree.OGSet - INFO - test_1b: Gathering of DNA seq for 5 OGs took 0.0040280818939208984.
+2018-12-20 17:34:18,380 - read2tree.ReferenceSet - INFO - test_1b: Extracted 6 reference species form 5 ogs took 0.0011630058288574219
+2018-12-20 17:34:18,414 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp5rgvz4bh
+2018-12-20 17:34:18,416 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp95x_g2m7
+2018-12-20 17:34:18,417 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp86qt3oeu
+2018-12-20 17:34:18,419 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpnqk1133j
+2018-12-20 17:34:19,223 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --auto --maxiterate 1000 /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpw7xlonae
+2018-12-20 17:34:19,937 - read2tree.Aligner - INFO - test_1b: Alignment of 5 OGs took 1.5553200244903564.
+2018-12-20 17:34:19,940 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-12-20 17:34:19,967 - read2tree.Reads - INFO - test_1b: Mate pairs are consistent.
+2018-12-20 17:34:19,969 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to CIOIN reference species ---
+2018-12-20 17:34:19,971 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3td3qpxz/CIOIN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3td3qpxz/CIOIN_OGs.fa.bam
+2018-12-20 17:34:31,113 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)
+2018-12-20 17:38:46,538 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2018-12-20 17:38:46,541 - read2tree.main - INFO - test_1b: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2018-12-20 17:38:46,561 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-12-20 17:38:46,591 - read2tree.Reads - INFO - test_1b: Mate pairs are consistent.
+2018-12-20 17:38:46,592 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to CIOSA reference species ---
+2018-12-20 17:38:46,594 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_m4l078sq/CIOSA_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_m4l078sq/CIOSA_OGs.fa.bam
+2018-12-20 17:38:56,493 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)
+2018-12-20 17:48:56,249 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2018-12-20 17:48:56,252 - read2tree.main - INFO - test_1b: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2018-12-20 17:48:56,271 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-12-20 17:48:56,298 - read2tree.Reads - INFO - test_1b: Mate pairs are consistent.
+2018-12-20 17:48:56,299 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to DIPOR reference species ---
+2018-12-20 17:48:56,301 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_xb6sq842/DIPOR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_xb6sq842/DIPOR_OGs.fa.bam
+2018-12-20 17:49:06,800 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)
+2018-12-20 17:56:57,888 - read2tree.main - INFO - test_1a: ------- NEW RUN -------
+2018-12-20 17:56:57,892 - read2tree.main - INFO - test_1a: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2018-12-20 17:56:57,912 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-12-20 17:58:16,604 - read2tree.main - INFO - test_1a: ------- NEW RUN -------
+2018-12-20 17:58:16,607 - read2tree.main - INFO - test_1a: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2018-12-20 17:58:16,625 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2018-12-20 17:58:16,853 - read2tree.Reads - INFO - test_1a: Mate pairs are consistent.
+2018-12-20 17:58:16,854 - read2tree.Mapper - INFO - test_1a: --- Mapping of reads to PANTR reference species ---
+2018-12-20 17:58:16,855 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_35ke3jqq/PANTR_OGs.fa -1 tests/data/reads/test_1a.996.fq.gz -2 tests/data/reads/test_2a.fq.gz -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_35ke3jqq/PANTR_OGs.fa.bam
+2018-12-20 17:58:22,230 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)

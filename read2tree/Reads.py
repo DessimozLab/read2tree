@@ -286,7 +286,7 @@ class Reads(object):
     def _sample_read_file(self, file, select_idx):
         initial_length = 0
         sampling_length = 0
-
+        select_idx = list(select_idx)
         record_number = 0
         # print(os.path.getsize(file))
         out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fq',

@@ -61,7 +61,6 @@ class NGM(ReadMapper):
                                            self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input, self.tmp_folder)
         elif self.read_input_type == ReadInput.FILENAME:
-            print('dort')
             output, error = self._call(self.ref_input, self.read_input,
                                        self.tmp_folder, *args, **kwargs)
             self.result = self._read_result(error, self.ref_input, self.tmp_folder)  # store result
