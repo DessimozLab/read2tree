@@ -6,10 +6,9 @@ import glob
 import time
 import subprocess
 import pandas as pd
-import numpy as np
 
 
-def get_download_string(species_id, sra):
+def get_download_string(species_id, sra, layout):
     sra_string = ''
     for i in sra:
         sra_string += '\"'+i+'\"'
@@ -30,21 +29,41 @@ mkdir /scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
 echo 'Created read $speciesid'
 cd /scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
 declare -a sra_all=(%s)
-for sra in "${sra_all}"
-do
-    ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra ./
-    echo 'Finished download'
-    fastq-dump --split-files --gzip $sra.sra
-    echo 'Finished fastq-dump'
-    rm $sra.sra
-done
-cat *\_1.* > $speciesid\_1.fq.gz
-cat *\_2.* > $speciesid\_2.fq.gz
-for sra in "${sra_all}"
-do
-    rm sra*
-done
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip())
+if [ "%s" == "PAIRED" ]
+then
+    for sra in "${sra_all[@]}"
+    do
+        ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra ./
+        echo 'Finished download'
+        fastq-dump --split-files --gzip $sra.sra
+        echo 'Finished fastq-dump'
+        # rm $sra.sra
+    done
+    find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
+    find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
+    #cat *\_1.* > $speciesid\_1.fq.gz
+    #cat *\_2.* > $speciesid\_2.fq.gz
+    for sra in "${sra_all[@]}"
+    do
+        rm $sra*
+    done
+else
+    for sra in "${sra_all[@]}"
+    do
+        ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra ./
+        echo 'Finished download'
+        fastq-dump --gzip $sra.sra
+        echo 'Finished fastq-dump'
+        # rm $sra.sra
+    done
+    find . -name "*.gz" | sort -V | xargs cat > $speciesid\_1.fq.gz
+    for sra in "${sra_all[@]}"
+    do
+        rm $sra*
+    done
+fi
+
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip(), layout)
 
 
     text_file = open('down_py_script.sh', "w")
@@ -55,60 +74,58 @@ echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id,
 
 
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
-    if se_pe is 'PAIRED' and read_type is 'short':
+    if se_pe in 'PAIRED' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_%s.o%sJ
-#BSUB -e /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.o%J
+#BSUB -e /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.e%J
 #BSUB -u david.dylus@unil.ch
-#BSUB -J r2t_%s
-#BSUB -n 1
-#BSUB -R "span[ptile=1]"
+#BSUB -J r2t_{species_id}
+#BSUB -n 4
+#BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
-reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/%s
+reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/{species_id}
 cd /scratch/beegfs/weekly/ddylus/metazoan/r2t/
 python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
---output_path . --single_mapping {reference} \
---threads 4 --min_species 0 --read_type short """.format(species_id=species_id,
-                                                reference=reference)
-    elif se_pe is 'SINGLE' and read_type is 'short':
+--output_path . --single_mapping 02_ref_dna/{reference} --check_mate_pairing \
+--threads 4 --min_species 0 --read_type short """.format(species_id=species_id, reference=os.path.basename(reference))
+    elif se_pe in 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
-#BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_%s.o%sJ
-#BSUB -e /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.o%J
+#BSUB -e /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.e%J
 #BSUB -u david.dylus@unil.ch
-#BSUB -J r2t_%s
-#BSUB -n 1
-#BSUB -R "span[ptile=1]"
+#BSUB -J r2t_{species_id}
+#BSUB -n 4
+#BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
-reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/%s
+reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/{species_id}
 cd /scratch/beegfs/weekly/ddylus/metazoan/r2t/
 python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree  \
---reads $reads/{species_id}_1.fq \
---output_path . --single_mapping {reference} \
---threads 4 --min_species 0 --sample_reads""".format(species_id=species_id,
-                                                reference=reference)
+--reads $reads/{species_id}_1.fq.gz \
+--output_path . --single_mapping 02_ref_dna/{reference} \
+--threads 4 --min_species 0 --read_type short""".format(species_id=species_id, reference=os.path.basename(reference))
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
-#BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_%s.o%sJ
-#BSUB -e /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_%s.e%sJ
+#BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.o%J
+#BSUB -e /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.e%J
 #BSUB -u david.dylus@unil.ch
-#BSUB -J r2t_%s
-#BSUB -n 1
-#BSUB -R "span[ptile=1]"
+#BSUB -J r2t_{species_id}
+#BSUB -n 4
+#BSUB -R "span[ptile=4]"
 #BSUB -R "rusage[mem=4000]"
 #BSUB -M 4000000
 source activate r2t
-reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/%s
+reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/{species_id}
 cd /scratch/beegfs/weekly/ddylus/metazoan/r2t/
 python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree \
---reads $reads/{species_id}_1.fq \
+--reads $reads/{species_id}_1.fq.gz \
 --output_path . \
---single_mapping {reference} --threads 4 --min_species 8 --read_type short \
---split_reads""".format(species_id=species_id, reference=reference)
+--single_mapping 02_ref_dna/{reference} --threads 4 --min_species 8 --read_type short \
+--split_reads""".format(species_id=species_id, reference=os.path.basename(reference))
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
     text_file.close()
@@ -191,7 +208,7 @@ def run_lsf(sra_dic, output_r2t):
             print('Submitting species {} with species id {}!'.format(species, species_id))
             if num_job_cycles < 7:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
-                job_string = get_download_string(species_id, sra[0])
+                job_string = get_download_string(species_id, sra[0], sra[1])
 
                 # Open a pipe to the bsub command.
                 p_download = output_shell('bsub < ' + job_string)
@@ -230,7 +247,7 @@ def run_lsf(sra_dic, output_r2t):
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
                 # Set up download string
-                job_string = get_download_string(species_id, sra[0])
+                job_string = get_download_string(species_id, sra[0], sra[1])
 
                 # Open a pipe to the bsub command.
                 p_download = output_shell(
@@ -301,7 +318,7 @@ def main():
     sra_dic = {}
     for i, row in df.iterrows():
         if row['oma_ids'] not in species:
-            sra_dic[row['species_ids']] = [[row['sra'].rstrip()], 'PAIRED', 'short', row['oma_ids']]
+            sra_dic[row['species_ids']] = [[row['sra'].rstrip()], row['layout'].rstrip(), 'short', row['oma_ids'].rstrip()]
 
     run_lsf(sra_dic, output_r2t)
 
