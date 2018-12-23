@@ -282,7 +282,7 @@ class OGSet(object):
             cleaned_seq = self._clean_DNA_seq(seq)
             # else:
             #     cleaned_seq = dna_record.seq
-            return SeqRecord.SeqRecord(cleaned_seq, rec_id,
+            return SeqRecord.SeqRecord(cleaned_seq, record.id,
                                        description="", name="")
 
 
