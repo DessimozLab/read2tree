@@ -1,6 +1,6 @@
 from Bio.SeqIO.FastaIO import FastaWriter
 from Bio import SeqIO
-import tqdm, os, glob
+import tqdm, os, glob, re
 from xml.dom import minidom
 
 
@@ -19,7 +19,8 @@ def _get_all_ids(f_orthoxml):
     itemlist = xmldoc.getElementsByTagName('gene')
     print(" --- loading all protids ---")
     for s in tqdm.tqdm(itemlist):
-        all_prot_ids.append(s.attributes['protId'].value)
+        tmp = s.attributes['protId'].value
+        all_prot_ids.append(tmp)
     return all_prot_ids
 
 
@@ -43,7 +44,10 @@ def run(orthogroups_fasta_folder, orthogroups_xml, output_path):
     for f in tqdm.tqdm(glob.glob(os.path.join(orthogroups_fasta_folder, '*.fa'))):
         records = list(SeqIO.parse(f, 'fasta'))
         for rec in records:
-            new_id = _find_index_substring(all_prot_ids, rec.id)
+            tmp = rec.description.split()[-2]
+            tmp_id = re.sub(r'\..*', '', tmp)
+            use_id = re.sub(r'\W+', '', tmp_id)
+            new_id = _find_index_substring(all_prot_ids, use_id)
             if new_id:
                 rec.id = all_prot_ids[new_id]
                 new_description = rec.description.split()[-1]

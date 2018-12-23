@@ -275,7 +275,6 @@ class OGSet(object):
             self.logger.debug('DNA not found for {}.'.format(use_id))
             pass
         else:
-            print(oma_record.json())
             seq = oma_record.json()['cdna']
             rec_id = oma_record.json()['omaid']
 
