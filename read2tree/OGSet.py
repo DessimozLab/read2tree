@@ -267,10 +267,11 @@ class OGSet(object):
         :param name:
         :return:
         """
+        use_id = re.sub(r'\W+', '', record.id.split("_")[0])
         try:
-            oma_record = requests.get(API_URL + "/protein/" + record.id.split("_")[0] + "/")
+            oma_record = requests.get(API_URL + "/protein/" + use_id + "/")
         except requests.exceptions.RequestException:
-            self.logger.debug('DNA not found for {}.'.format(record.id.split("_")[0]))
+            self.logger.debug('DNA not found for {}.'.format(use_id))
             pass
         else:
             print(oma_record.json())
