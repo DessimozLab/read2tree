@@ -267,7 +267,8 @@ class OGSet(object):
         :param name:
         :return:
         """
-        use_id = re.sub(r'\W+', '', record.id.split("_")[0])
+        tmp_id = re.sub(r'\..*', '', record.id.split("_")[0])
+        use_id = re.sub(r'\W+', '', tmp_id)
         try:
             oma_record = requests.get(API_URL + "/protein/" + use_id + "/")
         except requests.exceptions.RequestException:
