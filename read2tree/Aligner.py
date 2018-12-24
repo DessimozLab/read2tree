@@ -271,7 +271,10 @@ class Aligner(object):
             codons = self._get_codon_dict_og(value)
             align = Alignment()
             align.aa = alignment
-            align.dna = self._get_translated_alignment(codons, alignment)
+            try:
+                align.dna = self._get_translated_alignment(codons, alignment)
+            except ValueError as v:
+                logger.info('{} with error {}'.format(key, v))
             align_dict[key] = align
 
             og_name = key.split("/")[-1]
