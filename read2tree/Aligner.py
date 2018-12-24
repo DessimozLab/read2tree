@@ -175,8 +175,8 @@ class Aligner(object):
         :param dna_seq: dna sequence string
         :return: dictionary with codons, e.g 'M':'AGT'
         """
-        codons = {i: [aa_seq[i], dna_seq[3*i:3*i+3]] for i, x in enumerate(aa_seq)}
-        codons['-'] = '---'
+        codons = {i: [aa_seq[i], dna_seq[3 * i:3 * i + 3]] for i, x in enumerate(aa_seq)}
+        # codons['-'] = '---'
         return codons
 
     def _get_codon_dict_og(self, og):
