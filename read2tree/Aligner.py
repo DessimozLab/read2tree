@@ -95,8 +95,8 @@ class Aligner(object):
         try:
             new = [map_record[placement_dic[i]] if '-' not in v else '-' for i, v in enumerate(list(ref_rec.seq))]
         except IndexError as i:
-            logger.infor('variable new: {}'.format(new))
-            logger.infor('placement dig: {}'.format(placement_dic))
+            logger.info('variable new: {}'.format(new))
+            logger.info('placement dig: {}'.format(placement_dic))
             logger.info('{} with error {}'.format(ref_rec.id, i))
         if new:
             alignment.add_sequence(species_name, ''.join(new))
