@@ -37,6 +37,13 @@ def _write(file, value):
     handle.close()
 
 
+def _get_species_id(record):
+    if '[' in record.description and ']' in record.description:
+        return record.description[record.description.find(
+            "[")+1:record.description.find("]")]
+    else:
+        return record.id[0:5]
+
 def run(orthogroups_fasta_folder, orthogroups_xml, output_path):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
@@ -44,15 +51,18 @@ def run(orthogroups_fasta_folder, orthogroups_xml, output_path):
     for f in tqdm.tqdm(glob.glob(os.path.join(orthogroups_fasta_folder, '*.fa'))):
         records = list(SeqIO.parse(f, 'fasta'))
         for rec in records:
-            tmp = rec.description.split()[-2]
-            tmp_id = re.sub(r'\..*', '', tmp)
-            use_id = re.sub(r'\W+', '', tmp_id)
-            new_id = _find_index_substring(all_prot_ids, use_id)
-            if new_id:
-                rec.id = all_prot_ids[new_id]
-                new_description = rec.description.split()[-1]
-                rec.description = new_description
-                rec.name = ''
+            sp_id = _get_species_id(rec)
+            tmp_lst = rec.description.split()
+            if sp_id not in tmp_lst[0]:
+                tmp = tmp_lst[-2]
+                tmp_id = re.sub(r'\..*', '', tmp)
+                use_id = re.sub(r'\W+', '', tmp_id)
+                new_id = _find_index_substring(all_prot_ids, use_id)
+                if new_id:
+                    rec.id = all_prot_ids[new_id]
+                    new_description = rec.description.split()[-1]
+                    rec.description = new_description
+                    rec.name = ''
         output_file = os.path.join(output_path,
                                    os.path.basename(f))
         _write(output_file, records)

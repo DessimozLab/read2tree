@@ -91,8 +91,15 @@ class Aligner(object):
 
     def _add_mapseq_align(self, alignment,  map_record, ref_species, species_name):
         placement_dic, ref_rec = self._get_placement_dic(alignment, ref_species)
-        new = [map_record[placement_dic[i]] if '-' not in v else '-' for i, v in enumerate(list(ref_rec.seq))]
-        alignment.add_sequence(species_name, ''.join(new))
+        new = []
+        try:
+            new = [map_record[placement_dic[i]] if '-' not in v else '-' for i, v in enumerate(list(ref_rec.seq))]
+        except IndexError as i:
+            logger.infor('variable new: {}'.format(new))
+            logger.infor('placement dig: {}'.format(placement_dic))
+            logger.info('{} with error {}'.format(ref_rec.id, i))
+        if new:
+            alignment.add_sequence(species_name, ''.join(new))
         return alignment
 
     def _get_species_id(self, record):
