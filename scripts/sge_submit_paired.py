@@ -100,6 +100,49 @@ echo 'Finished moving files'""" % (species_id, species_id, sra_string.rstrip())
     return 'down_py_script.sh'
 
 
+def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
+    print(sra)
+    sra_string = ''
+    for i in sra:
+        sra_string += '\"'+i+'\"'
+        sra_string += ' '
+    download = """#!/bin/bash
+#$ -l mem=4G
+#$ -S /bin/bash
+#$ -l h_rt=10:00:0
+#$ -pe smp 1
+#$ -l tmpfs=100G
+#$ -j y
+#$ -N down_%s
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+speciesid=%s
+source activate r2t
+mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
+echo 'Created read $speciesid'
+cd /home/ucbpdvd/Scratch/avian/reads/$speciesid
+declare -a sra_all=(%s)
+for sra in "${sra_all[@]}"
+do
+    echo $sra
+    ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/${sra: -1}/$sra/$sra\_1.fastq.gz .
+    ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/${sra: -1}/$sra/$sra\_2.fastq.gz .
+done
+find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
+find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
+#cat *\_1.* > $speciesid\_1.fq.gz
+#cat *\_2.* > $speciesid\_2.fq.gz
+for sra in "${sra_all[@]}"
+do
+    rm $sra*
+done
+echo 'Finished moving files'""" % (species_id, species_id, sra_string.rstrip())
+    text_file = open('down_py_script.sh', "w")
+    text_file.write(download)
+    text_file.close()
+
+    return 'down_py_script.sh'
+
+
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
     if se_pe is 'PAIRED' and read_type is 'short':
         job_string = """#!/bin/bash
@@ -235,7 +278,7 @@ def run_sge(sra_dic, output_folder):
                   .format(species, species_id))
             if num_job_cycles < 5:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
-                job_string = get_download_string(species_id, sra_ids,
+                job_string = get_download_string_ena(species_id, sra_ids,
                                                  se_pe='PAIRED')
 
                 # Open a pipe to the qsub command.
@@ -276,7 +319,7 @@ def run_sge(sra_dic, output_folder):
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
                 # Set up download string
-                job_string = get_download_string(species_id, sra_ids,
+                job_string = get_download_string_ena(species_id, sra_ids,
                                                  se_pe='PAIRED')
 
                 # Open a pipe to the qsub command.
