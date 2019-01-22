@@ -408,7 +408,7 @@ def main():
 
     # df = pd.read_csv(sra_file, sep='\t')
     name_to_id=get_name_to_id(df_illumina_paired)
-    sra_dic=get_sra_dic(df_illumina_paired, name_to_id, start=start, end=end)
+    sra_dic=get_sra_dic(df_illumina_paired, name_to_id)
 
     run_sge(sra_dic, output_folder)
 
