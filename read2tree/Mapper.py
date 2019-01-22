@@ -261,6 +261,9 @@ class Mapper(object):
             except ValueError as v:
                 self.logger.debug('Reads not properly processed for further steps.')
                 self.logger.debug('ValueError: {}'.format(v))
+            except TypeError as t:
+                self.logger.debug('Reads not properly processed for further steps.')
+                self.logger.debug('TypeError: {}'.format(t))
             else:
                 mapped_reads = []
 
