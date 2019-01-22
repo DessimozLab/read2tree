@@ -1,13 +1,9 @@
-
 import os
 import sys
 import getopt
 import glob
 import time
 import subprocess
-import itertools
-import numpy as np
-from collections import OrderedDict
 import pandas as pd
 
 
@@ -47,85 +43,6 @@ def get_sra_dic(df, name_to_id):
         sra_dic[sp].append([r['Run'] for i,r in subset.iterrows()])
     return sra_dic
 
-def get_sra_dic_cov(df, name_to_id, start=0, end=0):
-    all_index = []
-    sra_dic = {}
-    for organism in list(set(df.Organism)):
-        if organism is not np.nan:
-            data_by_organism = df[df.Organism == organism]
-    #         print(len(data_by_organism))
-            if len(data_by_organism) == 1:  # there is only one datapoint for this organism lets collect it anyway
-                # for sure select the ones that have more than 1X coverage assuming a 1GB genome
-                if data_by_organism.MBases.values[0] > 100:
-                    sra_dic[organism] = [name_to_id[organism],
-                                         data_by_organism.MBases.values[0]]
-                    all_index.append([data_by_organism.index[0]])
-                    sra_dic[organism].append([data_by_organism['Run']
-                                              .values[0]])
-    #                 print(data_by_organism['MBases'])
-            else:  # Check if there is transcriptomic data available
-                if 'TRANSCRIPTOMIC' \
-                        in data_by_organism.LibrarySource.values[0]:
-                    sra_dic[organism] = [name_to_id[organism]]
-                    data_o_t = data_by_organism[df.LibrarySource
-                                                == 'TRANSCRIPTOMIC']
-                    x = data_by_organism.iloc[(data_by_organism['MBases']-1000)
-                                              .abs().argsort()[:1]]
-                    max_cov_sample = x.MBases.values[0]
-    #                 print(min_cov)
-                    if max_cov_sample > 1000:  # for sure select the ones that have more than 10X coverage assuming a 1GB genome
-                        all_index.append([x.index[0]])
-                        sra_dic[organism].append(x['MBases'].values[0])
-                        sra_dic[organism].append([x['Run'].values[0]])
-                    else:
-                        tmp = []
-                        tmp_sra = []
-                        cov = 0
-                        for index, row in data_by_organism.iterrows():
-                            cov += row['MBases']
-                            if cov < 10001:
-                                tmp.append(index)
-                                tmp_sra.append(row['Run'])
-                            else:
-                                tmp_sra.append(row['Run'])
-                                break
-                        all_index.append(tmp)
-                        sra_dic[organism].append(cov)
-                        sra_dic[organism].append(tmp_sra)
-                elif 'GENOMIC' in data_by_organism.LibrarySource.values[0]:
-                    sra_dic[organism] = [name_to_id[organism]]
-                    x = data_by_organism.iloc[(
-                        data_by_organism['MBases']-10000).abs().argsort()[:1]]
-                    x_all = data_by_organism.iloc[(
-                        data_by_organism['MBases']-10000).abs().argsort()]
-                    max_cov_sample = x.MBases.values[0]
-                    if max_cov_sample > 10000:  # for sure select the ones that have more than 10X coverage assuming a 1GB genome
-                        all_index.append([x.index[0]])
-                        sra_dic[organism].append(x['MBases'].values[0])
-                        sra_dic[organism].append([x['Run'].values[0]])
-                    else:  # if there is not a single sample that fullfills coverage select mutliple runs
-                        tmp = []
-                        tmp_sra = []
-                        cov = 0
-                        for index, row in data_by_organism.iterrows():
-                            cov += row['MBases']
-                            if cov < 10001:
-                                tmp.append(index)
-                                tmp_sra.append(row['Run'])
-                            else:
-                                tmp_sra.append(row['Run'])
-                                break
-                        all_index.append(tmp)
-                        sra_dic[organism].append(cov)
-                        sra_dic[organism].append(tmp_sra)
-    # return ordered dictionary by size of sra download
-    sra_dic_ordered = OrderedDict(sorted(sra_dic.items(),
-                                         key=lambda t: t[1][1]))
-    if end == 0:  # use whole dictionary
-        end = len(sra_dic_ordered.keys())
-    return itertools.islice(sra_dic_ordered.items(), start, end)
-
-
 
 
 def get_download_string(species_id, sra, se_pe='PAIRED'):
@@ -142,12 +59,12 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
 #$ -l tmpfs=100G
 #$ -j y
 #$ -N down_%s
-#$ -wd /home/ucbpdvd/Scratch/yeast/sge_output/
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
 speciesid=%s
 source activate r2t
-mkdir /home/ucbpdvd/Scratch/yeast/reads/$speciesid
+mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
 echo 'Created read $speciesid'
-cd /home/ucbpdvd/Scratch/yeast/reads/$speciesid
+cd /home/ucbpdvd/Scratch/avian/reads/$speciesid
 declare -a sra_all=(%s)
 for sra in "${sra_all[@]}"
 do
@@ -193,13 +110,13 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #$ -l tmpfs=140G
 #$ -j y
 #$ -N r2t_{species_id}
-#$ -wd /home/ucbpdvd/Scratch/yeast/sge_output/
-reads=/home/ucbpdvd/Scratch/yeast/reads/{species_id}
-cd /home/ucbpdvd/Scratch/yeast/r2t/
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
+cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
 python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
---output_path /home/ucbpdvd/Scratch/yeast/r2t/ --single_mapping {reference} \
+--output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
 --threads 4 --min_species 0 --read_type short --check_mate_pairing""".format(species_id=species_id,
                                                 reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
@@ -211,13 +128,13 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 #$ -l tmpfs=120G
 #$ -j y
 #$ -N r2t_{species_id}
-#$ -wd /home/ucbpdvd/Scratch/yeast/sge_output/
-reads=/home/ucbpdvd/Scratch/yeast/reads/{species_id}
-cd /home/ucbpdvd/Scratch/yeast/r2t/
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
+cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
 python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree  \
 --reads $reads/{species_id}_1.fq \
---output_path /home/ucbpdvd/Scratch/yeast/r2t/ \
+--output_path /home/ucbpdvd/Scratch/avian/r2t/ \
 --single_mapping {reference} --threads 4 --min_species 8 --sample_reads""".format(species_id=species_id,
                                                 reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
@@ -229,13 +146,13 @@ python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree  \
 #$ -l tmpfs=120G
 #$ -j y
 #$ -N r2t_{species_id}
-#$ -wd /home/ucbpdvd/Scratch/yeast/sge_output/
-reads=/home/ucbpdvd/Scratch/yeast/reads/{species_id}
-cd /home/ucbpdvd/Scratch/yeast/r2t/
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
+reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
+cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
 python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq \
---output_path /home/ucbpdvd/Scratch/yeast/r2t/ \
+--output_path /home/ucbpdvd/Scratch/avian/r2t/ \
 --single_mapping {reference} --threads 4 --min_species 8 --read_type long \
 --split_reads""".format(species_id=species_id, reference=reference)
 
@@ -254,9 +171,9 @@ def get_rm_string(species_id):
 #$ -pe smp 1
 #$ -j y
 #$ -N rm_{species_id}
-#$ -wd /home/ucbpdvd/Scratch/yeast/sge_output/
+#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
 rm -r \
-/home/ucbpdvd/Scratch/yeast/reads/{species_id}""".format(species_id=species_id)
+/home/ucbpdvd/Scratch/avian/reads/{species_id}""".format(species_id=species_id)
 
     text_file = open('rm_py_script.sh', "w")
     text_file.write(rm)
@@ -304,7 +221,7 @@ def output_shell(line):
     return output
 
 
-def run_sge(sra_dic, output_speciesid):
+def run_sge(sra_dic, output_folder):
     num_job_cycles = 0
     rm_job_id_idx = 0
     rm_job_id = []
@@ -312,7 +229,7 @@ def run_sge(sra_dic, output_speciesid):
         species_id = sra[0]
         sra_ids = sra[-1]
         # check whether the mapping already exists
-        if not is_species_mapped(species_id, output_speciesid):
+        if not is_species_mapped(species_id, output_folder):
             # check whether the mapping already exists
             print('Submitting species {} with species id {}!'
                   .format(species, species_id))
@@ -329,7 +246,7 @@ def run_sge(sra_dic, output_speciesid):
                 jobid = p_download.decode("utf-8").split(" ")[2]
 
                 r2t_jobids = []
-                for ref in glob.glob(os.path.join(output_speciesid,
+                for ref in glob.glob(os.path.join(output_folder,
                                                   '02_ref_dna/*.fa')):
                     # Set up r2t string
                     r2t_job_string = get_r2t_string(
@@ -373,7 +290,7 @@ def run_sge(sra_dic, output_speciesid):
                 jobid = p_download.decode("utf-8").split(" ")[2]
 
                 r2t_jobids = []
-                for ref in glob.glob(os.path.join(output_speciesid,
+                for ref in glob.glob(os.path.join(output_folder,
                                                   '02_ref_dna/*.fa')):
                     # Set up r2t string
                     r2t_job_string = get_r2t_string(
@@ -409,28 +326,28 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "s:o:a:e:",
-                                   ["sra_file=", "out_speciesid=",
+                                   ["sra_file=", "output_folder=",
                                     "start_position=", "end_position="])
     except getopt.GetoptError as e:
         print(str(e))
-        print('sge_submit.py -s <sra_file> -o <out_speciesid> '
+        print('sge_submit.py -s <sra_file> -o <output_folder> '
               '-a <start_position> -e <end_position>')
         sys.exit(2)
 
     sra_file = None
-    out_speciesid = None
+    output_folder = None
     start = 0
     end = 0
 
     for opt, arg in opts:
         if opt == '-h':
-            print('sge_submit.py -s <sra_file> -o <out_speciesid> '
+            print('sge_submit.py -s <sra_file> -o <output_folder> '
                   '-a <start_position> -e <end_position>')
             sys.exit()
         elif opt in ("-s", "--sra_file"):
             sra_file = arg
-        elif opt in ("-o", "--out_speciesid"):
-            out_speciesid = arg
+        elif opt in ("-o", "--output_folder"):
+            output_folder = arg
         elif opt in ("-a", "--start_position"):
             start = int(arg)
         elif opt in ("-e", "--end_position"):
@@ -439,8 +356,7 @@ def main():
             assert False, "unhandled option"
 
     df = pd.read_csv(sra_file)
-    df_illumina_paired = df[(df.Platform == 'ILLUMINA')
-                            & (df.LibraryLayout == 'PAIRED')]
+    df_illumina_paired = df[(df.Platform == 'ILLUMINA')]
     print('Make sure to set the folders of reads, '
           'cluster ouput and location of run correctly!')
 
@@ -451,7 +367,7 @@ def main():
     name_to_id=get_name_to_id(df_illumina_paired)
     sra_dic=get_sra_dic(df_illumina_paired, name_to_id, start=start, end=end)
 
-    run_sge(sra_dic, out_speciesid)
+    run_sge(sra_dic, output_folder)
 
 
 if __name__ == "__main__":
