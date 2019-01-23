@@ -93,7 +93,7 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--genome_len', type=int, default=2000000,
                             help='[Default is 2000000] Genome size in bp.')
 
-    arg_parser.add_argument('--output_path', default='.', required=True,
+    arg_parser.add_argument('--output_path', default='.',
                             help='[Default is current directory] Path to '
                             'output directory.')
 
@@ -155,7 +155,7 @@ def parse_args(argv, exe_name, desc):
                                  '* bam files are saved!'
                                  '* reads are saved by mapping to OG')
 
-    arg_parser.add_argument('-s', '--species_name', default=None,
+    arg_parser.add_argument('-s', '--species_name', default="",
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
 
@@ -195,8 +195,8 @@ def parse_args(argv, exe_name, desc):
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
-    _reads = None
-    _species_name = None
+    _reads = ""
+    _species_name = ""
 
     if args.reads:
         if len(args.reads) == 2:

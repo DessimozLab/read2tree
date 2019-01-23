@@ -1,36 +1,33 @@
 from Bio.SeqIO.FastaIO import FastaWriter
 from Bio import SeqIO
-import tqdm, os, glob, re
-from xml.dom import minidom
+import tqdm, os, glob
+
+def _oma_replace(row):
+    if 'OMA0000' in row:
+        return 'OMA0000'
+    elif 'OMA000' in row:
+        return 'OMA000'
+    elif 'OMA00' in row:
+        return 'OMA00'
+    elif 'OMA0' in row:
+        return 'OMA0'
+    elif 'OMA' in row:
+        return 'OMA'
 
 
-
-def _find_index_substring(ids, search_string, tmp_list):
-    best_index = None
-    max_occurence = 0
-    tmp_ids = [re.sub(r'\..*', '', tmp) for tmp in tmp_list]
-    use_ids = [re.sub(r'\W+', '', tmp_id) for tmp_id in tmp_ids]
-    index = [i for i, s in enumerate(ids) if search_string in s]
-    for i in index:
-        string_occurence = len([k for k in use_ids if k in ids[i]])
-        if string_occurence > max_occurence:
-            best_index = i
-            max_occurence = string_occurence
-    if best_index:
-        return best_index
-    else:
-        return None
-
-
-def _get_all_ids(f_orthoxml):
-    all_prot_ids = []
-    xmldoc = minidom.parse(f_orthoxml)
-    itemlist = xmldoc.getElementsByTagName('gene')
-    print(" --- loading all protids ---")
-    for s in tqdm.tqdm(itemlist):
-        tmp = s.attributes['protId'].value
-        all_prot_ids.append(tmp)
-    return all_prot_ids
+def _get_all_ids(orthogroups_txt):
+    with open(orthogroups_txt) as f:
+        lines = f.readlines()
+    x = []
+    for l in lines:
+        if '#' not in l:
+            x.append(l.rstrip("\n").split("\t"))
+    og_dic = {}
+    for r in x:
+        tmp = r[0].replace(_oma_replace(r[0]), 'OG')
+        r[0] = tmp
+        og_dic[tmp] = {i[0:5]: i[6:] for i in r[1:]}
+    return og_dic
 
 
 def _write(file, value):
@@ -53,28 +50,20 @@ def _get_species_id(record):
     else:
         return record.id[0:5]
 
-def run(orthogroups_fasta_folder, orthogroups_xml, output_path, min_species):
+def run(orthogroups_fasta_folder, og_dic, output_path, min_species):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    all_prot_ids = _get_all_ids(orthogroups_xml)
     for f in tqdm.tqdm(glob.glob(os.path.join(orthogroups_fasta_folder, '*.fa'))):
+        new_name_dic = og_dic[os.path.basename(f).split(".")[0]]
         records = list(SeqIO.parse(f, 'fasta'))
         if len(records) >= min_species:
             for rec in records:
                 sp_id = _get_species_id(rec)
-                tmp_lst = rec.description.split()
-                if sp_id not in tmp_lst[0]:
-                    tmp = tmp_lst[-2]
-                    tmp_id = re.sub(r'\..*', '', tmp)
-                    use_id = re.sub(r'\W+', '', tmp_id)
-                    new_id = _find_index_substring(all_prot_ids, use_id, tmp_lst)
-                    if new_id:
-                        rec.id = all_prot_ids[new_id]
-                        new_description = rec.description.split()[-1]
-                        rec.description = new_description
-                        rec.name = ''
+                new_id = new_name_dic[sp_id].split()[0]
+                rec.id = new_id
+                rec.description = new_name_dic[sp_id].replace(new_id, "") + " [" + sp_id + "]"
             output_file = os.path.join(output_path,
-                                       os.path.basename(f))
+                                           os.path.basename(f))
             _write(output_file, records)
 
 
@@ -82,7 +71,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(
         description="""Transform OrthogroupsFasta into marker_genes""")
-    parser.add_argument('--oxml', default=None,
+    parser.add_argument('--ogroups', default=None,
                         help='[Default is none] Remove species present '
                         'in data set after mapping step completed to '
                         'build OGs. Input is comma separated list '
@@ -100,5 +89,6 @@ if __name__ == "__main__":
                                  'are available.')
 
     conf = parser.parse_args()
+    og_dic = _get_all_ids(conf.ogroups)
 
-    run(conf.ofasta, conf.oxml, conf.ofolder, conf.min_species)
+    run(conf.ofasta, og_dic, conf.ofolder, conf.min_species)

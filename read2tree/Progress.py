@@ -16,7 +16,7 @@ OMA_MARKER_GENE_EXPORT = 'marker_genes'
 
 class Progress(object):
 
-    def __init__(self, args, species_name=None):
+    def __init__(self, args, species_name=""):
 
         self.args = args
 
