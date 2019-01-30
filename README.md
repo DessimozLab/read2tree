@@ -52,6 +52,20 @@ python -W ignore bin/read2tree --standalone_path tests/marker_genes/ --reads ~/R
 
 ```
 
+## Running 
+
+To run read2tree two things are required as input:
+1) The reads directly or as SRA or ENA submission index (submission scripts for lsf and sge are porvided (check the scripts folder))
+2) As set of reference orthologous groups from the omabrowser that can be obtained with either the [AllvsAll](https://omabrowser.org/oma/export/) export or the [marker gene](https://omabrowser.org/oma/export_markers) export. This also means that some beforehand knowledge about the species to place or to add is required
+
+
+#### Prerequisites
+
+* Make sure that species names are clearly labeled by a 5 letter code (e.g. Amphiura filiformis = AMPFI)
+* Needs either OMA standalone export or OMA marker gene export as reference input
+* If you are using your own OMA run the formatting is crucial
+
+
 ## Running on clusters
 
 ### LSF

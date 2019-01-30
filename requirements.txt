@@ -12,3 +12,5 @@ requests>=2.13.0
 dendropy>=4.3.0
 tqdm>=4.19.1
 pyham
+pyyaml
+multiprocessing_logging

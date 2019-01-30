@@ -23,6 +23,10 @@ setup(
                 'using reads and a reference set of orthologous groups '
                 '(DNA + Protein).',
     packages=find_packages(".", exclude=["scripts", "tests"]),
+    include_package_data=True,
+    package_data={
+          'read2tree': ['logging/log.yaml']
+      },
     install_requires=requirements,
     license='Proprietary',
     scripts=['bin/read2tree'])

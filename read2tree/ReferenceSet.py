@@ -8,8 +8,10 @@
 
 import os
 import glob
+import logging
+import time
 from tqdm import tqdm
-from Bio import SeqIO, Seq, SeqRecord
+from Bio import SeqIO
 from Bio.SeqIO.FastaIO import FastaWriter
 
 from read2tree.Progress import Progress
@@ -20,7 +22,7 @@ class ReferenceSet(object):
     Structure for reference
     '''
 
-    def __init__(self, args, og_set=None, load=True):
+    def __init__(self, args, og_set=None, load=True, progress=None):
         """
 
         :param args: list of arguments from command line
@@ -30,14 +32,17 @@ class ReferenceSet(object):
         self.ref = {}
         self.load = load
         self.args = args
-        self.progress = Progress(args)
+        self.progress = progress
+
+        self.logger = logging.getLogger(__name__)
+        self._species_name = self.args.species_name
 
         if load is False:
             self.ref = self._load_records_folder()
         elif og_set is not None and load is True:
             self.ref = self._generate_reference(og_set)
             self.write()
-            self.progress.set_status('ref')
+            # self.progress.set_status('ref')
 
         # if args.remove_species:
         #     self.ref = self._remove_species()
@@ -71,6 +76,7 @@ class ReferenceSet(object):
         Split records into dictionary with keys being species and the values the corresponded sequence records
         '''
         print('--- Generating reference for mapping ---')
+        start = time.time()
         ref_set = {}
         for name, og in tqdm(og_set.items(), desc="Loading records", unit=" record"):
             for record in og.aa:
@@ -90,7 +96,11 @@ class ReferenceSet(object):
                 else:
                     ref_set[species] = Reference()
                     ref_set[species].dna.append(record)
-
+        end = time.time()
+        elapsed_time = end - start
+        self.logger.info('{}: Extracted {} reference species form {} ogs took {}'
+                       .format(self._species_name, len(ref_set.keys()),
+                       len(og_set.keys()), elapsed_time))
         return ref_set
 
     def write(self):

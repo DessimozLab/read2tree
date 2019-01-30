@@ -28,7 +28,6 @@ class OMAOutputParser(object):
             self.ignore_species = self.args.ignore_species.split(",")
         else:
             self.ignore_species = []
-
         self.ogs = self._load_ogs_from_path()
 
     def _check_oma_output_path(self):
