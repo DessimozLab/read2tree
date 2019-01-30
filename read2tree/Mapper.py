@@ -371,6 +371,7 @@ class Mapper(object):
         record += read.query_alignment_sequence + "\n"
         # record += "+" + read_id + "\n"
         # record += read.qqual + "\n"
+
         with open(og_name_file, write_mode) as f:
             f.write(record)
 
@@ -390,8 +391,8 @@ class Mapper(object):
             read_id = read.query_name
         record = "@" + read_id + "\n"
         record += read.seq + "\n"
-        record += "+" + read_id + "\n"
-        record += read.qual + "\n"
+        #record += "+" + read_id + "\n"
+        #record += read.qual + "\n"
         with open(og_name_file.replace(".fq", "_full.fq"), write_mode) as f:
             f.write(record)
 
@@ -443,7 +444,7 @@ class Mapper(object):
                     og_name = read.reference_name.split("_")[-1]
                     og_name_file = os.path.join(output_folder, og_name + ".fq")
                     if os.path.exists(og_name_file):
-                        og = list(SeqIO.parse(og_name_file, 'fastq'))
+                        og = list(SeqIO.parse(og_name_file, 'fasta'))
                         og_read_ids = [rec.id for rec in og]
                         write_mode = 'a+'
                     else:

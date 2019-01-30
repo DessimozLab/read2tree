@@ -259,8 +259,8 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-            #print(tree.tree)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
     elif (progress.ref_ogs_01 and not progress.ref_dna_02 and
           not progress.mapping_03 and not progress.append_ogs_04 and
             not progress.align_05):
@@ -275,8 +275,8 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-            #print(tree.tree)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
     elif (progress.ref_ogs_01 and progress.ref_dna_02 and
           not progress.mapping_03 and not progress.append_ogs_04 and
             not progress.align_05):
@@ -294,8 +294,8 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-            #print(tree.tree)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
     elif (progress.ref_ogs_01 and progress.ref_dna_02 and
           progress.mapping_03 and not progress.append_ogs_04 and
             not progress.align_05):
@@ -309,8 +309,8 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-            #print(tree.tree)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
         else:
             for folder in glob.glob(os.path.join(args.output_path,
                                                  "03_mapping_*")):
@@ -329,8 +329,8 @@ def main(argv, exe_name, desc=''):
             alignments = Aligner(args, ogset.mapped_ogs, load=True)
             progress.set_status("og_align")
             concat_alignment = alignments.concat_alignment()
-            #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-            #print(tree.tree)
+            tree = TreeInference(args, concat_alignment=concat_alignment[0])
+            print(tree.tree)
     elif (progress.ref_ogs_01 and progress.ref_dna_02 and
           progress.mapping_03 and progress.append_ogs_04 and
             not progress.align_05):
@@ -338,15 +338,15 @@ def main(argv, exe_name, desc=''):
         alignments = Aligner(args, ogset.mapped_ogs, load=True)
         progress.set_status("og_align")
         concat_alignment = alignments.concat_alignment()
-        #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-        #print(tree.tree)
+        tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        print(tree.tree)
     elif (progress.ref_ogs_01 and progress.ref_dna_02 and
           progress.mapping_03 and progress.append_ogs_04 and
             progress.align_05):
         alignments = Aligner(args,  load=False)
         progress.set_status("og_align")
         concat_alignment = alignments.concat_alignment()
-        #tree = TreeInference(args, concat_alignment=concat_alignment[0])
-        #print(tree.tree)
+        tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        print(tree.tree)
 
     print('Time taken {}'.format(timer() - t1))
