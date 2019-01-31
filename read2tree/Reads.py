@@ -289,7 +289,7 @@ class Reads(object):
         select_idx = list(select_idx)
         record_number = 0
         # print(os.path.getsize(file))
-        out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fq',
+        out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fa',
                                                delete=False)
         fastq_reader = FastxReader(file)
         with fastq_reader.open_fastx() as read_input:
@@ -298,17 +298,16 @@ class Reads(object):
                                         desc='Selecting reads from {}'
                                         .format(os.path.basename(file)),
                                         unit=' reads'):
-                initial_length += len(seq)
+                initial_length = initial_length + len(seq)
                 # print(name.split(" ")[0])
                 # print(select_idx[i])
                 if record_number == select_idx[i] or \
                         name.split(" ")[0] == select_idx[i]:
-                    seq_record_str = self._get_4_line_fastq_string(name,
-                                                                   seq, qual)
+                    seq_record_str = self._get_2_line_fasta_string(name, seq)
                     out_file.write(seq_record_str)
                     sampling_length += len(seq)
-                    i += 1
-                record_number += 1
+                    i = i + 1
+                record_number = record_number + 1
         self.logger.info('{}: Cummulative length of all reads {}bp. Cummulative '
                     'length of sampled reads {}bp'
                     .format(self._species_name, initial_length,
