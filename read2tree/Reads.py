@@ -7,6 +7,7 @@ import tempfile
 import random
 import re
 import os
+import shutil
 import numpy as np
 
 from math import ceil
@@ -220,6 +221,10 @@ class Reads(object):
                                                             idx_random))
                 sampled_reads.append(self._sample_read_file(reads[1],
                                                             idx_random))
+                self.logger.info('Reads can be found at: {}'.format(sampled_reads))
+                if self.args.debug:
+                    shutil.copy(sampled_reads[0], os.path.join(self.args.output_path, 'reads_1.fa'))
+                    shutil.copy(sampled_reads[1], os.path.join(self.args.output_path, 'reads_2.fa'))
             else:
                 sampled_reads = reads
 
@@ -227,9 +232,7 @@ class Reads(object):
         elapsed_time = end - start
         self.logger.info('{}: Sampling of reads took {}.'
                     .format(self._species_name, elapsed_time))
-        # if self.args.debug:
-        #     shutil.copy(sampled_reads,
-        #                 '/Volumes/Untitled/reserach/r2t/test/split.fq')
+
         return sampled_reads
 
     def _get_num_reads(self, file):
