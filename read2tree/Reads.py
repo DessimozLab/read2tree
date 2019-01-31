@@ -305,7 +305,7 @@ class Reads(object):
                         name.split(" ")[0] == select_idx[i]:
                     seq_record_str = self._get_2_line_fasta_string(name, seq)
                     out_file.write(seq_record_str)
-                    sampling_length += len(seq)
+                    sampling_length = sampling_length + len(seq)
                     i = i + 1
                 record_number = record_number + 1
         self.logger.info('{}: Cummulative length of all reads {}bp. Cummulative '
