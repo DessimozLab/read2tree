@@ -88,6 +88,7 @@ cd /scratch/beegfs/weekly/ddylus/metazoan/r2t/
 python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
 --output_path . --single_mapping 02_ref_dna/{reference} --check_mate_pairing \
+--sample_reads --cov 10 --genome_len 1000000000 \
 --threads 4 --min_species 0 --read_type short """.format(species_id=species_id, reference=os.path.basename(reference))
     elif se_pe in 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
@@ -105,6 +106,7 @@ cd /scratch/beegfs/weekly/ddylus/metazoan/r2t/
 python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree  \
 --reads $reads/{species_id}_1.fq.gz \
 --output_path . --single_mapping 02_ref_dna/{reference} \
+--sample_reads --cov 10 --genome_len 1000000000 \
 --threads 4 --min_species 0 --read_type short""".format(species_id=species_id, reference=os.path.basename(reference))
     elif se_pe is 'SINGLE' and read_type is 'long':
         job_string = """#!/bin/bash
@@ -123,6 +125,7 @@ python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz \
 --output_path . \
 --single_mapping 02_ref_dna/{reference} --threads 4 --min_species 8 --read_type short \
+--sample_reads --cov 10 --genome_len 1000000000 \
 --split_reads""".format(species_id=species_id, reference=os.path.basename(reference))
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
@@ -155,13 +158,13 @@ def get_five_letter_species_id(species):
     return new_id
 
 
-def is_species_mapped(species_id, output):
+def get_species_mapped(species_id, output):
     if os.path.exists(os.path.join(output, '04_mapping_'+species_id+'_1')):
         mapped_speciesid = os.path.join(output, '04_mapping_'+species_id+'_1')
-        files = [f for f in glob.glob(os.path.join(mapped_speciesid, "*.fa"))]
+        files = [os.path.basename(f).replace('_consensus.fa','.fa') for f in glob.glob(os.path.join(mapped_speciesid, "*.fa"))]
         if files:
-            if len(files) == 6:
-                return True
+            if len(files):
+                return files
             else:
                 return False
         else:
@@ -202,8 +205,10 @@ def run_lsf(sra_dic, output_r2t):
     for species, sra in sra_dic.items():
         species_id = sra[-1]
         # check whether the mapping already exists
-        if not is_species_mapped(species_id, output_r2t):
-            print('Submitting species {} with species id {}!'.format(species, species_id))
+        mapped_species = get_species_mapped(species_id, output_r2t)
+        number_species = len([f for f in glob.glob(os.path.join(output_r2t, '02_ref_dna/*.fa'))])
+        if len(mapped_species) < number_species:
+            print('Submitting species {} with species id {} and mapping {}!'.format(species, species_id, len(mapped_species)))
             if num_job_cycles < 7:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
                 job_string = get_download_string(species_id, sra[0], sra[1])
@@ -217,19 +222,20 @@ def run_lsf(sra_dic, output_r2t):
 
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_r2t, '02_ref_dna/*.fa')):
-                    # Set up r2t string
-                    r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
+                    if os.bath.basename(ref) not in mapped_species:
+                        # Set up r2t string
+                        r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
 
-                    # Open a pipe to the bsub command.
-                    #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell(
-                        'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
+                        # Open a pipe to the bsub command.
+                        #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
+                        p_download = output_shell(
+                            'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
 
-                    # Append jobid of r2t
-                    r2t_jobids.append(
-                        re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
+                        # Append jobid of r2t
+                        r2t_jobids.append(
+                            re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
 
-                    time.sleep(0.1)
+                        time.sleep(0.1)
 
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)
@@ -258,19 +264,20 @@ def run_lsf(sra_dic, output_r2t):
 
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_r2t, '02_ref_dna/*.fa')):
-                    # Set up r2t string
-                    r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
+                    if os.bath.basename(ref) not in mapped_species:
+                        # Set up r2t string
+                        r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
 
-                    # Open a pipe to the bsub command.
-                    # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell(
-                        'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
+                        # Open a pipe to the bsub command.
+                        # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
+                        p_download = output_shell(
+                            'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
 
-                    # Append jobid of r2t
-                    r2t_jobids.append(
-                        re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
+                        # Append jobid of r2t
+                        r2t_jobids.append(
+                            re.search('<(.*)>', p_download.decode("utf-8").split(" ")[1]).group(1))
 
-                    time.sleep(0.1)
+                        time.sleep(0.1)
 
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)

@@ -90,7 +90,7 @@ class Reads(object):
             for name, seq, qual in tqdm(fastq_reader.readfx(f),
                                         desc='Splitting reads',
                                         unit=' reads'):
-                total_reads += 1
+                total_reads = total_reads + 1
                 read_id = name[1:].split(" ")[0]
                 # self.logger.debug("Process read {}".format(read_id))
                 if len(seq) > self.split_min_read_len:
@@ -112,8 +112,8 @@ class Reads(object):
                         out_file.write(self._get_2_line_fasta_string(read_id,
                                                                      i[0],
                                                                      x=x))
-                        x += 1
-                    total_new_reads += x
+                        x = x + 1
+                    total_new_reads = total_new_reads + x
                 else:
                     # out += self._get_4_line_fastq_string(read_id, None, seq,
                     #                                      qual)
@@ -121,7 +121,7 @@ class Reads(object):
                                                                  seq,
                                                                  x=None))
 
-                    total_new_reads += 1
+                    total_new_reads = total_new_reads + 1
 
         end = time.time()
         self.elapsed_time = end - start
@@ -283,34 +283,37 @@ class Reads(object):
                         "them all.".format(self._species_name))
             return None
         else:
-            return list(set(random.sample(range(total_records + 1),
-                                          num_reads_by_coverage)))
+            return sorted(list(set(random.sample(range(total_records + 1),
+                                          num_reads_by_coverage))))
 
     def _sample_read_file(self, file, select_idx):
         initial_length = 0
         sampling_length = 0
         select_idx = list(select_idx)
-        record_number = 0
-        # print(os.path.getsize(file))
         out_file = tempfile.NamedTemporaryFile(mode='at', suffix='.fa',
                                                delete=False)
         fastq_reader = FastxReader(file)
         with fastq_reader.open_fastx() as read_input:
-            i = 0
-            for name, seq, qual in tqdm(fastq_reader.readfx(read_input),
+            k = 0
+            for i, f_input in enumerate(tqdm(fastq_reader.readfx(read_input),
                                         desc='Selecting reads from {}'
                                         .format(os.path.basename(file)),
-                                        unit=' reads'):
+                                        unit=' reads')):
+                name = f_input[0]
+                seq = f_input[1]
                 initial_length = initial_length + len(seq)
-                # print(name.split(" ")[0])
-                # print(select_idx[i])
-                if record_number == select_idx[i] or \
-                        name.split(" ")[0] == select_idx[i]:
-                    seq_record_str = self._get_2_line_fasta_string(name, seq)
-                    out_file.write(seq_record_str)
-                    sampling_length = sampling_length + len(seq)
-                    i = i + 1
-                record_number = record_number + 1
+                try:
+                    if i == select_idx[k]:
+                        # print(name)
+                        seq_record_str = self._get_2_line_fasta_string(name, seq)
+                        out_file.write(seq_record_str)
+                        sampling_length = sampling_length + len(seq)
+                        k = k + 1
+                except IndexError as e:
+                    self.logger.info('{}: i={}, k={}, len={} and last select_idx={} has error:{}'.format(self._species_name,i,k,len(select_idx),select_idx[-1],e))
+                    pass
+                if k == len(select_idx):
+                    break
         self.logger.info('{}: Cummulative length of all reads {}bp. Cummulative '
                     'length of sampled reads {}bp'
                     .format(self._species_name, initial_length,
