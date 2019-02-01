@@ -125,7 +125,6 @@ python -W ignore /scratch/beegfs/monthly/ddylus/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz \
 --output_path . \
 --single_mapping 02_ref_dna/{reference} --threads 4 --min_species 8 --read_type short \
---sample_reads --cov 10 --genome_len 1000000000 \
 --split_reads""".format(species_id=species_id, reference=os.path.basename(reference))
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)

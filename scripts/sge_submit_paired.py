@@ -162,13 +162,15 @@ then
     python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
---threads 4 --min_species 0 --read_type short --check_mate_pairing
+--threads 4 --min_species 0 --read_type short --check_mate_pairing \
+--sample_reads --cov 10 --genome_len 1000000000 
 elif [ -s "$reads/{species_id}_1.fq.gz" ]
 then 
 	python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq.gz \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
---threads 4 --min_species 0 --read_type short
+--threads 4 --min_species 0 --read_type short \
+--sample_reads --cov 10 --genome_len 1000000000
 fi""".format(species_id=species_id,
                                                 reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
@@ -189,7 +191,8 @@ then
     python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree  \
 --reads $reads/{species_id}_1.fq \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ \
---single_mapping {reference} --threads 4 --min_species 8 --sample_reads
+--single_mapping {reference} --threads 4 --min_species 8 
+--sample_reads --cov 10 --genome_len 1000000000 \
 fi""".format(species_id=species_id,
                                                 reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
@@ -210,7 +213,8 @@ then
     python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fq \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ \
---single_mapping {reference} --threads 4 --min_species 8 --read_type long \
+--single_mapping {reference} --threads 4 --min_species 8 --read_type short \
+--sample_reads --cov 10 --genome_len 1000000000 \
 --split_reads
 fi""".format(species_id=species_id, reference=reference)
 
@@ -245,13 +249,13 @@ def get_five_letter_species_id(species):
     return new_id
 
 
-def is_species_mapped(species_id, output):
+def get_species_mapped(species_id, output):
     if os.path.exists(os.path.join(output, '04_mapping_'+species_id+'_1')):
-        mapped_folder = os.path.join(output, '04_mapping_'+species_id+'_1')
-        files = [f for f in glob.glob(os.path.join(mapped_folder, "*.fa"))]
+        mapped_speciesid = os.path.join(output, '04_mapping_'+species_id+'_1')
+        files = [os.path.basename(f).replace('_consensus.fa','.fa') for f in glob.glob(os.path.join(mapped_speciesid, "*.fa"))]
         if files:
-            if len(files) == 31:
-                return True
+            if len(files):
+                return files
             else:
                 return False
         else:
@@ -287,11 +291,12 @@ def run_sge(sra_dic, output_folder):
         species_id = sra[0]
         sra_ids = sra[-1]
         # check whether the mapping already exists
-        if not is_species_mapped(species_id, output_folder):
-            # check whether the mapping already exists
-            print('Submitting species {} with species id {}!'
-                  .format(species, species_id))
-            if num_job_cycles < 5:  # only run three jobs, then submit the jobs with dependency that files are again deleted
+        mapped_species = get_species_mapped(species_id, output_folder)
+        number_species = len([f for f in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa'))])
+        if len(mapped_species) < number_species:
+            print('Submitting species {} with species id {} and mapping {}!'.format(species, species_id,
+                                                                                    len(mapped_species)))
+            if num_job_cycles < 7:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
                 job_string = get_download_string_ena(species_id, sra_ids,
                                                  se_pe='PAIRED')
@@ -306,19 +311,20 @@ def run_sge(sra_dic, output_folder):
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_folder,
                                                   '02_ref_dna/*.fa')):
-                    # Set up r2t string
-                    r2t_job_string = get_r2t_string(
-                        species_id, ref, se_pe='PAIRED', read_type='short')
+                    if os.bath.basename(ref) not in mapped_species:
+                        # Set up r2t string
+                        r2t_job_string = get_r2t_string(
+                            species_id, ref, se_pe='PAIRED', read_type='short')
 
-                    # Open a pipe to the qsub command.
-                    # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('qsub -hold_jid {} {}'
-                                              .format(jobid, r2t_job_string))
+                        # Open a pipe to the qsub command.
+                        # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
+                        p_download = output_shell('qsub -hold_jid {} {}'
+                                                  .format(jobid, r2t_job_string))
 
-                    # Append jobid of r2t
-                    r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
+                        # Append jobid of r2t
+                        r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
 
-                    time.sleep(0.1)
+                        time.sleep(0.1)
 
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)
@@ -350,19 +356,20 @@ def run_sge(sra_dic, output_folder):
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_folder,
                                                   '02_ref_dna/*.fa')):
-                    # Set up r2t string
-                    r2t_job_string = get_r2t_string(
-                        species_id, ref, se_pe='PAIRED', read_type='short')
+                    if os.bath.basename(ref) not in mapped_species:
+                        # Set up r2t string
+                        r2t_job_string = get_r2t_string(
+                            species_id, ref, se_pe='PAIRED', read_type='short')
 
-                    # Open a pipe to the qsub command.
-                    # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
-                    p_download = output_shell('qsub -hold_jid {} {}'
-                                              .format(jobid, r2t_job_string))
+                        # Open a pipe to the qsub command.
+                        # output_r2t, input_r2t = Popen('qsub -hold_jid {}'.format(jobid))
+                        p_download = output_shell('qsub -hold_jid {} {}'
+                                                  .format(jobid, r2t_job_string))
 
-                    # Append jobid of r2t
-                    r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
+                        # Append jobid of r2t
+                        r2t_jobids.append(p_download.decode("utf-8").split(" ")[2])
 
-                    time.sleep(0.1)
+                        time.sleep(0.1)
 
                 # Set up r2t string
                 rm_job_string = get_rm_string(species_id)
