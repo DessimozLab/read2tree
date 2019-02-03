@@ -131,8 +131,8 @@ do
     if [ ! -s "$reads/$sra\_1.fastq.gz" ] && [ ! -s "$reads/$sra\_1.fastq.gz" ]
     then
         echo $sra
-        ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${sra:0:6}/$sra/$sra.sra .
-        fastq-dump --split-files --gzip $srr.sra
+        ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
+        fastq-dump --split-files --gzip $sra.sra
     fi
 done
 
