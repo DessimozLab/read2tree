@@ -118,6 +118,7 @@ def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
 speciesid=%s
 source activate r2t
 mkdir /home/ucbpdvd/Scratch/avian/reads/$speciesid
+reads=/home/ucbpdvd/Scratch/avian/reads/$speciesid
 echo 'Created read $speciesid'
 cd /home/ucbpdvd/Scratch/avian/reads/$speciesid
 declare -a sra_all=(%s)
@@ -126,11 +127,17 @@ do
     echo $sra
     ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
     ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
+    echo 'Finished $sra'
+    if [ ! -s "$reads/$sra\_1.fastq.gz" ] && [ ! -s "$reads/$sra\_1.fastq.gz" ]
+    then
+        echo $sra
+        ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/${sra:0:6}/$sra/$sra.sra .
+        fastq-dump --split-files --gzip $srr.sra
+    fi
 done
+
 find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
 find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-#cat *\_1.* > $speciesid\_1.fq.gz
-#cat *\_2.* > $speciesid\_2.fq.gz
 for sra in "${sra_all[@]}"
 do
     rm $sra*
