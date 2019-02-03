@@ -318,7 +318,7 @@ def run_sge(sra_dic, output_folder):
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_folder,
                                                   '02_ref_dna/*.fa')):
-                    if os.bath.basename(ref) not in mapped_species:
+                    if os.path.basename(ref) not in mapped_species:
                         # Set up r2t string
                         r2t_job_string = get_r2t_string(
                             species_id, ref, se_pe='PAIRED', read_type='short')
@@ -363,7 +363,7 @@ def run_sge(sra_dic, output_folder):
                 r2t_jobids = []
                 for ref in glob.glob(os.path.join(output_folder,
                                                   '02_ref_dna/*.fa')):
-                    if os.bath.basename(ref) not in mapped_species:
+                    if os.path.basename(ref) not in mapped_species:
                         # Set up r2t string
                         r2t_job_string = get_r2t_string(
                             species_id, ref, se_pe='PAIRED', read_type='short')
