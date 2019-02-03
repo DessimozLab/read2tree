@@ -264,11 +264,11 @@ def get_species_mapped(species_id, output):
             if len(files):
                 return files
             else:
-                return False
+                return []
         else:
-            return False
+            return []
     else:
-        return False
+        return []
 
 
 def output_shell(line):
