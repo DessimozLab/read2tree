@@ -250,14 +250,14 @@ class Reads(object):
             return self.args.split_len
         else:
             fastq_reader = FastxReader(file)
-            if num_records <= 100000:
+            if num_records < 100000:
                 samples = num_records
             else:
                 samples = 100000
             lens = [0] * samples
             with fastq_reader.open_fastx() as f:
                 for i, l in enumerate(fastq_reader.readfq(f)):
-                    if i <= samples:
+                    if i < samples:
                         lens[i] = len(l[1])
                     else:
                         break
