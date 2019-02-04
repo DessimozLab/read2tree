@@ -133,7 +133,7 @@ class OGSet(object):
                 'while . . . '.format(self.args.dna_reference.split("/")[-1]))
             fasta_reader = FastxReader(self.args.dna_reference)
             with fasta_reader.open_fastx() as f:
-                for name, seq, qual in tqdm(fasta_reader.readfx(f),
+                for name, seq in tqdm(fasta_reader.readfa(f),
                                             desc='Loading db', unit=' seq'):
                     seq_id = name.lstrip('>').lstrip().rstrip()
                     db[seq_id.split()[0]] = seq
@@ -335,13 +335,7 @@ class OGSet(object):
         for k, r_dna in dna_dic.items():
             r_aa = aa_dic[k]
             if (3*len(r_aa.seq)) != len(r_dna.seq):
-                # if translate:
-                    # r_aa.seq = self._translate_dna(r_dna)
-                    # self.logger.info(
-                    #     '{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name + " " + k,
-                    #                                                        3 * len(r_aa.seq), len(r_dna.seq)))
-                # else:
-                self.logger.debug('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
+                self.logger.info('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
 
     def _get_dna_records(self, records, db, source, og_name):
         """
@@ -395,6 +389,12 @@ class OGSet(object):
     #     except ValueError:
     #         raise ValueError("Problem with sequence format!")
     #     return frame
+
+    def remove_species_from_ogs(self):
+        for name_og, og in tqdm(self.ogs.items(),
+                                desc='Adding mapped seq to OG', unit=' OGs'):
+            og_filt = self._remove_species_from_original_set(og)
+            self.ogs[name_og] = og_filt
 
     #TODO: this has to be moved to OG not to OGSet
     def _remove_species_from_original_set(self, current_og):
@@ -495,9 +495,8 @@ class OGSet(object):
         # iterate through all existing ogs
         for name_og, og in tqdm(self.ogs.items(),
                                 desc='Adding mapped seq to OG', unit=' OGs'):
-            og_filt = self._remove_species_from_original_set(og)
-            #og_sc = {rec.id: mapper.all_sc[rec.id]
-            #         for rec in og_filt.aa if rec.id in mapper.all_sc.keys()}
+            # og_filt = self._remove_species_from_original_set(og)
+            og_filt = og
             if len(og_filt.aa) > 2:
                 # continue only if OG is in mapped OGs
                 if name_og in cons_og_set.keys():

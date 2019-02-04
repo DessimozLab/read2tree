@@ -87,7 +87,7 @@ class Reads(object):
                                                delete=False)
         fastq_reader = FastxReader(self._reads)
         with fastq_reader.open_fastx() as f:
-            for name, seq, qual in tqdm(fastq_reader.readfx(f),
+            for name, seq, qual in tqdm(fastq_reader.readfq(f),
                                         desc='Splitting reads',
                                         unit=' reads'):
                 total_reads = total_reads + 1
@@ -156,11 +156,11 @@ class Reads(object):
 
         with left_read.open_fastx() as left_input:
             with right_read.open_fastx() as right_input:
-                with_mate_pairs = set(left_read.readfx_id(left_input)) \
-                    .intersection(right_read.readfx_id(right_input))
+                with_mate_pairs = set(left_read.readfq_id(left_input)) \
+                    .intersection(right_read.readfq_id(right_input))
 
         with left_read.open_fastx() as left_input:
-            len_left = len(set(left_read.readfx_id(left_input)))
+            len_left = len(set(left_read.readfq_id(left_input)))
 
         if len_left == len(with_mate_pairs):
             print('----> Mate pairing consitent! ---')
@@ -240,41 +240,55 @@ class Reads(object):
             return self.total_reads
         else:
             fastq_reader = FastxReader(file)
+            num_lines = 0
             with fastq_reader.open_fastx() as f:
-                num_lines = sum([1 for l in f])
+                for l in f: num_lines += 1
             return int(num_lines / 4)
 
-    def _get_read_len(self, file):
+    def _get_read_len(self, file, num_records):
         if self.total_reads > 0:
             return self.args.split_len
         else:
             fastq_reader = FastxReader(file)
+            if num_records <= 100000:
+                samples = num_records
+            else:
+                samples = 100000
+            lens = [0] * samples
             with fastq_reader.open_fastx() as f:
-                collect_line_len = [len(l) for i, l in enumerate(f)
-                                    if (i) % 4 == 1]
-                mean_len = np.mean(collect_line_len)
-                median_len = np.median(collect_line_len)
+                for i, l in enumerate(fastq_reader.readfq(f)):
+                    if i <= samples:
+                        lens[i] = len(l[1])
+                    else:
+                        break
+                mean_len = np.mean(lens)
+                median_len = np.median(lens)
             self.logger.info('{}: The reads have a mean length of {} '
                         'and a median length of {}.'
                         .format(self._species_name, mean_len, median_len))
             return mean_len
 
-    def _get_number_reads(self, var):
+    def _get_number_read_files(self, var):
+        '''
+        Gets the number of read input files
+        :param var:
+        :return: 2 if paired end otherwise 1
+        '''
         if isinstance(var, list):
             return len(var)
         else:
             return 1
 
-    def _get_num_reads_by_coverage(self, file):
-        read_len = self._get_read_len(file)
+    def _get_num_reads_by_coverage(self, file, num_records):
+        read_len = self._get_read_len(file, num_records)
         self.logger.info('{}: Average read length estimated to {}.'
                     .format(self._species_name, read_len))
         return int(ceil(self.args.genome_len * self.args.coverage /
-                        (self._get_number_reads(self.args.reads) * read_len)))
+                        (self._get_number_read_files(self.args.reads) * read_len)))
 
     def _get_vector_random_reads(self, file):
-        num_reads_by_coverage = self._get_num_reads_by_coverage(file)
         total_records = self._get_num_reads(file)
+        num_reads_by_coverage = self._get_num_reads_by_coverage(file, total_records)
         self.logger.info('{}: Sampling {} / {} reads for {}X coverage.'
                     .format(self._species_name, num_reads_by_coverage,
                             total_records, self.coverage))
@@ -295,7 +309,7 @@ class Reads(object):
         fastq_reader = FastxReader(file)
         with fastq_reader.open_fastx() as read_input:
             k = 0
-            for i, f_input in enumerate(tqdm(fastq_reader.readfx(read_input),
+            for i, f_input in enumerate(tqdm(fastq_reader.readfq(read_input),
                                         desc='Selecting reads from {}'
                                         .format(os.path.basename(file)),
                                         unit=' reads')):

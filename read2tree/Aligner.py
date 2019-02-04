@@ -50,6 +50,12 @@ class Aligner(object):
 
         # print(self._get_codon_dict_og(og_set))
 
+    def remove_species_from_alignments(self):
+        for name_og, align in tqdm(self.alignments.items(),
+                                   desc='Adding mapped seq to alignments', unit=' alignments'):
+            align_filt = self._remove_species_from_alignment(align)
+            self.alignments[name_og] = align_filt
+
     def _remove_species_from_alignment(self, current_align):
         """
                 Removes sequence records for a species / set of
@@ -143,9 +149,7 @@ class Aligner(object):
         # iterate through all existing ogs
         for name_og, align in tqdm(self.alignments.items(),
                                    desc='Adding mapped seq to alignments', unit=' alignments'):
-            # print(align.aa)
-            align_filt = self._remove_species_from_alignment(align)
-            # print(align_filt.aa)
+            align_filt = align
             if len(align_filt.aa) >= 2:
                 # get all species that are not mapped from original alignment
                 if name_og in ogset_add.keys():

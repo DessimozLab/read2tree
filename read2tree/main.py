@@ -275,6 +275,8 @@ def main(argv, exe_name, desc=''):
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
+            alignments.remove_species_from_alignments()
+            ogset.remove_species_from_ogs()
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -293,6 +295,8 @@ def main(argv, exe_name, desc=''):
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:  # just generate reference
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
+            alignments.remove_species_from_alignments()
+            ogset.remove_species_from_ogs()
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -310,6 +314,8 @@ def main(argv, exe_name, desc=''):
         alignments = Aligner(args, ogset.ogs, load=True)
         if not args.reference:  # just generate reference
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)
+            alignments.remove_species_from_alignments()
+            ogset.remove_species_from_ogs()
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -330,6 +336,8 @@ def main(argv, exe_name, desc=''):
             reference = ReferenceSet(args, load=False, progress=progress)
             alignments = Aligner(args, load=False)
             mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, progress=progress)  # Run the mapping
+            alignments.remove_species_from_alignments()
+            ogset.remove_species_from_ogs()
             ogset.add_mapped_seq(mapper)
             ogset.write_added_ogs_aa()
             ogset.write_added_ogs_dna()
@@ -344,6 +352,8 @@ def main(argv, exe_name, desc=''):
           not progress.append_ogs_05 and not progress.align_06):
         ogset = OGSet(args, load=False, progress=progress)
         alignments = Aligner(args, load=False)
+        alignments.remove_species_from_alignments()
+        ogset.remove_species_from_ogs()
         for mapping in progress._get_finished_mapping_folders(args.output_path):
             species_name = mapping.split("04_mapping_")[-1]
             logger.info('--- Addition of {} to all ogs '
@@ -351,13 +361,9 @@ def main(argv, exe_name, desc=''):
             mapper = Mapper(args, og_set=ogset.ogs,
                             species_name=species_name, load=False, progress=progress)
             ogset.add_mapped_seq(mapper, species_name=species_name)
+            alignments.add_mapped_seq(ogset.mapped_ogs, species_name=species_name)
         ogset.write_added_ogs_aa(folder_name="05_merge_OGs_aa")
         ogset.write_added_ogs_dna(folder_name="05_merge_OGs_dna")
-        for mapping in progress._get_finished_mapping_folders(args.output_path):
-            species_name = mapping.split("04_mapping_")[-1]
-            logger.info('--- Addition of {} to all ogs '
-                        '---'.format(species_name))
-            alignments.add_mapped_seq(ogset.mapped_ogs, species_name=species_name)
         alignments.write_added_align_aa()
         alignments.write_added_align_dna()
         concat_alignment = alignments.concat_alignment()
@@ -369,6 +375,24 @@ def main(argv, exe_name, desc=''):
         ogset = OGSet(args, load=False, progress=progress)
         alignments = Aligner(args, load=False)
         mapper = Mapper(args, og_set=ogset.ogs, load=False, progress=progress)
+        alignments.remove_species_from_alignments()
+        ogset.remove_species_from_ogs()
+        ogset.add_mapped_seq(mapper)
+        ogset.write_added_ogs_aa()
+        ogset.write_added_ogs_dna()
+        alignments.add_mapped_seq(ogset.mapped_ogs)
+        alignments.write_added_align_aa()
+        alignments.write_added_align_dna()
+        concat_alignment = alignments.concat_alignment()
+        tree = TreeInference(args, concat_alignment=concat_alignment[0])
+        print(tree.tree)
+    elif (not args.merge_all_mappings and progress.ref_ogs_01 and progress.ref_dna_02 and
+          progress.ref_align_03 and progress.mapping_04 and progress.append_ogs_05 and progress.align_06):
+        ogset = OGSet(args, load=False, progress=progress)
+        alignments = Aligner(args, load=False)
+        mapper = Mapper(args, og_set=ogset.ogs, load=False, progress=progress)
+        alignments.remove_species_from_alignments()
+        ogset.remove_species_from_ogs()
         ogset.add_mapped_seq(mapper)
         ogset.write_added_ogs_aa()
         ogset.write_added_ogs_dna()
