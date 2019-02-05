@@ -39,7 +39,7 @@ then
         ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
         echo 'Finished download'
         # rm $sra.sra
-        if [ -s "$sra\_1.fastq.gz" ] && [ -s "$sra\_1.fastq.gz" ]
+        if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_1.fastq.gz ]
         then
             echo '----- USING NCBI DOWNLOAD -----'
             ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
@@ -98,10 +98,19 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 conda activate r2t
 reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/{species_id}
 cd /scratch/beegfs/weekly/ddylus/metazoan/r2t/
-python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/bin/read2tree \
+if [ -s $reads/{species_id}\_1.fa ] && [ -s $reads/{species_id}\_2.fa ]
+then
+    python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fa $reads/{species_id}_2.fa \
 --output_path . --single_mapping 02_ref_dna/{reference}
---threads 4 --min_species 0 --read_type short """.format(species_id=species_id, reference=os.path.basename(reference))
+--threads 4 --min_species 0 --read_type short 
+elif [ -s $reads/{species_id}\_1.fq.gz ]  && [ -s $reads/{species_id}\_2.fq.gz ]
+then
+    python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/bin/read2tree \
+--reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
+--output_path . --single_mapping 02_ref_dna/{reference}
+--threads 4 --min_species 0 --read_type short 
+fi""".format(species_id=species_id, reference=os.path.basename(reference))
     elif se_pe in 'SINGLE' and read_type is 'short':
         job_string = """#!/bin/bash
 #BSUB -o /scratch/beegfs/weekly/ddylus/metazoan/lsf/r2t_{species_id}.o%J
