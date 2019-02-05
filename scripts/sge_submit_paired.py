@@ -128,7 +128,7 @@ do
     ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
     ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
     echo 'Finished $sra'
-    if [ ! -s "$reads/$sra\_1.fastq.gz" ] && [ ! -s "$reads/$sra\_1.fastq.gz" ]
+    if [ ! -s "$sra\_1.fastq.gz" ] && [ ! -s "$sra\_1.fastq.gz" ]
     then
         echo $sra
         ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
@@ -138,6 +138,8 @@ done
 
 find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
 find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
+python -W ignore /home/ucbpdvd/opt/read2tree/scripts/sample_reads.py --coverage 10 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
+
 for sra in "${sra_all[@]}"
 do
     rm $sra*
@@ -164,20 +166,19 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
 cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
-if [ -s "$reads/{species_id}_1.fq.gz" ] && [ -s "$reads/{species_id}_2.fq.gz" ]
+if [ -s "$reads/{species_id}_1.fa" ] && [ -s "$reads/{species_id}_2.fa" ]
 then
     python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
---reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
+--reads $reads/{species_id}_1.fa $reads/{species_id}_2.fa \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
 --threads 4 --min_species 0 --read_type short --check_mate_pairing \
 --sample_reads --cov 10 --genome_len 1000000000 
 elif [ -s "$reads/{species_id}_1.fq.gz" ]
 then 
 	python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
---reads $reads/{species_id}_1.fq.gz \
+--reads $reads/{species_id}_1.fa \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
 --threads 4 --min_species 0 --read_type short \
---sample_reads --cov 10 --genome_len 1000000000
 fi""".format(species_id=species_id,
                                                 reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'short':
@@ -199,7 +200,6 @@ then
 --reads $reads/{species_id}_1.fq \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ \
 --single_mapping {reference} --threads 4 --min_species 8 
---sample_reads --cov 10 --genome_len 1000000000 \
 fi""".format(species_id=species_id,
                                                 reference=reference)
     elif se_pe is 'SINGLE' and read_type is 'long':
@@ -221,7 +221,6 @@ then
 --reads $reads/{species_id}_1.fq \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ \
 --single_mapping {reference} --threads 4 --min_species 8 --read_type short \
---sample_reads --cov 10 --genome_len 1000000000 \
 --split_reads
 fi""".format(species_id=species_id, reference=reference)
 
@@ -303,7 +302,7 @@ def run_sge(sra_dic, output_folder):
         if len(mapped_species) < number_species:
             print('Submitting species {} with species id {} and mapping {}!'.format(species, species_id,
                                                                                     len(mapped_species)))
-            if num_job_cycles < 7:  # only run three jobs, then submit the jobs with dependency that files are again deleted
+            if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
                 job_string = get_download_string_ena(species_id, sra_ids,
                                                  se_pe='PAIRED')

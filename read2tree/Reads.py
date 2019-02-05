@@ -5,7 +5,7 @@ import mimetypes
 import time
 import tempfile
 import random
-import re
+import sys
 import os
 import shutil
 import numpy as np
@@ -158,6 +158,7 @@ class Reads(object):
             with right_read.open_fastx() as right_input:
                 with_mate_pairs = set(left_read.readfq_id(left_input)) \
                     .intersection(right_read.readfq_id(right_input))
+                self.logger.info('Mate pairs have size: {}'.format(sys.getsizeof(with_mate_pairs)))
 
         with left_read.open_fastx() as left_input:
             len_left = len(set(left_read.readfq_id(left_input)))
