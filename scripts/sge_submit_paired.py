@@ -128,7 +128,7 @@ do
     ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
     ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
     echo 'Finished $sra'
-    if [ ! -s "$sra\_1.fastq.gz" ] && [ ! -s "$sra\_1.fastq.gz" ]
+    if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_2.fastq.gz ]
     then
         echo $sra
         ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
@@ -166,63 +166,19 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
 cd /home/ucbpdvd/Scratch/avian/r2t/
 source activate r2t
-if [ -s "$reads/{species_id}_1.fa" ] && [ -s "$reads/{species_id}_2.fa" ]
+if [ -s $reads/{species_id}\_1.fa ] && [ -s $reads/{species_id}\_2.fa ]
 then
     python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
 --reads $reads/{species_id}_1.fa $reads/{species_id}_2.fa \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
---threads 4 --min_species 0 --read_type short --check_mate_pairing \
---sample_reads --cov 10 --genome_len 1000000000 
-elif [ -s "$reads/{species_id}_1.fq.gz" ]
+--threads 4 --min_species 0 --read_type short
+elif [ -s $reads/{species_id}\_1.fq.gz ]  && [ -s $reads/{species_id}\_2.fq.gz ]
 then 
 	python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
---reads $reads/{species_id}_1.fa \
+--reads $reads/{species_id}_1.fq.gz $reads/{species_id}_2.fq.gz \
 --output_path /home/ucbpdvd/Scratch/avian/r2t/ --single_mapping {reference} \
---threads 4 --min_species 0 --read_type short \
-fi""".format(species_id=species_id,
-                                                reference=reference)
-    elif se_pe is 'SINGLE' and read_type is 'short':
-        job_string = """#!/bin/bash
-#$ -l mem=4G
-#$ -S /bin/bash
-#$ -l h_rt=16:00:0
-#$ -pe smp 4
-#$ -l tmpfs=120G
-#$ -j y
-#$ -N r2t_{species_id}
-#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
-reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
-cd /home/ucbpdvd/Scratch/avian/r2t/
-source activate r2t
-if [ -s "$reads/{species_id}_1.fq" ]
-then
-    python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree  \
---reads $reads/{species_id}_1.fq \
---output_path /home/ucbpdvd/Scratch/avian/r2t/ \
---single_mapping {reference} --threads 4 --min_species 8 
-fi""".format(species_id=species_id,
-                                                reference=reference)
-    elif se_pe is 'SINGLE' and read_type is 'long':
-        job_string = """#!/bin/bash
-#$ -l mem=4G
-#$ -S /bin/bash
-#$ -l h_rt=16:00:0
-#$ -pe smp 4
-#$ -l tmpfs=120G
-#$ -j y
-#$ -N r2t_{species_id}
-#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
-reads=/home/ucbpdvd/Scratch/avian/reads/{species_id}
-cd /home/ucbpdvd/Scratch/avian/r2t/
-source activate r2t
-if [ -s "$reads/{species_id}_1.fq" ]
-then
-    python -W ignore /home/ucbpdvd/opt/read2tree/bin/read2tree \
---reads $reads/{species_id}_1.fq \
---output_path /home/ucbpdvd/Scratch/avian/r2t/ \
---single_mapping {reference} --threads 4 --min_species 8 --read_type short \
---split_reads
-fi""".format(species_id=species_id, reference=reference)
+--threads 4 --min_species 0 --read_type short --check_mate_pairing
+fi""".format(species_id=species_id,reference=reference)
 
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
