@@ -138,7 +138,7 @@ done
 
 find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
 find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-python -W ignore /home/ucbpdvd/opt/read2tree/scripts/sample_reads.py --coverage 10 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
+python -W ignore /home/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 10 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
 
 for sra in "${sra_all[@]}"
 do
