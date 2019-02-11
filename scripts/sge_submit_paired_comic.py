@@ -52,7 +52,8 @@ def get_download_string(species_id, sra, se_pe='PAIRED'):
         sra_string += '\"'+i+'\"'
         sra_string += ' '
     download = """#!/bin/bash
-#$ -l mem=4G
+#$ -l h_vmem=4G
+#$ -l tmem=4G
 #$ -S /bin/bash
 #$ -l h_rt=10:00:0
 #$ -pe smp 1
@@ -107,7 +108,8 @@ def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
         sra_string += '\"'+i+'\"'
         sra_string += ' '
     download = """#!/bin/bash
-#$ -l mem=4G
+#$ -l h_vmem=4G
+#$ -l tmem=4G
 #$ -S /bin/bash
 #$ -l h_rt=10:00:0
 #$ -pe smp 1
@@ -125,8 +127,8 @@ declare -a sra_all=(%s)
 for sra in "${sra_all[@]}"
 do
     echo $sra
-    ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
-    ~/.aspera/connect/bin/ascp -QT -l 300m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
+    ~/.aspera/connect/bin/ascp -QT -l 100m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
+    ~/.aspera/connect/bin/ascp -QT -l 100m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
     echo 'Finished $sra'
     if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_2.fastq.gz ]
     then
@@ -155,11 +157,12 @@ echo 'Finished moving files'""" % (species_id, species_id, sra_string.rstrip())
 def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
     if se_pe is 'PAIRED' and read_type is 'short':
         job_string = """#!/bin/bash
-#$ -l mem=4G
+#$ -l h_vmem=4G
+#$ -l tmem=4G
 #$ -S /bin/bash
 #$ -l h_rt=16:00:0
 #$ -pe smp 4
-#$ -l tmpfs=140G
+#$ -l tscratch=80G
 #$ -j y
 #$ -N r2t_{species_id}
 #$ -wd /home/ddylus/research/david_dylus/avian/sge_output/
@@ -189,7 +192,8 @@ fi""".format(species_id=species_id,reference=reference)
 
 def get_rm_string(species_id):
     rm = """#!/bin/bash
-#$ -l mem=4G
+#$ -l h_vmem=4G
+#$ -l tmem=4G
 #$ -S /bin/bash
 #$ -l h_rt=0:10:0
 #$ -pe smp 1

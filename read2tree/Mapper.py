@@ -118,7 +118,10 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
-        return self._post_process_read_mapping(ref_file_handle, bam_file)
+        if os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
+            return self._post_process_read_mapping(ref_file_handle, bam_file)
+        else:
+            return None
 
     def _read_mapping_from_folder(self, species_name=None):
         """
@@ -238,37 +241,38 @@ class Mapper(object):
                                                  tmp_output_folder)
 
             # postprocess mapping and build consensus
-            try:
-                mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
-                mapped_reads_species[species] = Reference()
-                mapped_reads_species[species].dna = mapped_reads
+            if processed_reads:
+                try:
+                    mapped_reads = list(SeqIO.parse(processed_reads, 'fasta'))
+                    mapped_reads_species[species] = Reference()
+                    mapped_reads_species[species].dna = mapped_reads
 
 
-                # save some general statistics for mapped gene
-                if self.args.remove_species_ogs:
-                    seqC = SeqCompleteness(mapped_ref=ref[species].dna,
-                                           tested_ref=ref[self.args.remove_species_ogs].dna)
+                    # save some general statistics for mapped gene
+                    if self.args.remove_species_ogs:
+                        seqC = SeqCompleteness(mapped_ref=ref[species].dna,
+                                               tested_ref=ref[self.args.remove_species_ogs].dna)
+                    else:
+                        seqC = SeqCompleteness(mapped_ref=ref[species].dna)
+                    seqC.get_seq_completeness(mapped_reads)
+                    seqC.write_seq_completeness(os
+                                                .path.join(output_folder,
+                                                           species+"_OGs_sc.txt"))
+                    self.all_sc.update(seqC.seq_completeness)
+                except AttributeError as a:
+                    self.logger.debug('Reads not properly processed for further steps.')
+                    self.logger.debug('AttributeError: {}'.format(a))
+                except ValueError as v:
+                    self.logger.debug('Reads not properly processed for further steps.')
+                    self.logger.debug('ValueError: {}'.format(v))
+                except TypeError as t:
+                    self.logger.debug('Reads not properly processed for further steps.')
+                    self.logger.debug('TypeError: {}'.format(t))
                 else:
-                    seqC = SeqCompleteness(mapped_ref=ref[species].dna)
-                seqC.get_seq_completeness(mapped_reads)
-                seqC.write_seq_completeness(os
-                                            .path.join(output_folder,
-                                                       species+"_OGs_sc.txt"))
-                self.all_sc.update(seqC.seq_completeness)
-            except AttributeError as a:
-                self.logger.debug('Reads not properly processed for further steps.')
-                self.logger.debug('AttributeError: {}'.format(a))
-            except ValueError as v:
-                self.logger.debug('Reads not properly processed for further steps.')
-                self.logger.debug('ValueError: {}'.format(v))
-            except TypeError as t:
-                self.logger.debug('Reads not properly processed for further steps.')
-                self.logger.debug('TypeError: {}'.format(t))
-            else:
-                mapped_reads = []
+                    mapped_reads = []
 
-            # self.progress.set_status('single_map', ref=species)
-            self._rm_file(ref_file_handle+".fai", ignore_error=True)
+                # self.progress.set_status('single_map', ref=species)
+                self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
         tmp_output_folder.cleanup()
         end = time.time()
