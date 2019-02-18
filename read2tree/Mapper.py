@@ -118,7 +118,8 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
-        if os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
+        if ngm['reads_mapped'] > 0 and os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
+            shutil.copy(bam_file,os.path.join(self.args.output_path,os.path.basename(bam_file)))
             return self._post_process_read_mapping(ref_file_handle, bam_file)
         else:
             return None
@@ -144,7 +145,7 @@ class Mapper(object):
             fasta_reader = FastxReader(file)
             records = []
             with fasta_reader.open_fastx() as f:
-                for name, seqstr, qual in fasta_reader.readfx(f):
+                for name, seqstr  in fasta_reader.readfa(f):
                     seq = Seq.Seq(seqstr, generic_dna)
                     records.append(SeqRecord.SeqRecord(seq, id=name.lstrip(">"), description='', name=''))
                     map_reads_species[species].dna = records

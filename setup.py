@@ -9,7 +9,7 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
 
 requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml',
                 'tqdm', 'scipy', 'pysam', 'pyham', 'pyparsing', 'requests',
-                'filelock', 'natsort']
+                'filelock', 'natsort', 'pyyaml']
 
 # requirements = [line.strip() for line in open("requirements.txt", 'r')]
 # print(requirements)
