@@ -683,7 +683,6 @@ class OG(object):
         if 'cov_sc' in sequence_selection_mode:
             sc_cov = {k: v[0]*cov[k][0] for k,v in sc.items()}
             sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
-            print(sc_cov_ordered)
             best_record_id = list(sc_cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
             if seq_completenesses >= threshold:
@@ -693,7 +692,6 @@ class OG(object):
                 return None
         elif 'cov' in sequence_selection_mode:
             cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
-            print(cov_ordered)
             best_record_id = list(cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
             if seq_completenesses >= threshold:
