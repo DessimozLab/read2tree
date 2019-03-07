@@ -155,6 +155,10 @@ def parse_args(argv, exe_name, desc):
                                  '* bam files are saved!'
                                  '* reads are saved by mapping to OG')
 
+    arg_parser.add_argument('--sequence_selection_mode', default="sc",
+                            help='[Default is sc] possibilities are cov and cov_sc '
+                                 'for mapped sequence.')
+
     arg_parser.add_argument('-s', '--species_name', default="",
                             help='[Default is name of read] Name of species '
                                  'for mapped sequence.')
