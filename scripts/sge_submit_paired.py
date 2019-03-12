@@ -7,7 +7,7 @@ import subprocess
 import pandas as pd
 
 
-def get_name_to_id(df):
+def get_name_to_id(df, output_folder):
     name_to_id = {}
     index = 0
     for ogr in sorted(set(df.Organism)):
