@@ -87,6 +87,8 @@ class Mapper(object):
                 self.og_records = self._sort_by_og(og_set)
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
+        output_folder = os.path.join(self.args.output_path,
+                                     "04_mapping_" + self._species_name)
 
         if len(self._reads) is 2:
             ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
@@ -119,7 +121,7 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         if ngm['reads_mapped'] > 0 and os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
-            shutil.copy(bam_file,os.path.join(self.args.output_path,os.path.basename(bam_file)))
+            shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(bam_file)))
             return self._post_process_read_mapping(ref_file_handle, bam_file)
         else:
             return None
