@@ -97,7 +97,7 @@ def get_alignment_sim(R2T_FOLDER, OUT_FOLDER, expected_nr_files=None):
         idx_without_N = get_idx_words_without_N(new_align2_words)
         woN_align1_words = get_words_without_N(new_align1_words, idx=idx_without_N)
         woN_align2_words = get_words_without_N(new_align2_words)
-        if woN_align1_words and woN_align2_words
+        if woN_align1_words and woN_align2_words:
             j_dist_wo[og] = get_jaccard_sim(woN_align1_words, woN_align2_words)
             cos_dist_wo[og] = get_cosine_sim(' '.join(woN_align1_words), ' '.join(woN_align2_words))[-1, 0]
         else:
