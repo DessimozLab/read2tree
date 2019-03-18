@@ -20,6 +20,14 @@ logging.config.dictConfig(D)
 
 logger = logging.getLogger(__name__)
 
+def get_idx_words_without_N(words):
+    return [i for i,w in enumerate(words) if 'X' not in w]
+
+def get_words_without_N(words, idx=None):
+    if idx is not None:
+        return [w for i,w in enumerate(words) if i in idx]
+    else:
+        return [w for w in words if 'X' not in w]
 
 def get_jaccard_sim(str1, str2):
     a = set(str1)
@@ -42,6 +50,8 @@ def get_vectors(*strs):
 def get_alignment_sim(R2T_FOLDER, OUT_FOLDER, expected_nr_files=None):
     j_dist = {}
     cos_dist = {}
+    j_dist_wo = {}
+    cos_dist_wo = {}
     with_r2t = {}
     num_sp_align_ref = {}
     num_sp_align_r2t = {}
@@ -71,32 +81,25 @@ def get_alignment_sim(R2T_FOLDER, OUT_FOLDER, expected_nr_files=None):
         num_sp_align_ref[og] = len(align1)
         num_sp_align_r2t[og] = len(align2)
         diff_num_sp[og] = len(align1) - len(align2)
-        if len(align1) == len(align2):
-            align1.sort()
-            align2.sort()
-            align1_words = [align1[:, i] for i in range(len(align1[1, :]))]
-            align2_words = [align2[:, i] for i in range(len(align2[1, :]))]
-            j_dist[og] = get_jaccard_sim(align1_words, align2_words)
-            cos_dist[og] = get_cosine_sim(' '.join(align1_words), ' '.join(align2_words))[-1,0]
-        elif len(align2) < len(align1):  # in case the alingments are not filled
-            sp_align2 = [r.id[0:5] for r in align2]
-            new_align1 = MultipleSeqAlignment([r for r in align1 if r.id in sp_align2])
-            new_align1.sort()
-            align2.sort()
-            new_align1_words = [new_align1[:, i] for i in range(len(new_align1[1, :]))]
-            align2_words = [align2[:, i] for i in range(len(align2[1, :]))]
-            j_dist[og] = get_jaccard_sim(new_align1_words, align2_words)
-            cos_dist[og] = get_cosine_sim(' '.join(new_align1_words), ' '.join(align2_words))[-1, 0]
-        elif len(align2) > len(align1):  # in case the alingments are not filled
-            sp_align1 = [r.id[0:5] for r in align1]
-            new_align2 = MultipleSeqAlignment([r for r in align2 if r.id[0:5] in sp_align1])
-            new_align2.sort()
-            align1.sort()
-            new_align2_words = [new_align2[:, i] for i in range(len(new_align2[1, :]))]
-            align1_words = [align1[:, i] for i in range(len(align1[1, :]))]
-            j_dist[og] = get_jaccard_sim(new_align2_words, align1_words)
-            cos_dist[og] = get_cosine_sim(' '.join(align1_words), ' '.join(new_align2_words))[-1, 0]
-    df = pd.DataFrame({'num_added': pd.Series(num_added), 'cos_dist':pd.Series(cos_dist), 'j_dist': pd.Series(j_dist), 'with_r2t': pd.Series(with_r2t),
+        sp_align2 = sorted([r.id[0:5] for r in align2])
+        sp_align1 = sorted([r.id[0:5] for r in align1])
+        sp_intersection = sorted(list(set(sp_align1).intersection(set(sp_align2))))
+        new_align1 = MultipleSeqAlignment([r for r in align1 if r.id[0:5] in sp_intersection])
+        new_align1.sort()
+        new_align2 = MultipleSeqAlignment([r for r in align2 if r.id[0:5] in sp_intersection])
+        new_align2.sort()
+        new_align1_words = [new_align1[:, i] for i in range(len(new_align1[1, :]))]
+        new_align2_words = [new_align2[:, i] for i in range(len(new_align2[1, :]))]
+        j_dist[og] = get_jaccard_sim(new_align1_words, new_align2_words)
+        cos_dist[og] = get_cosine_sim(' '.join(new_align1_words), ' '.join(new_align2_words))[-1, 0]
+
+        # get distances for words that only contain estimated amino acids (NO words with X)
+        idx_without_N = get_idx_words_without_N(new_align2_words)
+        woN_align1_words = get_words_without_N(new_align1_words, idx=idx_without_N)
+        woN_align2_words = get_words_without_N(new_align2_words)
+        j_dist_wo[og] = get_jaccard_sim(woN_align1_words, woN_align2_words)
+        cos_dist_wo[og] = get_cosine_sim(' '.join(woN_align1_words), ' '.join(woN_align2_words))[-1, 0]
+    df = pd.DataFrame({'num_added': pd.Series(num_added), 'cos_dist':pd.Series(cos_dist), 'j_dist': pd.Series(j_dist), 'cos_dist_wo':pd.Series(cos_dist_wo), 'j_dist_wo': pd.Series(j_dist_wo), 'with_r2t': pd.Series(with_r2t),
                        'num_sp_align_ref': pd.Series(num_sp_align_ref), 'num_sp_align_r2t': pd.Series(num_sp_align_r2t),
                        'diff_num_sp': pd.Series(diff_num_sp)})
     df.to_csv(

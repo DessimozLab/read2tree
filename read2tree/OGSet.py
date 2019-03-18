@@ -10,7 +10,9 @@ import re
 import pyham
 import requests
 import logging
+import random
 import time
+import numpy as np
 
 from tqdm import tqdm
 from collections import OrderedDict
@@ -694,7 +696,7 @@ class OG(object):
             cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
             best_record_id = list(cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
-            if seq_completenesses >= threshold:
+            if seq_completenesses >= threshold:  # check whether best sequence by coverage is above sc threshold
                 return (self._get_record_by_id(self.aa, best_record_id),
                         self._get_record_by_id(self.dna, best_record_id))
             else:
@@ -702,6 +704,28 @@ class OG(object):
         elif 'sc' in sequence_selection_mode:
             sc_ordered = OrderedDict(sorted(sc.items(), key=lambda t: t[-1]))
             best_record_id = list(sc_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif 'cov_sc_scaled' in sequence_selection_mode:
+            max_cov = np.max([v[0] for k,v in cov.items()])
+            sc_cov = {k: v[0] * cov[k][0]/max_cov for k, v in sc.items()}
+            sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(sc_cov_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif 'random' in sequence_selection_mode:
+            best_record_id = random.choice(list(sc.keys()))
+            # sc_cov = {k: v[0] * cov[k][0]/max_cov for k, v in sc.items()}
+            # sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
+            # best_record_id = list(sc_cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
             if seq_completenesses >= threshold:
                 return (self._get_record_by_id(self.aa, best_record_id),
