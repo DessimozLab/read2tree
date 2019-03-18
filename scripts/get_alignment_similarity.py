@@ -97,8 +97,12 @@ def get_alignment_sim(R2T_FOLDER, OUT_FOLDER, expected_nr_files=None):
         idx_without_N = get_idx_words_without_N(new_align2_words)
         woN_align1_words = get_words_without_N(new_align1_words, idx=idx_without_N)
         woN_align2_words = get_words_without_N(new_align2_words)
-        j_dist_wo[og] = get_jaccard_sim(woN_align1_words, woN_align2_words)
-        cos_dist_wo[og] = get_cosine_sim(' '.join(woN_align1_words), ' '.join(woN_align2_words))[-1, 0]
+        if woN_align1_words and woN_align2_words
+            j_dist_wo[og] = get_jaccard_sim(woN_align1_words, woN_align2_words)
+            cos_dist_wo[og] = get_cosine_sim(' '.join(woN_align1_words), ' '.join(woN_align2_words))[-1, 0]
+        else:
+            j_dist_wo[og] = 0.0
+            cos_dist_wo[og] = 0.0
     df = pd.DataFrame({'num_added': pd.Series(num_added), 'cos_dist':pd.Series(cos_dist), 'j_dist': pd.Series(j_dist), 'cos_dist_wo':pd.Series(cos_dist_wo), 'j_dist_wo': pd.Series(j_dist_wo), 'with_r2t': pd.Series(with_r2t),
                        'num_sp_align_ref': pd.Series(num_sp_align_ref), 'num_sp_align_r2t': pd.Series(num_sp_align_r2t),
                        'diff_num_sp': pd.Series(diff_num_sp)})
