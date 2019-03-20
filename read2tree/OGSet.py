@@ -128,14 +128,13 @@ class OGSet(object):
         if '.fa' in self.args.dna_reference or \
            '.fasta' in self.args.dna_reference:
             db = {}
-            print('--- Load ogs and find their corresponding '
+            self.logger.info('--- Load ogs and find their corresponding '
                   'DNA seq from {} ---'.format(self.args.dna_reference))
-            print(
-                'Loading {} into memory. This might take a '
+            self.logger.info('Loading {} into memory. This might take a '
                 'while . . . '.format(self.args.dna_reference.split("/")[-1]))
             fasta_reader = FastxReader(self.args.dna_reference)
             with fasta_reader.open_fastx() as f:
-                for name, seq in tqdm(fasta_reader.readfa(f),
+                for name, seq, qual in tqdm(fasta_reader.readfx(f),
                                             desc='Loading db', unit=' seq'):
                     seq_id = name.lstrip('>').lstrip().rstrip()
                     db[seq_id.split()[0]] = seq
@@ -154,7 +153,7 @@ class OGSet(object):
         #                                self._db_id_map.genome_table]
         #     # print(self._db_species_list)
         else:
-            print('--- Load ogs and find their corresponding DNA seq using '
+            self.logger.info('--- Load ogs and find their corresponding DNA seq using '
                   'the REST api ---')
             source = 'REST_api'
             return None, source
