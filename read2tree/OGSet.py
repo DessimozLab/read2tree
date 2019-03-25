@@ -285,7 +285,6 @@ class OGSet(object):
             return SeqRecord.SeqRecord(cleaned_seq, record.id,
                                        description="", name="")
 
-
     def _get_dna_from_REST_bulk(self, records, og_name):
         """
 
@@ -486,7 +485,7 @@ class OGSet(object):
         """
         start = time.time()
         cons_og_set = mapper.og_records  # get sequences from mapping
-        cov = Coverage()
+        cov = Coverage(self.args)
         seqC = SeqCompleteness()
         if not species_name:
             species_name = self._species_name
@@ -696,6 +695,15 @@ class OG(object):
             best_record_id = list(cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
             if seq_completenesses >= threshold:  # check whether best sequence by coverage is above sc threshold
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif 'cov_no_sc' in sequence_selection_mode:
+            cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(cov_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= 0.0:  # check whether best sequence by coverage is above sc threshold
                 return (self._get_record_by_id(self.aa, best_record_id),
                         self._get_record_by_id(self.dna, best_record_id))
             else:

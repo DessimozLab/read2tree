@@ -4,7 +4,8 @@ import numpy as np
 
 class Coverage(object):
 
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
         self.coverage = {}
 
     def get_coverage_bam(self, file_name):
@@ -49,6 +50,7 @@ class Coverage(object):
         """
         column_coverage = []
         for pileupcolumn in mybam.pileup(ref, 0, 100000):
-            column_coverage.append(pileupcolumn.n)
+            if pileupcolumn.n >= self.args.min_cons_coverage:
+                column_coverage.append(pileupcolumn.n)
         np_column_coverage = np.array(column_coverage)
         return [np.mean(np_column_coverage), np.std(np_column_coverage)]

@@ -362,6 +362,7 @@ def main(argv, exe_name, desc=''):
           progress.ref_align_03 and progress.mapping_04 and
           not progress.append_ogs_05 and not progress.align_06):
         ogset = OGSet(args, load=False, progress=progress)
+        reference = ReferenceSet(args, load=False, progress=progress)
         alignments = Aligner(args, load=False)
         alignments.remove_species_from_alignments()
         ogset.remove_species_from_ogs()
@@ -369,7 +370,7 @@ def main(argv, exe_name, desc=''):
             species_name = mapping.split("04_mapping_")[-1]
             logger.info('--- Addition of {} to all ogs '
                         '---'.format(species_name))
-            mapper = Mapper(args, og_set=ogset.ogs,
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref,
                             species_name=species_name, load=False, progress=progress)
             ogset.add_mapped_seq(mapper, species_name=species_name)
             alignments.add_mapped_seq(ogset.mapped_ogs, species_name=species_name)
@@ -385,8 +386,9 @@ def main(argv, exe_name, desc=''):
           progress.ref_align_03 and progress.mapping_04 and
           (not progress.append_ogs_05 or not progress.align_06)):
         ogset = OGSet(args, load=False, progress=progress)
+        reference = ReferenceSet(args, load=False, progress=progress)
         alignments = Aligner(args, load=False)
-        mapper = Mapper(args, og_set=ogset.ogs, load=False, progress=progress)
+        mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, load=False, progress=progress)
         alignments.remove_species_from_alignments()
         ogset.remove_species_from_ogs()
         ogset.add_mapped_seq(mapper)

@@ -249,12 +249,14 @@ class Progress(object):
         mapping_folders_finished = []
         num_expected_mappings = self._get_number_of_references()
         mapping_folders = [x for x in os.listdir(path) if '04' in x]
+        print(num_expected_mappings)
         for folder in mapping_folders:
             # NOTE: we are calculating the number of completed mappings as the number of existing cov files,
             # because these are written even if the mapping step did not find any reads to map to a particular reference
             computed_cov = [f for f in
                             glob.glob(os.path.join(self.args.output_path,
                                                    folder+'/*cov.txt'))]
+            print(computed_cov)
             if (num_expected_mappings - len(computed_cov)) == 0:  # it is finished if the number of generated coverage files is the same as the number of references
                 if self.args.merge_all_mappings:
                     mapping_folders_finished.append(folder)
