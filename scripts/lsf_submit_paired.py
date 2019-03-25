@@ -234,7 +234,7 @@ def run_lsf(sra_dic, output_folder):
                 for ref in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa')):
                     # Set up r2t string
                     if os.path.basename(ref) not in mapped_species:
-                        r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
+                        r2t_job_string = get_r2t_string(species_id, ref, se_pe='PAIRED', read_type='short')
 
                         # Open a pipe to the bsub command.
                         #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
@@ -276,7 +276,7 @@ def run_lsf(sra_dic, output_folder):
                 for ref in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa')):
                     if os.path.basename(ref) not in mapped_species:
                         # Set up r2t string
-                        r2t_job_string = get_r2t_string(species_id, ref, se_pe=sra[1], read_type=sra[2])
+                        r2t_job_string = get_r2t_string(species_id, ref, se_pe='PAIRED', read_type='short')
 
                         # Open a pipe to the bsub command.
                         # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
