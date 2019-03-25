@@ -221,7 +221,7 @@ def run_lsf(sra_dic, output_folder):
             print('Submitting species {} with species id {}!'.format(species, species_id))
             if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
-                job_string = get_download_string(species_id, sra_ids,  se_pe='PAIRED')
+                job_string = get_download_string(species_id, sra_ids)
 
                 # Open a pipe to the bsub command.
                 p_download = output_shell('bsub < ' + job_string)
@@ -261,7 +261,7 @@ def run_lsf(sra_dic, output_folder):
                 time.sleep(0.1)
             else:  # this part should ensure that on the scratch never more than 3 downloads are available
                 # Set up download string
-                job_string = get_download_string(species_id, sra_ids, se_pe='PAIRED')
+                job_string = get_download_string(species_id, sra_ids)
 
                 # Open a pipe to the bsub command.
                 p_download = output_shell(
