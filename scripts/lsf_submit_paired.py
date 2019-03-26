@@ -22,7 +22,6 @@ def get_sra_dic(df, name_to_id):
 
 
 def get_download_string(species_id, sra):
-    print(sra)
     sra_string = ''
     for i in sra:
         sra_string += '\"'+i+'\"'
@@ -34,13 +33,13 @@ def get_download_string(species_id, sra):
 #BSUB -J down_%s
 #BSUB -n 1
 #BSUB -R "span[ptile=1]"
-#BSUB -R "rusage[mem=10000]"
-#BSUB -M 10000000
+#BSUB -R "rusage[mem=2000]"
+#BSUB -M 2000000
 speciesid=%s
 conda activate r2t
 mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
-echo 'Created read $speciesid'
+echo Created read $speciesid
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 declare -a sra_all=(%s)
 for sra in "${sra_all[@]}"
