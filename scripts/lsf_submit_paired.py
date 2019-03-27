@@ -86,7 +86,7 @@ else
     done
 fi
 
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip(), layout)
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip())
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
     text_file.close()
