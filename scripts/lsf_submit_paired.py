@@ -104,9 +104,8 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -J r2t_{species_id}
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=12000]"
-#BSUB -M 12000000
-conda activate r2t
+#BSUB -R "rusage[mem=4000]"
+#BSUB -M 4000000
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{species_id}
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/
 if [ -s $reads/{species_id}\_1.fa ] && [ -s $reads/{species_id}\_2.fa ]
@@ -122,41 +121,7 @@ then
 --output_path . --single_mapping 02_ref_dna/{reference}
 --threads 4 --min_species 0 --read_type short 
 fi""".format(species_id=species_id, reference=os.path.basename(reference))
-    elif se_pe in 'SINGLE' and read_type is 'short':
-        job_string = """#!/bin/bash
-#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf/r2t_{species_id}.o%J
-#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf/r2t_{species_id}.e%J
-#BSUB -u david.dylus@unil.ch
-#BSUB -J r2t_{species_id}
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=12000]"
-#BSUB -M 12000000
-conda activate r2t
-reads=/scratch/beegfs/weekly/ddylus/avian/reads/{species_id}
-cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/bin/read2tree  \
---reads $reads/{species_id}_1.fa \
---output_path . --single_mapping 02_ref_dna/{reference} \
---threads 4 --min_species 0 --read_type short""".format(species_id=species_id, reference=os.path.basename(reference))
-    elif se_pe is 'SINGLE' and read_type is 'long':
-        job_string = """#!/bin/bash
-#BSUB -o /scratch/beegfs/weekly/ddylus/avian/lsf/r2t_{species_id}.o%J
-#BSUB -e /scratch/beegfs/weekly/ddylus/avian/lsf/r2t_{species_id}.e%J
-#BSUB -u david.dylus@unil.ch
-#BSUB -J r2t_{species_id}
-#BSUB -n 4
-#BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=12000]"
-#BSUB -M 12000000
-conda activate r2t
-reads=/scratch/beegfs/weekly/ddylus/avian/reads/{species_id}
-cd /scratch/beegfs/weekly/ddylus/avian/r2t/
-python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/bin/read2tree \
---reads $reads/{species_id}_1.fa \
---output_path . \
---single_mapping 02_ref_dna/{reference} --threads 4 --min_species 8 --read_type short \
---split_reads""".format(species_id=species_id, reference=os.path.basename(reference))
+
     text_file = open('r2t_py_script.sh', "w")
     text_file.write(job_string)
     text_file.close()
@@ -247,6 +212,7 @@ def run_lsf(sra_dic, output_folder, max_jobs):
 
                 # Open a pipe to the bsub command.
                 p_download = output_shell('bsub < ' + job_string)
+                num_total_submissions += 1
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
@@ -262,6 +228,7 @@ def run_lsf(sra_dic, output_folder, max_jobs):
                         #output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
                         p_download = output_shell(
                             'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
+                        num_total_submissions += 1
 
                         # Append jobid of r2t
                         r2t_jobids.append(
@@ -277,6 +244,7 @@ def run_lsf(sra_dic, output_folder, max_jobs):
                 r2t_jobids_done = ['done(' + r + ')' for r in r2t_jobids]
                 p_rm = output_shell(
                     'bsub -w "{}" < {}'.format(' && '.join(r2t_jobids_done), rm_job_string))
+                num_total_submissions += 1
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
@@ -288,7 +256,7 @@ def run_lsf(sra_dic, output_folder, max_jobs):
                 # Open a pipe to the bsub command.
                 p_download = output_shell(
                     'bsub -w "{}" < {}'.format('done('+rm_job_id[rm_job_id_idx]+')', job_string))
-
+                num_total_submissions += 1
                 time.sleep(0.1)
 
                 # Get jobid for job chaining
@@ -304,6 +272,7 @@ def run_lsf(sra_dic, output_folder, max_jobs):
                         # output_r2t, input_r2t = Popen('bsub -hold_jid {}'.format(jobid))
                         p_download = output_shell(
                             'bsub -w "{}" < {}'.format('done('+jobid+')', r2t_job_string))
+                        num_total_submissions += 1
 
                         # Append jobid of r2t
                         r2t_jobids.append(
@@ -319,13 +288,13 @@ def run_lsf(sra_dic, output_folder, max_jobs):
                 r2t_jobids_done = ['done('+r+')' for r in r2t_jobids]
                 p_rm = output_shell(
                     'bsub -w "{}" < {}'.format(' && '.join(r2t_jobids_done), rm_job_string))
+                num_total_submissions += 1
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
                 rm_job_id_idx += 1
                 time.sleep(0.1)
             num_job_cycles += 1
-        num_total_submissions += 1
         if num_total_submissions > max_jobs:
             break
 

@@ -8,7 +8,7 @@ import subprocess
 import pandas as pd
 
 
-def get_download_string(species_id, sra, layout):
+def get_download_string(species_id, sra, layout='PAIRED'):
     sra_string = ''
     for i in sra:
         sra_string += '\"'+i+'\"'
