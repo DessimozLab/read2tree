@@ -9,30 +9,8 @@ import pandas as pd
 
 def get_name_to_id(df):
     name_to_id = {}
-    index = 0
-    for ogr in sorted(set(df.Organism)):
-        #     print(ogr)
-        if len(ogr.split(" ")) > 2:
-            new_id = ogr.split(" ")[0][0:3].upper() \
-            + ogr.split(" ")[2][0:2].upper()
-        elif len(ogr.split(" ")) > 1:
-            new_id = ogr.split(" ")[0][0:3].upper() \
-            + ogr.split(" ")[1][0:2].upper()
-        else:
-            new_id = ogr.split(" ")[0][0:3].upper()+'sp'
-
-        if new_id in name_to_id.values():
-            use_id = new_id[0:4]+str(index)
-    #         print(use_id)
-            index += 1
-        else:
-            index = 0
-            use_id = new_id
-        name_to_id[ogr] = use_id
-    out_dict = {'names':list(name_to_id.keys()), 'ids':list(name_to_id.values())}
-
-    df = pd.DataFrame(data=out_dict)
-    df.to_csv('sra_species_to_id.csv')
+    for i,r in df.iterrows():
+        name_to_id[r['Organism']] = r['id5letter']
     return name_to_id
 
 def get_sra_dic(df, name_to_id):
@@ -108,7 +86,7 @@ def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
         sra_string += '\"'+i+'\"'
         sra_string += ' '
     download = """#!/bin/bash
-#$ -l h_vmem=4G
+#$ -l h_vmem=4G 
 #$ -l tmem=4G
 #$ -S /bin/bash
 #$ -l h_rt=10:00:0
@@ -353,40 +331,17 @@ def run_sge(sra_dic, output_folder):
             num_job_cycles += 1
 
 
-def main():
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(
+        description="""Submit jobs given an sra file""")
+    parser.add_argument('--sra_file', default=None, required=True,
+                        help='[Default is none] SRA-file with ')
+    parser.add_argument('--output_folder', default=None, required=True,
+                            help='[Default is none] Folder of r2t run.')
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:o:a:e:",
-                                   ["sra_file=", "output_folder=",
-                                    "start_position=", "end_position="])
-    except getopt.GetoptError as e:
-        print(str(e))
-        print('sge_submit.py -s <sra_file> -o <output_folder> '
-              '-a <start_position> -e <end_position>')
-        sys.exit(2)
-
-    sra_file = None
-    output_folder = None
-    start = 0
-    end = 0
-
-    for opt, arg in opts:
-        if opt == '-h':
-            print('sge_submit.py -s <sra_file> -o <output_folder> '
-                  '-a <start_position> -e <end_position>')
-            sys.exit()
-        elif opt in ("-s", "--sra_file"):
-            sra_file = arg
-        elif opt in ("-o", "--output_folder"):
-            output_folder = arg
-        elif opt in ("-a", "--start_position"):
-            start = int(arg)
-        elif opt in ("-e", "--end_position"):
-            end = int(arg)
-        else:
-            assert False, "unhandled option"
-
-    df = pd.read_csv(sra_file)
+    conf = parser.parse_args()
+    df = pd.read_csv(conf.sra_file)
     df_illumina_paired = df[(df.Platform == 'ILLUMINA')]
     print('Make sure to set the folders of reads, '
           'cluster ouput and location of run correctly!')
@@ -395,11 +350,7 @@ def main():
           .format(len(set(df_illumina_paired.Organism)), len(df)))
 
     # df = pd.read_csv(sra_file, sep='\t')
-    name_to_id=get_name_to_id(df_illumina_paired)
-    sra_dic=get_sra_dic(df_illumina_paired, name_to_id)
+    name_to_id = get_name_to_id(df_illumina_paired)
+    sra_dic = get_sra_dic(df_illumina_paired, name_to_id)
 
-    run_sge(sra_dic, output_folder)
-
-
-if __name__ == "__main__":
-    main()
+    run_sge(sra_dic, conf.output_folder)
