@@ -228,7 +228,8 @@ def output_shell(line):
     return output
 
 
-def run_lsf(sra_dic, output_folder):
+def run_lsf(sra_dic, output_folder, max_jobs):
+    num_total_submissions = 0
     num_job_cycles = 0
     rm_job_id_idx = 0
     rm_job_id = []
@@ -324,6 +325,9 @@ def run_lsf(sra_dic, output_folder):
                 rm_job_id_idx += 1
                 time.sleep(0.1)
             num_job_cycles += 1
+        num_total_submissions += 1
+        if num_total_submissions > max_jobs:
+            break
 
 
 if __name__ == "__main__":
@@ -334,6 +338,9 @@ if __name__ == "__main__":
                         help='[Default is none] SRA-file with ')
     parser.add_argument('--output_folder', default=None, required=True,
                             help='[Default is none] Folder of r2t run.')
+    parser.add_argument('--max_jobs', type=int, default=1000,
+                        help='[Default is 1000] Number of jobs.')
+
 
     conf = parser.parse_args()
     df = pd.read_csv(conf.sra_file)
@@ -348,6 +355,6 @@ if __name__ == "__main__":
     name_to_id = get_name_to_id(df_illumina_paired)
     sra_dic = get_sra_dic(df_illumina_paired, name_to_id)
 
-    run_lsf(sra_dic, conf.output_folder)
+    run_lsf(sra_dic, conf.output_folder, conf.max_jobs)
 
 
