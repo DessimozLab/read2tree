@@ -28,7 +28,7 @@ module add UHTS/Analysis/sratoolkit/2.8.2.1
 conda activate r2t
 reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
 mkdir /scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
-echo 'Created read $speciesid'
+echo Created read $speciesid
 cd /scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
 declare -a sra_all=(%s)
 if [ "%s" == "PAIRED" ]
@@ -41,7 +41,7 @@ then
         # rm $sra.sra
         if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_1.fastq.gz ]
         then
-            echo '----- USING NCBI DOWNLOAD -----'
+            echo ----- USING NCBI DOWNLOAD -----
             ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
             fastq-dump --split-files --gzip $sra.sra
         fi

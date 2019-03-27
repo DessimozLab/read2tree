@@ -36,35 +36,57 @@ def get_download_string(species_id, sra):
 #BSUB -R "rusage[mem=2000]"
 #BSUB -M 2000000
 speciesid=%s
-conda activate r2t
-mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
+module add Utility/aspera_connect/3.7.4.147727
+module add UHTS/Analysis/sratoolkit/2.8.2.1
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
+mkdir /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 echo Created read $speciesid
 cd /scratch/beegfs/weekly/ddylus/avian/reads/$speciesid
 declare -a sra_all=(%s)
-for sra in "${sra_all[@]}"
-do
-    echo $sra
-    ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
-    ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
-    echo 'Finished $sra'
-    if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_2.fastq.gz ]
-    then
-        echo $sra
-        ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
-        fastq-dump --split-files --gzip $sra.sra
-    fi
-done
+if [ "%s" == "PAIRED" ]
+then
+    for sra in "${sra_all[@]}"
+    do
+        ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
+        ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
+        echo 'Finished download'
+        # rm $sra.sra
+        if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_1.fastq.gz ]
+        then
+            echo ----- USING NCBI DOWNLOAD -----
+            ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
+            fastq-dump --split-files --gzip $sra.sra
+        fi
+    done
+    
+    find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
+    find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
+    python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 5 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
+    for sra in "${sra_all[@]}"
+    do
+        rm $sra*
+    done
+else
+    for sra in "${sra_all[@]}"
+    do
+        ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra.fastq.gz .
+        echo 'Finished download'
+        # rm $sra.sra
+        if [ ! -s "$sra.fastq.gz" ]
+            then
+            echo $sra
+            ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
+            fastq-dump --gzip $sra.sra
+        fi
+    done
+    find . -name "*.gz" | sort -V | xargs cat > $speciesid\_1.fq.gz
+    for sra in "${sra_all[@]}"
+    do
+        rm $sra*
+    done
+fi
 
-find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
-find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 10 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
-
-for sra in "${sra_all[@]}"
-do
-    rm $sra*
-done
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip())
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip(), layout)
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
     text_file.close()
@@ -253,7 +275,7 @@ def run_lsf(sra_dic, output_folder):
                 #output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
                 r2t_jobids_done = ['done(' + r + ')' for r in r2t_jobids]
                 p_rm = output_shell(
-                    'bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
+                    'bsub -w "{}" < {}'.format(' && '.join(r2t_jobids_done), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
@@ -295,7 +317,7 @@ def run_lsf(sra_dic, output_folder):
                 # output_rm, input_rm = Popen('bsub -hold_jid {}'.format(','.join(r2t_jobids)))
                 r2t_jobids_done = ['done('+r+')' for r in r2t_jobids]
                 p_rm = output_shell(
-                    'bsub -w "{}" < {}'.format('&&'.join(r2t_jobids_done), rm_job_string))
+                    'bsub -w "{}" < {}'.format(' && '.join(r2t_jobids_done), rm_job_string))
 
                 # Print your job and the system response to the screen as it's submitted
                 rm_job_id.append(re.search('<(.*)>', p_rm.decode("utf-8").split(" ")[1]).group(1))
