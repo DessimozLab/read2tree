@@ -205,7 +205,8 @@ def run_lsf(sra_dic, output_folder, max_jobs):
         mapped_species = get_species_mapped(species_id, output_folder)
         number_species = len([f for f in glob.glob(os.path.join(output_folder, '02_ref_dna/*.fa'))])
         if len(mapped_species) < number_species:
-            print('Submitting species {} with species id {}!'.format(species, species_id))
+            print('Submitting species {} with species id {} and mapping {}!'.format(species, species_id,
+                                                                                    len(mapped_species)))
             if num_job_cycles < 3:  # only run three jobs, then submit the jobs with dependency that files are again deleted
                 # Set up download string
                 job_string = get_download_string(species_id, sra_ids)
