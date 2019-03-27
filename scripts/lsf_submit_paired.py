@@ -21,7 +21,7 @@ def get_sra_dic(df, name_to_id):
     return sra_dic
 
 
-def get_download_string(species_id, sra):
+def get_download_string(species_id, sra, layout='PAIRED'):
     sra_string = ''
     for i in sra:
         sra_string += '\"'+i+'\"'
@@ -86,7 +86,7 @@ else
     done
 fi
 
-echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip())
+echo 'Finished moving files'""" % (species_id, '%', species_id, '%', species_id, species_id, sra_string.rstrip(), layout)
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)
     text_file.close()
