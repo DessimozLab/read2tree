@@ -104,7 +104,7 @@ def get_r2t_string(species_id, reference, se_pe='PAIRED', read_type='short'):
 #BSUB -J r2t_{species_id}
 #BSUB -n 4
 #BSUB -R "span[ptile=4]"
-#BSUB -R "rusage[mem=4000]"
+#BSUB -R "rusage[mem=1000]"
 #BSUB -M 4000000
 reads=/scratch/beegfs/weekly/ddylus/avian/reads/{species_id}
 cd /scratch/beegfs/weekly/ddylus/avian/r2t/

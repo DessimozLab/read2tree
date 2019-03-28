@@ -47,30 +47,26 @@ cd /home/ddylus/research/david_dylus/avian/reads/$speciesid
 declare -a sra_all=(%s)
 for sra in "${sra_all[@]}"
 do
-    echo $sra
-    if [ "${sra:0:3}" == "SRR" ] || [ "${sra:0:3}" == "ERR"] || [ "${sra:0:3}" == "DRR"]; then
-        ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra ./
-        echo 'Finished download'
+    ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
+    ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
+    echo 'Finished download'
+    # rm $sra.sra
+    if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_1.fastq.gz ]
+    then
+        echo ----- USING NCBI DOWNLOAD -----
+        ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
         fastq-dump --split-files --gzip $sra.sra
-        echo 'Finished fastq-dump'
-        rm $sra.sra
-    else
-        # ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/002/$sra/$sra\_1.fastq.gz .
-        # ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/002/$sra/$sra\_2.fastq.gz .
-        wget ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra
-        fastq-dump --split-files --gzip $sra.sra
-        rm $sra.sra
-        echo 'Finished download'
     fi
 done
+    
 find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
 find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-#cat *\_1.* > $speciesid\_1.fq.gz
-#cat *\_2.* > $speciesid\_2.fq.gz
+python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 20 --genome_len 50000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
 for sra in "${sra_all[@]}"
 do
     rm $sra*
 done
+
 echo 'Finished moving files'""" % (species_id, species_id, sra_string.rstrip())
     text_file = open('down_py_script.sh', "w")
     text_file.write(download)

@@ -49,6 +49,10 @@ def parse_args(argv, exe_name, desc):
                             help='Show programme\'s version number and exit.',
                             version=read2tree.__version__)
 
+    arg_parser.add_argument('--threads', type=int, default=1,
+                            help='Number of threads for the mapping '
+                                 'using ngm / ngmlr!')
+
     arg_parser.add_argument('--standalone_path', default='.',
                             help='[Default is current directory] Path to '
                                  'oma standalone directory.')
@@ -186,10 +190,6 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--single_mapping', default=None,
                             help='Single species file allowing to map in a '
                             'job array.')
-
-    arg_parser.add_argument('--threads', type=int, default=1,
-                            help='Number of threads for the mapping '
-                            'using ngm / ngmlr!')
 
     # Arguments to map the reads
     arg_parser.add_argument('--ref_folder', default=None,
