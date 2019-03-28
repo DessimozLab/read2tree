@@ -42,7 +42,7 @@ speciesid=%s
 source activate r2t
 mkdir /home/ddylus/research/david_dylus/avian/reads/$speciesid
 reads=/home/ddylus/research/david_dylus/avian/reads/$speciesid
-echo 'Created read $speciesid'
+echo Created read $speciesid
 cd /home/ddylus/research/david_dylus/avian/reads/$speciesid
 declare -a sra_all=(%s)
 for sra in "${sra_all[@]}"
@@ -50,11 +50,15 @@ do
     echo $sra
     ~/.aspera/connect/bin/ascp -QT -l 100m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
     ~/.aspera/connect/bin/ascp -QT -l 100m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
-    echo 'Finished $sra'
+    echo Finished $sra
     if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_2.fastq.gz ]
     then
         echo $sra
         ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
+        if [ ! -s $sra.sra ]
+        then
+            wget ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra
+        fi
         fastq-dump --split-files --gzip $sra.sra
     fi
 done
