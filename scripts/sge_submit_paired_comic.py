@@ -22,59 +22,6 @@ def get_sra_dic(df, name_to_id):
     return sra_dic
 
 
-
-def get_download_string(species_id, sra, se_pe='PAIRED'):
-    print(sra)
-    sra_string = ''
-    for i in sra:
-        sra_string += '\"'+i+'\"'
-        sra_string += ' '
-    download = """#!/bin/bash
-#$ -l h_vmem=4G
-#$ -l tmem=4G
-#$ -S /bin/bash
-#$ -l h_rt=10:00:0
-#$ -pe smp 1
-#$ -l tscratch=80G
-#$ -j y
-#$ -N down_%s
-#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
-speciesid=%s
-source activate r2t
-mkdir /home/ddylus/research/david_dylus/avian/reads/$speciesid
-echo 'Created read $speciesid'
-cd /home/ddylus/research/david_dylus/avian/reads/$speciesid
-declare -a sra_all=(%s)
-for sra in "${sra_all[@]}"
-do
-    ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
-    ascp -QT -l 300m -P33001 -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
-    echo 'Finished download'
-    # rm $sra.sra
-    if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_1.fastq.gz ]
-    then
-        echo ----- USING NCBI DOWNLOAD -----
-        ascp -v -QT -k1 -l100M -i /software/Utility/aspera_connect/3.7.4.147727/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
-        fastq-dump --split-files --gzip $sra.sra
-    fi
-done
-    
-find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
-find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-python -W ignore /scratch/beegfs/weekly/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 20 --genome_len 50000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
-for sra in "${sra_all[@]}"
-do
-    rm $sra*
-done
-
-echo 'Finished moving files'""" % (species_id, species_id, sra_string.rstrip())
-    text_file = open('down_py_script.sh', "w")
-    text_file.write(download)
-    text_file.close()
-
-    return 'down_py_script.sh'
-
-
 def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
     print(sra)
     sra_string = ''
@@ -114,7 +61,7 @@ done
 
 find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
 find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-python -W ignore /home/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 10 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
+python -W ignore /home/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 5 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
 
 for sra in "${sra_all[@]}"
 do
