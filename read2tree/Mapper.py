@@ -75,16 +75,16 @@ class Mapper(object):
                 #if self.progress.get_mapping_status():
                 #    self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
-                self.og_records = self._sort_by_og(og_set)
+                self.og_records = self._sort_by_og()
         else:  # re-load already computed mapping
             if og_set is not None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
-                self.og_records = self._sort_by_og(og_set)
+                self.og_records = self._sort_by_og()
             elif (og_set is not None and
                   self.args.merge_all_mappings and species_name is not None):
                 self.mapped_records = \
                     self._read_mapping_from_folder(species_name=species_name, ref_records=ref_set)
-                self.og_records = self._sort_by_og(og_set)
+                self.og_records = self._sort_by_og()
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
         output_folder = os.path.join(self.args.output_path,
@@ -637,7 +637,7 @@ class Mapper(object):
 
         return output
 
-    def _sort_by_og(self, og_set):
+    def _sort_by_og(self):
         """
         Group the mapped sequences according to their OG name
         :return: dictionary with lists of records as values and og name as keys

@@ -699,6 +699,14 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
+        elif 'cov_pure' in sequence_selection_mode:
+            cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(cov_ordered.items())[-1][0]
+            if best_record_id:  # check whether best sequence by coverage is above sc threshold
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
         elif 'cov_no_sc' in sequence_selection_mode:
             cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
             best_record_id = list(cov_ordered.items())[-1][0]

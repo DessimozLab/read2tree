@@ -1,0 +1,2 @@
+#species,og,gene_id,map_seq_completeness,ref_seq_completeness,inferred_len,given_len,ref_len
+CIOIN,OG4,CIOIN01570,0.26077097505668934,0.26077097505668934,115,441,441

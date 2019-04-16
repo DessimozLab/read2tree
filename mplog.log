@@ -1,0 +1,63 @@
+2019-04-04 07:59:47,520 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2019-04-04 07:59:47,522 - read2tree.main - INFO - test_1b: Progress: ogs_dna False | ref False | ref_align False | mapping False | append_ogs False | align False 
+2019-04-04 07:59:47,530 - read2tree.OGSet - INFO - --- Load ogs and find their corresponding DNA seq from tests/data/dna.fa ---
+2019-04-04 07:59:47,530 - read2tree.OGSet - INFO - Loading dna.fa into memory. This might take a while . . . 
+2019-04-04 07:59:47,548 - read2tree.OGSet - INFO - test_1b: Gathering of DNA seq for 5 OGs took 0.004089832305908203.
+2019-04-04 07:59:47,550 - read2tree.ReferenceSet - INFO - test_1b: Extracted 6 reference species form 5 ogs took 0.0013349056243896484
+2019-04-04 07:59:47,579 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --maxiterate 1000 --auto /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpvoey0d08
+2019-04-04 07:59:47,580 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --maxiterate 1000 --auto /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpb9ocwitm
+2019-04-04 07:59:47,581 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --maxiterate 1000 --auto /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmps4sr_doq
+2019-04-04 07:59:47,583 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --maxiterate 1000 --auto /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmp1asdv587
+2019-04-04 07:59:48,163 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/mafft --maxiterate 1000 --auto /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/tmpnh7ua7wz
+2019-04-04 07:59:48,476 - read2tree.Aligner - INFO - test_1b: Alignment of 5 OGs took 0.9236328601837158.
+2019-04-04 07:59:48,479 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2019-04-04 07:59:48,481 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to CIOSA reference species ---
+2019-04-04 07:59:48,484 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/CIOSA_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/CIOSA_OGs.fa.bam
+2019-04-04 07:59:58,512 - read2tree.Mapper - INFO - test_1b: Mapped 2 / 2000 reads to CIOSA_OGs.fa
+2019-04-04 07:59:58,600 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 07:59:58,618 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to PANTR reference species ---
+2019-04-04 07:59:58,620 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/PANTR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/PANTR_OGs.fa.bam
+2019-04-04 08:00:06,531 - read2tree.Mapper - INFO - test_1b: Mapped 1 / 2000 reads to PANTR_OGs.fa
+2019-04-04 08:00:06,597 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:00:06,604 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to HUMAN reference species ---
+2019-04-04 08:00:06,605 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/HUMAN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/HUMAN_OGs.fa.bam
+2019-04-04 08:00:14,231 - read2tree.Mapper - INFO - test_1b: Mapped 1 / 2000 reads to HUMAN_OGs.fa
+2019-04-04 08:00:14,300 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:00:14,308 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to MOUSE reference species ---
+2019-04-04 08:00:14,310 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm -t 4 --no-unal -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/MOUSE_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_3bs905pc/MOUSE_OGs.fa.bam
+2019-04-04 08:00:18,676 - read2tree.wrappers.read_mappers.parser - ERROR - No match found for "[MAIN] Done (" (at char 0), (line:1, col:1)
+2019-04-04 08:02:03,531 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2019-04-04 08:02:03,534 - read2tree.main - INFO - test_1b: Progress: ogs_dna True | ref True | ref_align True | mapping False | append_ogs False | align False 
+2019-04-04 08:02:03,551 - read2tree.Mapper - DEBUG - --- Creating tmp directory on local node ---
+2019-04-04 08:02:03,561 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to CIOSA reference species ---
+2019-04-04 08:02:03,563 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/CIOSA_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/CIOSA_OGs.fa.bam
+2019-04-04 08:02:11,159 - read2tree.Mapper - INFO - test_1b: Mapped 2 / 2000 reads to CIOSA_OGs.fa
+2019-04-04 08:02:11,220 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:02:11,228 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to DIPOR reference species ---
+2019-04-04 08:02:11,229 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/DIPOR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/DIPOR_OGs.fa.bam
+2019-04-04 08:02:18,881 - read2tree.Mapper - INFO - test_1b: Mapped 3 / 2000 reads to DIPOR_OGs.fa
+2019-04-04 08:02:18,942 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:02:18,952 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to CIOIN reference species ---
+2019-04-04 08:02:18,954 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/CIOIN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/CIOIN_OGs.fa.bam
+2019-04-04 08:02:26,706 - read2tree.Mapper - INFO - test_1b: Mapped 3 / 2000 reads to CIOIN_OGs.fa
+2019-04-04 08:02:26,779 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:02:26,788 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to PANTR reference species ---
+2019-04-04 08:02:26,790 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/PANTR_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/PANTR_OGs.fa.bam
+2019-04-04 08:02:34,576 - read2tree.Mapper - INFO - test_1b: Mapped 1 / 2000 reads to PANTR_OGs.fa
+2019-04-04 08:02:34,640 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:02:34,646 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to MOUSE reference species ---
+2019-04-04 08:02:34,647 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/MOUSE_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/MOUSE_OGs.fa.bam
+2019-04-04 08:02:42,224 - read2tree.Mapper - INFO - test_1b: Mapped 0 / 2000 reads to MOUSE_OGs.fa
+2019-04-04 08:02:42,247 - read2tree.Mapper - INFO - test_1b: --- Mapping of reads to HUMAN reference species ---
+2019-04-04 08:02:42,249 - read2tree.wrappers.abstract_cli - DEBUG - Running following command: /Users/daviddylus/miniconda3/envs/r2t/bin/ngm --no-unal -t 4 -b -r /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/HUMAN_OGs.fa -1 tests/data/mapper/test3/test_1b.fq -2 tests/data/mapper/test3/test_2b.fq -o /var/folders/24/6txjb_hn147_6lrnwcl2l0g40000gn/T/ngm_hradu4x8/HUMAN_OGs.fa.bam
+2019-04-04 08:02:50,111 - read2tree.Mapper - INFO - test_1b: Mapped 1 / 2000 reads to HUMAN_OGs.fa
+2019-04-04 08:02:50,230 - read2tree.Mapper - DEBUG - test_1b: --- Binning reads ---
+2019-04-04 08:02:50,240 - read2tree.Mapper - INFO - test_1b: Mapping to all references took 46.69024610519409.
+2019-04-04 08:04:48,809 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2019-04-04 08:04:48,812 - read2tree.main - INFO - test_1b: Progress: ogs_dna True | ref True | ref_align True | mapping True | append_ogs False | align False 
+2019-04-04 08:04:48,840 - read2tree.OGSet - INFO - test_1b: Appending 2 reconstructed sequences to present OG took 0.0009181499481201172.
+2019-04-04 08:04:48,846 - read2tree.Aligner - INFO - test_1b: Appending 1 reconstructed sequences to present Alignments took 0.0025789737701416016.
+2019-04-04 08:06:30,488 - read2tree.main - INFO - test_1b: ------- NEW RUN -------
+2019-04-04 08:06:30,492 - read2tree.main - INFO - test_1b: Progress: ogs_dna True | ref True | ref_align True | mapping True | append_ogs False | align False 
+2019-04-04 08:06:30,519 - read2tree.OGSet - INFO - test_1b: Appending 2 reconstructed sequences to present OG took 0.0009090900421142578.
+2019-04-04 08:06:30,525 - read2tree.Aligner - INFO - test_1b: Appending 1 reconstructed sequences to present Alignments took 0.0026509761810302734.

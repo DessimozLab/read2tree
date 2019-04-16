@@ -1,0 +1,2 @@
+#species,og,gene_id,coverage,std
+CIOSA,OG4,CIOSA10137,1.88034188034,0.324561325573
