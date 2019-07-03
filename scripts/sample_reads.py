@@ -37,13 +37,70 @@ def sample_from_reads(reads, genome_len, coverage):
             shutil.copy(sampled_reads[0], reads[0].split(".")[0]+".fa")
             shutil.copy(sampled_reads[1], reads[1].split(".")[0]+".fa")
         else:
-            sampled_reads = reads
+            mate_pairs = _check_read_consistency(reads)
+            if mate_pairs:
+                sampled_reads = _select_mates_from_reads(reads, mate_pairs)
+                shutil.copy(sampled_reads[0], reads[0].split(".")[0] + ".fa")
+                shutil.copy(sampled_reads[1], reads[1].split(".")[0] + ".fa")
+            else:
+                sampled_reads = reads
 
     end = time.time()
     elapsed_time = end - start
     logger.info('Sampling of reads took {}.'.format(elapsed_time))
 
     return sampled_reads
+
+
+def _check_read_consistency(reads):
+    '''
+    Function that checks whether all mate pairs are present and if not
+    uses only reads for which mate pairs exist.
+    '''
+    print('--- Checking for consistent mate pairing ---')
+    left_read = FastxReader(reads[0])
+    right_read = FastxReader(reads[1])
+
+    with left_read.open_fastx() as left_input:
+        with right_read.open_fastx() as right_input:
+            with_mate_pairs = set(left_read.readfq_id(left_input)) \
+                .intersection(right_read.readfq_id(right_input))
+            logger.info('Mate pairs have size: {}'.format(sys.getsizeof(with_mate_pairs)))
+
+    with left_read.open_fastx() as left_input:
+        len_left = len(set(left_read.readfq_id(left_input)))
+
+    if len_left == len(with_mate_pairs):
+        logger.info('Mate pairs are consistent.')
+        return None
+    else:
+        logger.info('----> Mate pairing not consitent! ---')
+        logger.info('Inconsistent number of mate pairs! '
+                    'Will use only reads that have mate pair. '
+                    'Consistent {} of {} total reads.'
+                    .format(2*len(with_mate_pairs),
+                            len_left+len_left))
+        return with_mate_pairs
+
+def _select_mates_from_reads(reads, mates):
+    '''
+    Main function taking in the reads of the object and processing it
+    given the provided parameters
+    :return: string that contains all the read sequences separated by '\n'
+    '''
+    sampled_reads = []
+    start = time.time()
+    sampled_reads.append(_sample_read_file(reads[0],
+                                                mates))
+    sampled_reads.append(_sample_read_file(reads[1],
+                                                mates))
+
+    end = time.time()
+    elapsed_time = end - start
+    logger.info('Selecting of reads with mates took {}.'
+                .format(elapsed_time))
+    return sampled_reads
+
 
 
 def _get_num_reads_by_coverage(file, num_records, genome_len, coverage):
@@ -58,6 +115,7 @@ def _get_vector_random_reads(file, genome_len, coverage):
     logger.info('Sampling {} / {} reads for {}X coverage.'.format(num_reads_by_coverage, total_records, coverage))
     if num_reads_by_coverage > total_records:
         logger.info("Not enough reads available for sampling, using them all.")
+
         return None
     else:
         x = np.sort(np.random.choice((total_records + 1), num_reads_by_coverage, replace=False))

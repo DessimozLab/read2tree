@@ -9,30 +9,8 @@ import pandas as pd
 
 def get_name_to_id(df):
     name_to_id = {}
-    index = 0
-    for ogr in sorted(set(df.Organism)):
-        #     print(ogr)
-        if len(ogr.split(" ")) > 2:
-            new_id = ogr.split(" ")[0][0:3].upper() \
-            + ogr.split(" ")[2][0:2].upper()
-        elif len(ogr.split(" ")) > 1:
-            new_id = ogr.split(" ")[0][0:3].upper() \
-            + ogr.split(" ")[1][0:2].upper()
-        else:
-            new_id = ogr.split(" ")[0][0:3].upper()+'sp'
-
-        if new_id in name_to_id.values():
-            use_id = new_id[0:4]+str(index)
-    #         print(use_id)
-            index += 1
-        else:
-            index = 0
-            use_id = new_id
-        name_to_id[ogr] = use_id
-    out_dict = {'names':list(name_to_id.keys()), 'ids':list(name_to_id.values())}
-
-    df = pd.DataFrame(data=out_dict)
-    df.to_csv('sra_species_to_id.csv')
+    for i,r in df.iterrows():
+        name_to_id[r['Organism']] = r['id5letter']
     return name_to_id
 
 def get_sra_dic(df, name_to_id):
@@ -44,63 +22,6 @@ def get_sra_dic(df, name_to_id):
     return sra_dic
 
 
-
-def get_download_string(species_id, sra, se_pe='PAIRED'):
-    print(sra)
-    sra_string = ''
-    for i in sra:
-        sra_string += '\"'+i+'\"'
-        sra_string += ' '
-    download = """#!/bin/bash
-#$ -l h_vmem=4G
-#$ -l tmem=4G
-#$ -S /bin/bash
-#$ -l h_rt=10:00:0
-#$ -pe smp 1
-#$ -l tscratch=80G
-#$ -j y
-#$ -N down_%s
-#$ -wd /home/ucbpdvd/Scratch/avian/sge_output/
-speciesid=%s
-source activate r2t
-mkdir /home/ddylus/research/david_dylus/avian/reads/$speciesid
-echo 'Created read $speciesid'
-cd /home/ddylus/research/david_dylus/avian/reads/$speciesid
-declare -a sra_all=(%s)
-for sra in "${sra_all[@]}"
-do
-    echo $sra
-    if [ "${sra:0:3}" == "SRR" ] || [ "${sra:0:3}" == "ERR"] || [ "${sra:0:3}" == "DRR"]; then
-        ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra ./
-        echo 'Finished download'
-        fastq-dump --split-files --gzip $sra.sra
-        echo 'Finished fastq-dump'
-        rm $sra.sra
-    else
-        # ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/002/$sra/$sra\_1.fastq.gz .
-        # ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/002/$sra/$sra\_2.fastq.gz .
-        wget ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra
-        fastq-dump --split-files --gzip $sra.sra
-        rm $sra.sra
-        echo 'Finished download'
-    fi
-done
-find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
-find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-#cat *\_1.* > $speciesid\_1.fq.gz
-#cat *\_2.* > $speciesid\_2.fq.gz
-for sra in "${sra_all[@]}"
-do
-    rm $sra*
-done
-echo 'Finished moving files'""" % (species_id, species_id, sra_string.rstrip())
-    text_file = open('down_py_script.sh', "w")
-    text_file.write(download)
-    text_file.close()
-
-    return 'down_py_script.sh'
-
-
 def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
     print(sra)
     sra_string = ''
@@ -108,7 +29,7 @@ def get_download_string_ena(species_id, sra, se_pe='PAIRED'):
         sra_string += '\"'+i+'\"'
         sra_string += ' '
     download = """#!/bin/bash
-#$ -l h_vmem=4G
+#$ -l h_vmem=4G 
 #$ -l tmem=4G
 #$ -S /bin/bash
 #$ -l h_rt=10:00:0
@@ -121,7 +42,7 @@ speciesid=%s
 source activate r2t
 mkdir /home/ddylus/research/david_dylus/avian/reads/$speciesid
 reads=/home/ddylus/research/david_dylus/avian/reads/$speciesid
-echo 'Created read $speciesid'
+echo Created read $speciesid
 cd /home/ddylus/research/david_dylus/avian/reads/$speciesid
 declare -a sra_all=(%s)
 for sra in "${sra_all[@]}"
@@ -129,18 +50,22 @@ do
     echo $sra
     ~/.aspera/connect/bin/ascp -QT -l 100m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_1.fastq.gz .
     ~/.aspera/connect/bin/ascp -QT -l 100m -P33001 -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  era-fasp@fasp.sra.ebi.ac.uk:/vol1/fastq/${sra:0:6}/00${sra: -1}/$sra/$sra\_2.fastq.gz .
-    echo 'Finished $sra'
+    echo Finished $sra
     if [ ! -s $sra\_1.fastq.gz ] && [ ! -s $sra\_2.fastq.gz ]
     then
         echo $sra
         ~/.aspera/connect/bin/ascp -v -QT -k1 -l100M -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh  anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra .
+        if [ ! -s $sra.sra ]
+        then
+            wget ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/${sra:0:3}/${sra:0:6}/$sra/$sra.sra
+        fi
         fastq-dump --split-files --gzip $sra.sra
     fi
 done
 
 find . -name "*\_1.*" | sort -V | xargs cat > $speciesid\_1.fq.gz
 find . -name "*\_2.*" | sort -V | xargs cat > $speciesid\_2.fq.gz
-python -W ignore /home/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 10 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
+python -W ignore /home/ddylus/opt/read2tree/scripts/sample_reads.py --coverage 5 --genome_len 1000000000 --reads $speciesid\_1.fq.gz $speciesid\_2.fq.gz
 
 for sra in "${sra_all[@]}"
 do
@@ -353,40 +278,17 @@ def run_sge(sra_dic, output_folder):
             num_job_cycles += 1
 
 
-def main():
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(
+        description="""Submit jobs given an sra file""")
+    parser.add_argument('--sra_file', default=None, required=True,
+                        help='[Default is none] SRA-file with ')
+    parser.add_argument('--output_folder', default=None, required=True,
+                            help='[Default is none] Folder of r2t run.')
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "s:o:a:e:",
-                                   ["sra_file=", "output_folder=",
-                                    "start_position=", "end_position="])
-    except getopt.GetoptError as e:
-        print(str(e))
-        print('sge_submit.py -s <sra_file> -o <output_folder> '
-              '-a <start_position> -e <end_position>')
-        sys.exit(2)
-
-    sra_file = None
-    output_folder = None
-    start = 0
-    end = 0
-
-    for opt, arg in opts:
-        if opt == '-h':
-            print('sge_submit.py -s <sra_file> -o <output_folder> '
-                  '-a <start_position> -e <end_position>')
-            sys.exit()
-        elif opt in ("-s", "--sra_file"):
-            sra_file = arg
-        elif opt in ("-o", "--output_folder"):
-            output_folder = arg
-        elif opt in ("-a", "--start_position"):
-            start = int(arg)
-        elif opt in ("-e", "--end_position"):
-            end = int(arg)
-        else:
-            assert False, "unhandled option"
-
-    df = pd.read_csv(sra_file)
+    conf = parser.parse_args()
+    df = pd.read_csv(conf.sra_file)
     df_illumina_paired = df[(df.Platform == 'ILLUMINA')]
     print('Make sure to set the folders of reads, '
           'cluster ouput and location of run correctly!')
@@ -395,11 +297,7 @@ def main():
           .format(len(set(df_illumina_paired.Organism)), len(df)))
 
     # df = pd.read_csv(sra_file, sep='\t')
-    name_to_id=get_name_to_id(df_illumina_paired)
-    sra_dic=get_sra_dic(df_illumina_paired, name_to_id)
+    name_to_id = get_name_to_id(df_illumina_paired)
+    sra_dic = get_sra_dic(df_illumina_paired, name_to_id)
 
-    run_sge(sra_dic, output_folder)
-
-
-if __name__ == "__main__":
-    main()
+    run_sge(sra_dic, conf.output_folder)

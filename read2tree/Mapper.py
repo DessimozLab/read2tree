@@ -75,18 +75,20 @@ class Mapper(object):
                 #if self.progress.get_mapping_status():
                 #    self.progress.set_status('map')
             if self.mapped_records and og_set is not None:
-                self.og_records = self._sort_by_og(og_set)
+                self.og_records = self._sort_by_og()
         else:  # re-load already computed mapping
             if og_set is not None and not self.args.merge_all_mappings:
-                self.mapped_records = self._read_mapping_from_folder()
-                self.og_records = self._sort_by_og(og_set)
+                self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
+                self.og_records = self._sort_by_og()
             elif (og_set is not None and
                   self.args.merge_all_mappings and species_name is not None):
                 self.mapped_records = \
-                    self._read_mapping_from_folder(species_name=species_name)
-                self.og_records = self._sort_by_og(og_set)
+                    self._read_mapping_from_folder(species_name=species_name, ref_records=ref_set)
+                self.og_records = self._sort_by_og()
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
+        output_folder = os.path.join(self.args.output_path,
+                                     "04_mapping_" + self._species_name)
 
         if len(self._reads) is 2:
             ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
@@ -119,12 +121,13 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
 
         if ngm['reads_mapped'] > 0 and os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
-            shutil.copy(bam_file,os.path.join(self.args.output_path,os.path.basename(bam_file)))
+            shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(bam_file)))
             return self._post_process_read_mapping(ref_file_handle, bam_file)
         else:
+            open(os.path.join(output_folder, os.path.basename(ref_file_handle).split('.')[0]+'_cov.txt'), 'a').close()
             return None
 
-    def _read_mapping_from_folder(self, species_name=None):
+    def _read_mapping_from_folder(self, species_name=None, ref_records=None):
         """
         Retrieve all the mapped consensus files from folder and add to mapper
         object
@@ -137,42 +140,74 @@ class Mapper(object):
             species_name = self._species_name
         in_folder = os.path.join(self.args.output_path,
                                  "04_mapping_"+species_name)
-        for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
-                         desc='Loading consensus read mappings ',
-                         unit=' species'):
-            species = file.split("/")[-1].split("_")[0]
-            map_reads_species[species] = Reference()
-            fasta_reader = FastxReader(file)
-            records = []
-            with fasta_reader.open_fastx() as f:
-                for name, seqstr  in fasta_reader.readfa(f):
+        bam_files = glob.glob(os.path.join(in_folder, "*.bam"))
+        if self.args.min_cons_coverage >= 2 and bam_files:
+            for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species'):
+                species = file.split("/")[-1].split("_")[0]
+                ref_file = os.path.join(self.args.output_path, '02_ref_dna',
+                                 species+'_OGs.fa')
+                map_reads_species[species] = Reference()
+                self._output_shell(
+                    'samtools index -@ ' + str(self.args.threads) + ' ' +
+                    file)
+                consensus = self._build_consensus_seq_v2(ref_file, file)
+                records = []
+
+                for name, seqstr in consensus.items():
                     seq = Seq.Seq(seqstr, generic_dna)
-                    records.append(SeqRecord.SeqRecord(seq, id=name.lstrip(">"), description='', name=''))
-                    map_reads_species[species].dna = records
+                    records.append(SeqRecord.SeqRecord(seq, id=name, description='', name=''))
+                map_reads_species[species].dna = records
 
-            cov = Coverage()
-            cov_file_name = os.path.join(in_folder, species + "_OGs_cov.txt")
-            for line in open(cov_file_name, "r"):
-                if "#" not in line:
-                    values = line.split(",")
-                    cov.add_coverage(values[2]+"_"+values[1],
-                                     [float(values[3]),
-                                      float(values[4].replace("\n", ""))])
-            self.all_cov.update(cov.coverage)
 
-            seqC = SeqCompleteness()
-            seqC_file_name = os.path.join(in_folder, species + "_OGs_sc.txt")
-            for line in open(seqC_file_name, "r"):
-                if "#" not in line:
-                    values = line.split(",")
-                    seqC.add_seq_completeness(values[2] + "_" + values[1],
-                                              [float(values[3]),
-                                               float(values[4]),
-                                               int(values[5]),
-                                               int(values[6]),
-                                               int(values[7].replace("\n",
-                                                                     ""))])
-            self.all_sc.update(seqC.seq_completeness)
+                cov = Coverage(self.args)
+                cov.get_coverage_bam(file)
+                cov.write_coverage_bam(os.path.join(
+                    in_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
+                self.all_cov.update(cov.coverage)
+
+                seqC = SeqCompleteness(mapped_ref=ref_records[species].dna)
+                seqC.get_seq_completeness(map_reads_species[species].dna)
+                seqC.write_seq_completeness(os
+                                            .path.join(in_folder,
+                                                       species + "_OGs_sc.txt"))
+                self.all_sc.update(seqC.seq_completeness)
+        else:
+            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
+                             desc='Loading consensus read mappings ',
+                             unit=' species'):
+                species = file.split("/")[-1].split("_")[0]
+                map_reads_species[species] = Reference()
+                fasta_reader = FastxReader(file)
+                records = []
+
+                with fasta_reader.open_fastx() as f:
+                    for name, seqstr in fasta_reader.readfa(f):
+                        seq = Seq.Seq(seqstr, generic_dna)
+                        records.append(SeqRecord.SeqRecord(seq, id=name.lstrip(">"), description='', name=''))
+                        map_reads_species[species].dna = records
+                cov = Coverage(self.args)
+                cov_file_name = os.path.join(in_folder, species + "_OGs_cov.txt")
+                for line in open(cov_file_name, "r"):
+                    if "#" not in line:
+                        values = line.split(",")
+                        cov.add_coverage(values[2]+"_"+values[1],
+                                         [float(values[3]),
+                                          float(values[4].replace("\n", ""))])
+                self.all_cov.update(cov.coverage)
+
+                seqC = SeqCompleteness()
+                seqC_file_name = os.path.join(in_folder, species + "_OGs_sc.txt")
+                for line in open(seqC_file_name, "r"):
+                    if "#" not in line:
+                        values = line.split(",")
+                        seqC.add_seq_completeness(values[2] + "_" + values[1],
+                                                  [float(values[3]),
+                                                   float(values[4]),
+                                                   int(values[5]),
+                                                   int(values[6]),
+                                                   int(values[7].replace("\n",
+                                                                         ""))])
+                self.all_sc.update(seqC.seq_completeness)
         return map_reads_species
 
     def _make_tmpdir(self):
@@ -515,7 +550,6 @@ class Mapper(object):
             self._output_shell(
                 'samtools index -@ ' + str(self.args.threads) + ' ' +
                 outfile_name + "_sorted.bam")
-            # self._output_shell('bedtools genomecov -bga -ibam ' + outfile_name + '_sorted.bam | grep -w 0$ > ' + outfile_name + "_sorted.bed")
         if self.args.single_mapping:
             self.logger.debug("{}: ---- Samtools index completed"
                          .format(self._species_name))
@@ -526,16 +560,6 @@ class Mapper(object):
 
         consensus = self._build_consensus_seq_v2(ref_file, outfile_name +
                                                  '_sorted.bam')
-        # mapped_reads, all_reads = self._get_mapping_stats(outfile_name +
-        #                                                   '_sorted.bam')
-        #
-        # self.logger.info("---- Mapping of {} against {} with {} "
-        #             "of {} mapped reads completed!---"
-        #             .format(self._species_name, ref_file.split("_")[0],
-        #                     mapped_reads, all_reads))
-
-        # if self.args.single_mapping:
-        #     self.logger.debug("---- Number of mapped reads {} ")
 
         all_consensus = []
         if consensus:
@@ -562,7 +586,7 @@ class Mapper(object):
             out_file = None
 
         # Get effective coverage of each mapped sequence
-        cov = Coverage()
+        cov = Coverage(self.args)
         cov.get_coverage_bam(outfile_name + "_sorted.bam")
         cov.write_coverage_bam(os.path.join(
             output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
@@ -613,7 +637,7 @@ class Mapper(object):
 
         return output
 
-    def _sort_by_og(self, og_set):
+    def _sort_by_og(self):
         """
         Group the mapped sequences according to their OG name
         :return: dictionary with lists of records as values and og name as keys

@@ -10,7 +10,9 @@ import re
 import pyham
 import requests
 import logging
+import random
 import time
+import numpy as np
 
 from tqdm import tqdm
 from collections import OrderedDict
@@ -126,14 +128,13 @@ class OGSet(object):
         if '.fa' in self.args.dna_reference or \
            '.fasta' in self.args.dna_reference:
             db = {}
-            print('--- Load ogs and find their corresponding '
+            self.logger.info('--- Load ogs and find their corresponding '
                   'DNA seq from {} ---'.format(self.args.dna_reference))
-            print(
-                'Loading {} into memory. This might take a '
+            self.logger.info('Loading {} into memory. This might take a '
                 'while . . . '.format(self.args.dna_reference.split("/")[-1]))
             fasta_reader = FastxReader(self.args.dna_reference)
             with fasta_reader.open_fastx() as f:
-                for name, seq in tqdm(fasta_reader.readfa(f),
+                for name, seq, qual in tqdm(fasta_reader.readfx(f),
                                             desc='Loading db', unit=' seq'):
                     seq_id = name.lstrip('>').lstrip().rstrip()
                     db[seq_id.split()[0]] = seq
@@ -152,7 +153,7 @@ class OGSet(object):
         #                                self._db_id_map.genome_table]
         #     # print(self._db_species_list)
         else:
-            print('--- Load ogs and find their corresponding DNA seq using '
+            self.logger.info('--- Load ogs and find their corresponding DNA seq using '
                   'the REST api ---')
             source = 'REST_api'
             return None, source
@@ -283,7 +284,6 @@ class OGSet(object):
             #     cleaned_seq = dna_record.seq
             return SeqRecord.SeqRecord(cleaned_seq, record.id,
                                        description="", name="")
-
 
     def _get_dna_from_REST_bulk(self, records, og_name):
         """
@@ -485,7 +485,7 @@ class OGSet(object):
         """
         start = time.time()
         cons_og_set = mapper.og_records  # get sequences from mapping
-        cov = Coverage()
+        cov = Coverage(self.args)
         seqC = SeqCompleteness()
         if not species_name:
             species_name = self._species_name
@@ -505,10 +505,13 @@ class OGSet(object):
                     og_sc = {self._get_id_rec(rec): mapper.all_sc[self._get_id_rec(rec)]
                              for rec in cons_og_filt.aa
                              if self._get_id_rec(rec) in mapper.all_sc.keys()}
+                    og_cov = {self._get_id_rec(rec): mapper.all_cov[self._get_id_rec(rec)]
+                             for rec in cons_og_filt.aa
+                             if self._get_id_rec(rec) in mapper.all_cov.keys()}
                     if len(cons_og_filt.aa) >= 1:  # we had at least one mapped og even after removal
                         best_records = cons_og_filt \
-                            .get_best_consensus_by_seq_completeness(
-                                og_sc, threshold=self.args.sc_threshold)
+                            .get_best_consensus_by_seq_completeness(self.args.sequence_selection_mode,
+                                sc=og_sc, cov=og_cov, threshold=self.args.sc_threshold)
                         if best_records:
                             best_record_aa = best_records[0]
                             best_record_dna = best_records[1]
@@ -669,16 +672,74 @@ class OG(object):
             if idx in rec.id:
                 return rec
 
-    def get_best_consensus_by_seq_completeness(self, sc,
+    def get_best_consensus_by_seq_completeness(self, sequence_selection_mode, sc=None, cov=None,
                                                threshold=0.0):
         """
         :param ref_og: OG containing reference sequences
         :param threshold: minimum sequence completeness [0.0]
         :return: best amino acid sequence
         """
-        if sc:
+        if sequence_selection_mode in 'cov_sc':
+            sc_cov = {k: v[0]*cov[k][0] for k,v in sc.items()}
+            sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(sc_cov_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif sequence_selection_mode in 'cov':
+            cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(cov_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:  # check whether best sequence by coverage is above sc threshold
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif sequence_selection_mode in 'cov_pure':
+            cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(cov_ordered.items())[-1][0]
+            if best_record_id:  # check whether best sequence by coverage is above sc threshold
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif sequence_selection_mode in 'cov_no_sc':
+            cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(cov_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= 0.0:  # check whether best sequence by coverage is above sc threshold
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif sequence_selection_mode in 'sc':
             sc_ordered = OrderedDict(sorted(sc.items(), key=lambda t: t[-1]))
             best_record_id = list(sc_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif sequence_selection_mode in 'cov_sc_scaled':
+            max_cov = np.max([v[0] for k,v in cov.items()])
+            sc_cov = {k: v[0] * cov[k][0]/max_cov for k, v in sc.items()}
+            sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
+            best_record_id = list(sc_cov_ordered.items())[-1][0]
+            seq_completenesses = sc[best_record_id][1]
+            if seq_completenesses >= threshold:
+                return (self._get_record_by_id(self.aa, best_record_id),
+                        self._get_record_by_id(self.dna, best_record_id))
+            else:
+                return None
+        elif sequence_selection_mode in 'random':
+            best_record_id = random.choice(list(sc.keys()))
+            # sc_cov = {k: v[0] * cov[k][0]/max_cov for k, v in sc.items()}
+            # sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
+            # best_record_id = list(sc_cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
             if seq_completenesses >= threshold:
                 return (self._get_record_by_id(self.aa, best_record_id),

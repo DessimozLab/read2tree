@@ -40,6 +40,7 @@ class Aligner(object):
             self.species_to_remove_ogs = []
 
         self.alignments = Alignment()
+        #self.placement_dic = {}
 
         if load and og_set is not None:
             print('--- Alignment of {} OGs ---'.format(len(list(og_set.keys()))))
@@ -465,3 +466,25 @@ class Alignment(object):
                     return new_id.upper()
                 else:  # [MUSMU]
                     return species
+
+# TODO: this is an idea that still needs some work on better using of codons
+class Placement(object):
+
+    def __init__(self):
+        self.aa = []
+        self.dna = []
+
+    def _get_placement_dic(self, alignment, ref_species):
+        placement_dic = {}
+        ref_rec = None
+        for r in alignment:
+            if ref_species in r.id:
+                ref_rec = r
+                k = 0
+                for i, aa in enumerate(list(r.seq)):
+                    if "-" not in aa:
+                        placement_dic[i] = k
+                        k = k + 1
+                    else:
+                        placement_dic[i] = k
+        return placement_dic, ref_rec
