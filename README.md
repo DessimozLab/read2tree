@@ -66,7 +66,10 @@ To run read2tree two things are required as input:
 * If you are using your own OMA run the formatting is crucial
 
 
-## Running on clusters
+#### Running on clusters
+
+* Run the first step of read2tree such that folders 01, 02 and 03 are computed (this allows for mapping). This can be done using the '--reference' option.
+* Since read2tree re-orders the OGs into the included species, it is possible to split the mapping step per species using multiple threads for the mapper. For this the '--single_mapping' option is available.
 
 ### LSF
 

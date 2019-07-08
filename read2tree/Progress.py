@@ -255,10 +255,12 @@ class Progress(object):
             computed_cov = [f for f in
                             glob.glob(os.path.join(self.args.output_path,
                                                    folder+'/*cov.txt'))]
-            if (num_expected_mappings - len(computed_cov)) == 0:  # it is finished if the number of generated coverage files is the same as the number of references
-                if self.args.merge_all_mappings:
+            # it is finished if the number of generated coverage files is the same as the number of references
+            if self.args.merge_all_mappings:
+                if num_expected_mappings >= len(computed_cov) and len(computed_cov) >= 1:
                     mapping_folders_finished.append(folder)
-                elif self._species_name in folder:
+            elif self._species_name in folder:
+                if (num_expected_mappings - len(computed_cov)) == 0:
                     mapping_folders_finished.append(folder)
             # else:
         #         self.logger.debug(

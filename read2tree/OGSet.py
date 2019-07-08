@@ -679,7 +679,7 @@ class OG(object):
         :param threshold: minimum sequence completeness [0.0]
         :return: best amino acid sequence
         """
-        if sequence_selection_mode in 'cov_sc':
+        if sequence_selection_mode == 'cov_sc':
             sc_cov = {k: v[0]*cov[k][0] for k,v in sc.items()}
             sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
             best_record_id = list(sc_cov_ordered.items())[-1][0]
@@ -689,7 +689,7 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
-        elif sequence_selection_mode in 'cov':
+        elif sequence_selection_mode == 'cov':
             cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
             best_record_id = list(cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
@@ -698,7 +698,7 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
-        elif sequence_selection_mode in 'cov_pure':
+        elif sequence_selection_mode == 'cov_pure':
             cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
             best_record_id = list(cov_ordered.items())[-1][0]
             if best_record_id:  # check whether best sequence by coverage is above sc threshold
@@ -706,7 +706,7 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
-        elif sequence_selection_mode in 'cov_no_sc':
+        elif sequence_selection_mode == 'cov_no_sc':
             cov_ordered = OrderedDict(sorted(cov.items(), key=lambda t: t[-1]))
             best_record_id = list(cov_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
@@ -715,7 +715,7 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
-        elif sequence_selection_mode in 'sc':
+        elif sequence_selection_mode == 'sc':
             sc_ordered = OrderedDict(sorted(sc.items(), key=lambda t: t[-1]))
             best_record_id = list(sc_ordered.items())[-1][0]
             seq_completenesses = sc[best_record_id][1]
@@ -724,7 +724,7 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
-        elif sequence_selection_mode in 'cov_sc_scaled':
+        elif sequence_selection_mode == 'cov_sc_scaled':
             max_cov = np.max([v[0] for k,v in cov.items()])
             sc_cov = {k: v[0] * cov[k][0]/max_cov for k, v in sc.items()}
             sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
@@ -735,7 +735,7 @@ class OG(object):
                         self._get_record_by_id(self.dna, best_record_id))
             else:
                 return None
-        elif sequence_selection_mode in 'random':
+        elif sequence_selection_mode == 'random':
             best_record_id = random.choice(list(sc.keys()))
             # sc_cov = {k: v[0] * cov[k][0]/max_cov for k, v in sc.items()}
             # sc_cov_ordered = OrderedDict(sorted(sc_cov.items(), key=lambda t: t[-1]))
