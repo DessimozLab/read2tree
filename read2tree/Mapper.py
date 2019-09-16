@@ -87,6 +87,7 @@ class Mapper(object):
                 self.og_records = self._sort_by_og()
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
+        start = time.time()
         output_folder = os.path.join(self.args.output_path,
                                      "04_mapping_" + self._species_name)
 
@@ -119,6 +120,12 @@ class Mapper(object):
         self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
         self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+
+        end = time.time()
+        self.elapsed_time = end - start
+        self.logger.info('{}: Mapping to {} references took {}.'
+                         .format(self._species_name, os.path.basename(ref_file_handle),
+                                 self.elapsed_time))
 
         if ngm['reads_mapped'] > 0 and os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
             shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(bam_file)))
@@ -313,11 +320,7 @@ class Mapper(object):
         tmp_output_folder.cleanup()
         end = time.time()
         self.elapsed_time = end - start
-        if len(references) == 1:
-            self.logger.info('{}: Mapping to {} references took {}.'
-                        .format(self._species_name, references[0],
-                                self.elapsed_time))
-        else:
+        if len(references) > 1:
             self.logger.info('{}: Mapping to all references took {}.'
                         .format(self._species_name,
                                 self.elapsed_time))
