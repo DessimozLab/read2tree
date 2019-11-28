@@ -23,9 +23,9 @@ def get_download_string(species_id, sra, layout='PAIRED'):
 #BSUB -R "rusage[mem=2000]"
 #BSUB -M 2000000
 speciesid=%s
+module add Bioinformatics/Software/vital-it
 module add Utility/aspera_connect/3.7.4.147727
 module add UHTS/Analysis/sratoolkit/2.8.2.1
-conda activate r2t
 reads=/scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
 mkdir /scratch/beegfs/weekly/ddylus/metazoan/reads/$speciesid
 echo Created read $speciesid

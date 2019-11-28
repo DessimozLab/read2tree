@@ -87,7 +87,7 @@ class Reads(object):
                                                delete=False)
         fastq_reader = FastxReader(self._reads)
         with fastq_reader.open_fastx() as f:
-            for name, seq, qual in tqdm(fastq_reader.readfq(f),
+            for name, seq, qual in tqdm(fastq_reader.readfx(f),
                                         desc='Splitting reads',
                                         unit=' reads'):
                 total_reads = total_reads + 1
