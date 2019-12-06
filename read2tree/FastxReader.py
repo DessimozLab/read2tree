@@ -48,8 +48,8 @@ class FastxReader(object):
         for l in file_handle:
             name = l.rstrip()
             seq = next(file_handle).rstrip()
-            tmp = next(file_handle).rstrip()
             if '@' in name[0]:
+                tmp = next(file_handle).rstrip()
                 qual = next(file_handle).rstrip()
             elif '>' in name[0]:
                 qual = None
