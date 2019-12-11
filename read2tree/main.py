@@ -207,6 +207,7 @@ def parse_args(argv, exe_name, desc):
     _species_name = ""
 
     if args.reads:
+        print(args.reads)
         if len(args.reads) == 2:
             _reads = args.reads
             _species_name = _reads[0].split("/")[-1].split(".")[0]

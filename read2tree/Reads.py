@@ -145,6 +145,15 @@ class Reads(object):
         #             /data/reads/split.fq')
         return out_file.name
 
+    def check_paired(self, reads):
+        '''
+        Function to check whether really to use both or a single read for mapping. Sometimes people submitted paired reads but left and right pair are the same.
+
+        :param reads:
+        :return:
+        '''
+        return None
+
     def check_read_consistency(self, reads):
         '''
         Function that checks whether all mate pairs are present and if not
@@ -208,14 +217,9 @@ class Reads(object):
         '''
         sampled_reads = []
         start = time.time()
-        if len(self.args.reads) == 1:
-            idx_random = self._get_vector_random_reads(reads)
-            if idx_random:
-                sampled_reads = self._sample_read_file(reads,
-                                                       idx_random)
-            else:
-                sampled_reads = reads
-        elif len(self.args.reads) == 2:
+        print(len(self.args.reads))
+
+        if len(self.args.reads) == 2:
             idx_random = self._get_vector_random_reads(reads[0])
             if idx_random:
                 sampled_reads.append(self._sample_read_file(reads[0],
@@ -226,6 +230,15 @@ class Reads(object):
                 if self.args.debug:
                     shutil.copy(sampled_reads[0], os.path.join(self.args.output_path, 'reads_1.fa'))
                     shutil.copy(sampled_reads[1], os.path.join(self.args.output_path, 'reads_2.fa'))
+            else:
+                sampled_reads = reads
+        else:
+            idx_random = self._get_vector_random_reads(reads)
+            print(idx_random)
+            if idx_random:
+                sampled_reads = self._sample_read_file(reads,
+                                                       idx_random)
+                print(sampled_reads)
             else:
                 sampled_reads = reads
 

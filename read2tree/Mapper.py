@@ -496,7 +496,7 @@ class Mapper(object):
         for ref in references:
             #     self.logger.info(read.qual)
             seq = list('N' * len(records[ref]))
-            for pileup_column in bam.pileup(ref, 0, 100000):
+            for pileup_column in bam.pileup(ref, 0, 10000000):
                 # TODO: improve the selection of a column by its quality
                 # qualities = [pileupread.alignment.query_alignment_qualities[pileupread.query_position] for pileupread in
                 #        pileupcolumn.pileups if not pileupread.is_del and not pileupread.is_refskip]
