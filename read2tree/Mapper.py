@@ -55,12 +55,13 @@ class Mapper(object):
         else:
             self._species_name = species_name
 
+
         # #------- uncomment this for species removal test ---------
-        # if args.reads:
-        #     if len(args.reads) == 2:
-        #         self._species_name = self._reads[0].split("/")[-1].split(".")[0]
-        #     else:
-        #         self._species_name = self._reads.split("/")[-1].split(".")[0]
+        if args.reads:
+            if len(args.reads) == 2:
+                self._mapping_name = os.path.basename(self._reads[0]).split(".")[0]
+            else:
+                self._mapping_name = os.path.basename(self._reads).split(".")[0]
 
         self.progress = progress
         self.all_cov = {}
@@ -83,7 +84,7 @@ class Mapper(object):
             elif (og_set is not None and
                   self.args.merge_all_mappings and species_name is not None):
                 self.mapped_records = \
-                    self._read_mapping_from_folder(species_name=species_name, ref_records=ref_set)
+                    self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
                 self.og_records = self._sort_by_og()
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
@@ -134,7 +135,7 @@ class Mapper(object):
             open(os.path.join(output_folder, os.path.basename(ref_file_handle).split('.')[0]+'_cov.txt'), 'a').close()
             return None
 
-    def _read_mapping_from_folder(self, species_name=None, ref_records=None):
+    def _read_mapping_from_folder(self, mapping_name=None, ref_records=None):
         """
         Retrieve all the mapped consensus files from folder and add to mapper
         object
@@ -143,10 +144,10 @@ class Mapper(object):
         """
         print('--- Retrieve mapped consensus sequences ---')
         map_reads_species = {}
-        if not species_name:
-            species_name = self._species_name
+        if not mapping_name:
+            mapping_name = self._mapping_name
         in_folder = os.path.join(self.args.output_path,
-                                 "04_mapping_"+species_name)
+                                 "04_mapping_"+mapping_name)
         bam_files = glob.glob(os.path.join(in_folder, "*.bam"))
         if self.args.min_cons_coverage >= 2 and bam_files:
             for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species'):
