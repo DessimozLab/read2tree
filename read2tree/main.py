@@ -30,7 +30,7 @@ import argparse
 COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 
 logger = logging.getLogger(__name__)
-
+logger.disabled = True
 
 def parse_args(argv, exe_name, desc):
     '''
@@ -235,7 +235,7 @@ def parse_args(argv, exe_name, desc):
         arg_parser.error(
             'Splitting reads does not work for paired end reads.')
 
-    if args.read_type is 'short' and args.ngmlr_parameters:
+    if args.read_type == 'short' and args.ngmlr_parameters:
         arg_parser.error(
             'Arguments for --ngmlr_parameters only work if --read_type is set '
             'to "long".')

@@ -70,19 +70,19 @@ class Mapper(object):
         self.read_og_set = {}
 
         if load:  # compute mapping
-            if ref_set is not None:
+            if ref_set != None:
                 self.mapped_records = \
                     self._map_reads_to_references(ref_set)
                 #if self.progress.get_mapping_status():
                 #    self.progress.set_status('map')
-            if self.mapped_records and og_set is not None:
+            if self.mapped_records and og_set != None:
                 self.og_records = self._sort_by_og()
         else:  # re-load already computed mapping
-            if og_set is not None and not self.args.merge_all_mappings:
+            if og_set != None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
                 self.og_records = self._sort_by_og()
-            elif (og_set is not None and
-                  self.args.merge_all_mappings and species_name is not None):
+            elif (og_set != None and
+                  self.args.merge_all_mappings and species_name != None):
                 self.mapped_records = \
                     self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
                 self.og_records = self._sort_by_og()
@@ -92,23 +92,23 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path,
                                      "04_mapping_" + self._species_name)
 
-        if len(self._reads) is 2:
+        if len(self._reads) == 2:
             ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads is not None:
+            if self.args.threads != None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        elif len(self._reads) is not 2 and 'short' in self.args.read_type:
+        elif len(self._reads) != 2 and 'short' in self.args.read_type:
             ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads is not None:
+            if self.args.threads != None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
             ngm = ngm_wrapper()
             bam_file = ngm['file']
-        elif len(self._reads) is not 2 and 'long' in self.args.read_type:
+        elif len(self._reads) != 2 and 'long' in self.args.read_type:
             ngm_wrapper = NGMLR(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads is not None:
+            if self.args.threads != None:
                 ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            if self.args.ngmlr_parameters is not None:
+            if self.args.ngmlr_parameters != None:
                 par = self.args.ngmlr_parameters.split(',')
                 ngm_wrapper.options.options['-x'].set_value(str(par[0]))
                 ngm_wrapper.options \

@@ -61,7 +61,7 @@ class OMAOutputParser(object):
 
     def _load_ogs_from_path(self):
 
-        if self.mode is "marker_genes":
+        if self.mode == "marker_genes":
             ogs = self._filter_ogs_min_species_marker()
         else:
             ogs = self._filter_ogs_min_species()
@@ -146,7 +146,7 @@ class OMAOutputParser(object):
         :return:
         """
         min_species = 0
-        if self.args.min_species is not None:
+        if self.args.min_species != None:
             min_species = self.args.min_species
 
         return min_species

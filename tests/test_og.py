@@ -9,8 +9,8 @@ dirname = os.path.dirname(__file__)
 class OGTest(unittest.TestCase):
 
     def setup(self):
-        aa = list(SeqIO.parse('tests/data/OG4.aa', format='fasta'))
-        dna = list(SeqIO.parse('tests/data/OG4.dna', format='fasta'))
+        aa = list(SeqIO.parse('data/OG4.aa', format='fasta'))
+        dna = list(SeqIO.parse('data/OG4.dna', format='fasta'))
         og = OG()
         og.aa = aa
         og.dna = dna
@@ -23,7 +23,7 @@ class OGTest(unittest.TestCase):
     def test_get_og_dict(self):
         og = self.setup()
         dna_dict = og._get_og_dict(og)
-        self.assertEqual(dna_dict['MOUSE21964_OG4'].name, 'MOUSE21964_OG4')
+        self.assertEqual(dna_dict['MOUSE21964'].name, 'MOUSE21964_OG4')
 
     def test_remove_species_records(self):
         og = self.setup()

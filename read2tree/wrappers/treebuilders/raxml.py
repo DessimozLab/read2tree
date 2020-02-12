@@ -44,7 +44,7 @@ class Raxml(TreeBuilder):
     def __init__(self, alignment, *args, **kwargs):
         self.options = get_default_options()
         super(Raxml, self).__init__(alignment=alignment, *args, **kwargs)
-        if self.input is not None:
+        if self.input != None:
             if self.datatype == DataType.DNA:
                 set_default_dna_options(self)
             else:
@@ -62,11 +62,11 @@ class Raxml(TreeBuilder):
 
         #Need to create temp directory to put raxml output here
         with TempDir() as tmpd:
-            if self.input_type is AlignmentInput.OBJECT:  # different operation depending on what it is
+            if self.input_type == AlignmentInput.OBJECT:  # different operation depending on what it is
                 with TempFile() as filename:
                     SeqIO.write(self.input, filename, 'phylip-relaxed') # default interleaved
                     output, error = self._call(filename,tmpd, *args, **kwargs)
-            elif self.input_type is AlignmentInput.FILENAME:
+            elif self.input_type == AlignmentInput.FILENAME:
                 filename = self.input
                 output, error = self._call(filename, tmpd, *args, **kwargs)
             else:
@@ -107,7 +107,7 @@ class Raxml(TreeBuilder):
         parser = RaxmlParser()
 
         try:
-            if self.options['-f'].get_value() is not '':
+            if self.options['-f'].get_value() != '':
                 f_value = os.path.splitext(os.path.basename(self.options['-f'].get_value()))[0]
 
                 result = parser.to_dict(*expected_outfiles, dash_f=f_value)

@@ -43,13 +43,13 @@ class SeqCompleteness(object):
             ref_seq = str(ref_record.seq).upper()
         else:
             ref_seq = map_ref_seq
-        if gene_code is 'dna':
+        if gene_code == 'dna':
             ref_seq_len = len(ref_seq)
             map_seq_len = len(map_ref_seq)
             non_n_len = len(map_ref_seq) - str(map_seq).count('N')
             map_seq_completeness = non_n_len / map_seq_len
             ref_seq_completeness = non_n_len / ref_seq_len
-        elif gene_code is 'aa':
+        elif gene_code == 'aa':
             ref_seq_len = len(ref_seq)
             map_seq_len = len(map_seq)
             non_n_len = len(map_seq) - str(map_seq).count('X')

@@ -232,7 +232,7 @@ class RaxmlParser(object):
     def parse(self, filename, f_flag=None):
         with open(filename) as fl:
             s = fl.read()
-        if f_flag is None:
+        if f_flag == None:
             try:
                 alphas = self.alpha.parseString(s).asList()
             except ParseException as err:
@@ -259,7 +259,7 @@ class RaxmlParser(object):
                 lnl = [0]
 
             return alphas, freqs, names, rates, lnl
-        elif f_flag is 'i':
+        elif f_flag == 'i':
             try:
                 tc_stochbi = self.tc_stochbi.parseString(s).asList()[0]
             except ParseException as err:
@@ -304,7 +304,7 @@ class RaxmlParser(object):
             return tc_unibi, rtc_unibi, tca_unibi, rtca_unibi, tc_stochbi, \
                    rtc_stochbi, tca_stochbi, rtca_stochbi
 
-        elif f_flag is 'a':
+        elif f_flag == 'a':
             try:
                 model = self.model.parseString(s).asList()
             except ParseException:
@@ -424,11 +424,11 @@ class RaxmlParser(object):
         Option dash_f_e=True will parse the output of a raxml -f e run,
         which has different output
         """
-        if dash_f is 'e':
+        if dash_f == 'e':
             return self._dash_f_e_to_dict(info_filename, tree_filename)
-        elif dash_f is 'i':
+        elif dash_f == 'i':
             return self._dash_f_i_to_dict(info_filename, tree_filename)
-        elif dash_f is 'a':
+        elif dash_f == 'a':
             return self._dash_f_a_to_dict(info_filename, tree_filename)
         else:
             return self._to_dict(info_filename, tree_filename)
@@ -445,7 +445,7 @@ class RaxmlParser(object):
         n_parts = len(alpha)
         assert len(freqs) == n_parts
         assert len(names) == n_parts
-        if rates is not None:
+        if rates != None:
             assert len(rates) == n_parts
 
         result = {'likelihood': lnl[0],
@@ -455,7 +455,7 @@ class RaxmlParser(object):
         for i in range(n_parts):
             subdict = {'alpha': alpha[i], 'frequencies': freqs[i],
                        'name': names[i]}
-            if rates is not None:
+            if rates != None:
                 subdict['rates'] = rates[i]
             result['partitions'][i] = subdict
 

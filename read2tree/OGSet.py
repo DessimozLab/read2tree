@@ -116,7 +116,7 @@ class OGSet(object):
         return path
 
     def _load_orthoxml(self):
-        if self.oma.mode is 'standalone':
+        if self.oma.mode == 'standalone':
             og_orthoxml = os.path.join(self.oma_output_path,
                                        'OrthologousGroups.orthoxml')
             tree_str = os.path.join(self.oma_output_path,
@@ -217,7 +217,7 @@ class OGSet(object):
         :param records:
         :return:
         """
-        if self.oma.mode is 'standalone':
+        if self.oma.mode == 'standalone':
             og_ham = self._ham_analysis.get_hog_by_id(name[2:])
             prot_ids = [gene.prot_id.split(" | ")[0]
                         for gene in og_ham.get_all_descendant_genes()]
@@ -229,7 +229,7 @@ class OGSet(object):
                 if 'X' in record.seq[-1]:
                     tmp_seq = record.seq[0:-1]
                     record.seq = tmp_seq
-        elif self.oma.mode is 'marker_genes':
+        elif self.oma.mode == 'marker_genes':
             records = records
             for record in records:
                 if 'X' in record.seq[-1]:

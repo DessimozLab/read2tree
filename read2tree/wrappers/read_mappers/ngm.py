@@ -81,18 +81,18 @@ class NGM(ReadMapper):
         [This only covers the simplest automatic
          case]
         """
-        if tmp_folder is None:
+        if tmp_folder == None:
             tmp_file = './' + os.path.basename(reference)+".bam"
         if '/' not in tmp_folder[-1]:
             tmp_file = os.path.join(tmp_folder,
                                     os.path.basename(reference))+".bam"
-        if len(reads) is 2:
+        if len(reads) == 2:
             self.cli('{} -b -r {} -1 {} -2 {} -o {}'.format(self.command(),
                                                             reference,
                                                             reads[0], reads[1],
                                                             tmp_file),
                      wait=True)
-        elif len(reads) is not 2:
+        elif len(reads) != 2:
             self.cli('{} -b -r {} -q {} -o {}'.format(self.command(),
                                                       reference, reads,
                                                       tmp_file), wait=True)

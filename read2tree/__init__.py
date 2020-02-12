@@ -18,7 +18,7 @@ __copyright__ = 'read2tree (C) 2017-{:d} David Dylus' \
 
 conf = resource_string(__name__, 'logging/log.yaml')
 
-D = yaml.load(conf)
+D = yaml.load(conf, Loader=yaml.FullLoader)
 D.setdefault('version', 1)
 logging.config.dictConfig(D)
 # del D
