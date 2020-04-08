@@ -1,3 +1,4 @@
+added here something to test windows bash
 * add better error handling when mapping doesn't work
 * tables needs hdf5 dependencies
 * some git repositories are difficult to access
