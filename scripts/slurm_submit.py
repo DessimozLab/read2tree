@@ -57,13 +57,13 @@ class JobProducer(object):
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
 #SBATCH --job-name r2t_{reference}-{species.name}
-#SBATCH --mem=5GB"
+#SBATCH --mem=5GB
 #SBATCH --export=None
 
 eval "$(/scratch/wally/FAC/FBM/DBC/cdessim2/default/aaltenho/miniconda3/bin/conda shell.bash hook)"
 conda activate r2t
 
-cd {self.base_path}
+cd {os.path.abspath(self.base_path)}
 
 python -W ignore read2tree --reads {" ".join(species.read_files)} --output_path ./ --single_mapping {reference} --threads 4 --species_name {species.name}"""
 
