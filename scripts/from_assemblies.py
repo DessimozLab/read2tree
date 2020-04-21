@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+import os
+
+import Bio.AlignIO
+import Bio.SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+import numpy
+import collections
+import logging
+logger = logging.getLogger(__name__)
+
+
+def chunk_msa(msa, min_length=300):
+    def frac_uninform(column):
+        cnts = collections.Counter(column)
+        return (cnts['-'] + cnts['n']) / len(column)
+
+    uninform = numpy.array([frac_uninform(msa[:, i]) for i in range(msa.get_alignment_length())])
+    splits = []
+    cur_chunk = 0
+    for i in range(msa.get_alignment_length()):
+        if uninform[i] <= 0.1:
+            cur_chunk += 1
+        if cur_chunk >= min_length:
+            splits.append(i)
+            cur_chunk = 0
+    # remove last split such that the last segement is still at least min_length long
+    return splits[:-1]
+
+
+def split_msa(msa, split_pos):
+    msas = []
+    for i in range(len(split_pos)+1):
+        rng = slice(split_pos[i-1] if i > 0 else None,
+                    split_pos[i] if i < len(split_pos)-1 else None)
+        cur_msa_chunk = msa[:, rng]
+        for rec in cur_msa_chunk:
+            rec.id = rec.id + "_OG{}".format(i)
+        msas.append(cur_msa_chunk)
+    logger.info("split msa into {} chunks".format(len(msas)))
+    return msas
+
+
+def write_aligned_og(msas, outdir):
+    os.makedirs(outdir)
+    for og, msa in enumerate(msas):
+        fname = os.path.join(outdir, "OG{:04d}.phy".format(og))
+        with open(fname, 'wt') as fout:
+            Bio.AlignIO.write(msa, fout, 'phylip')
+
+
+def get_unaligned_seq_rec_from_aligned_seq(rec):
+    seq = Seq("".join([bp for bp in str(rec.seq) if bp != '-']),
+              alphabet=rec.seq.alphabet)
+    new = SeqRecord(seq)
+    new.id = rec.id
+    new.name = rec.name
+    return new
+
+
+def write_unaligned_og(msas, outdir):
+    os.makedirs(outdir)
+    for og, msa in enumerate(msas):
+        fname = os.path.join(outdir, "OG{:04d}.fa".format(og))
+        with open(fname, 'wt') as fout:
+            for rec in msa:
+                Bio.SeqIO.write(get_unaligned_seq_rec_from_aligned_seq(rec), fout, 'fasta')
+
+
+def write_reference_files(msas, outdir):
+    os.makedirs(outdir)
+    for rg in range(len(msas[0])):
+        fname = os.path.join(outdir, "{}_OGs.fa".format(msas[0][rg].id.split('_')[0]))
+        with open(fname, 'wt') as fout:
+            for msa in msas:
+                Bio.SeqIO.write(get_unaligned_seq_rec_from_aligned_seq(msa[rg]), fout, 'fasta')
+
+
+def make_genome_names_compatible(msa, out):
+    with open(os.path.join(out, "genome_mapping.txt"), 'wt') as fh:
+        for i in range(len(msa)):
+            orig_header = msa[i].description
+            msa[i].description = ""
+            msa[i].id = "RG{:03d}".format(i+1)
+            fh.write("RG{:03d}\t{}\n".format(i+1, orig_header))
+    return msa
+
+
+def split_and_write_msa(msa, out):
+    split_pos = chunk_msa(msa)
+    logger.info("splitting msa into {} chunks".format(len(split_pos)-1))
+    os.makedirs(os.path.join(out, "03_align_dna"))
+    os.makedirs(os.path.join(out, "01_ref_ogs_dna"))
+    os.makedirs(os.path.join(out, "02_ref_dna"))
+    for k in range(len(split_pos)-1):
+        fn = os.path.join(out, "03_align_dna", "OG{}.phy".format(k))
+        rng = slice(split_pos[k], split_pos[k+1])
+        write_aligned_og(msa[:, rng], fn)
+        fn = os.path.join(out, "01_ref_ogs_dna", "OG{}.fa".format(k))
+        write_unaligned_og(msa[:, rng], fn)
+    for i in range(len(msa)):
+        fn = os.path.join(out, "02_ref_dna", "{}_OG.fa".format(msa[i].id))
+        write_reference_files(msa[i], split_pos, fn)
+
+
+def prepare_r2t(msa, base_path):
+    os.makedirs(base_path)
+    msa = make_genome_names_compatible(msa, base_path)
+    split_pos = chunk_msa(msa)
+    all_msas = split_msa(msa, split_pos)
+    write_unaligned_og(all_msas, os.path.join(base_path, "01_ref_ogs_dna"))
+    write_reference_files(all_msas, os.path.join(base_path, "02_ref_dna"))
+    write_aligned_og(all_msas, os.path.join(base_path, "03_align_dna"))
+    with open(os.path.join(base_path, "mplog.log"), 'w') as log:
+        log.write("2020-04-18 00:30:16,393 - read2tree.ReferenceSet - INFO - test_1a: "
+                  "Extracted {} reference species form 6428 ogs took 0.045595407485961914\n".format(len(msa)))
+        log.write("2020-04-18 00:30:16,338 - read2tree.OGSet - INFO - test_1a: "
+                  "Gathering of DNA seq for {} OGs took 1037.3560745716095.\n".format(len(all_msas)))
+        log.write("2020-04-18 01:38:40,309 - read2tree.Aligner - INFO - test_1a: "
+                  "Alignment of {} OGs took 4103.362480401993.\n".format(len(all_msas)))
+
+
+
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="extract from a whole genome alignment MSA pseudo OGs for r2t")
+    parser.add_argument('--out', required=True, help="folder where output is written")
+    parser.add_argument('-v', action='count', help="increase verbosity")
+    parser.add_argument('msa', help="input whole genome alignment MSA in fasta/phylip format")
+    conf = parser.parse_args()
+    logging.basicConfig(level=30 - 10 * min(conf.v, 2))
+
+    if conf.msa.endswith('.fa') or conf.msa.endswith('.fasta'):
+        format = 'fasta'
+    elif conf.msa.endswith('.phy'):
+        format = 'phylip'
+    else:
+        raise ValueError("Invalid input format for {}. Ending determines filetype and should be either .phy or .fa"
+                         .format(conf.msa))
+    with open(conf.msa) as fh:
+        msa = next(Bio.AlignIO.parse(fh, format))
+    logger.info("loaded msa with {} sequences of length {}".format(len(msa), msa.get_alignment_length()))
+
+    prepare_r2t(msa, conf.out)
+
