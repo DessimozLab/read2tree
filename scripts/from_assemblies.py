@@ -87,23 +87,6 @@ def make_genome_names_compatible(msa, out):
     return msa
 
 
-def split_and_write_msa(msa, out):
-    split_pos = chunk_msa(msa)
-    logger.info("splitting msa into {} chunks".format(len(split_pos)-1))
-    os.makedirs(os.path.join(out, "03_align_dna"))
-    os.makedirs(os.path.join(out, "01_ref_ogs_dna"))
-    os.makedirs(os.path.join(out, "02_ref_dna"))
-    for k in range(len(split_pos)-1):
-        fn = os.path.join(out, "03_align_dna", "OG{}.phy".format(k))
-        rng = slice(split_pos[k], split_pos[k+1])
-        write_aligned_og(msa[:, rng], fn)
-        fn = os.path.join(out, "01_ref_ogs_dna", "OG{}.fa".format(k))
-        write_unaligned_og(msa[:, rng], fn)
-    for i in range(len(msa)):
-        fn = os.path.join(out, "02_ref_dna", "{}_OG.fa".format(msa[i].id))
-        write_reference_files(msa[i], split_pos, fn)
-
-
 def prepare_r2t(msa, base_path):
     os.makedirs(base_path)
     msa = make_genome_names_compatible(msa, base_path)
@@ -112,6 +95,13 @@ def prepare_r2t(msa, base_path):
     write_unaligned_og(all_msas, os.path.join(base_path, "01_ref_ogs_dna"))
     write_reference_files(all_msas, os.path.join(base_path, "02_ref_dna"))
     write_aligned_og(all_msas, os.path.join(base_path, "03_align_dna"))
+    try:
+        fd = os.open(base_path, os.O_RDONLY)
+        os.symlink("01_ref_ogs_dna", "01_ref_ogs_aa", dir_fd=fd)
+        os.symlink("03_align_dna", "03_align_aa", dir_fd=fd)
+    finally:
+        os.close(fd)
+
     with open(os.path.join(base_path, "mplog.log"), 'w') as log:
         log.write("2020-04-18 00:30:16,393 - read2tree.ReferenceSet - INFO - test_1a: "
                   "Extracted {} reference species form 6428 ogs took 0.045595407485961914\n".format(len(msa)))
@@ -119,8 +109,6 @@ def prepare_r2t(msa, base_path):
                   "Gathering of DNA seq for {} OGs took 1037.3560745716095.\n".format(len(all_msas)))
         log.write("2020-04-18 01:38:40,309 - read2tree.Aligner - INFO - test_1a: "
                   "Alignment of {} OGs took 4103.362480401993.\n".format(len(all_msas)))
-
-
 
 
 if __name__ == "__main__":
