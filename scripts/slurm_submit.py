@@ -50,7 +50,6 @@ class JobProducer(object):
     def get_r2t_string(self, species, reference):
         return f"""#!/bin/bash
 #SBATCH --output={self.job_log}/r2t_{species.name}-{reference}.out
-#SBATCH --error=slurm_out/r2t_{species.name}-{reference}.out
 #SBATCH --partition={os.getenv('CLUSTER')}
 #SBATCH --account=cdessim2_default
 #SBATCH --time=0:20:00
