@@ -368,7 +368,15 @@ class Aligner(object):
             use_alignments = self.alignments
         alignments_aa = []
         alignments_dna = []
-        for key, value in use_alignments.items():
+
+        def sorter_groups(grp):
+            if grp.startswith('OG') and grp[2:].isdigit():
+                return int(grp[2:])
+            else:
+                return grp
+
+        for key in sorted(use_alignments.keys(), key=sorter_groups):
+            value = use_alignments[key]
             alignments_aa.append(value.aa)
             alignments_dna.append(value.dna)
         concatination_aa = concatenate(alignments_aa)
