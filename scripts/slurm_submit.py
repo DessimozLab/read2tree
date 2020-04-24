@@ -1,3 +1,4 @@
+import math
 import os
 import re
 import sys
@@ -11,6 +12,9 @@ class Species(object):
     def __init__(self, species: t.Union[os.PathLike, str, bytes]):
         self.name = os.path.basename(species)
         self.read_files = glob.glob(species+"*")
+        if len(self.read_files) == 0:
+            raise ValueError(f"no read files found for {self.name}")
+        self.reads_size = sum(os.stat(f).st_size for f in self.read_files)
 
 
 class JobProducer(object):
@@ -30,6 +34,20 @@ class JobProducer(object):
 
     def set_job_log_dir(self, log_dir):
         self.job_log = log_dir
+
+    def estimated_runtime(self, species):
+        if species.reads_size < 200e6:
+            return "00:20:00"
+        elif species.reads_size < 2e9:
+            return "01:00:00"
+        elif species.reads_size < 8e9:
+            return "04:00:00"
+        else:
+            return "12:00:00"
+
+    def estimated_memory(self, species):
+        gigs = max(5, math.ceil(species.reads_size/(2**30)))
+        return f"{gigs}GB"
 
     def produce_jobs(self):
         for d in (self.job_dir, self.job_log):
@@ -52,11 +70,11 @@ class JobProducer(object):
 #SBATCH --output={self.job_log}/r2t_{species.name}-{reference}.out
 #SBATCH --partition={os.getenv('CLUSTER')}
 #SBATCH --account=cdessim2_default
-#SBATCH --time=0:20:00
+#SBATCH --time={self.estimated_runtime(species)}
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
 #SBATCH --job-name r2t_{reference}-{species.name}
-#SBATCH --mem=5GB
+#SBATCH --mem={self.estimated_memory(species)}
 #SBATCH --export=None
 
 source /scratch/wally/FAC/FBM/DBC/cdessim2/default/aaltenho/miniconda3/etc/profile.d/conda.sh
