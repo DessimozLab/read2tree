@@ -47,6 +47,8 @@ def write_aligned_og(msas, outdir):
     for og, msa in enumerate(msas):
         fname = os.path.join(outdir, "OG{}.phy".format(og))
         with open(fname, 'wt') as fout:
+            for rec in msa:
+                rec.id = rec.id.split('_OG')[0]
             Bio.AlignIO.write(msa, fout, 'phylip')
 
 
