@@ -45,7 +45,7 @@ def split_msa(msa, split_pos):
 def write_aligned_og(msas, outdir):
     os.makedirs(outdir)
     for og, msa in enumerate(msas):
-        fname = os.path.join(outdir, "OG{:04d}.phy".format(og))
+        fname = os.path.join(outdir, "OG{}.phy".format(og))
         with open(fname, 'wt') as fout:
             Bio.AlignIO.write(msa, fout, 'phylip')
 
@@ -62,7 +62,7 @@ def get_unaligned_seq_rec_from_aligned_seq(rec):
 def write_unaligned_og(msas, outdir):
     os.makedirs(outdir)
     for og, msa in enumerate(msas):
-        fname = os.path.join(outdir, "OG{:04d}.fa".format(og))
+        fname = os.path.join(outdir, "OG{}.fa".format(og))
         with open(fname, 'wt') as fout:
             for rec in msa:
                 Bio.SeqIO.write(get_unaligned_seq_rec_from_aligned_seq(rec), fout, 'fasta')
