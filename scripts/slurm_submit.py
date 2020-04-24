@@ -49,31 +49,51 @@ class JobProducer(object):
         gigs = max(5, math.ceil(species.reads_size/(2**30)))
         return f"{gigs}GB"
 
+    def submit_jobs(self, jobs):
+        job_ids = []
+        for job in jobs:
+            res = subprocess.run(["sbatch", job], cwd=self.base_path, capture_output=True)
+            res.check_returncode()
+            job_id = res.stdout.split()[-1]
+            job_ids.append(job_id)
+        return job_ids
+
     def produce_jobs(self):
+        all_jobs = []
         for d in (self.job_dir, self.job_log):
             if not os.path.isabs(d):
                 d = os.path.join(self.base_path, d)
             os.makedirs(d, exist_ok=True)
         mjobs = self.mapping_jobs()
+        mjob_ids = self.submit_jobs(mjobs)
+        all_jobs.extend(mjob_ids)
+        merge_job = self.merge_results(mjob_ids)
+        all_jobs.append(self.submit_jobs(merge_job))
+        return all_jobs
 
     def mapping_jobs(self):
         jobs = []
         for species in self.species:
             for ref in self.references:
-                with open(os.path.join(self.base_path, self.job_dir, f"r2t_{ref}-{species.name}"), 'wt') as jobfile:
-                    jobfile.write(self.get_r2t_string(species, ref))
+                with open(os.path.join(self.base_path, self.job_dir, f"r2t_map_{ref}-{species.name}"), 'wt') as jobfile:
+                    jobfile.write(self.map_job_string(species, ref))
                     jobs.append(jobfile.name)
         return jobs
 
-    def get_r2t_string(self, species, reference):
+    def merge_results(self, map_job_ids):
+        with open(os.path.join(self.base_path, self.job_dir, f"r2t_merge"), 'wt') as jobfile:
+            jobfile.write(self.merge_job_string(map_job_ids))
+        return jobfile.name
+
+    def map_job_string(self, species, reference):
         return f"""#!/bin/bash
-#SBATCH --output={self.job_log}/r2t_{species.name}-{reference}.out
+#SBATCH --output={self.job_log}/r2t_map_{reference}-{species.name}.out
 #SBATCH --partition={os.getenv('CLUSTER')}
 #SBATCH --account=cdessim2_default
 #SBATCH --time={self.estimated_runtime(species)}
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
-#SBATCH --job-name r2t_{reference}-{species.name}
+#SBATCH --job-name r2t_map_{reference}-{species.name}
 #SBATCH --mem={self.estimated_memory(species)}
 #SBATCH --export=None
 
@@ -83,6 +103,31 @@ conda activate r2t
 cd {os.path.abspath(self.base_path)}
 
 read2tree --reads {" ".join(species.read_files)} --output_path ./ --single_mapping {reference} --threads 4 --species_name {species.name}"""
+
+    def merge_job_string(self, map_job_ids):
+        condition = ""
+        if len(map_job_ids) > 0:
+            condition = f"#SBATCH --dependency afterok:{':'.join(map_job_ids)}"
+
+        return f"""#!/bin/bash
+#SBATCH --output={self.job_log}/r2t_merge.out
+#SBATCH --partition={os.getenv('CLUSTER')}
+#SBATCH --account=cdessim2_default
+#SBATCH --time=01:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --job-name r2t_merge
+#SBATCH --mem=20GB
+#SBATCH --export=None
+{condition}
+
+source /scratch/wally/FAC/FBM/DBC/cdessim2/default/aaltenho/miniconda3/etc/profile.d/conda.sh
+conda activate r2t
+
+cd {os.path.abspath(self.base_path)}
+
+read2tree --output_path ./ --merge_all_mappings
+"""
 
 
 if __name__ == "__main__":
