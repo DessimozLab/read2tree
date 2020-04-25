@@ -62,6 +62,8 @@ class Mapper(object):
                 self._mapping_name = os.path.basename(self._reads[0]).split(".")[0]
             else:
                 self._mapping_name = os.path.basename(self._reads).split(".")[0]
+        else:
+            self._mapping_name = self._species_name
 
         self.progress = progress
         self.all_cov = {}
