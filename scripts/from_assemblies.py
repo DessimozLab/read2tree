@@ -33,12 +33,13 @@ def split_msa(msa, split_pos):
     msas = []
     for i in range(len(split_pos)+1):
         rng = slice(split_pos[i-1] if i > 0 else None,
-                    split_pos[i] if i < len(split_pos)-1 else None)
+                    split_pos[i] if i < len(split_pos) else None)
         cur_msa_chunk = msa[:, rng]
         for rec in cur_msa_chunk:
             rec.id = rec.id + "_OG{}".format(i)
         msas.append(cur_msa_chunk)
     logger.info("split msa into {} chunks".format(len(msas)))
+    assert sum((x.get_alignment_length() for x in msas)) == msa.get_alignment_length()
     return msas
 
 
