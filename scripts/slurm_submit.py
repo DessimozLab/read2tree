@@ -52,9 +52,9 @@ class JobProducer(object):
     def submit_jobs(self, jobs):
         job_ids = []
         for job in jobs:
-            res = subprocess.run(["sbatch", job], cwd=self.base_path, capture_output=True)
+            res = subprocess.run(["sbatch", job], cwd=self.base_path, stdout=subprocess.PIPE)
             res.check_returncode()
-            job_id = res.stdout.split()[-1]
+            job_id = res.stdout.split()[-1].decode()
             job_ids.append(job_id)
         return job_ids
 
