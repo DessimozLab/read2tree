@@ -13,6 +13,7 @@ import logging
 import random
 import time
 import numpy as np
+import gzip
 
 from tqdm import tqdm
 from collections import OrderedDict
@@ -132,13 +133,11 @@ class OGSet(object):
                   'DNA seq from {} ---'.format(self.args.dna_reference))
             self.logger.info('Loading {} into memory. This might take a '
                 'while . . . '.format(self.args.dna_reference.split("/")[-1]))
-            fasta_reader = FastxReader(self.args.dna_reference)
-            with fasta_reader.open_fastx() as f:
-                for name, seq, qual in tqdm(fasta_reader.readfx(f),
-                                            desc='Loading db', unit=' seq'):
-                    seq_id = name.lstrip('>').lstrip().rstrip()
-                    db[seq_id.split()[0]] = seq
-            # db = SeqIO.index(self.args.dna_reference, "fasta")
+
+            open_ = gzip.open if self.args.dna_reference.endswith('.gz') else open
+            with open_(self.args.dna_reference, 'rt') as f:
+                for rec in SeqIO.parse(f, 'fasta'):
+                    db[rec.id.strip()] = str(rec.seq)
             source = 'fa'
             return db, source
         # ---------------- only to be used internally ----------------------
