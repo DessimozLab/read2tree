@@ -62,6 +62,31 @@ def get_unaligned_seq_rec_from_aligned_seq(rec):
     return new
 
 
+def compute_seq_identity(s1, s2):
+    assert(len(s1) == len(s2))
+    x = 0
+    for i, j in zip(s1, s2):
+        if i == '-' and j == 'j':
+            continue
+        if i == j:
+           x += 1
+    return x / len(s1)
+
+
+def select_representative_references(msa, min_divergence):
+    if min_divergence <= 0:
+        return [s.id for s in msa]
+    rep = [0]
+    for k, rec in enumerate(msa):
+        if k == 0: continue
+        for ref in rep:
+            if 100 * compute_seq_identity(rec, msa[ref]) > 100-min_divergence:
+                break
+        else:
+            rep.append(k)
+    return [msa[i].id for i in rep]
+
+
 def write_unaligned_og(msas, outdir):
     os.makedirs(outdir)
     for og, msa in enumerate(msas):
@@ -90,9 +115,10 @@ def make_genome_names_compatible(msa, out):
     return msa
 
 
-def prepare_r2t(msa, base_path):
+def prepare_r2t(msa, base_path, min_divergence):
     os.makedirs(base_path)
     msa = make_genome_names_compatible(msa, base_path)
+    rep_refs = select_representative_references(msa, min_divergence)
     split_pos = chunk_msa(msa)
     all_msas = split_msa(msa, split_pos)
     write_unaligned_og(all_msas, os.path.join(base_path, "01_ref_ogs_dna"))
@@ -112,12 +138,17 @@ def prepare_r2t(msa, base_path):
                   "Gathering of DNA seq for {} OGs took 1037.3560745716095.\n".format(len(all_msas)))
         log.write("2020-04-18 01:38:40,309 - read2tree.Aligner - INFO - test_1a: "
                   "Alignment of {} OGs took 4103.362480401993.\n".format(len(all_msas)))
+    print("We suggest to use the following reference genomes for mapping:")
+    print(rep_refs)
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="extract from a whole genome alignment MSA pseudo OGs for r2t")
     parser.add_argument('--out', required=True, help="folder where output is written")
+    parser.add_argument('-d', '--min-divergence', type=int, default=0,
+                        help="minimum divergence (seq-identity) for reference genome to be used for "
+                             "separate mapping. [Default 0]")
     parser.add_argument('-v', action='count', help="increase verbosity")
     parser.add_argument('msa', help="input whole genome alignment MSA in fasta/phylip format")
     conf = parser.parse_args()
@@ -134,5 +165,5 @@ if __name__ == "__main__":
         msa = next(Bio.AlignIO.parse(fh, format))
     logger.info("loaded msa with {} sequences of length {}".format(len(msa), msa.get_alignment_length()))
 
-    prepare_r2t(msa, conf.out)
+    prepare_r2t(msa, conf.out, conf.min_divergence)
 
