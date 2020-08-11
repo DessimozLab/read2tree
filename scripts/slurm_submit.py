@@ -24,8 +24,8 @@ class JobProducer(object):
             self.species = [Species(species_list)]
         else:
             self.species = [Species(sp) for sp in species_list]
-        self.nr_references = len(os.listdir(os.path.join(base_path, "02_ref_dna")))
-        self.references = ["RG{:03d}".format(x+1) for x in range(self.nr_references)]
+        self.references = [z.split('_')[0] for z in os.listdir(os.path.join(base_path, "02_ref_dna"))]
+        self.nr_references = len(self.references)
         self.job_dir = "jobs/"
         self.job_log = "logs/"
 
