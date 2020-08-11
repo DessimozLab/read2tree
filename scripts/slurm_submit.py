@@ -15,11 +15,13 @@ class Species(object):
         if len(self.read_files) == 0:
             raise ValueError(f"no read files found for {self.name}")
         self.reads_size = sum(os.stat(f).st_size for f in self.read_files)
+        self.is_longread = '/ONT/' in self.read_files[0] 
 
 
 class JobProducer(object):
-    def __init__(self, base_path, species_list):
+    def __init__(self, base_path, species_list, submit):
         self.base_path = base_path
+        self.submit = submit
         if isinstance(species_list, (str, bytes)):
             self.species = [Species(species_list)]
         else:
@@ -65,10 +67,14 @@ class JobProducer(object):
                 d = os.path.join(self.base_path, d)
             os.makedirs(d, exist_ok=True)
         mjobs = self.mapping_jobs()
-        mjob_ids = self.submit_jobs(mjobs)
+        if self.submit:
+            mjob_ids = self.submit_jobs(mjobs)
+        else:
+            mjob_ids = []
         all_jobs.extend(mjob_ids)
         merge_job = self.merge_results(mjob_ids)
-        all_jobs.append(self.submit_jobs(merge_job))
+        if self.submit:
+            all_jobs.append(self.submit_jobs(merge_job))
         return all_jobs
 
     def mapping_jobs(self):
@@ -86,6 +92,7 @@ class JobProducer(object):
         return jobfile.name
 
     def map_job_string(self, species, reference):
+        read_type = '' if not species.is_longread else '--read_type long'
         return f"""#!/bin/bash
 #SBATCH --output={self.job_log}/r2t_map_{reference}-{species.name}.out
 #SBATCH --partition={os.getenv('CLUSTER')}
@@ -102,7 +109,7 @@ conda activate r2t
 
 cd {os.path.abspath(self.base_path)}
 
-read2tree --reads {" ".join(species.read_files)} --output_path ./ --single_mapping {reference} --threads 4 --species_name {species.name}"""
+read2tree {read_type} --reads {" ".join(species.read_files)} --output_path ./ --single_mapping {reference} --threads 4 --species_name {species.name}"""
 
     def merge_job_string(self, map_job_ids):
         condition = ""
@@ -135,8 +142,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--species", nargs="+", help="species (reads). If several read files, just provide the "
                                                      "common prefix of them. Basename is species name")
+    parser.add_argument("--only-jobfiles", default=False, action="store_true",
+                        help="do not submit slurm jobs, but rather just create the job files. Note that "
+                             "the final merge step can only run after all other jobs finished. User "
+                             "needs to make sure this is fulfilled if using this flag.")
     parser.add_argument("base_path", help="base path of analysis")
     conf = parser.parse_args()
 
-    producer = JobProducer(conf.base_path, conf.species)
+    producer = JobProducer(conf.base_path, conf.species, submit=not conf.only_jobfiles)
     producer.produce_jobs()
