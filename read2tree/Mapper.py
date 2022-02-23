@@ -25,7 +25,10 @@ from tqdm import tqdm
 
 import functools
 from Bio import SeqIO, SeqRecord, Seq
-from Bio.Alphabet import generic_dna
+try:
+    from Bio.Alphabet import generic_dna
+except ImportError:
+    generic_dna = None
 from Bio.SeqIO.FastaIO import FastaWriter
 from read2tree.OGSet import OG
 from read2tree.Reads import Reads
@@ -254,7 +257,7 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path,
                                      "04_mapping_"+self._species_name)
         if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
+            os.makedirs(output_folder, exist_ok=True)
 
         tmp_output_folder = self._make_tmpdir()
 

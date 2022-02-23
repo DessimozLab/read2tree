@@ -18,7 +18,6 @@ import gzip
 from tqdm import tqdm
 from collections import OrderedDict
 from Bio import SeqIO, Seq, SeqRecord
-from Bio.Alphabet import SingleLetterAlphabet
 from Bio.SeqIO.FastaIO import FastaWriter
 #from tables import *
 # ----------- only to be used internally; requires hdf5 installation -------------------
@@ -373,7 +372,7 @@ class OGSet(object):
         if 'TGA' in outseq[-3:] or 'TAA' in outseq[-3:] or 'TAG' in outseq[-3:] or 'NNN' in outseq[-3:]:
             outseq = outseq[:-3]
 
-        return Seq.Seq(outseq, SingleLetterAlphabet())
+        return Seq.Seq(outseq)
 
     # def _translate_dna(self, record):
     #     """

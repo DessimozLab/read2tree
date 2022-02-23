@@ -95,8 +95,7 @@ class JobProducer(object):
         read_type = '' if not species.is_longread else '--read_type long'
         return f"""#!/bin/bash
 #SBATCH --output={self.job_log}/r2t_map_{reference}-{species.name}.out
-#SBATCH --partition={os.getenv('CLUSTER')}
-#SBATCH --account=cdessim2_default
+#SBATCH --account=cdessim2_read2tree
 #SBATCH --time={self.estimated_runtime(species)}
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
@@ -104,7 +103,8 @@ class JobProducer(object):
 #SBATCH --mem={self.estimated_memory(species)}
 #SBATCH --export=None
 
-source /scratch/wally/FAC/FBM/DBC/cdessim2/default/aaltenho/miniconda3/etc/profile.d/conda.sh
+#source /scratch/wally/FAC/FBM/DBC/cdessim2/default/aaltenho/miniconda3/etc/profile.d/conda.sh
+source ~/.conda-init
 conda activate r2t
 
 cd {os.path.abspath(self.base_path)}
@@ -118,8 +118,7 @@ read2tree {read_type} --reads {" ".join(species.read_files)} --output_path ./ --
 
         return f"""#!/bin/bash
 #SBATCH --output={self.job_log}/r2t_merge.out
-#SBATCH --partition={os.getenv('CLUSTER')}
-#SBATCH --account=cdessim2_default
+#SBATCH --account=cdessim2_read2tree
 #SBATCH --time=01:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
@@ -128,7 +127,7 @@ read2tree {read_type} --reads {" ".join(species.read_files)} --output_path ./ --
 #SBATCH --export=None
 {condition}
 
-source /scratch/wally/FAC/FBM/DBC/cdessim2/default/aaltenho/miniconda3/etc/profile.d/conda.sh
+source ~/.conda-init
 conda activate r2t
 
 cd {os.path.abspath(self.base_path)}

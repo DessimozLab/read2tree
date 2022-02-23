@@ -13,7 +13,7 @@ from collections import defaultdict
 from enum import Enum
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
-from Bio.Alphabet import IUPAC
+from Bio.Data.IUPACData import ambiguous_dna_letters
 from Bio.Seq import Seq, UnknownSeq
 from Bio.SeqRecord import SeqRecord
 
@@ -23,7 +23,7 @@ __all__ = ['is_dna', 'guess_datatype', 'identify_input']
 def is_dna(record):
     """check whether a sequence is of type dna"""
     allchars = [char.upper() for char in str(record.seq) if char.upper() not in '-?X']
-    return set(allchars).issubset(set(IUPAC.ambiguous_dna.letters))
+    return set(allchars).issubset(set(ambiguous_dna_letters))
 
 
 def guess_datatype(alignment, from_filename=False):
@@ -116,8 +116,19 @@ def concatenate(alignments):
     # (defaultdict is convenient -- asking for a missing key gives back an empty list)
     tmp = defaultdict(list)
 
-    # Assume all alignments have same alphabet
-    alphabet = alignments[0]._alphabet
+    # try to get molecule_type from sequences
+    molecule_type = set(seq.annotations.get('molecule_type') for aln in alignments for seq in aln)
+    molecule_type.discard(None)
+    if len(molecule_type) == 1:
+        molecule_type = molecule_type.pop()
+        if molecule_type.upper() in ("DNA", "RNA"):
+            unknown_char = "N"
+        elif molecule_type.lower() == "protein":
+            unknown_char = "X"
+        else:
+            unknown_char = "?"
+    else:
+        unknown_char = '?'
 
     for aln in alignments:
         length = aln.get_alignment_length()
@@ -129,7 +140,7 @@ def concatenate(alignments):
         # if any are missing, create unknown data of the right length,
         # stuff the string representation into the tmp dict
         for label in missing:
-            new_seq = UnknownSeq(length, alphabet=alphabet)
+            new_seq = UnknownSeq(length, character=unknown_char)
             tmp[label].append(str(new_seq))
 
         # else stuff the string representation into the tmp dict
@@ -138,5 +149,5 @@ def concatenate(alignments):
 
     # Stitch all the substrings together using join (most efficient way),
     # and build the Biopython data structures Seq, SeqRecord and MultipleSeqAlignment
-    return MultipleSeqAlignment(SeqRecord(Seq(''.join(v), alphabet=alphabet), id=k)
+    return MultipleSeqAlignment(SeqRecord(Seq(''.join(v)), id=k)
                                 for (k, v) in tmp.items())
