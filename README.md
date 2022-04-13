@@ -21,16 +21,16 @@ conda install -c bioconda mafft  iqtree ngmlr nextgenmap  samtools
 Finally, for installing [pyham](https://github.com/DessimozLab/pyham)(a library to work with HOGs), [pyoma](https://github.com/DessimozLab/pyoma)(library for retrieval of nucleotide sequences using OMA API) run `pip install pyham` `pip install pyoma` or alternatively:
 ```
 git clone https://github.com/DessimozLab/pyham.git
-python -m pip install -3 ./pyham
+python -m pip install -e ./pyham
 git clone https://github.com/DessimozLab/pyoma.git
-python -m pip install -3 ./pyoma
+python -m pip install -e ./pyoma
 ```
 
 
 
 ## Installation
 
-read2tree was build and tested with python 3.5.1. To set up read2tree on your local machine please follow the instructions below.
+read2tree was built and tested with python 3.5.1. To set up read2tree on your local machine please follow the instructions below.
 
 ```
 git clone https://github.com/DessimozLab/read2tree.git
