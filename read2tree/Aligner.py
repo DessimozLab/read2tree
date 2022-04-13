@@ -11,7 +11,10 @@ import logging
 from multiprocessing import Pool
 from collections import ChainMap
 from Bio import AlignIO
-from Bio.Alphabet import generic_dna
+try:
+    from Bio.Alphabet import generic_dna
+except ImportError:
+    generic_dna = None
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
@@ -106,7 +109,8 @@ class Aligner(object):
             logger.info('placement dig: {}'.format(placement_dic))
             logger.info('{} with error {}'.format(ref_rec.id, i))
         if new:
-            alignment.add_sequence(species_name, ''.join(new))
+            alignment.append(
+                SeqRecord(Seq("".join(new), generic_dna), id=species_name))
         return alignment
 
     def _get_species_id(self, record):
@@ -368,7 +372,15 @@ class Aligner(object):
             use_alignments = self.alignments
         alignments_aa = []
         alignments_dna = []
-        for key, value in use_alignments.items():
+
+        def sorter_groups(grp):
+            if grp.startswith('OG') and grp[2:].isdigit():
+                return int(grp[2:])
+            else:
+                return grp
+
+        for key in sorted(use_alignments.keys(), key=sorter_groups):
+            value = use_alignments[key]
             alignments_aa.append(value.aa)
             alignments_dna.append(value.dna)
         concatination_aa = concatenate(alignments_aa)

@@ -99,32 +99,16 @@ class Progress(object):
         :param logfile: log file (typically mplog.log)
         :return:
         '''
-        # if os.path.exists(logfile) and os.stat(logfile).st_size != 0:
-        #     file = open(logfile, "r")
-        #     bestline = [line.split() for line in file if word in line]
-        #     if bestline:
-        #         return bestline[-1]
-        #     else:
-        #         return None
-        # else:
-        #     return None
 
         try:
-            file = open(logfile, "r")
-            bestline = [line.split() for line in file if word in line]
-            if bestline:
-                file.close()
-                return bestline[-1]
-            else:
-                file.close()
+            with open(logfile, "r") as file:
+                bestline = [line.split() for line in file if word in line]
+                if bestline:
+                    return bestline[-1]
                 return None
         except FileNotFoundError:
-            print('File not accessible')
+            print('File {} not accessible'.format(logfile))
             return None
-        finally:
-            file.close()
-            return None
-
 
     def _get_number_of_OGs(self):
         '''

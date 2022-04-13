@@ -58,7 +58,7 @@ Make sure that executables are in PATH. Or you can just follow the instructions 
 
 Once successfully installed you can test the package using:
 ```
-python -W ignore bin/read2tree --standalone_path tests/marker_genes/ --reads ~/Research/read2tree/read2tree/tests/mapper/test3/test_1a.fq ~/Research/read2tree/read2tree/tests/mapper/test3/test_2a.fq  --output_path test/output/
+python -W ignore bin/read2tree --standalone_path tests/data/marker_genes/ --reads tests/data/mapper/test3/test_1a.fq tests/data/mapper/test3/test_2a.fq  --output_path test/output/
 
 ```
 In the folder 'tests/data/output' you should be able to find the following folders:
