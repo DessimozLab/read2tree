@@ -191,7 +191,7 @@ Initial work
 
 * [David Dylus](https://github.com/dvdylus), (main author)
 * [Adrian Altenhoff](http://people.inf.ethz.ch/adriaal).
-* [Sina Majidian](https://github.com/smajidian).
+
 
 The authors would like to thank  Alex Warwick for help how to initiate such a package.
 
