@@ -56,12 +56,14 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fq read_2.fq  --
 
 ## Test example
 
+The goal of this test example is to infer species tree for Mus musculus using its sequencing reads provided in the `tests` folder which are extracted from (SRR5171076)[https://www.ncbi.nlm.nih.gov/sra/?term=SRR5171076].  To do so,  we consider five species including Mnemiopsis leidyi, Xenopus laevis, Homo sapiens, Gorilla gorilla, and Rattus norvegicus as the reference. Using [OMA browser](https://omabrowser.org/oma/export_markers), we downloaded 20 marker genes of these five species as the reference orthologous groups, located in the folder `tests/mareker_genes`. 
 
-You can run the test example as follows:
 ```
 cd tests
-read2tree --standalone_path marker_genes/ --reads read_1.fq read_2.fq  --output_path output/
+read2tree  --tree --standalone_path marker_genes/ --reads sample_1.fq sample_2.fq  --output_path output/
 ```
+
+
 In the folder 'tests/output' you should be able to find the following folders:
 
 | folder/file  | description           | 
@@ -82,9 +84,17 @@ In the folder 'tests/output' you should be able to find the following folders:
 | test_1b_all_sc.txt | summary of average consensus length of reconstructed sequences|
 
 
+You can check the species tree for the sample and five reference species in Newick format:
+```
+$cat  output/tree_sample.nwk
+(sample:0.0106979811,((HUMAN:0.0041202790,GORGO:0.0272785216):0.0433094119,(XENLA:0.1715052824,MNELE:0.9177670816):0.1141311779):0.0613339433,RATNO:0.0123413734);
+```
+
+
 Note that we consider species names as 5-letter codes e.g. AMPFI= Amphiura filiformis.
 
 For running on clusters, you can run the first step of read2tree such that folders 01, 02 and 03 are computed (this allows for mapping). This can be done using the '--reference' option.  Since read2tree re-orders the OGs into the included species, it is possible to split the mapping step per species using multiple threads for the mapper. For this the '--single_mapping' option is available.
+
 
 
 ## Details of arguments
