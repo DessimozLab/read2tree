@@ -91,7 +91,7 @@ $cat  output/tree_sample.nwk
 ```
 
 
-Note that we consider species names as 5-letter codes e.g. AMPFI= Amphiura filiformis.
+Note that we consider species names as 5-letter codes e.g. XENLA = Xenopus laevis.
 
 For running on clusters, you can run the first step of read2tree such that folders 01, 02 and 03 are computed (this allows for mapping). This can be done using the '--reference' option.  Since read2tree re-orders the OGs into the included species, it is possible to split the mapping step per species using multiple threads for the mapper. For this the '--single_mapping' option is available.
 
@@ -100,7 +100,7 @@ For running on clusters, you can run the first step of read2tree such that folde
 ## Details of arguments
 
 You can see the details of arguments of the read2tree package by running `read2tree -h`.
-s
+
 ```
 usage: read2tree [-h] [--version] [--threads THREADS] [--standalone_path STANDALONE_PATH] [--reads READS [READS ...]] [--read_type READ_TYPE]
                  [--split_reads] [--split_len SPLIT_LEN] [--split_overlap SPLIT_OVERLAP] [--split_min_read_len SPLIT_MIN_READ_LEN]
@@ -185,16 +185,11 @@ read2tree (C) 2017-2022 David Dylus
 ## Change log
 
 
-- version 0.2
+- version 0.2: packaging
 
+- version 0.1: Adding covid analysis
 
-- version 0.1
-
-Adding covid analysis
-
-- version 0.0
-
-Initial work
+- version 0.0: Initial work
 
 
 ## Authors
