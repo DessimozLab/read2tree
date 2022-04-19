@@ -56,7 +56,7 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fas
 
 ## Test example
 
-The goal of this test example is to infer species tree for Mus musculus using its sequencing reads provided in the `tests` folder which are extracted from [SRR5171076](https://www.ncbi.nlm.nih.gov/sra/?term=SRR5171076). To do so,  we consider five species including Mnemiopsis leidyi, Xenopus laevis, Homo sapiens, Gorilla gorilla, and Rattus norvegicus as the reference. Using [OMA browser](https://omabrowser.org/oma/export_markers), we downloaded 20 marker genes of these five species as the reference orthologous groups, located in the folder `tests/mareker_genes`. 
+The goal of this test example is to infer species tree for Mus musculus using its sequencing reads. You can download the full read data from from [SRR5171076](https://www.ncbi.nlm.nih.gov/sra/?term=SRR5171076) using [sra-tools](https://anaconda.org/bioconda/sra-tools). Alternatively, a small read dataset is provided in the `tests` folder. For this example, we consider five species including Mnemiopsis leidyi, Xenopus laevis, Homo sapiens, Gorilla gorilla, and Rattus norvegicus as the reference. Using [OMA browser](https://omabrowser.org/oma/export_markers), we downloaded 20 marker genes of these five species as the reference orthologous groups, located in the folder `tests/mareker_genes`. 
 
 ```
 cd tests
