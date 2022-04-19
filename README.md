@@ -49,7 +49,7 @@ This can be obtained from [OMA browser](https://omabrowser.org/oma/export_marker
 
 
 ```
-read2tree --tree --standalone_path marker_genes/ --reads read_1.fq read_2.fq  --output_path output
+read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fastq  --output_path output
 ```
 
 
