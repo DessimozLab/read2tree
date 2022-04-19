@@ -13,3 +13,4 @@ tmp
 **/.ipynb_checkpoints
 .idea/workspace.xml
 .python-version
+.DS_Store
