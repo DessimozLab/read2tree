@@ -11,18 +11,17 @@ requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml',
                 'tqdm', 'scipy', 'pysam', 'pyham', 'pyparsing', 'requests',
                 'filelock', 'natsort', 'pyyaml']
 
-# requirements = [line.strip() for line in open("requirements.txt", 'r')]
-# print(requirements)
+
 
 setup(
     name=name,
     version=__version__,
     author='David Dylus and Fritz Sedlaczek',
-    author_email='david.dylus@unil.ch',
+    author_email='daviddylus@gmail.com',
     description='read2tree allows to build high quality phylogenetic trees '
                 'using reads and a reference set of orthologous groups '
                 '(DNA + Protein).',
-    packages=find_packages(".", exclude=["scripts", "tests"]),
+    packages=find_packages(".", exclude=["archive"]),
     include_package_data=True,
     package_data={
           'read2tree': ['logging/log.yaml']

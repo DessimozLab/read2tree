@@ -302,8 +302,8 @@ class OGSet(object):
             group_members = reply.json()
             for memb in group_members:
                 # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
-                seq = memb['cdna']
-                rec_id = memb['omaid']+"_"+og_name
+                seq = memb['target']['cdna']
+                rec_id = memb['target']['omaid']+"_"+og_name
                 cleaned_seq = self._clean_DNA_seq(seq)
                 # print(cleaned_seq)
                 dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,

@@ -1,6 +1,0 @@
-added here something to test windows bash
-* add better error handling when mapping doesn't work
-* tables needs hdf5 dependencies
-* some git repositories are difficult to access
-* each time the mapping function finishes it should check whether the currently running mapping is the
-last one and if so then once this is done it should delete all unnecessary files
