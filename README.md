@@ -73,25 +73,25 @@ In the folder 'tests/output' you should be able to find the following folders:
 | 02_ref_dna | contains the OGs reshuffeled by available species | 
 | 03_align_aa | contains mafft alignment of aa data|
 | 03_align_dna | contains codon replacement of aa alignments|
-| 04_mapping_test_1b |contains the consensus sequences from the mapping|
-| 05_ogs_map_test_1b_aa | contains the OGs with additional sequence test_1b|
-| 05_ogs_map_test_1b_dna | contains the OGs with additional sequence test_1b|
-| 06_align_test_1b_aa | contains the alignment with additional sequence test_1b|
-| 06_align_test_1b_dna | contains the alignment with additional sequence test_1b|
-| concat_test_1b_aa.phy | concatenated alignments from 06 amino acid folder|
-| concat_test_1b_dna.phy| concatenated alignments from 06 dna folder|
-| test_1b_all_cov.txt | summary of average numbers of reads used for selected sequences|
-| test_1b_all_sc.txt | summary of average consensus length of reconstructed sequences|
+| 04_mapping_sample_1 |contains the consensus sequences from the mapping|
+| 05_ogs_map_sample_1_aa | contains the OGs with additional sequence sample_1|
+| 05_ogs_map_sample_1_dna | contains the OGs with additional sequence sample_1|
+| 06_align_sample_1_aa | contains the alignment with additional sequence sample_1|
+| 06_align_sample_1_dna | contains the alignment with additional sequence sample_1|
+| concat_sample_1_aa.phy | concatenated alignments from 06 amino acid folder|
+| concat_sample_1_dna.phy| concatenated alignments from 06 dna folder|
+| sample_1_all_cov.txt | summary of average numbers of reads used for selected sequences|
+| sample_1_all_sc.txt | summary of average consensus length of reconstructed sequences|
 
 
-You can check the species tree for the sample and five reference species in Newick format:
+You can check the inferred species tree for the sample and five reference species in Newick format:
 ```
-$cat  output/tree_sample.nwk
-(sample:0.0106979811,((HUMAN:0.0041202790,GORGO:0.0272785216):0.0433094119,(XENLA:0.1715052824,MNELE:0.9177670816):0.1141311779):0.0613339433,RATNO:0.0123413734);
+$cat  output/tree_sample_1.nwk
+(sample_1:0.0106979811,((HUMAN:0.0041202790,GORGO:0.0272785216):0.0433094119,(XENLA:0.1715052824,MNELE:0.9177670816):0.1141311779):0.0613339433,RATNO:0.0123413734);
 ```
 
 
-Note that we consider species names as 5-letter codes e.g. XENLA = Xenopus laevis.
+Note that we consider species names as 5-letter codes e.g. XENLA = Xenopus laevis. If you want to rerun your analysis, make sure that you moved/deleted the files. Otherwise, read2tree continues the progress of previous analysis.  
 
 For running on clusters, you can run the first step of read2tree such that folders 01, 02 and 03 are computed (this allows for mapping). This can be done using the '--reference' option.  Since read2tree re-orders the OGs into the included species, it is possible to split the mapping step per species using multiple threads for the mapper. For this the '--single_mapping' option is available.
 
