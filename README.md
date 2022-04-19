@@ -18,7 +18,7 @@ Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/sof
 conda install -c bioconda mafft  iqtree ngmlr nextgenmap  samtools
 ```
 
-Finally, for installing [pyham](https://github.com/DessimozLab/pyham)(a library to work with HOGs), [pyoma](https://github.com/DessimozLab/pyoma)(library for retrieval of nucleotide sequences using OMA API) run `pip install pyham` `pip install pyoma` or alternatively:
+Finally, for installing [pyham](https://github.com/DessimozLab/pyham)(a library to work with OrthoXML files and orthologous groups), [pyoma](https://github.com/DessimozLab/pyoma)(library for retrieval of nucleotide sequences using OMA API) run `pip install pyham` `pip install pyoma` or alternatively:
 ```
 git clone https://github.com/DessimozLab/pyham.git
 python -m pip install -e ./pyham
@@ -56,7 +56,7 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fq read_2.fq  --
 
 ## Test example
 
-The goal of this test example is to infer species tree for Mus musculus using its sequencing reads provided in the `tests` folder which are extracted from (SRR5171076)[https://www.ncbi.nlm.nih.gov/sra/?term=SRR5171076].  To do so,  we consider five species including Mnemiopsis leidyi, Xenopus laevis, Homo sapiens, Gorilla gorilla, and Rattus norvegicus as the reference. Using [OMA browser](https://omabrowser.org/oma/export_markers), we downloaded 20 marker genes of these five species as the reference orthologous groups, located in the folder `tests/mareker_genes`. 
+The goal of this test example is to infer species tree for Mus musculus using its sequencing reads provided in the `tests` folder which are extracted from [SRR5171076](https://www.ncbi.nlm.nih.gov/sra/?term=SRR5171076). To do so,  we consider five species including Mnemiopsis leidyi, Xenopus laevis, Homo sapiens, Gorilla gorilla, and Rattus norvegicus as the reference. Using [OMA browser](https://omabrowser.org/oma/export_markers), we downloaded 20 marker genes of these five species as the reference orthologous groups, located in the folder `tests/mareker_genes`. 
 
 ```
 cd tests
