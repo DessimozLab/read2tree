@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
 name = 'read2tree'
+
 __version__ = None
 with open('{:s}/__init__.py'.format(name), 'rt') as fp:
     for line in fp:
@@ -11,7 +12,8 @@ requirements = ['biopython', 'numpy', 'Cython', 'ete3', 'dendropy', 'lxml',
                 'tqdm', 'scipy', 'pysam', 'pyham', 'pyparsing', 'requests',
                 'filelock', 'natsort', 'pyyaml']
 
-
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
     name=name,
@@ -21,11 +23,20 @@ setup(
     description='read2tree allows to build high quality phylogenetic trees '
                 'using reads and a reference set of orthologous groups '
                 '(DNA + Protein).',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/dessimozlab/read2tree",
     packages=find_packages(".", exclude=["archive"]),
     include_package_data=True,
     package_data={
           'read2tree': ['logging/log.yaml']
       },
     install_requires=requirements,
-    license='Proprietary',
-    scripts=['bin/read2tree'])
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Environment :: Console",
+        "License :: OSI Approved :: MIT License",
+    ],
+    scripts=['bin/read2tree'],
+    python_requires=">=3.5",
+)
