@@ -187,11 +187,16 @@ class OGSet(object):
                     ogs[name].dna = self._get_dna_records(ogs[name].aa,
                                                           db, source, name)
                 except (ValueError, TypeError):
-                    self.logger.debug('This OG {} did not have '
-                                 'any DNA'.format(name))
+                    self.logger.warning('This OG {} did not have any DNA'.format(name))
                     pass
                 else:
-                    self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna)
+                    all_len_consistent = self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna)
+                    if "REST_api" in source and not all_len_consistent:
+                        msg = "The returned DNA sequences from the REST API do not match the protein sequences. " \
+                              "Most likely this is due to an update of the OMA Browser. Please download the DNA " \
+                              "sequences that correspond to your reference groups."
+                        self.logger.error(msg)
+                        raise Exception(msg)
                     self._write(output_file_dna, ogs[name].dna)
                     self._write(output_file_aa, ogs[name].aa)
             else:
@@ -330,10 +335,13 @@ class OGSet(object):
     def _check_dna_aa_length_consistency(self, og_name, aa, dna):
         dna_dic = {r.id.split("_")[0]: r for r in dna}
         aa_dic = {r.id.split("_")[0]: r for r in aa}
+        all_consistent = True
         for k, r_dna in dna_dic.items():
             r_aa = aa_dic[k]
-            if (3*len(r_aa.seq)) != len(r_dna.seq):
-                self.logger.info('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
+            if abs(len(r_dna.seq) - 3*len(r_aa.seq)) > 3:
+                self.logger.warning('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
+                all_consistent = False
+        return all_consistent
 
     def _get_dna_records(self, records, db, source, og_name):
         """
