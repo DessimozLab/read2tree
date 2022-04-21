@@ -45,15 +45,17 @@ def parse_args(argv, exe_name, desc):
     # # Add standard arguments
     # if not is_standalone:
     #     # If standalone, set in parser.
+
+    
     arg_parser.add_argument('--version', action='version',
                             help='Show programme\'s version number and exit.',
                             version=read2tree.__version__)
 
-    arg_parser.add_argument('--threads', type=int, default=1,
-                            help='[Default is 1] Number of threads for the mapping '
-                                 'using ngm / ngmlr!')
+    arg_parser.add_argument('--output_path', default='.',
+                            help='[Default is current directory] Path to '
+                            'output directory.')
 
-    arg_parser.add_argument('--standalone_path', default='.',
+    arg_parser.add_argument('--standalone_path', default='.', required=True,
                             help='[Default is current directory] Path to '
                                  'oma standalone directory.')
 
@@ -65,6 +67,10 @@ def parse_args(argv, exe_name, desc):
                             help='[Default is short reads] Type of reads to '
                             'use for mapping. Either ngm for short reads or '
                             'ngmlr for long will be used.')
+
+    arg_parser.add_argument('--threads', type=int, default=1,
+                            help='[Default is 1] Number of threads for the mapping '
+                                 'using ngm / ngmlr!')
 
     arg_parser.add_argument('--split_reads', action='store_true',
                             help='[Default is off] Splits reads as defined by split_len (200) '
@@ -87,19 +93,15 @@ def parse_args(argv, exe_name, desc):
     arg_parser.add_argument('--sample_reads', action='store_true',
                             help='[Default is off] Splits reads as defined by split_len (200) '
                             'and split_overlap (0) parameters. ')
-
-    arg_parser.add_argument('--coverage', type=float, default=10,
-                            help='[Default is 10] coverage in X.')
-
-    arg_parser.add_argument('--min_cons_coverage', type=int, default=1,
-                            help='[Default is 1] Minimum number of nucleotides at column.')
-
+    
     arg_parser.add_argument('--genome_len', type=int, default=2000000,
                             help='[Default is 2000000] Genome size in bp.')
 
-    arg_parser.add_argument('--output_path', default='.',
-                            help='[Default is current directory] Path to '
-                            'output directory.')
+    arg_parser.add_argument('--coverage', type=float, default=10,
+                            help='[Default is 10] coverage in X. Only considered if --sample reads is selected.')
+
+    arg_parser.add_argument('--min_cons_coverage', type=int, default=1,
+                            help='[Default is 1] Minimum number of nucleotides at column.')
 
     arg_parser.add_argument('--dna_reference', default='',
                             help='[Default is None] Reference file that contains nucleotide '
@@ -108,29 +110,12 @@ def parse_args(argv, exe_name, desc):
                             'from http://omabrowser.org directly. '
                             'NOTE: internet connection required!')
 
-    arg_parser.add_argument('--ignore_species', default=None,
-                            help='[Default is none] Ignores species part of '
-                            'the OMA standalone pipeline. Input is comma '
-                            'separated list without spaces, e.g. XXX,YYY,AAA.')
-
     arg_parser.add_argument('--sc_threshold', type=float, default=0.25,
                             help='[Default is 0.25; Range 0-1] Parameter for '
                             'selection of sequences from mapping by '
                             'completeness compared to its reference sequence '
                             '(number of ACGT basepairs vs length of sequence). '
                             'By default, all sequences are selected.')
-
-    arg_parser.add_argument('--remove_species_mapping', default=None,
-                            help='[Default is none] Remove species present in '
-                            'data set after mapping step completed and only '
-                            'do analysis on subset. Input is comma separated '
-                            'list without spaces, e.g. XXX,YYY,AAA.')
-
-    arg_parser.add_argument('--remove_species_ogs', default=None,
-                            help='[Default is none] Remove species present '
-                            'in data set after mapping step completed to '
-                            'build OGs. Input is comma separated list '
-                            'without spaces, e.g. XXX,YYY,AAA.')
 
     arg_parser.add_argument('--ngmlr_parameters', default=None,
                             help='[Default is none] In case this parameters '
@@ -140,12 +125,6 @@ def parse_args(argv, exe_name, desc):
                             'parameter can be found in the original '
                             'documentation of ngmlr.')
 
-    arg_parser.add_argument('--keep_all_ogs', action='store_true', default=True,
-                            help='[Default is on] Keep all orthologs after addition of '
-                            'mapped seq, which means also the OGs that '
-                            'have no mapped sequence. Otherwise only OGs '
-                            'are used that have the mapped sequence for '
-                            'alignment and tree inference.')
 
     arg_parser.add_argument('--check_mate_pairing', action='store_true',
                             help='Check whether in case of paired end '
@@ -155,7 +134,7 @@ def parse_args(argv, exe_name, desc):
                             'reads.')
 
     arg_parser.add_argument('--debug', action='store_true',
-                            help='[Default is off] Changes to debug mode: '
+                            help='[Default is false] Changes to debug mode: '
                                  '* bam files are saved!'
                                  '* reads are saved by mapping to OG')
 
@@ -197,6 +176,31 @@ def parse_args(argv, exe_name, desc):
                             help='[Default is none] Folder containing reference files with '
                             'sequences sorted by species.')
 
+
+    arg_parser.add_argument('--remove_species_mapping', default=None,
+                            help='[Default is none] Remove species present in '
+                            'data set after mapping step completed and only '
+                            'do analysis on subset. Input is comma separated '
+                            'list without spaces, e.g. XXX,YYY,AAA.')
+
+    arg_parser.add_argument('--remove_species_ogs', default=None,
+                            help='[Default is none] Remove species present '
+                            'in data set after mapping step completed to '
+                            'build OGs. Input is comma separated list '
+                            'without spaces, e.g. XXX,YYY,AAA.')
+
+    arg_parser.add_argument('--keep_all_ogs', action='store_true', default=True,
+                            help='[Default is on] Keep all orthologs after addition of '
+                            'mapped seq, which means also the OGs that '
+                            'have no mapped sequence. Otherwise only OGs '
+                            'are used that have the mapped sequence for '
+                            'alignment and tree inference.')
+
+    arg_parser.add_argument('--ignore_species', default=None,
+                            help='[Default is none] Ignores species part of '
+                            'the OMA standalone pipeline. Input is comma '
+                            'separated list without spaces, e.g. XXX,YYY,AAA.')
+
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
 
@@ -207,7 +211,7 @@ def parse_args(argv, exe_name, desc):
     _species_name = ""
 
     if args.reads:
-        print(args.reads)
+        # print(args.reads)
         if len(args.reads) == 2:
             _reads = args.reads
             _species_name = _reads[0].split("/")[-1].split(".")[0]
