@@ -133,8 +133,8 @@ optional arguments:
                         [Default is none] Reads to be mapped to reference. If
                         paired end add separated by space.
   --read_type READ_TYPE
-                        [Default is short reads] Type of reads to use for
-                        mapping. Either ngm for short reads or ngmlr for long
+                        [Default is "short" reads] Type of reads to use for
+                        mapping, either "short" or "long". Either ngm for short reads or ngmlr for long
                         will be used.
   --threads THREADS     [Default is 1] Number of threads for the mapping using
                         ngm / ngmlr!
