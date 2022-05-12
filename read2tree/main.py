@@ -64,8 +64,8 @@ def parse_args(argv, exe_name, desc):
                             'end add separated by space.')
 
     arg_parser.add_argument('--read_type', default='short',
-                            help='[Default is short reads] Type of reads to '
-                            'use for mapping. Either ngm for short reads or '
+                            help='[Default is short] Type of reads to '
+                            'use for mapping: short or long. Either ngm for short reads or '
                             'ngmlr for long will be used.')
 
     arg_parser.add_argument('--threads', type=int, default=1,
