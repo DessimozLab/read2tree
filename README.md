@@ -93,6 +93,7 @@ Note that we consider species names as 5-letter codes e.g. XENLA = Xenopus laevi
 
 For running on clusters, you can run the first step of read2tree such that folders 01, 02 and 03 are computed (this allows for mapping). This can be done using the '--reference' option.  Since read2tree re-orders the OGs into the included species, it is possible to split the mapping step per species using multiple threads for the mapper. For this the '--single_mapping' option is available.
 
+Hint: As read2tree exploits the `progress` package, the user can benefit from continuing unfinished runs. However, if you want to conduct a new analysis with different inputs, you need to remove output of previous runs or change the `output_path`. 
 
 
 ## Details of arguments
@@ -127,8 +128,8 @@ optional arguments:
                         [Default is current directory] Path to output
                         directory.
   --standalone_path STANDALONE_PATH
-                        [Default is current directory] Path to oma standalone
-                        directory.
+                        [Default is current directory] Path to the folder where marker genes
+                        (i.e. reference orthologous groups) in fasta format are located.
   --reads READS [READS ...]
                         [Default is none] Reads to be mapped to reference. If
                         paired end add separated by space.
