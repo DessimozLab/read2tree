@@ -300,8 +300,8 @@ class OGSet(object):
         try:
             reply = requests.post('https://omabrowser.org/api/protein/bulk_retrieve/',
                                   json={"ids": record_ids})
-        except requests.exceptions.RequestException:
-            self.logger.debug('DNA not found for {}.'.format(record.id))
+        except requests.exceptions.RequestException as exception_type:
+            self.logger.warning('DNA not found probably for '+str(record_ids[0])+'. The reason is '+str(exception_type))
             pass
         else:
             group_members = reply.json()
