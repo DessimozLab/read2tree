@@ -17,4 +17,3 @@ class Aligner(object):
         self.placement_dic = alignments.placement_dic
 
 
-    def
