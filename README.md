@@ -24,13 +24,17 @@ conda install -c bioconda mafft iqtree ngmlr nextgenmap samtools
 
 ## Installation
 
-read2tree was built and tested with python 3.5.1. To set up read2tree on your local machine please follow the instructions below.
+read2tree was built and tested with python 3.8. To set up read2tree on your local machine please follow the instructions below.
 
 ```
 git clone https://github.com/DessimozLab/read2tree.git
 cd read2tree
 python setup.py install
 ```
+
+#### Docker
+The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
+
 
 ## Run
 
@@ -63,6 +67,12 @@ cd tests
 read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq --output_path output/
 ```
 
+#### Run test example using docker
+
+```
+docker run --rm -t -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/out:/app   read2tree_k   --tree --standalone_path /input/marker_genes --reads /reads/sample_1.fastq
+```
+### output files
 
 In the folder 'tests/output' you should be able to find the following folders:
 
