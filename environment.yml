@@ -1,0 +1,26 @@
+name: read2tree_env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.9
+  - numpy
+  - Cython
+  - biopython
+  - Cython
+  - ete3
+  - lxml
+  - tqdm
+  - scipy
+  - pyparsing
+  - requests
+  - natsort
+  - pyyaml
+  - filelock
+  - dendropy
+  - mafft
+  - iqtree
+  - ngmlr
+  - nextgenmap
+  - samtools
+  - filelock
