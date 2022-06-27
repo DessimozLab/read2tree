@@ -54,7 +54,7 @@ read2tree --standalone_path marker_genes/ --output_path output --reference  # th
 read2tree --standalone_path marker_genes/ --output_path output --reads species1_R1.fastq species2_R2.fastq
 read2tree --standalone_path marker_genes/ --output_path output --reads species2_R1.fastq species2_R2.fastq
 read2tree --standalone_path marker_genes/ --output_path output --reads species3_R1.fastq species3_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --merge_all_mappings
+read2tree --standalone_path marker_genes/ --output_path output --merge_all_mappings --tree
 ```
 
 
