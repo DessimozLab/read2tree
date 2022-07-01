@@ -41,7 +41,7 @@ The Dockerfile is also available in this repository. There is an example how to 
 To run read2tree two things are required as input:
 1) The DNA sequencing reads as FASTQ file(s).
 2) A set of reference orthologous groups, i.e. marker genes. 
-This can be obtained from [OMA browser](https://omabrowser.org/oma/export_markers). 
+In our wiki [page](https://github.com/DessimozLab/read2tree/wiki/obtaining-marker-genes), you may find information on how to obtain the marker genes using [OMA browser](https://omabrowser.org/oma/export_markers). 
 
 ### Single species mode
 ```
@@ -72,32 +72,16 @@ read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2
 ```
 docker run --rm -t -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/out:/app   read2tree_k   --tree --standalone_path /input/marker_genes --reads /reads/sample_1.fastq
 ```
+
 ### output files
-
-In the folder 'tests/output' you should be able to find the following folders:
-
-| folder/file  | description           | 
-| ------------- |-------------|
-| 01_ref_ogs_aa | contains the selected OGs with amino acid data | 
-| 01_ref_ogs_dna | contains the selected OGs with dna data |
-| 02_ref_dna | contains the OGs reshuffeled by available species | 
-| 03_align_aa | contains mafft alignment of aa data|
-| 03_align_dna | contains codon replacement of aa alignments|
-| 04_mapping_sample_1 |contains the consensus sequences from the mapping|
-| 05_ogs_map_sample_1_aa | contains the OGs with additional sequence sample_1|
-| 05_ogs_map_sample_1_dna | contains the OGs with additional sequence sample_1|
-| 06_align_sample_1_aa | contains the alignment with additional sequence sample_1|
-| 06_align_sample_1_dna | contains the alignment with additional sequence sample_1|
-| concat_sample_1_aa.phy | concatenated alignments from 06 amino acid folder|
-| concat_sample_1_dna.phy| concatenated alignments from 06 dna folder|
-| sample_1_all_cov.txt | summary of average numbers of reads used for selected sequences|
-| sample_1_all_sc.txt | summary of average consensus length of reconstructed sequences|
 
 You can check the inferred species tree for the sample and five reference species in Newick format:
 ```
 $cat  output/tree_sample_1.nwk
 (sample_1:0.0106979811,((HUMAN:0.0041202790,GORGO:0.0272785216):0.0433094119,(XENLA:0.1715052824,MNELE:0.9177670816):0.1141311779):0.0613339433,RATNO:0.0123413734);
 ```
+For the full description of output files please check our wiki [page](https://github.com/DessimozLab/read2tree/wiki/output-files).  
+
 
 Note that we consider species names as 5-letter codes e.g. XENLA = Xenopus laevis. If you want to rerun your analysis, make sure that you moved/deleted the files. Otherwise, read2tree continues the progress of previous analysis.  
 
@@ -106,7 +90,9 @@ For running on clusters, you can run the first step of read2tree such that folde
 Hint: As read2tree exploits the `progress` package, the user can benefit from continuing unfinished runs. However, if you want to conduct a new analysis with different inputs, you need to remove output of previous runs or change the `output_path`. 
 
 
-## Details of arguments
+### Details of arguments
+
+To see the details of arguments, please take look at our wiki [page](https://github.com/DessimozLab/read2tree/wiki/Details-of-arguments)
 
 ## Possible issues
 
@@ -140,7 +126,7 @@ export LANG=en_US.UTF-8
 * [Adrian Altenhoff](http://people.inf.ethz.ch/adriaal).
 
 
-The authors would like to thank  Alex Warwick for help how to initiate such a package.
+The authors would like to thank Alex Warwick for help how to initiate such a package.
 
 ## License
 This project is licensed under the MIT License.
