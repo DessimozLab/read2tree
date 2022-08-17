@@ -89,16 +89,16 @@ class Mafft(Aligner):
         be specified (listed as *args and **kwargs for now).
         """
         start = time.time()  # time the execution
-        
+
         if self.input_type == AlignmentInput.OBJECT:  # different operation depending on what it is
             with tempfile.NamedTemporaryFile(mode='wt') as filehandle:
                 SeqIO.write(self.input, filehandle, 'fasta')
                 filehandle.seek(0)
                 output, error = self._call(filehandle.name, *args, **kwargs)
-                
+
         else:
             output, error = self._call(self.input, *args, **kwargs)
-        
+
         #logger.debug('Output of Mafft: stdout={}; stderr={}'.format(output, error))
         if len(output)==0 and len(error)>0:
             logger.warning('is MAFFT_BINARIES set correctly: {}'.format(os.getenv('MAFFT_BINARIES','')))
@@ -112,10 +112,10 @@ class Mafft(Aligner):
         return self.result
         # End call
 
-    # Any other accessory methods 
+    # Any other accessory methods
     def _call(self, filename, *args, **kwargs):
         """
-        Call underlying low level _Mafft wrapper. 
+        Call underlying low level _Mafft wrapper.
         Options are passed via *args and **kwargs
         [This only covers the simplest automatic
          case]
@@ -300,6 +300,8 @@ def get_default_options():
         # Seed alignments given in alignment_n (fasta format) are aligned with
         # sequences in input. The alignment within every seed is preserved.
         MultiOption('--seed', None, active=False),
+
+        FlagOption('--anysymbol', True, active=True), # accepting unusual chars
 
         # Choose analysis mode automatically (default=True)
         FlagOption('--auto', True, active=True)
