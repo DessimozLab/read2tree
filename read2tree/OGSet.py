@@ -23,6 +23,7 @@ from Bio.SeqIO.FastaIO import FastaWriter
 # ----------- only to be used internally; requires hdf5 installation -------------------
 #from pyoma.browser import db
 
+from . import __version__ as read2tree_version
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
@@ -299,7 +300,8 @@ class OGSet(object):
         dna_records = []
         try:
             reply = requests.post('https://omabrowser.org/api/protein/bulk_retrieve/',
-                                  json={"ids": record_ids})
+                                  json={"ids": record_ids},
+                                  headers={'User-Agent': 'read2tree/'+read2tree_version})
         except requests.exceptions.RequestException as exception_type:
             self.logger.warning('DNA not found probably for '+str(record_ids[0])+'. The reason is '+str(exception_type))
             pass
