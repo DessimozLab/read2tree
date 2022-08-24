@@ -38,6 +38,7 @@ def set_default_dna_options(aligner):
     """
     aligner.options = get_default_options()
     aligner.options['--auto'].set_value(True)
+    aligner.options['--nuc'].set_and_activate(True)
 
 
 def set_default_protein_options(aligner):
@@ -46,6 +47,7 @@ def set_default_protein_options(aligner):
     """
     aligner.options = get_default_options()
     aligner.options['--auto'].set_value(True)
+    aligner.options['--amino'].set_and_activate(True)
 
 
 class Mafft(Aligner):

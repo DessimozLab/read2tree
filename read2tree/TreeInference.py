@@ -7,8 +7,8 @@
 import os
 import time
 import logging
-from read2tree.wrappers.treebuilders import Fasttree
-from read2tree.wrappers.treebuilders import Iqtree
+from read2tree.wrappers.treebuilders import Fasttree, Iqtree
+from read2tree.wrappers.treebuilders.base_treebuilder import DataType
 
 
 logger = logging.getLogger(__name__)
@@ -46,9 +46,9 @@ class TreeInference(object):
         output_folder = self.args.output_path
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        #fasttree_wrapper = Fasttree(concat_alignment, datatype="PROTEIN")
+        #fasttree_wrapper = Fasttree(concat_alignment, datatype=DataType.PROTEIN)
         #tree = fasttree_wrapper()
-        iqtree_wrapper = Iqtree(concat_alignment, datatype="PROTEIN")
+        iqtree_wrapper = Iqtree(concat_alignment, datatype=DataType.PROTEIN)
         iqtree_wrapper.options.options['-m'].set_value('LG')
         iqtree_wrapper.options.options['-nt'].set_value(self.args.threads)
         tree = iqtree_wrapper()

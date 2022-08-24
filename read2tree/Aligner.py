@@ -20,7 +20,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
 from tqdm import tqdm
-from read2tree.wrappers.aligners import Mafft
+from read2tree.wrappers.aligners import Mafft, DataType
 from read2tree.utils.seq_utils import concatenate
 
 logger = logging.getLogger(__name__)
@@ -280,9 +280,10 @@ class Aligner(object):
         output_folder_dna = os.path.join(
             self.args.output_path, "03_align_dna")
         for key, value in og_set.items():
-            mafft_wrapper = Mafft(value.aa, datatype="PROTEIN")
+            mafft_wrapper = Mafft(value.aa, datatype=DataType.PROTEIN)
             mafft_wrapper.options.options['--localpair'].set_value(True)
             mafft_wrapper.options.options['--maxiterate'].set_value(1000)
+            logger.info("aligning OG {} with {} proteins".format(key, len(value.aa)))
             alignment = mafft_wrapper()
             codons = self._get_codon_dict_og(value)
             align = Alignment()
