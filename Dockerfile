@@ -10,7 +10,7 @@ WORKDIR /app
 # Create the environment:
 COPY environment.yml .
 
-RUN apt-get update && apt-get install -y wget && conda init bash
+RUN apt-get update && apt-get install -y wget
 
 RUN conda env create -f environment.yml
 
@@ -32,18 +32,12 @@ RUN python -m pip install pyham
 
 
 
-ENV PATH /opt/conda/envs/read2tree_env/bin:$PATH
-
-
-RUN git clone https://github.com/DessimozLab/read2tree.git
-WORKDIR read2tree
-
-
+COPY . .
 RUN python setup.py install
 
+ENV PATH  /app/read2tree/bin:/opt/conda/envs/read2tree_env/bin:$PATH
 
-ENV PATH  /app/read2tree/bin:$PATH
-
+WORKDIR /run
 
 ENTRYPOINT ["read2tree"]
 
