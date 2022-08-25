@@ -283,7 +283,7 @@ class Aligner(object):
             mafft_wrapper = Mafft(value.aa, datatype=DataType.PROTEIN)
             mafft_wrapper.options.options['--localpair'].set_value(True)
             mafft_wrapper.options.options['--maxiterate'].set_value(1000)
-            logger.info("aligning OG {} with {} proteins".format(key, len(value.aa)))
+            logger.debug("aligning OG {} with {} proteins".format(key, len(value.aa)))
             alignment = mafft_wrapper()
             codons = self._get_codon_dict_og(value)
             align = Alignment()
