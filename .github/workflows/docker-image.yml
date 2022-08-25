@@ -58,8 +58,8 @@ jobs:
       -
         name: Test
         run: |
-          docker run --rm ${{ env.TEST_TAG }}
-
+          docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run ${{ env.TEST_TAG }} --tree --standalone_path /input/marker_genes --reads /reads/sample_1.fastq --output_path /out
+          if [ ! -f output/tree_sample_1.nwk ] ; then exit 1; fi
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request' && github.event_name != 'push'
