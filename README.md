@@ -35,6 +35,11 @@ python setup.py install
 #### Docker
 The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
 
+A prebuild container can be loaded from dockerhub:
+```
+docker pull dessimozlab/read2tree:latest
+```
+
 
 ## Run
 
@@ -70,7 +75,7 @@ read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2
 #### Run test example using docker
 
 ```
-docker run --rm -t -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/out:/app   read2tree_k   --tree --standalone_path /input/marker_genes --reads /reads/sample_1.fastq
+docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run  dessimozlab/read2tree:latest  --tree --standalone_path /input/marker_genes --reads /reads/sample_1.fastq --output_path /out
 ```
 
 ### output files
@@ -112,10 +117,14 @@ export LANG=en_US.UTF-8
 
 ## Change log
 
+- version 0.1.3: 
+   - improvements of documentation
+   - adding support for docker
+   - small bugfixes 
 
-- version 0.2: packaging
+- version 0.1.2: packaging
 
-- version 0.1: Adding covid analysis
+- version 0.1.0: Adding covid analysis
 
 - version 0.0: Initial work
 
