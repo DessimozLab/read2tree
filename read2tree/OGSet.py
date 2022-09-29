@@ -505,7 +505,7 @@ class OGSet(object):
                                 desc='Adding mapped seq to OG', unit=' OGs'):
             # og_filt = self._remove_species_from_original_set(og)
             og_filt = og
-            if len(og_filt.aa) > 2:
+            if len(og_filt.aa) >= 2:
                 # continue only if OG is in mapped OGs
                 if name_og in cons_og_set.keys():
                     cons_og_filt = self \
