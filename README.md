@@ -48,6 +48,11 @@ To run read2tree two things are required as input:
 2) A set of reference orthologous groups, i.e. marker genes. 
 In our wiki [page](https://github.com/DessimozLab/read2tree/wiki/obtaining-marker-genes), you may find information on how to obtain the marker genes using [OMA browser](https://omabrowser.org/oma/export_markers). 
 
+### output 
+
+The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as defualt.  
+
+
 ### Single species mode
 ```
 read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fastq  --output_path output
