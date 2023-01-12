@@ -113,7 +113,8 @@ class OMAOutputParser(object):
         :return:
         """
         names_og = {}
-        unique_species = []
+        unique_species = set([])
+        included_species = set([])
         orthologous_groups_fasta = os.path.join(self.oma_output_path,
                                                 "marker_genes")
         print('--- Load OGs with min {} species from oma '
@@ -125,19 +126,31 @@ class OMAOutputParser(object):
             name = file.split("/")[-1].split(".")[0].replace('OMAGroup_', 'OG')
             records = list(SeqIO.parse(file, 'fasta'))
             new_records = []
+            seen_species = set([])
             for record in records:
                 species = self._get_species_id(record)
                 if species not in self.ignore_species:
-                    new_records.append(record)
-                    if species not in unique_species:
-                        unique_species.append(species)
-                        self.num_species += 1
+                    if species in seen_species:
+                        raise Exception("Invalid marker group: {} contains species '{}' more than once"
+                                        .format(file, species))
+                    seen_species.add(species)
                     new_id = record.id + "_" + name
                     record.id = new_id
+                    new_records.append(record)
 
+            unique_species.update(seen_species)
             if len(new_records) >= self.min_species:
                 names_og[name] = new_records
                 self.num_selected_ogs += 1
+                included_species.update(seen_species)
+
+        self.num_species = len(included_species)
+        ignored = unique_species - included_species
+        if len(ignored) > 0:
+            print("{} species in marker genes were excluded as they never were present in sufficiently "
+                  "complete marker genes".format(len(ignored)))
+            for x in ignored:
+                print(" - {}".format(x))
         return names_og
 
     def _estimate_best_number_species(self):

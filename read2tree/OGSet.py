@@ -28,8 +28,6 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-OMA_STANDALONE_OUTPUT = 'Output'
-OMA_MARKER_GENE_EXPORT = 'marker_genes'
 API_URL = 'http://omabrowser.org/api'
 
 
@@ -195,7 +193,8 @@ class OGSet(object):
                     if "REST_api" in source and not all_len_consistent:
                         msg = "The returned DNA sequences from the REST API do not match the protein sequences. " \
                               "Most likely this is due to an update of the OMA Browser. Please download the DNA " \
-                              "sequences that correspond to your reference groups."
+                              "sequences from the download page of the OMA Browser that correspond to the release " \
+                              "of your reference groups."
                         self.logger.error(msg)
                         raise Exception(msg)
                     self._write(output_file_dna, ogs[name].dna)
