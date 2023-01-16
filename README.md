@@ -124,6 +124,12 @@ export LANG=en_US.UTF-8
 
 ## Change log
 
+- version 0.1.4:
+   - allow reference folders not named marker_genes (#12)
+   - update environment.yml file to contain all dependencies (#16)
+   - documentation improvements
+   - CI/CD pipeline
+
 - version 0.1.3: 
    - improvements of documentation
    - adding support for docker
