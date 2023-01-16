@@ -1,9 +1,10 @@
 import glob
 import os
+import re
 
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
-#from tables import *
+from pathlib import Path
 
 
 OMA_STANDALONE_OUTPUT = 'Output'
@@ -32,40 +33,53 @@ class OMAOutputParser(object):
 
     def _check_oma_output_path(self):
         """
+        This method analysis how the standalone_path argument is used:
+          1. OmaStandalone run, and standalone_path points to base folder
+          2. OmaStandalone run, but standalone_path points to output folder
+          3. Marker gene export, standalone_path points to the marker_genes folder
+          4. Marker genes export, standalone_path points to a folder with marker genes, but named differently
+             (maybe even different source)
+          5. Marker genes export, standalone_path points to parent folder containing marker_genes subfolder
 
-        :return:
+        All possibilities are analysed in this order and first one wins. The method sets then the `mode`,
+        oma_output_path, og_fasta_path
+
+        :return: None
         """
-        oma_output_path = ''
-        if os.path.exists(os.path.join(self.args.standalone_path,
-                                       "OrthologousGroupsFasta")):
-            OMA_STANDALONE_OUTPUT = "."
+        standalone_path = Path(self.args.standalone_path)
+        self.oma_output_path = None
+        if (standalone_path / OMA_STANDALONE_OUTPUT / "OrthologousGroupsFasta").is_dir():
+            self.mode = "standalone"
+            self.oma_output_path = standalone_path / OMA_STANDALONE_OUTPUT
+            self.og_fasta_path = standalone_path / "Output" / "OrthologousGroupsFasta"
+        elif (standalone_path / "OrthologousGroupsFasta").is_dir():
+            self.mode = "standalone"
+            self.oma_output_path = standalone_path
+            self.og_fasta_path = standalone_path / "OrthologousGroupsFasta"
+        elif standalone_path.parts[-1] == OMA_MARKER_GENE_EXPORT:
+            self.og_fasta_path = standalone_path
+            self.mode = "marker_genes"
         else:
-            OMA_STANDALONE_OUTPUT = 'Output'
-
-        if os.path.exists(os.path.join(self.args.standalone_path,
-                                       OMA_STANDALONE_OUTPUT)):
-            oma_output_path = os.path.join(self.args.standalone_path,
-                                           OMA_STANDALONE_OUTPUT)
-            if os.path.join(oma_output_path, "OrthologousGroups.orthoxml"):
-                self.mode = 'standalone'
-        # standalone path set to path up of marker_genes
-        elif os.path.exists(os.path.join(self.args.standalone_path,
-                                         OMA_MARKER_GENE_EXPORT)):
-            oma_output_path = self.args.standalone_path
             self.mode = 'marker_genes'
-        # standalone path set to marker_genes
-        elif OMA_MARKER_GENE_EXPORT in self.args.standalone_path.split('/'):
-            oma_output_path = os.path.join(self.args.standalone_path, "..")
-            self.mode = 'marker_genes'
-        return oma_output_path
+            nr_fasta_files = len([name for name in os.listdir(standalone_path)
+                                  if name.endswith(".fa") or name.endswith(".fasta")])
+            if nr_fasta_files > 1:
+                self.og_fasta_path = standalone_path
+            elif (standalone_path / OMA_MARKER_GENE_EXPORT).is_dir():
+                self.og_fasta_path = standalone_path / OMA_MARKER_GENE_EXPORT
+            else:
+                raise Exception("argument standalone_path seems not to point to a valid directory: {}"
+                                .format(standalone_path))
 
     def _load_ogs_from_path(self):
+        return self._filter_ogs_min_species()
 
-        if self.mode == "marker_genes":
-            ogs = self._filter_ogs_min_species_marker()
+    def _get_species_id(self, record):
+        m = re.search(r"\[(?P<species>[^]]+)]", record.description)
+        if m is not None:
+            return m.group('species')
         else:
-            ogs = self._filter_ogs_min_species()
-        return ogs
+            return record.id[0:5]
 
     def _filter_ogs_min_species(self):
         """
@@ -73,71 +87,45 @@ class OMAOutputParser(object):
         :return:
         """
         names_og = {}
-        unique_species = []
-        orthologous_groups_fasta = os.path.join(self.oma_output_path,
-                                                "OrthologousGroupsFasta")
-        print('--- Load OGs with min {} species from oma '
-              'standalone! ---'.format(self.min_species))
-        files = (glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or
-                 glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta")))
-        for file in tqdm(files, desc='Pre-filter files',
-                         unit=' OGs'):
-            name = file.split("/")[-1].split(".")[0]
-            records = list(SeqIO.parse(file, 'fasta'))
-            new_records = []
-            for record in records:
-                species = self._get_species_id(record)
-                if species not in self.ignore_species:
-                    new_records.append(record)
-                    if species not in unique_species:
-                        unique_species.append(species)
-                        self.num_species += 1
-                new_id = record.id + "_" + name
-                record.id = new_id
-
-            if len(new_records) >= self.min_species:
-                names_og[name] = new_records
-                self.num_selected_ogs += 1
-        return names_og
-
-    def _get_species_id(self, record):
-        if '[' in record.description and ']' in record.description:
-            return record.description[record.description.find(
-                "[")+1:record.description.find("]")]
-        else:
-            return record.id[0:5]
-
-    def _filter_ogs_min_species_marker(self):
-        """
-
-        :return:
-        """
-        names_og = {}
-        unique_species = []
-        orthologous_groups_fasta = os.path.join(self.oma_output_path,
-                                                "marker_genes")
-        print('--- Load OGs with min {} species from oma '
-              'marker gene export! ---'.format(self.min_species))
-        files = (glob.glob(os.path.join(orthologous_groups_fasta, "*.fa")) or
-                 glob.glob(os.path.join(orthologous_groups_fasta, "*.fasta")))
+        unique_species = set([])
+        included_species = set([])
+        print('--- Load OGs with min {} species from oma {} - mode = {} ---'
+              .format(self.min_species, self.og_fasta_path, self.mode))
+        files = (glob.glob(os.path.join(self.og_fasta_path, "*.fa")) or
+                 glob.glob(os.path.join(self.og_fasta_path, "*.fasta")))
         for file in tqdm(files, desc='Loading files for pre-filter',
                          unit=' OGs'):
-            name = file.split("/")[-1].split(".")[0].replace('OMAGroup_', 'OG')
+            name = os.path.splitext(os.path.basename(file))[0]
+            name = name.replace("OMAGroup_", "OG")
             records = list(SeqIO.parse(file, 'fasta'))
             new_records = []
+            seen_species = set([])
             for record in records:
                 species = self._get_species_id(record)
                 if species not in self.ignore_species:
-                    new_records.append(record)
-                    if species not in unique_species:
-                        unique_species.append(species)
-                        self.num_species += 1
+                    if species in seen_species:
+                        raise Exception("Invalid marker group: {} contains species '{}' more than once"
+                                        .format(file, species))
+                    seen_species.add(species)
                     new_id = record.id + "_" + name
                     record.id = new_id
+                    new_records.append(record)
 
+            unique_species.update(seen_species)
             if len(new_records) >= self.min_species:
                 names_og[name] = new_records
                 self.num_selected_ogs += 1
+                included_species.update(seen_species)
+
+        self.num_species = len(included_species)
+        ignored = unique_species - included_species
+        if len(ignored) > 0:
+            print("{} species in marker genes were excluded as they never were present in sufficiently "
+                  "complete marker genes".format(len(ignored)))
+            for x in ignored:
+                print(" - {}".format(x))
+        if len(names_og) == 0:
+            raise Exception("could not load any marker genes from {}".format(self.og_fasta_path))
         return names_og
 
     def _estimate_best_number_species(self):

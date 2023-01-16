@@ -10,9 +10,6 @@ import glob
 import os
 import logging
 
-OMA_STANDALONE_OUTPUT = 'Output'
-OMA_MARKER_GENE_EXPORT = 'marker_genes'
-
 
 class Progress(object):
 
@@ -76,20 +73,6 @@ class Progress(object):
         self.append_ogs_04 = self._get_append_og_set_status()
         self.align_05 = self._get_alignment_status()
         self.tree = False
-
-    def _get_num_species(self):
-        """
-        :return:
-        """
-        if self.status > 1:
-            if self.species_to_remove:
-                num_species = len(os.listdir(self._folder_ref_dna)) \
-                    - len(self.species_to_remove)
-            else:
-                num_species = len(os.listdir(self._folder_ref_dna))
-        else:
-            num_species = 0
-        return num_species
 
     def _extract_line_from_log(self, word, logfile):
         '''
