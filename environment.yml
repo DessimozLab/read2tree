@@ -24,3 +24,6 @@ dependencies:
   - nextgenmap
   - samtools
   - filelock
+  - pip:
+    - pyham
+    - pysam
