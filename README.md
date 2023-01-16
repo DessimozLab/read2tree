@@ -82,7 +82,7 @@ read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2
 #### Run test example using docker
 
 ```
-docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run  dessimozlab/read2tree:latest  --tree --standalone_path /input/marker_genes --reads /reads/sample_1.fastq --output_path /out
+docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run  dessimozlab/read2tree:latest  --tree --standalone_path /input/marker_genes --dna_reference /input/cds-marker_genes.fasta.gz --reads /reads/sample_1.fastq --output_path /out
 ```
 
 ### output files
