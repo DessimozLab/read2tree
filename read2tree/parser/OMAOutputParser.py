@@ -124,6 +124,8 @@ class OMAOutputParser(object):
                   "complete marker genes".format(len(ignored)))
             for x in ignored:
                 print(" - {}".format(x))
+        if len(names_og) == 0:
+            raise Exception("could not load any marker genes from {}".format(self.og_fasta_path))
         return names_og
 
     def _estimate_best_number_species(self):
