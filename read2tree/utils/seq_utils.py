@@ -14,7 +14,7 @@ from enum import Enum
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Data.IUPACData import ambiguous_dna_letters
-from Bio.Seq import Seq, UnknownSeq
+from Bio.Seq import Seq  #, UnknownSeq
 from Bio.SeqRecord import SeqRecord
 
 __all__ = ['is_dna', 'guess_datatype', 'identify_input']
@@ -140,7 +140,7 @@ def concatenate(alignments):
         # if any are missing, create unknown data of the right length,
         # stuff the string representation into the tmp dict
         for label in missing:
-            new_seq = UnknownSeq(length, character=unknown_char)
+            new_seq = unknown_char*length  # UnknownSeq(length, character=unknown_char)
             tmp[label].append(str(new_seq))
 
         # else stuff the string representation into the tmp dict
