@@ -5,14 +5,8 @@
     -- David Dylus, July--XXX 2017
 '''
 import os
-#from tables import *
 from Bio import AlignIO
 import re
-
-from tqdm import tqdm
-from read2tree.wrappers.aligners import Mafft
-from read2tree.utils.seq_utils import concatenate
-
 
 class Analyzer(object):
 
@@ -67,6 +61,7 @@ class Analyzer(object):
         raise NotImplementedError
 
     def _get_mean_ACGT(self, args):
+        import glob
         for folder in glob.iglob(args.output + '/05_*', recursive=True):
             print(folder)
             all_coverages = []

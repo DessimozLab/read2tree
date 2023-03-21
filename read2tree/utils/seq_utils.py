@@ -17,7 +17,7 @@ from Bio.Data.IUPACData import ambiguous_dna_letters
 from Bio.Seq import Seq  #, UnknownSeq
 from Bio.SeqRecord import SeqRecord
 
-__all__ = ['is_dna', 'guess_datatype', 'identify_input']
+__all__ = ['is_dna', 'identify_input', 'concatenate']
 
 
 def is_dna(record):
@@ -25,15 +25,6 @@ def is_dna(record):
     allchars = [char.upper() for char in str(record.seq) if char.upper() not in '-?X']
     return set(allchars).issubset(set(ambiguous_dna_letters))
 
-
-def guess_datatype(alignment, from_filename=False):
-    logger.warning("Guessing is not recommended - specify the sequence type with option datatype={DNA, PROTEIN}, be more confident")
-    if from_filename:
-        try:
-            alignment = SeqIO.parse(alignment, 'fasta')
-        except:
-            alignment = SeqIO.parse(alignment, 'phylip-relaxed')
-    return DataType.DNA if is_dna(alignment) else DataType.PROTEIN
 
 AlignmentInput = Enum('AlignmentInput', 'OBJECT FILENAME')
 

@@ -20,8 +20,8 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 
 from tqdm import tqdm
-from read2tree.wrappers.aligners import Mafft, DataType
-from read2tree.utils.seq_utils import concatenate
+from .wrappers.aligners import Mafft, DataType
+from .utils.seq_utils import concatenate
 
 logger = logging.getLogger(__name__)
 
