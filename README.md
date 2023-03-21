@@ -124,6 +124,10 @@ export LANG=en_US.UTF-8
 
 ## Change log
 
+- version 0.1.5:
+  - fix issue with UnknownSeq being removed in Biopython>1.80
+  - removing unused modeltester wrappers
+
 - version 0.1.4:
    - allow reference folders not named marker_genes (#12)
    - update environment.yml file to contain all dependencies (#16)
