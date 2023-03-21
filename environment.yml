@@ -5,9 +5,7 @@ channels:
 dependencies:
   - python=3.9
   - numpy
-  - Cython
   - biopython
-  - Cython
   - ete3
   - lxml
   - tqdm
@@ -24,6 +22,5 @@ dependencies:
   - nextgenmap
   - samtools
   - filelock
-  - pip:
-    - pyham
-    - pysam
+  - pyham
+  - pysam
