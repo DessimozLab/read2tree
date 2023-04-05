@@ -4,14 +4,39 @@ read2tree is a software tool that allows to obtain alignment matrices for tree i
 
 read2tree works in linux with:
 
-[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
-[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
-## Prerequisites
 
-The following python packages are needed: [numpy](https://github.com/numpy/numpy), [scipy](https://github.com/scipy/scipy), [cython](https://github.com/cython/cython), [lxml](https://github.com/lxml/lxml), [tqdm](https://tqdm.github.io/docs/tqdm), [pysam](https://github.com/pysam-developers/pysam), [pyparsing](https://svn.code.sf.net/p/pyparsing/code/), [requests](http://python-requests.org), [filelock](https://github.com/benediktschmitt/py-filelock), [natsort](https://github.com/SethMMorton/natsort), [pyyaml](http://pyyaml.org/wiki/PyYAML), [biopython](https://github.com/biopython/biopython), [ete3](http://etetoolkit.org), [dendropy](http://packages.python.org/DendroPy/). 
+# Installation
 
-You can install all of them using [conda](https://docs.conda.io/en/latest/miniconda.html).
+There are three ways to install read2tree. You can choose either of them. 
+
+### 1) Installation using Conda
+
+
+```
+conda create -n r2t python=3.10
+conda install -c bioconda  read2tree 
+
+```
+
+
+### 2) Installation using Docker
+The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
+
+A prebuild container can be loaded from dockerhub:
+```
+docker pull dessimozlab/read2tree:latest
+```
+
+
+### 3) Installation from source 
+
+To set up read2tree on your local machine from source please follow the instructions below.
+
+#### Prerequisites
+
+The following python packages are needed: [numpy](https://github.com/numpy/numpy), [scipy](https://github.com/scipy/scipy), [cython](https://github.com/cython/cython), [lxml](https://github.com/lxml/lxml), [tqdm](https://tqdm.github.io/docs/tqdm), [pysam](https://github.com/pysam-developers/pysam), [pyparsing](https://svn.code.sf.net/p/pyparsing/code/), [requests](http://python-requests.org), [filelock](https://github.com/benediktschmitt/py-filelock), [natsort](https://github.com/SethMMorton/natsort), [pyyaml](http://pyyaml.org/wiki/PyYAML), [biopython](https://github.com/biopython/biopython), [ete3](http://etetoolkit.org), [dendropy](http://packages.python.org/DendroPy/).  You can install all of them using [conda](https://docs.conda.io/en/latest/miniconda.html).
 ```
 conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsing requests natsort pyyaml filelock
 conda install -c bioconda dendropy pysam
@@ -22,9 +47,7 @@ Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/sof
 conda install -c bioconda mafft iqtree ngmlr nextgenmap samtools
 ```
 
-## Installation
-
-read2tree was built and tested with python 3.8. To set up read2tree on your local machine please follow the instructions below.
+Then install the package
 
 ```
 git clone https://github.com/DessimozLab/read2tree.git
@@ -32,13 +55,6 @@ cd read2tree
 python setup.py install
 ```
 
-#### Docker
-The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
-
-A prebuild container can be loaded from dockerhub:
-```
-docker pull dessimozlab/read2tree:latest
-```
 
 
 ## Run
