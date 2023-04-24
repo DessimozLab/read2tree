@@ -67,7 +67,7 @@ def edit_record_write_faa(species_name_all_faa, faa_all, fiveLetter_species_dic,
             # >lcl|AF092942.1_prot_AAC96311.1_11 
             prot_id_old_split= prot_id_old.split("_")
             prot_id_old_split.remove("prot")
-            prot_id_edit = "_".join(prot_id_old_split)
+            prot_id_edit = ".".join(prot_id_old_split)
 
             prot_id_new = fiveLetter_species+ prot_id_edit
             prot.id = prot_id_new
@@ -97,7 +97,7 @@ def edit_record_write_fna(species_name_all_fna, fna_all, output_file_fna):
             # >lcl|AF092942.1_prot_AAC96311.1_11 
             prot_id_old_split= prot_id_old.split("_")
             prot_id_old_split.remove("cds")
-            prot_id_edit = "_".join(prot_id_old_split)
+            prot_id_edit = ".".join(prot_id_old_split)
             
             prot_id_new = fiveLetter_species+ prot_id_edit
             prot.id = prot_id_new
@@ -116,8 +116,8 @@ def edit_record_write_fna(species_name_all_fna, fna_all, output_file_fna):
 
 if __name__ == '__main__':
 
-    input_folder_faa = sys.argv[1]  # "data/" 
-    output_folder_faa = sys.argv[2] # "DB/" 
+    input_folder_faa = sys.argv[1]+"/"  # "data/" 
+    output_folder_faa = sys.argv[2]+"/" # "DB/" 
 
     output_file_fna = sys.argv[3]   # "all_cdna.fa" 
     
