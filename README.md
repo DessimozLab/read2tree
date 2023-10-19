@@ -13,9 +13,18 @@ There are three ways to install read2tree. You can choose either of them.
 
 To set up read2tree on your local machine from source please follow the instructions below.
 
+
+First, we need to create a fresh [conda](https://docs.conda.io/en/latest/miniconda.html) environment: 
+```
+conda create -n r2t python=3.10.8
+```
+
+
 #### Prerequisites
 
-The following python packages are needed: [numpy](https://github.com/numpy/numpy), [scipy](https://github.com/scipy/scipy), [cython](https://github.com/cython/cython), [lxml](https://github.com/lxml/lxml), [tqdm](https://tqdm.github.io/docs/tqdm), [pysam](https://github.com/pysam-developers/pysam), [pyparsing](https://svn.code.sf.net/p/pyparsing/code/), [requests](http://python-requests.org), [filelock](https://github.com/benediktschmitt/py-filelock), [natsort](https://github.com/SethMMorton/natsort), [pyyaml](http://pyyaml.org/wiki/PyYAML), [biopython](https://github.com/biopython/biopython), [ete3](http://etetoolkit.org), [dendropy](http://packages.python.org/DendroPy/).  You can install all of them using [conda](https://docs.conda.io/en/latest/miniconda.html).
+The following python packages are needed: [numpy](https://github.com/numpy/numpy), [scipy](https://github.com/scipy/scipy), [cython](https://github.com/cython/cython), [lxml](https://github.com/lxml/lxml), [tqdm](https://tqdm.github.io/docs/tqdm), [pysam](https://github.com/pysam-developers/pysam), [pyparsing](https://svn.code.sf.net/p/pyparsing/code/), [requests](http://python-requests.org), [filelock](https://github.com/benediktschmitt/py-filelock), [natsort](https://github.com/SethMMorton/natsort), [pyyaml](http://pyyaml.org/wiki/PyYAML), [biopython](https://github.com/biopython/biopython), [ete3](http://etetoolkit.org), [dendropy](http://packages.python.org/DendroPy/).  
+
+You can install all of them using.
 ```
 conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsing requests natsort pyyaml filelock
 conda install -c bioconda dendropy pysam
@@ -26,7 +35,7 @@ Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/sof
 conda install -c bioconda mafft iqtree ngmlr nextgenmap samtools
 ```
 
-Then install the package
+Then, you can install the read2tree package after downlaoding the package from this GitHub repo using
 
 ```
 git clone https://github.com/DessimozLab/read2tree.git
