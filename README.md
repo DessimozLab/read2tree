@@ -9,26 +9,7 @@ read2tree works in linux with  [![Python 3.10.8](https://img.shields.io/badge/py
 
 There are three ways to install read2tree. You can choose either of them. 
 
-### 1) Installation using Conda
-
-
-```
-conda create -n r2t python=3.10.8
-conda install -c bioconda  read2tree 
-
-```
-
-
-### 2) Installation using Docker
-The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
-
-A prebuild container can be loaded from dockerhub:
-```
-docker pull dessimozlab/read2tree:latest
-```
-
-
-### 3) Installation from source 
+### 1) Installation from source 
 
 To set up read2tree on your local machine from source please follow the instructions below.
 
@@ -52,6 +33,27 @@ git clone https://github.com/DessimozLab/read2tree.git
 cd read2tree
 python setup.py install
 ```
+
+
+### 2) Installation using Conda
+
+
+```
+conda create -n r2t python=3.10.8
+conda install -c bioconda  read2tree 
+
+```
+
+
+### 3) Installation using Docker
+The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
+
+A prebuild container can be loaded from dockerhub:
+```
+docker pull dessimozlab/read2tree:latest
+```
+
+
 
 
 
