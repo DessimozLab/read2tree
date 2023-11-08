@@ -52,7 +52,7 @@ conda create -n r2t python=3.10.8
 conda install -c bioconda  read2tree 
 
 ```
-
+Alternatively, you could also try using [mamba](https://mamba.readthedocs.io/en/latest/). Caution: please read about compatiblity of conda and mamba in one envirnoment.
 
 ### 3) Installation using Docker
 The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
@@ -71,9 +71,15 @@ docker pull dessimozlab/read2tree:latest
 To run read2tree two things are required as input:
 1) The DNA sequencing reads as FASTQ file(s).
 2) A set of reference orthologous groups, i.e. marker genes. 
-In our wiki [page](https://github.com/DessimozLab/read2tree/wiki/obtaining-marker-genes), you may find information on how to obtain the marker genes using [OMA browser](https://omabrowser.org/oma/export_markers). 
+In our wiki [page](https://github.com/DessimozLab/read2tree/wiki/obtaining-marker-genes), you may find information on how to obtain the marker genes using [OMA browser](https://omabrowser.org/oma/export_markers). You can set the value of `Maximum nr of markers` as 200 or 400. Once you downloaded the tgz file, run this
 
-Note that read2tree needs the Internet to download some additional files (cdna of OGs) from the oma database. 
+```
+tar xvzf  marker_genes_*.tgz 
+ls marker_genes/*.fna | wc -l
+cat marker_genes/*.fna > dna_ref.fa
+``` 
+
+
 
 ### output 
 
@@ -82,7 +88,7 @@ The output of Read2Tree is the concatenated alignments as a fasta file where eac
 
 ### Single species mode
 ```
-read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fastq  --output_path output
+read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fastq  --output_path output --dna_reference  dna_ref.fa 
 ```
 
 ### Multiple species mode
@@ -101,7 +107,7 @@ The goal of this test example is to infer species tree for Mus musculus using it
 
 ```
 cd tests
-read2tree --debug --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq --output_path output/
+read2tree --debug --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq --output_path output/  --dna_reference  dna_ref.fa 
 ```
 
 
@@ -149,6 +155,7 @@ export LANG=en_US.UTF-8
 ```
 
 ## Change log
+
 
 - version 0.1.5:
   - fix issue with UnknownSeq being removed in Biopython>1.80
