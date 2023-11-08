@@ -93,7 +93,7 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fas
 
 ### Multiple species mode
 ```
-read2tree --standalone_path marker_genes/ --output_path output --reference  # this creates just the reference folder 01 - 03
+read2tree --standalone_path marker_genes/ --output_path output --reference --dna_reference  dna_ref.fa  # this creates just the reference folder 01 - 03
 read2tree --standalone_path marker_genes/ --output_path output --reads species1_R1.fastq species2_R2.fastq
 read2tree --standalone_path marker_genes/ --output_path output --reads species2_R1.fastq species2_R2.fastq
 read2tree --standalone_path marker_genes/ --output_path output --reads species3_R1.fastq species3_R2.fastq
