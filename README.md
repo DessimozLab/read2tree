@@ -5,6 +5,18 @@ read2tree is a software tool that allows to obtain alignment matrices for tree i
 read2tree works in linux with  [![Python 3.10.8](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
 
+#### Read2Tree Talk:
+You can watch David Dylus's presentation on Read2Tree as part of the [in silico talks](https://www.sib.swiss/in-silico-talks/read2tree-inferring-phylogenetic-trees-from-raw-sequencing-data)
+
+#### Read2Tree publication
+You can cite Read2Tree published in [Nature Biotechnology](https://doi.org/10.1038/s41587-023-01753-4): 
+```
+David Dylus, Adrian Altenhoff, Sina Majidian, Fritz J. Sedlazeck & Christophe Dessimoz.
+
+Inference of phylogenetic trees directly from raw sequencing reads using Read2Tree.  Nat Biotechnol (2023). https://doi.org/10.1038/s41587-023-01753-4/.
+```
+
+
 # Installation
 
 There are three ways to install read2tree. You can choose either of them. 
