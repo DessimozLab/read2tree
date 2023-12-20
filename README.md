@@ -121,9 +121,9 @@ iqtree -T ${thread} -s output/concat_*_aa.phy  -bb 1000
 ```
 The `.phy` file is either `concat_sample_aa.phy` or `concat_merge_aa.phy` corresponding to single- or multi-species mode. 
 
-It is also possible to us [trimal](http://trimal.cgenomics.org/use_of_the_command_line_trimal_v1.2) for trimming msa `trimal -in <inputfile> -out <outputfile> -automated1` 
+It is also possible to use [trimal](http://trimal.cgenomics.org/use_of_the_command_line_trimal_v1.2) for trimming msa `trimal -in <inputfile> -out <outputfile> -automated1` 
 
-### DNA-mode tree inferrence
+### DNA-mode tree inference
 For closely related species, the user can infer tree using MSA of nucleotide sequences. 
 ```
 thread=20
