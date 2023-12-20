@@ -112,6 +112,23 @@ read2tree --standalone_path marker_genes/ --output_path output --reads species3_
 read2tree --standalone_path marker_genes/ --output_path output --merge_all_mappings --tree
 ```
 
+### bootstraping
+
+To have bootstrap values a metric for quality of internal nodes, you can run the following 
+```
+thread=20
+iqtree -T ${thread} -s output/concat_*_aa.phy  -bb 1000 
+```
+The `.phy` file is either `concat_sample_aa.phy` or `concat_merge_aa.phy` corresponding to single- or multi-species mode. 
+
+It is also possible to us [trimal](http://trimal.cgenomics.org/use_of_the_command_line_trimal_v1.2) for trimming msa `trimal -in <inputfile> -out <outputfile> -automated1` 
+
+### DNA-mode tree inferrence
+For closely related species, the user can infer tree using MSA of nucleotide sequences. 
+```
+thread=20
+iqtree -T ${thread} -s output/concat_*_dna.phy 
+```
 
 ## Test example
 
