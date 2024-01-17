@@ -31,10 +31,13 @@ def read_fiveLetter_species_file(input_five_letter_csv):
 def write_fiveLetter_species_file(species_name_all, output_five_letter_tsv):
     
     fiveLetter_species_dic = {}
-    for species_name in species_name_all: # let's try to extract a code  which unique from file name
-        fiveLetter_species= species_name.split(".")[0].split("_")[1][-5:]
-        # GCA_000849305.1_ViralProj14697_translated_cds.faa
+    try:
+        for species_name in species_name_all: # let's try to extract a code  which unique from file name
+            fiveLetter_species= species_name.split(".")[0].split("_")[1][-5:]  # GCA_000849305.1_ViralProj14697_translated_cds.faa  # JN032115.1_cds_from_genomic.fna
         fiveLetter_species_dic[species_name] = fiveLetter_species
+    except:
+        fiveLetter_species_dic = {}
+
     if len(set(fiveLetter_species_dic.values())) != len(set(species_name_all)):
         #"we assume the last five letter of NCBI is unique, please provide five letter code for species name as input as  Read2tree works with five letter code specicies name." 
         fiveLetter_species_dic = {}
