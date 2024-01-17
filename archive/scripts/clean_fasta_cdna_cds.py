@@ -14,7 +14,7 @@ def read_fasta_files(input_folder_faa,format_input):
             species_name_all.append(".".join(sp_name))
             records_prot = list(SeqIO.parse(input_folder_faa+file, "fasta"))
             fa_all.append(records_prot)
-    print(len(species_name_all),len(fa_all[0]))     # , sum([len(i) for i in og_all]
+    print("there are ",len(species_name_all),format_input, " files, and the first file has ",len(fa_all[0]),"sequences in it.")     # , sum([len(i) for i in og_all]
 
     return (species_name_all, fa_all)
 
@@ -66,7 +66,10 @@ def edit_record_write_faa(species_name_all_faa, faa_all, fiveLetter_species_dic,
             # >lcl|AF092942.1_cds_AAC96311.1_11
             # >lcl|AF092942.1_prot_AAC96311.1_11 
             prot_id_old_split= prot_id_old.split("_")
-            prot_id_old_split.remove("prot")
+            try:
+                prot_id_old_split.remove("prot")
+            except:
+                pass
             prot_id_edit = ".".join(prot_id_old_split)
 
             prot_id_new = fiveLetter_species+ prot_id_edit
