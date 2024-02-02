@@ -121,6 +121,7 @@ def concatenate(alignments):
     else:
         unknown_char = '?'
 
+    boundaries, cumlength = [], 0
     for aln in alignments:
         length = aln.get_alignment_length()
 
@@ -137,8 +138,10 @@ def concatenate(alignments):
         # else stuff the string representation into the tmp dict
         for rec in aln:
             tmp[rec.id].append(str(rec.seq))
+        cumlength += length
+        boundaries.append(cumlength)
 
     # Stitch all the substrings together using join (most efficient way),
     # and build the Biopython data structures Seq, SeqRecord and MultipleSeqAlignment
-    return MultipleSeqAlignment(SeqRecord(Seq(''.join(v)), id=k)
-                                for (k, v) in tmp.items())
+    return MultipleSeqAlignment([SeqRecord(Seq(''.join(v)), id=k) for (k, v) in tmp.items()],
+                                annotations={'boundaries': boundaries})

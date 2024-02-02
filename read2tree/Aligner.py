@@ -373,6 +373,7 @@ class Aligner(object):
             use_alignments = self.alignments
         alignments_aa = []
         alignments_dna = []
+        grp_names = []
 
         def sorter_groups(grp):
             if grp.startswith('OG') and grp[2:].isdigit():
@@ -384,22 +385,28 @@ class Aligner(object):
             value = use_alignments[key]
             alignments_aa.append(value.aa)
             alignments_dna.append(value.dna)
+            grp_names.append(key)
         concatination_aa = concatenate(alignments_aa)
         concatination_dna = concatenate(alignments_dna)
 
         if concatination_aa:
-            align_output = open(os.path.join(self.args.output_path,
-                                             "concat_" + self._species_name + "_aa.phy"), "w")
-            AlignIO.write(concatination_aa, align_output, "phylip-relaxed")
-            align_output.close()
+            outfn = os.path.join(self.args.output_path, "concat_" + self._species_name + "_aa.phy")
+            self._write_concation(outfn, concatination_aa, grp_names)
 
         if concatination_dna:
-            align_output = open(os.path.join(self.args.output_path,
-                                             "concat_" + self._species_name + "_dna.phy"), "w")
-            AlignIO.write(concatination_dna, align_output, "phylip-relaxed")
-            align_output.close()
+            outfn = os.path.join(self.args.output_path,"concat_" + self._species_name + "_dna.phy")
+            self._write_concation(outfn, concatination_dna, grp_names)
+        return concatination_aa, concatination_dna
 
-        return (concatination_aa, concatination_dna)
+    def _write_concation(self, outfn, msa, group_names):
+        with open(outfn, "w") as align_output:
+            AlignIO.write(msa, align_output, "phylip-relaxed")
+        if 'boundaries' in msa.annotations:
+            with open(outfn.replace(".phy", ".group_boundaries"), "w") as fh:
+                start_pos = 0
+                for name, end_pos in zip(group_names, msa.annotations['boundaries']):
+                    fh.write(f"{name} = {start_pos + 1}-{end_pos + 1}\n")
+                    start_pos = end_pos
 
     def add_to_alignment(self, mapper):
         """
