@@ -57,34 +57,6 @@ def write_fiveLetter_species_file(species_name_all, output_five_letter_tsv):
 
 
 
-def edit_record_write_faa(species_name_all_faa, faa_all, fiveLetter_species_dic, output_folder_faa):
-
-    # Add the five letter species code to each record in fasta file
-    for species_idx, species_record in enumerate(faa_all):
-        species_name = species_name_all_faa[species_idx]
-        fiveLetter_species = fiveLetter_species_dic[species_name]
-        for prot in species_record:    
-            prot_id_old = prot.id.split(" ")[0][3:]
-            # lcl|KY249672.1_prot_APW78783.1_1 [protein=NS1] [protein_id=APW78783.1] [location=99..518] [gbkey=CDS] 
-            # >lcl|AF092942.1_cds_AAC96311.1_11
-            # >lcl|AF092942.1_prot_AAC96311.1_11 
-            prot_id_old_split= prot_id_old.split("_")
-            try:
-                prot_id_old_split.remove("prot")
-            except:
-                pass
-            prot_id_edit = ".".join(prot_id_old_split)
-
-            prot_id_new = fiveLetter_species+ prot_id_edit
-            prot.id = prot_id_new
-            prot.name = prot_id_new
-            prot.description = prot_id_new
-
-
-        SeqIO.write(species_record, output_folder_faa+fiveLetter_species+".fa", "fasta")
-        
-    return faa_all
-    
 
 def edit_record_write_fna(species_name_all_fna, fna_all, output_file_fna):
     # Add the five letter species code to each record in fasta file
@@ -102,7 +74,16 @@ def edit_record_write_fna(species_name_all_fna, fna_all, output_file_fna):
             # >lcl|AF092942.1_cds_AAC96311.1_11
             # >lcl|AF092942.1_prot_AAC96311.1_11 
             prot_id_old_split= prot_id_old.split("_")
-            prot_id_old_split.remove("cds")
+            try:
+                prot_id_old_split.remove("prot")
+            except:
+                try:
+                    prot_id_old_split.remove("cds")
+                except:
+                    print("Error: prot/cds is not inside the record id of ", prot.id.split(" ")[0])
+                    print("we expect such format >lcl|AF092942.1_cds_AAC96311.1_11. Contact the developers.")
+                    exit            
+            
             prot_id_edit = ".".join(prot_id_old_split)
             
             prot_id_new = fiveLetter_species+ prot_id_edit
@@ -117,6 +98,42 @@ def edit_record_write_fna(species_name_all_fna, fna_all, output_file_fna):
     
     return all_prot_fna
 
+
+def edit_record_write_faa(species_name_all_faa, faa_all, fiveLetter_species_dic, output_folder_faa,all_prot_fna_id_set):
+
+    # Add the five letter species code to each record in fasta file
+    for species_idx, species_record in enumerate(faa_all):
+        species_name = species_name_all_faa[species_idx]
+        fiveLetter_species = fiveLetter_species_dic[species_name]
+        for prot in species_record:    
+            prot_id_old = prot.id.split(" ")[0][3:]
+            # lcl|KY249672.1_prot_APW78783.1_1 [protein=NS1] [protein_id=APW78783.1] [location=99..518] [gbkey=CDS] 
+            # >lcl|AF092942.1_cds_AAC96311.1_11
+            # >lcl|AF092942.1_prot_AAC96311.1_11 
+            prot_id_old_split= prot_id_old.split("_")
+            try:
+                prot_id_old_split.remove("prot")
+            except:
+                try:
+                    prot_id_old_split.remove("cds")
+                except:
+                    print("Error: prot/cds is not inside the record id of ", prot.id.split(" ")[0])
+                    print("we expect such format >lcl|AF092942.1_cds_AAC96311.1_11. Contact the developers. ")
+                    exit
+            prot_id_edit = ".".join(prot_id_old_split)
+
+            prot_id_new = fiveLetter_species+ prot_id_edit
+            
+            assert prot_id_new in all_prot_fna_id_set,prot_id_old+"is not in fna file (exact match after removing _cds_ or _prot_)"
+            prot.id = prot_id_new
+            prot.name = prot_id_new
+            prot.description = prot_id_new
+
+
+        SeqIO.write(species_record, output_folder_faa+fiveLetter_species+".fa", "fasta")
+        
+    return faa_all
+    
 
 
 
@@ -160,12 +177,18 @@ if __name__ == '__main__':
         fiveLetter_species_dic=  write_fiveLetter_species_file(species_name_all_faa, output_five_letter_tsv)
 
 
-    faa_all = edit_record_write_faa(species_name_all_faa, faa_all, fiveLetter_species_dic, output_folder_faa)
-
-    #edit_record_write_fna(species_name_all_faa, faa_all, fiveLetter_species_dic, output_file_fna)
-    print("Edited protien records are written to the folder",output_folder_faa)
 
     all_prot_fna = edit_record_write_fna(species_name_all_fna, fna_all, output_file_fna)
-
     print("Edited cdna records are written to the file",output_file_fna)
+
+    all_prot_fna_recordid = [i.id for i in all_prot_fna]
+    all_prot_fna_id_set = set(all_prot_fna_recordid)
+    assert len(all_prot_fna_recordid) == len(all_prot_fna_id_set), "all record id in fna files should be unique. we consider this format when we checl"  +all_prot_fna_recordid[0]
+
+
+    faa_all = edit_record_write_faa(species_name_all_faa, faa_all, fiveLetter_species_dic, output_folder_faa, all_prot_fna_id_set)
+
+    print("Edited protien records are written to the folder",output_folder_faa)
+
+
 
