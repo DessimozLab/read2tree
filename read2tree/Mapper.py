@@ -39,7 +39,7 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-
+minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2 "
 samtools ="/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools "
 
 class Mapper(object):
@@ -100,10 +100,17 @@ class Mapper(object):
                                      "04_mapping_" + self._species_name)
 
         bam_file= tmp_output_folder+"/"+ref_file_handle.split("/")[-1]+".bam"
-        minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2 "
+
 
         #self._output_shell(minimap2_ex+" -ax sr "+ ref_file_handle+ " -t " + str(self.args.threads) + " "+reads+" | "+samtools_ex+" view -F 4 -bh -S -t" + str(self.args.threads)+ " > " + bam_file)
-        self._output_shell(minimap2_ex + " -ax sr " + ref_file_handle + " -t " + str(
+        if 'short' in self.args.read_type:
+            minimap_argm =" -ax sr"
+        elif 'long-hifi' in self.args.read_type:
+            minimap_argm = " -ax map-hifi "
+        elif 'long-ont' in self.args.read_type:
+            minimap_argm = " -ax map-ont "
+
+        self._output_shell(minimap2_ex + minimap_argm + ref_file_handle + " -t " + str(
             self.args.threads) + " " + reads + " > " + bam_file)
 
         # if len(self._reads) == 2:
