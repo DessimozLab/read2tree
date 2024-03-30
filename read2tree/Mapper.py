@@ -40,6 +40,8 @@ from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
 
+samtools ="/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools "
+
 class Mapper(object):
     """
     Structure for reference
@@ -97,43 +99,50 @@ class Mapper(object):
         output_folder = os.path.join(self.args.output_path,
                                      "04_mapping_" + self._species_name)
 
-        if len(self._reads) == 2:
-            ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads != None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        elif len(self._reads) != 2 and 'short' in self.args.read_type:
-            ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads != None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        elif len(self._reads) != 2 and 'long' in self.args.read_type:
-            ngm_wrapper = NGMLR(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads != None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            if self.args.ngmlr_parameters != None:
-                par = self.args.ngmlr_parameters.split(',')
-                ngm_wrapper.options.options['-x'].set_value(str(par[0]))
-                ngm_wrapper.options \
-                           .options['--subread-length'].set_value(int(par[1]))
-                ngm_wrapper.options.options['-R'].set_value(float(par[2]))
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        self.logger.info('{}: Mapped {} / {} reads to {}'.format(self._species_name, ngm['reads_mapped'],
-                         ngm['total_reads']+ngm['reads_mapped'], os.path.basename(ref_file_handle)))
-        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        bam_file= tmp_output_folder+"/"+ref_file_handle.split("/")[-1]+".bam"
+        minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2 "
 
-        end = time.time()
-        self.elapsed_time = end - start
-        self.logger.info('{}: Mapping to {} references took {}.'
-                         .format(self._species_name, os.path.basename(ref_file_handle),
-                                 self.elapsed_time))
+        #self._output_shell(minimap2_ex+" -ax sr "+ ref_file_handle+ " -t " + str(self.args.threads) + " "+reads+" | "+samtools_ex+" view -F 4 -bh -S -t" + str(self.args.threads)+ " > " + bam_file)
+        self._output_shell(minimap2_ex + " -ax sr " + ref_file_handle + " -t " + str(
+            self.args.threads) + " " + reads + " > " + bam_file)
 
-        if ngm['reads_mapped'] > 0 and os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
+        # if len(self._reads) == 2:
+        #     ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder)
+        #     if self.args.threads != None:
+        #         ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+        #     ngm = ngm_wrapper()
+        #     bam_file = ngm['file']
+        # elif len(self._reads) != 2 and 'short' in self.args.read_type:
+        #     ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder)
+        #     if self.args.threads != None:
+        #         ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+        #     ngm = ngm_wrapper()
+        #     bam_file = ngm['file']
+        # elif len(self._reads) != 2 and 'long' in self.args.read_type:
+        #     ngm_wrapper = NGMLR(ref_file_handle, reads, tmp_output_folder)
+        #     if self.args.threads != None:
+        #         ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+        #     if self.args.ngmlr_parameters != None:
+        #         par = self.args.ngmlr_parameters.split(',')
+        #         ngm_wrapper.options.options['-x'].set_value(str(par[0]))
+        #         ngm_wrapper.options \
+        #                    .options['--subread-length'].set_value(int(par[1]))
+        #         ngm_wrapper.options.options['-R'].set_value(float(par[2]))
+        #     ngm = ngm_wrapper()
+        #     bam_file = ngm['file'] # this is a same file ! 'folder/output1/PYGNA_OGs.fa.sam'
+        # self.logger.info('{}: Mapped {} / {} reads to {}'.format(self._species_name, ngm['reads_mapped'],
+        #                  ngm['total_reads']+ngm['reads_mapped'], os.path.basename(ref_file_handle)))
+        # self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True) # ngmlr deosn't produce these files !
+        # self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        # self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        #
+        # end = time.time()
+        # self.elapsed_time = end - start
+        # self.logger.info('{}: Mapping to {} references took {}.'
+        #                  .format(self._species_name, os.path.basename(ref_file_handle),
+        #                          self.elapsed_time))
+
+        if  os.path.exists(bam_file) and os.path.getsize(bam_file) > 0: # ngm['reads_mapped'] > 0 and
             shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(bam_file)))
             return self._post_process_read_mapping(ref_file_handle, bam_file)
         else:
@@ -161,7 +170,7 @@ class Mapper(object):
                                  species+'_OGs.fa')
                 map_reads_species[species] = Reference()
                 self._output_shell(
-                    'samtools index -@ ' + str(self.args.threads) + ' ' +
+                    samtools+' index -@ ' + str(self.args.threads) + ' ' +
                     file)
                 consensus = self._build_consensus_seq_v2(ref_file, file)
                 records = []
@@ -230,16 +239,17 @@ class Mapper(object):
         accelerated when parsing large files from the node drive.
 
         '''
-        try:
-            tmp_output_folder = tempfile.TemporaryDirectory(
-                prefix='ngm', dir=os.environ.get("TMPDIR"))
-        except NotADirectoryError:
-            self.logger.info('{}: Environmental variable TMPDIR not set, will use \
-                        native python tmpdir location.'
-                        .format(self._species_name))
-        else:
-            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            self.logger.debug('--- Creating tmp directory on local node ---')
+        # try:
+        #     tmp_output_folder = tempfile.TemporaryDirectory(
+        #         prefix='ngm', dir=os.environ.get("TMPDIR"))
+        # except NotADirectoryError:
+        #     self.logger.info('{}: Environmental variable TMPDIR not set, will use \
+        #                 native python tmpdir location.'
+        #                 .format(self._species_name))
+        # else:
+        #     tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
+        #     self.logger.debug('--- Creating tmp directory on local node ---')
+        tmp_output_folder=self.args.output_path
         return tmp_output_folder
 
     def _map_reads_to_references(self, ref):
@@ -281,9 +291,10 @@ class Mapper(object):
 
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
-            ref_tmp_file_handle = os.path.join(tmp_output_folder.name,
-                                               species + '_OGs.fa')
-            shutil.copy(ref_file_handle, ref_tmp_file_handle)
+            #ref_tmp_file_handle = os.path.join(tmp_output_folder, #.name,
+            #                                   species + '_OGs.fa')
+            #shutil.copy(ref_file_handle, ref_tmp_file_handle) # it doesnt need to be temp.
+            ref_tmp_file_handle= ref_file_handle
 
             # call the WRAPPER here
             processed_reads = self._call_wrapper(ref_tmp_file_handle, reads,
@@ -323,7 +334,7 @@ class Mapper(object):
                 # self.progress.set_status('single_map', ref=species)
                 self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
-        tmp_output_folder.cleanup()
+        #tmp_output_folder.cleanup()
         end = time.time()
         self.elapsed_time = end - start
         if len(references) > 1:
@@ -541,7 +552,7 @@ class Mapper(object):
             bam_file = sam_file.replace(".sam", ".bam")
             if os.path.exists(sam_file):
                 self._output_shell(
-                    'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) +
+                    samtools+' view -F 4 -bh -S -@ ' + str(self.args.threads) +
                     ' -o ' + bam_file + " " + sam_file)
         if self.args.single_mapping:
             self.logger.debug("{}: ---- Samtools view completed"
@@ -549,7 +560,7 @@ class Mapper(object):
 
         if os.path.exists(bam_file):
             self._output_shell(
-                'samtools sort -m 2G  -@ ' + str(self.args.threads) +
+                samtools+' sort -m 2G  -@ ' + str(self.args.threads) + # todo 2G might not be enough
                 ' -o ' + outfile_name + "_sorted.bam " + bam_file)
         if self.args.single_mapping:
             self.logger.debug("{}: ---- Samtools sort completed"
@@ -557,7 +568,7 @@ class Mapper(object):
 
         if os.path.exists(outfile_name + "_sorted.bam"):
             self._output_shell(
-                'samtools index -@ ' + str(self.args.threads) + ' ' +
+                samtools+' index -@ ' + str(self.args.threads) + ' ' +
                 outfile_name + "_sorted.bam")
         if self.args.single_mapping:
             self.logger.debug("{}: ---- Samtools index completed"
