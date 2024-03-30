@@ -629,15 +629,18 @@ class Mapper(object):
         :return:
         """
         try:
+            self.logger.debug("Running " + line)
             shell_command = subprocess.Popen(
                 line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True)
-        except OSError:
-            return None
-        except ValueError:
+        except:
+            self.logger.debug("Shell command failed to execute by running ")
             return None
 
         (output, err) = shell_command.communicate()
+        self.logger.debug("Shell output: "+ str(output))
+        self.logger.debug("Shell err: " + str(err))
+        
         shell_command.wait()
         if shell_command.returncode != 0:
             self.logger.debug("Shell command failed to execute")
