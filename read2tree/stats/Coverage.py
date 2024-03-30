@@ -12,7 +12,7 @@ class Coverage(object):
         mybam = pysam.AlignmentFile(file_name, 'rb')
         for ref in mybam.references:
             self.coverage[self._get_clean_id(ref)] \
-                = self._get_gene_coverage(mybam, ref)
+                = self._get_gene_coverage(mybam, ref)  # {'ASTMX00297_OG1080037': [63.51897184822521, 30.055455801280203],
 
     def _get_clean_id(self, id):
         id = id.split(" ")[0]
