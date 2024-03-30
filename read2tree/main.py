@@ -65,12 +65,10 @@ def parse_args(argv, exe_name, desc):
 
     arg_parser.add_argument('--read_type', default='short',
                             help='[Default is short] Type of reads to '
-                            'use for mapping: short or long. Either ngm for short reads or '
-                            'ngmlr for long will be used.')
+                            'use for mapping: short, long-hifi or long-ont corresponding to  sr,  map-hifi, or map-ont   in minimap2.')
 
     arg_parser.add_argument('--threads', type=int, default=1,
-                            help='[Default is 1] Number of threads for the mapping '
-                                 'using ngm / ngmlr!')
+                            help='[Default is 1] Number of threads for the mapping ')
 
     arg_parser.add_argument('--split_reads', action='store_true',
                             help='[Default is off] Splits reads as defined by split_len (200) '
@@ -117,13 +115,13 @@ def parse_args(argv, exe_name, desc):
                             '(number of ACGT basepairs vs length of sequence). '
                             'By default, all sequences are selected.')
 
-    arg_parser.add_argument('--ngmlr_parameters', default=None,
-                            help='[Default is none] In case this parameters '
-                            'need to be changed all 3 values have to be '
-                            'changed [x,subread-length,R]. The standard '
-                            'is: ont,256,0.25. Possibilities for these '
-                            'parameter can be found in the original '
-                            'documentation of ngmlr.')
+    # arg_parser.add_argument('--ngmlr_parameters', default=None, # todo this could be used for minimap2 options
+    #                         help='[Default is none] In case this parameters '
+    #                         'need to be changed all 3 values have to be '
+    #                         'changed [x,subread-length,R]. The standard '
+    #                         'is: ont,256,0.25. Possibilities for these '
+    #                         'parameter can be found in the original '
+    #                         'documentation of ngmlr.')
 
 
     arg_parser.add_argument('--check_mate_pairing', action='store_true',
@@ -239,10 +237,10 @@ def parse_args(argv, exe_name, desc):
         arg_parser.error(
             'Splitting reads does not work for paired end reads.')
 
-    if args.read_type == 'short' and args.ngmlr_parameters:
-        arg_parser.error(
-            'Arguments for --ngmlr_parameters only work if --read_type is set '
-            'to "long".')
+    # if args.read_type == 'short' and args.ngmlr_parameters:
+    #     arg_parser.error(
+    #         'Arguments for --ngmlr_parameters only work if --read_type is set '
+    #         'to "long".')
 
     if not args.sample_reads and (args.coverage != 10 or
                                   args.genome_len != 2000000):
