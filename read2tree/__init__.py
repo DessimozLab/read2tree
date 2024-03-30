@@ -6,7 +6,7 @@ import os
 from pkg_resources import resource_string
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-__version__ = '0.1.5'
+__version__ = '0.2.0'
 __copyright__ = 'read2tree (C) 2017-{:d} David Dylus' \
                 .format(date.today().year)
 
