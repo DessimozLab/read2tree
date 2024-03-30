@@ -42,6 +42,7 @@ from read2tree.FastxReader import FastxReader
 minimap2_ex= "minimap2"
 samtools = "samtools"
 
+
 class Mapper(object):
     """
     Structure for reference
@@ -109,7 +110,7 @@ class Mapper(object):
             minimap_argm = " -ax map-hifi "
         elif 'long-ont' in self.args.read_type:
             minimap_argm = " -ax map-ont "
-        line_minimp= minimap2_ex +" "+ minimap_argm + " -t " + str(self.args.threads) + ref_file_handle + " " + reads + " > " + bam_file
+        line_minimp= minimap2_ex +" "+ minimap_argm + " -t " + str(self.args.threads) +" "+ ref_file_handle + " " + reads + " > " + bam_file
         self._output_shell(line_minimp)
 
         self.logger.info('mapping with' + line_minimp)
@@ -650,15 +651,17 @@ class Mapper(object):
         :return:
         """
         try:
+            self.logger.debug("Running " + line)
             shell_command = subprocess.Popen(
                 line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 shell=True)
-        except OSError:
-            return None
-        except ValueError:
+        except:
+            self.logger.debug("Shell command failed to execute by running ")
             return None
 
         (output, err) = shell_command.communicate()
+        self.logger.debug("Shell output: "+ str(output))
+        self.logger.debug("Shell err: " + str(err))
         shell_command.wait()
         if shell_command.returncode != 0:
             self.logger.debug("Shell command failed to execute")
