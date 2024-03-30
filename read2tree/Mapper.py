@@ -571,7 +571,7 @@ class Mapper(object):
 
         if os.path.exists(bam_file):
             self._output_shell(
-                samtools+' sort -m 2G  -@ ' + str(self.args.threads) + # todo 2G might not be enough
+                samtools+' sort  -@ ' + str(self.args.threads) + # todo 2G might not be enough
                 ' -o ' + outfile_name + "_sorted.bam " + bam_file)
         if self.args.single_mapping:
             self.logger.debug("{}: ---- Samtools sort completed"
