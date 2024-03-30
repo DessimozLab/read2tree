@@ -39,8 +39,8 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-minimap2_ex= "minimap2" #"/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2 "
-samtools = "samtools" # "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools "
+minimap2_ex= "minimap2"
+samtools = "samtools"
 
 class Mapper(object):
     """
