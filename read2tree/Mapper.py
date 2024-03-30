@@ -39,8 +39,8 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2 "
-samtools ="/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools "
+minimap2_ex= "minimap2" #"/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2 "
+samtools = "samtools" # "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools "
 
 class Mapper(object):
     """
@@ -109,9 +109,12 @@ class Mapper(object):
             minimap_argm = " -ax map-hifi "
         elif 'long-ont' in self.args.read_type:
             minimap_argm = " -ax map-ont "
+        line_minimp= minimap2_ex +" "+ minimap_argm + ref_file_handle + " -t " + str(self.args.threads) + " " + reads + " > " + bam_file
+        self._output_shell(line_minimp)
 
-        self._output_shell(minimap2_ex + minimap_argm + ref_file_handle + " -t " + str(
-            self.args.threads) + " " + reads + " > " + bam_file)
+        self.logger.info('mapping with' + line_minimp)
+
+
 
         # if len(self._reads) == 2:
         #     ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder)
