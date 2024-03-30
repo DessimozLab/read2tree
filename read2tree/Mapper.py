@@ -109,7 +109,7 @@ class Mapper(object):
             minimap_argm = " -ax map-hifi "
         elif 'long-ont' in self.args.read_type:
             minimap_argm = " -ax map-ont "
-        line_minimp= minimap2_ex +" "+ minimap_argm + ref_file_handle + " -t " + str(self.args.threads) + " " + reads + " > " + bam_file
+        line_minimp= minimap2_ex +" "+ minimap_argm + " -t " + str(self.args.threads) + ref_file_handle + " " + reads + " > " + bam_file
         self._output_shell(line_minimp)
 
         self.logger.info('mapping with' + line_minimp)
