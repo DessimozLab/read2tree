@@ -30,7 +30,7 @@ import argparse
 COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 
 logger = logging.getLogger(__name__)
-logger.disabled = True
+#logger.disabled = True
 
 def parse_args(argv, exe_name, desc):
     '''
@@ -262,6 +262,10 @@ def main(argv, exe_name, desc=''):
     '''
         Main function.
     '''
+    from . import __version__ as r2t_version
+
+    logger.info(' ------- Read2Tree version: {} -------'.format(r2t_version))
+    print(' ------- Read2Tree version: '+str(r2t_version)+' -------')
 
     t1 = timer()
     # Parse
