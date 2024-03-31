@@ -178,7 +178,7 @@ class Aligner(object):
                     self.mapped_aligns[name_og].dna = align_filt.dna
         end = time.time()
         self.elapsed_time = end-start
-        logger.info('{}: Appending {} reconstructed sequences to present Alignments '
+        logger.info('{}: Appending {} reconstructed sequences to present Alignments ' # todo when is all cases are 0, needs better handling 
                     'took {}.'
                     .format(self._species_name,
                             num_append_seq,
