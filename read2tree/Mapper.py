@@ -638,8 +638,10 @@ class Mapper(object):
             return None
 
         (output, err) = shell_command.communicate()
-        self.logger.debug("Shell output: "+ str(output))
-        self.logger.debug("Shell err: " + str(err))
+        if output:
+            self.logger.debug("Shell output: "+ str(output))
+        if err:
+            self.logger.debug("Shell err: " + str(err))
         
         shell_command.wait()
         if shell_command.returncode != 0:
