@@ -353,8 +353,9 @@ class Mapper(object):
                         .format(self._species_name,
                                 self.elapsed_time))
         if not mapped_reads_species :
-            self.logger.warning('mapped_reads_species is empty')
-
+            log_line='mapped_reads_species is empty! are the aligner and samtools installed correctly? are there enough marker genes close to the species of interest?  Please remove the output folder and mplog file and re-run.  '
+            self.logger.warning(log_line)
+            print(log_line)
 
         return mapped_reads_species
 
