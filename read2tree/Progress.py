@@ -87,7 +87,7 @@ class Progress(object):
             with open(logfile, "r") as file:
                 bestline = [line.split() for line in file if word in line]
                 if bestline:
-                    return bestline[-1]
+                    return bestline[-1] # the last line with this word is selected
                 return None
         except FileNotFoundError:
             print('File {} not accessible'.format(logfile))
@@ -101,6 +101,7 @@ class Progress(object):
         '''
         log_list = self._extract_line_from_log('Gathering', 'mplog.log')
         if log_list:
+            logging.debug(' We are using the info from line #' +" ".join(log_list[:3])+".# So number of OGs is "+str(int(log_list[13])) )
             return int(log_list[13])
         else:
             return 0
@@ -113,6 +114,7 @@ class Progress(object):
         '''
         log_list = self._extract_line_from_log('Appending', 'mplog.log')
         if log_list:
+            logging.debug(' We are using the info from line #' + " ".join(log_list[:3]) + ".# So number of appended sequences to OGs " + str(int(log_list[9])))
             return int(log_list[9])
         else:
             return 0
@@ -125,6 +127,7 @@ class Progress(object):
         '''
         log_list = self._extract_line_from_log('Alignment of', 'mplog.log')
         if log_list:
+            logging.debug(' We are using the info from line #' + " ".join(log_list[:3]) + ".# So number of alignments is " + str(int(log_list[10])))
             return int(log_list[10])
         else:
             return 0
@@ -135,9 +138,10 @@ class Progress(object):
         2018-11-23 12:13:53,691 - read2tree.ReferenceSet - INFO - ass: Extracted 6 reference species form 5 ogs took 0.0008709430694580078
         :return: Number of reference species
         '''
-        log_list = self._extract_line_from_log('ReferenceSet', 'mplog.log')
+        log_list = self._extract_line_from_log('ReferenceSet', 'mplog.log')  # # the last line with ReferenceSet is selected
         if log_list:
-            return int(log_list[9])
+            logging.debug("We are using the info from line #" + " ".join(log_list[:3]) + ".# So number of references is " + str(int(log_list[9])))
+            return int(log_list[9])  #
         else:
             return 0
 
@@ -159,9 +163,12 @@ class Progress(object):
         if os.path.exists(self._folder_ref_ogs_aa) and os.path.exists(self._folder_ref_ogs_dna):
             num_ogs_aa = self._count_files(self._folder_ref_ogs_aa, '*fa')
             num_ogs_dna = self._count_files(self._folder_ref_ogs_dna, '*fa')
+            logging.debug(' We are counting the number of fa files in folder _ogs_aa and _ogs_daa which are ' + str(num_ogs_aa)  + " and "+ str(num_ogs_dna) +" in folder "+str(self._folder_ref_ogs_aa) +" and "+ str(self._folder_ref_ogs_dna))
             if (num_ogs_expected-num_ogs_aa) == 0 and (num_ogs_expected-num_ogs_dna) == 0:
+                logging.debug(' We are counting the number of fa files in folder _ogs_aa and _ogs_daa, which are ' + str(num_ogs_aa) + " and " + str(num_ogs_dna) +" the same as expected"+str(num_ogs_expected) +". So this step is done")
                 return True
             else:
+                logging.debug(' We are counting the number of fa files in folder _ogs_aa and _ogs_daa, which are ' + str(num_ogs_aa) + " and " + str(num_ogs_dna) +" but not the same as expected "+str(num_ogs_expected)  +". So this step is done")
                 return False
         else:
             return False
@@ -176,8 +183,11 @@ class Progress(object):
             num_ogs_aa = self._count_files(self._folder_append_og_aa, '*fa')
             num_ogs_dna = self._count_files(self._folder_append_og_dna, '*fa')
             if (num_ogs_expected-num_ogs_aa) <= 0 and (num_ogs_expected-num_ogs_dna) <= 0:
+                logging.debug("Number of ogs expected after appending is"+str(num_ogs_expected)+" the same as ogs number in dna and aa " + str(self._folder_ref_ogs_dna)  +". So this step is done")
                 return True
             else:
+                logging.debug("Number of ogs expected after appending is"+str(num_ogs_expected)+" but the number in dna and aa " + str(self._folder_ref_ogs_dna) +" are " + str(num_ogs_aa)  + " and "+ str(num_ogs_dna)+". So this step is not done")
+
                 return False
         else:
             return False
@@ -191,8 +201,10 @@ class Progress(object):
         if os.path.exists(self._folder_ref_dna):
             num_references = self._count_files(self._folder_ref_dna, '*fa')
             if (num_ref_expected-num_references) == 0:
+                logging.debug("Number of ref expected is " + str( num_ref_expected) + " and number in  " + str( self._folder_ref_ogs_dna) +" is "+ str(num_references)+ ". So this step is done")
                 return True
             else:
+                logging.debug("Number of ref expected is " + str( num_ref_expected) + " but number in  " + str( self._folder_ref_ogs_dna) +" is "+ str(num_references)+ ". So this step is not done")
                 return False
         else:
             return False
@@ -207,8 +219,10 @@ class Progress(object):
             num_align_aa = self._count_files(self._folder_align_aa, '*phy')
             num_align_dna = self._count_files(self._folder_align_dna, '*phy')
             if (num_aligns_expected-num_align_aa) == 0 and (num_aligns_expected-num_align_dna) == 0:
+                logging.debug("Number of aligns expected is " + str( num_aligns_expected) + " and number in  " + str( self._folder_ref_ogs_dna) +" is "+ str(num_align_dna)+ ", similarly for aa. So this step is done")
                 return True
             else:
+                logging.debug("Number of aligns expected is " + str( num_aligns_expected) + " and number in  " + str( self._folder_ref_ogs_dna) +" and aa versions  are "+ str(num_align_dna)+ " and "+ str(num_align_aa)+ ". So this step is not done")
                 return False
         else:
             return False
@@ -223,8 +237,10 @@ class Progress(object):
             num_align_aa = self._count_files(self._folder_align_append_aa, '*phy')
             num_align_dna = self._count_files(self._folder_align_append_dna, '*phy')
             if (num_aligns_expected-num_align_aa) == 0 and (num_aligns_expected-num_align_dna) == 0:
+                logging.debug("Number of aligns expected is " + str(num_aligns_expected) + " and number in  " + str(self._folder_align_append_aa) + " is " + str(num_align_aa) + ", similarly for aa. So this step is done")
                 return True
             else:
+                logging.debug("Number of aligns expected is " + str(num_aligns_expected) + " and number in  " + str(self._folder_align_append_aa) + " and aa versions  are " + str(num_align_aa) + " and " + str(num_align_dna) + ". So this step is not done")
                 return False
         else:
             return False
@@ -233,6 +249,7 @@ class Progress(object):
         mapping_folders_finished = []
         num_expected_mappings = self._get_number_of_references()
         mapping_folders = [x for x in os.listdir(path) if '04' in x]
+        logging.debug("Number of mapping expected is " + str(num_expected_mappings) + " we are checking folders in  " + str(path))
         for folder in mapping_folders:
             # NOTE: we are calculating the number of completed mappings as the number of existing cov files,
             # because these are written even if the mapping step did not find any reads to map to a particular reference
@@ -258,10 +275,13 @@ class Progress(object):
             if len(mapping_folders) > 0:
                 self.num_completed_mappings = len(mapping_folders)
                 # self.logger.info('{}: Mapping completed!'.format(self._species_name))
+                logging.debug("There are some mapping folders " + str(self.num_completed_mappings))
                 return True
             else:
                 self.num_completed_mappings = 0
+                logging.debug("There is no mapping folder")
                 # self.logger.info('{}: Mapping not completed!'.format(self._species_name))
                 return False
         else:
+            logging.debug("There is no mapping folder")
             return False

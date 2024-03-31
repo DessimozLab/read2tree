@@ -352,6 +352,10 @@ class Mapper(object):
             self.logger.info('{}: Mapping to all references took {}.'
                         .format(self._species_name,
                                 self.elapsed_time))
+        if not mapped_reads_species :
+            self.logger.warning('mapped_reads_species is empty')
+
+
         return mapped_reads_species
 
     def _write_read_query_aling(self, read, og_name_file, write_mode):
