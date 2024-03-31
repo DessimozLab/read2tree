@@ -260,6 +260,10 @@ def main(argv, exe_name, desc=''):
     '''
         Main function.
     '''
+    from . import __version__ as r2t_version
+
+    logger.debug(' ------- Read2Tree version: {} -------'.format(r2t_version))
+    print(' ------- Read2Tree version: '+str(r2t_version)+' -------')
 
     t1 = timer()
     # Parse
