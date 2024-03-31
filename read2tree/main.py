@@ -248,7 +248,7 @@ def parse_args(argv, exe_name, desc):
             'Arguments --coverage and --genome_len '
             'can only be set if --sample_reads is set.')
 
-    progress = Progress(args)
+    progress = Progress(args) # todo why calling Progress twice?
     if progress.num_completed_mappings <= 1 and args.merge_all_mappings:
         arg_parser.error('The number of completed mappings ({}) is too '
                          'little to perform a merge.'.format(progress.num_completed_mappings))
@@ -266,10 +266,10 @@ def main(argv, exe_name, desc=''):
     args = parse_args(argv, exe_name, desc)
     logger.info('{}: ------- NEW RUN -------'.format(args.species_name))
 
-    x = ', '.join("{!s}={!r}".format(key, val) for (key, val) in vars(args).items())
+    x = ', '.join("{!s}={!r}".format(key, val) for (key, val) in vars(args).items())  # todo why calling Progress twice?
     logger.info('{}: read2tree was run with: {}'.format(args.species_name, x))
 
-    progress = Progress(args)
+    progress = Progress(args) # todo why calling Progress twice?
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
     logger.info('{}: Progress: ogs_dna {} | ref {} | ref_align {} | mapping {} | append_ogs {} | align {} '
