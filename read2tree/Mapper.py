@@ -86,7 +86,7 @@ class Mapper(object):
             if self.mapped_records and og_set != None: #todo else
                 self.og_records = self._sort_by_og()
         elif step =="3combine":  # re-load already computed mapping
-            if og_set != None: #and not self.args.merge_all_mappings:
+            if og_set != None: #and not self.args.merge_all_mappings:  # todo else
                 self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
                 self.og_records = self._sort_by_og()
             # elif (og_set != None and # todo to check
@@ -177,14 +177,16 @@ class Mapper(object):
         :return: dictionary with key og_name and value sequences mapped to each
                  species
         """
-        print('--- Retrieve mapped consensus sequences ---')
+
         map_reads_species = {}
         if not mapping_name:
             mapping_name = self._mapping_name
-        in_folder = os.path.join(self.args.output_path,
-                                 "04_mapping_"+mapping_name)
+        self.logger.debug('--- Retrieve mapped consensus sequences ---'+str(mapping_name))
+        in_folder = os.path.join(self.args.output_path, "04_mapping_"+mapping_name)
+
         bam_files = glob.glob(os.path.join(in_folder, "*.bam"))
-        if self.args.min_cons_coverage >= 2 and bam_files:
+        if self.args.min_cons_coverage >= 2 and bam_files: # default self.args.min_cons_coverage is 1
+            self.logger.debug('Generating consensus from bam files' )
             for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species'):
                 species = file.split("/")[-1].split("_")[0]
                 ref_file = os.path.join(self.args.output_path, '02_ref_dna',species+'_OGs.fa')
@@ -204,20 +206,16 @@ class Mapper(object):
 
                 cov = Coverage(self.args)
                 cov.get_coverage_bam(file)
-                cov.write_coverage_bam(os.path.join(
-                    in_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
+                cov.write_coverage_bam(os.path.join(in_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
                 self.all_cov.update(cov.coverage)
 
                 seqC = SeqCompleteness(mapped_ref=ref_records[species].dna)
                 seqC.get_seq_completeness(map_reads_species[species].dna)
-                seqC.write_seq_completeness(os
-                                            .path.join(in_folder,
-                                                       species + "_OGs_sc.txt"))
+                seqC.write_seq_completeness(os.path.join(in_folder,species + "_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)
         else:
-            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
-                             desc='Loading consensus read mappings ',
-                             unit=' species'):
+            self.logger.debug('Loading consensus read mappings '+in_folder+ "*_consensus.fa")
+            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
                 species = file.split("/")[-1].split("_")[0]
                 map_reads_species[species] = Reference()
                 fasta_reader = FastxReader(file)

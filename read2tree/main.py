@@ -401,13 +401,14 @@ def main(argv, exe_name, desc=''):
         alignments = Aligner(args, step=args.step)  # og set is not input of this, becuase we only read the aligned seq
         alignments.remove_species_from_alignments()
         ogset.remove_species_from_ogs()
-        mapping_folders_finished = get_finished_mapping_folders2(args.output_path)
+        mapping_folders_finished = get_finished_mapping_folders2(args.output_path) # this is done based on "_all_cov.txt" files
         for mapping in mapping_folders_finished:
             species_name = mapping.split("04_mapping_")[-1]
             logger.info('--- Addition of {} to all ogs '
                         '---'.format(species_name))
-            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref,
+            mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref,  # for those OGs reported in {sample}_all_cov.txt file
                             species_name=species_name, step=args.step)
+
             ogset.add_mapped_seq(mapper, species_name=species_name)
             alignments.add_mapped_seq(ogset.mapped_ogs, species_name=species_name)
         ogset.write_added_ogs_aa(folder_name="05_merge_OGs_aa")

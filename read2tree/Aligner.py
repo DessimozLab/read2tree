@@ -46,7 +46,7 @@ class Aligner(object):
         #self.placement_dic = {}
 
         if step== "all" or step== "1marker":#and og_set is not None:
-            print('--- Alignment of {} OGs ---'.format(len(list(og_set.keys()))))
+            logger.info('--- Alignment of {} OGs ---'.format(len(list(og_set.keys()))))
             self._og_set = og_set
             self.alignments = self._align(og_set)
         elif step =="3combine" or step =="2map":
@@ -149,29 +149,31 @@ class Aligner(object):
         num_append_seq = 0
         if not species_name:
             species_name = self._species_name
-        print('--- Add inferred mapped sequence back to alignment ---')
+        logger.info('--- Add inferred mapped sequence back to alignment ---')
 
         # iterate through all existing ogs
-        for name_og, align in tqdm(self.alignments.items(),
-                                   desc='Adding mapped seq to alignments', unit=' alignments'):
+        for name_og, align in tqdm(self.alignments.items(), desc='Adding mapped seq to alignments', unit=' alignments'):
             align_filt = align
             if len(align_filt.aa) >= 2:
                 # get all species that are not mapped from original alignment
                 if name_og in ogset_add.keys():
                     # find mapped records from appended records in OGSet
-                    map_record_aa = [r for r in ogset_add[name_og].aa if species_name in r.id]
-                    # print(map_records_aa)
-                    map_record_dna = [r for r in ogset_add[name_og].dna if species_name in r.id]
+                    map_record_aa = [r for r in ogset_add[name_og].aa if species_name == r.id]
+                    # print(map_records_aa) # todo this is important which is solved  it's a bug  in when the sample name is small , probably should be species_name == r.id    species_name='3'  id='ASTMX01499_OG1003046'
+
+                    map_record_dna = [r for r in ogset_add[name_og].dna if species_name == r.id]
                     if map_record_aa and map_record_dna:
-                        ref_species = self._get_species_id(map_record_aa[0])
+                        ref_species = self._get_species_id(map_record_aa[0])    # why the zeroth? how about the rest?
                         self.mapped_aligns[name_og] = Alignment()
-                        self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name)
+                        self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name) # why the zeroth? how about the rest?
                         self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
                         num_append_seq = num_append_seq + 1
-                    elif self.args.keep_all_ogs:
+
+                    elif self.args.keep_all_ogs: # todo   both self.args.keep_all_ogs and  "map_record_aa and map_record_dna" are true althout it is eilf
                         self.mapped_aligns[name_og] = Alignment()
                         self.mapped_aligns[name_og].aa = align_filt.aa
                         self.mapped_aligns[name_og].dna = align_filt.dna
+
                 elif self.args.keep_all_ogs:
                     self.mapped_aligns[name_og] = Alignment()
                     self.mapped_aligns[name_og].aa = align_filt.aa
