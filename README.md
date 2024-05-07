@@ -95,7 +95,7 @@ cat marker_genes/*.fna > dna_ref.fa
 
 ### output 
 
-The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as defualt.  
+The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as default.  
 
 
 ### Single species mode
@@ -104,12 +104,23 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fas
 ```
 
 ### Multiple species mode
+
+#### step1
 ```
-read2tree --standalone_path marker_genes/ --output_path output --reference --dna_reference  dna_ref.fa  # this creates just the reference folder 01 - 03
-read2tree --standalone_path marker_genes/ --output_path output --reads species1_R1.fastq species2_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --reads species2_R1.fastq species2_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --reads species3_R1.fastq species3_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --merge_all_mappings --tree
+read2tree  --step 1marker  --standalone_path marker_genes  --dna_reference dna_ref.fa --output_path output  --debug # this creates just the reference folder 01 - 03
+```
+
+#### step2
+The following could be run in parallel. 
+```
+read2tree --step 2map --standalone_path marker_genes  --dna_reference dna_ref.fa --reads species1_R1.fastq species2_R2.fastq  --output_path output --debug
+read2tree --step 2map --standalone_path marker_genes  --dna_reference dna_ref.fa --reads species2_R1.fastq species2_R2.fastq  --output_path output --debug
+read2tree --step 2map --standalone_path marker_genes  --dna_reference dna_ref.fa --reads species3_R1.fastq species3_R2.fastq  --output_path output  --debug
+```
+
+#### step3
+```
+read2tree  --step 3combine --standalone_path marker_genes  --dna_reference dna_ref.fa  --output_path output  --tree --debug
 ```
 
 ### bootstraping
@@ -136,12 +147,12 @@ The goal of this test example is to infer species tree for Mus musculus using it
 
 ```
 cd tests
-read2tree --debug --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq --output_path output/  --dna_reference  dna_ref.fa 
+read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fastq  --output_path output --dna_reference  dna_ref.fa  
 ```
 
 
 #### Run test example using docker
-
+(to be updated  )
 ```
 docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run  dessimozlab/read2tree:latest  --tree --standalone_path /input/marker_genes --dna_reference /input/cds-marker_genes.fasta.gz --reads /reads/sample_1.fastq --output_path /out
 ```
