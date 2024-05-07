@@ -79,11 +79,11 @@ class Mapper(object):
         self.read_og_set = {}
 
         if step=="2map" or step=="all":  # compute mapping
-            if ref_set != None:
+            if ref_set != None: #todo else
                 self.mapped_records = self._map_reads_to_references(ref_set)
                 #if self.progress.get_mapping_status():
                 #    self.progress.set_status('map')
-            if self.mapped_records and og_set != None:
+            if self.mapped_records and og_set != None: #todo else
                 self.og_records = self._sort_by_og()
         elif step =="3combine":  # re-load already computed mapping
             if og_set != None and not self.args.merge_all_mappings:

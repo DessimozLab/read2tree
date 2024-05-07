@@ -300,17 +300,17 @@ def main(argv, exe_name, desc=''):
     t1 = timer()
     # Parse
     args = parse_args(argv, exe_name, desc)
-    logger.info('{}: ------- NEW RUN -------'.format(args.species_name))
+
 
     x = ', '.join("{!s}={!r}".format(key, val) for (key, val) in vars(args).items())  # todo why calling Progress twice?
     logger.info('{}: read2tree was run with: {}'.format(args.species_name, x))
 
-    logger.info("Running r2t in mode " + args.step)
+    logger.info("Running read2tree in mode " + args.step)
 
     if os.path.exists(args.output_path):
         if args.step == "all" or args.step == "1marker":
             logger.error(
-                "the output folder exist " + args.output_path + ". Since you are running r2t in all mode, you need to specify output folder which will created by r2t.")
+                "the output folder exist " + args.output_path + ". Since you are running read2tree in all mode, you need to specify output folder which will created by read2tree.")
             sys.exit()
     else:
         os.makedirs(args.output_path)
@@ -323,7 +323,7 @@ def main(argv, exe_name, desc=''):
                       list):  # in parse_args it is input read is converted to a list, if there are 2 - paired end
             for read_file in args.reads:
                 if not os.path.isfile(read_file):
-                    logger.error("read file doesn't exist" + read_file)
+                    logger.error("read file doesn't exist " + read_file)
                     sys.exit()
         elif isinstance(args.reads, str):
             if not os.path.isfile(args.reads):
@@ -331,17 +331,18 @@ def main(argv, exe_name, desc=''):
                 sys.exit()
 
     if args.step == "all":
+        logger.info('{}: ------- NEW RUN -------'.format(args.species_name))
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
-        ogset = OGSet(args, oma_output=oma_output, step=args.step)  # Generate the OGs with their DNA sequences
+        ogset = OGSet(args, oma_output=oma_output, step=args.step)  # Generate the OGs with their DNA sequences.   # Write 01_
         # ogset.ogs['OG1188079'].aa[0] = SeqRecord(seq=Seq('FLGMT ...
         # ogset.ogs['OG1188079'].dna[0] = SeqRecord(seq=Seq('TTT
 
-        reference = ReferenceSet(args, og_set=ogset.ogs, step=args.step)
+        reference = ReferenceSet(args, og_set=ogset.ogs, step=args.step)                            #  write 02_
         # aa and dna of each species
         # reference.ref['MNELE'].aa[0] =  SeqRecord(seq=Seq('FLGM
 
-        alignments = Aligner(args, ogset.ogs, step=args.step)  # multiple sequence alignment of OGs
+        alignments = Aligner(args, ogset.ogs, step=args.step)  # multiple sequence alignment of OGs     #  write 03_
         # alignments.alignments['OG1008242'].aa  <<class 'Bio.Align.MultipleSeqAlignment'> instance (5 records of length 573) at 7f9189695c00>
         # alignments.alignments['OG1008242'].aa[0]  SeqRecord(seq=Seq('---------------MTDFDKL
 
@@ -363,16 +364,24 @@ def main(argv, exe_name, desc=''):
         logger.info(' ------- Read2Tree finished -*- -------')
         # print("done - all")
 
+
     if args.step == "1marker":
+        logger.info('{}: ------- NEW RUN -------'.format(args.species_name))
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output, step=args.step)  # Generate the OGs with their DNA sequences
         reference = ReferenceSet(args, og_set=ogset.ogs, step=args.step)
-        alignments = Aligner(args, ogset.ogs)
+        alignments = Aligner(args, ogset.ogs, step=args.step)
         print("done- 1marker")
         logger.info(' ------- Read2Tree step 1marker finished -*- -------')
 
     if args.step == "2map":
+        logger.info('{}: ------- Read2tree RUN step 2map (after running 1marker) -------'.format(args.species_name))
+        oma_output = OMAOutputParser(args)
+        args.oma_output_path = oma_output.oma_output_path
+        ogset = OGSet(args, oma_output=oma_output, step=args.step)  # Generate the OGs with their DNA sequences
+        reference = ReferenceSet(args, og_set=ogset.ogs, step=args.step)
+        alignments = Aligner(args, ogset.ogs, step=args.step)  # multiple sequence alignment of OGs
         mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, step=args.step)
         alignments.remove_species_from_alignments()
         ogset.remove_species_from_ogs()
@@ -380,12 +389,12 @@ def main(argv, exe_name, desc=''):
         ogset.write_added_ogs_aa()
         ogset.write_added_ogs_dna()
         # alignments = Aligner(args, ogset.mapped_ogs, load=True)
-        alignments.add_mapped_seq(ogset.mapped_ogs)
-        alignments.write_added_align_aa()
-        alignments.write_added_align_dna()
+        # alignments.add_mapped_seq(ogset.mapped_ogs)
+        # alignments.write_added_align_aa()
+        # alignments.write_added_align_dna()
 
         print("done- 2map")
-        logger.info(' ------- Read2Tree step map finished -*- -------')
+        logger.info(' ------- Read2Tree step 2map finished -*- -------')
 
     if args.step == "3combine":
         ogset = OGSet(args, step=args.step)
@@ -412,16 +421,14 @@ def main(argv, exe_name, desc=''):
             logger.info(str(tree.tree))
 
         print("done- 3combine")
-        logger.info(' ------- Read2Tree step 3combined finished -*- -------')
+        logger.info(' ------- Read2Tree step 3combine finished -*- -------')
 
         logger.info(' ------- Read2Tree finished -*- -------')
 
     print("done- main ")
-    # logger.info('{}: Progress: ogs_dna {} | ref {} | ref_align {} | mapping {} | append_ogs {} | align {} '
-    #             .format(args.species_name, progress.ref_ogs_01, progress.ref_dna_02,
-    #                     progress.ref_align_03, progress.mapping_04, progress.append_ogs_05, progress.align_06))
 
     # TODO: Check whether all the necessary binaries are available
     # TODO: Check all given files and throw error if faulty
 
     logger.info('{}: Time taken {}'.format(args.species_name, timer() - t1))
+    # todo remove sam file
