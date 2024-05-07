@@ -33,7 +33,7 @@ API_URL = 'http://omabrowser.org/api'
 
 class OGSet(object):
 
-    def __init__(self, args, oma_output=None, load=True, progress=None):
+    def __init__(self, args, oma_output=None, step=None):
         self.args = args
 
         self.logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ class OGSet(object):
 
         self._ham_analysis = None
 
-        self.progress = progress
+        self.step = step
         # self.progress.get_status(species_name=self._species_name)
 
         if self.args.remove_species_mapping:
@@ -69,9 +69,11 @@ class OGSet(object):
         #     self.mapped_ogs = self._reload_ogs_from_folder(
         #         folder_suffix="05_ogs_map_" + self._species_name)
         #     self.ogs = self.mapped_ogs
-        if not load and self.progress.ref_ogs_01:
+        #if not load and self.progress.ref_ogs_01:
+        if step == "2map" or step=="3combine":
             self.ogs = self._reload_ogs_from_folder()
-        elif load and oma_output is not None:
+
+        elif step == "all" or step == "1marker" : #load and oma_output is not None:
             self.min_species = oma_output.min_species
             self.oma = oma_output
             self.ogs = oma_output.ogs
@@ -176,10 +178,8 @@ class OGSet(object):
             # name = file.split("/")[-1].split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = self._get_aa_records(name, records)
-            output_file_aa = os.path.join(orthologous_groups_aa,
-                                          name + ".fa")
-            output_file_dna = os.path.join(orthologous_groups_dna,
-                                           name + ".fa")
+            output_file_aa = os.path.join(orthologous_groups_aa, name + ".fa")
+            output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
 
             if source:
                 try:
@@ -451,7 +451,7 @@ class OGSet(object):
             best_record_dna.id = species_name
             return (best_record_aa, best_record_dna)
         else:
-            return none
+            return None
 
     def _generate_seq_completeness(self, seqC, mapper, og, best_record_dna):
         if self.args.remove_species_ogs:

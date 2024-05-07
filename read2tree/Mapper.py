@@ -40,8 +40,8 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-minimap2_ex= "minimap2"
-samtools = "samtools"
+minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2"
+samtools = "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin//samtools"
 
 
 class Mapper(object):
@@ -49,7 +49,7 @@ class Mapper(object):
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None, species_name=None, progress=None,
+    def __init__(self, args, ref_set=None, og_set=None, species_name=None, step=None,
                  load=True):
         self.args = args
         self.elapsed_time = 0
@@ -72,25 +72,24 @@ class Mapper(object):
         else:
             self._mapping_name = self._species_name
 
-        self.progress = progress
+        self.step = step
         self.all_cov = {}
         self.all_sc = {}
 
         self.read_og_set = {}
 
-        if load:  # compute mapping
+        if step=="2map" or step=="all":  # compute mapping
             if ref_set != None:
-                self.mapped_records = \
-                    self._map_reads_to_references(ref_set)
+                self.mapped_records = self._map_reads_to_references(ref_set)
                 #if self.progress.get_mapping_status():
                 #    self.progress.set_status('map')
             if self.mapped_records and og_set != None:
                 self.og_records = self._sort_by_og()
-        else:  # re-load already computed mapping
+        elif step =="3combine":  # re-load already computed mapping
             if og_set != None and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
                 self.og_records = self._sort_by_og()
-            elif (og_set != None and
+            elif (og_set != None and # todo to check
                   self.args.merge_all_mappings and species_name != None):
                 self.mapped_records = \
                     self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
@@ -298,11 +297,13 @@ class Mapper(object):
         reads = read_container.reads
         # print(os.path.getsize(reads[0]))
 
-        if self.args.single_mapping:
-            references = [self.args
-                          .single_mapping.split("/")[-1].split("_")[0]]
-        else:
-            references = list(ref.keys())
+        # if self.args.single_mapping:
+        #     references = [self.args
+        #                   .single_mapping.split("/")[-1].split("_")[0]]
+        # else:
+        #     references = list(ref.keys())
+        #
+        references = list(ref.keys())
 
         # Going through provided references and starting mapping
         for species in tqdm(references,
@@ -570,8 +571,8 @@ class Mapper(object):
         #outfile_name = os.path.join(tmp_folder,
         #                            ref_file.split('/')[-1].split('.')[0] +
         #                            "_post")
-        if self.args.single_mapping:
-            self.logger.debug("{}: --- POSTPROCESSING MAPPING ---".format(self._species_name))
+        # if self.args.single_mapping:
+        #     self.logger.debug("{}: --- POSTPROCESSING MAPPING ---".format(self._species_name))
 
         # ngmlr doesn't have the option to write in bam file directly
         #if 'sam' in bam_file.split(".")[-1]:
@@ -584,8 +585,8 @@ class Mapper(object):
         else:
             self.logger.debug("Sam file is not generated", sam_file)
 
-        if self.args.single_mapping:
-            self.logger.error("single mapping is not tested with this version ")
+        # if self.args.single_mapping:
+        #     self.logger.error("single mapping is not tested with this version ")
             #self.logger.debug("{}: ---- Samtools view completed".format(self._species_name))
 
         if os.path.exists(sam_file_base+".bam"):
@@ -596,16 +597,16 @@ class Mapper(object):
         else:
             self.logger.debug("bam file is not generated", sam_file_base+".bam")
 
-        if self.args.single_mapping:
-            self.logger.debug("{}: ---- Samtools sort completed".format(self._species_name))
+        # if self.args.single_mapping:
+        #     self.logger.debug("{}: ---- Samtools sort completed".format(self._species_name))
 
         if os.path.exists(sam_file_base + "_sorted.bam"):
             line_samtools_index= samtools+' index -@ ' + str(self.args.threads) + ' ' + sam_file_base + "_sorted.bam"
             self._output_shell(line_samtools_index)
             self.logger.debug(line_samtools_index)
 
-        if self.args.single_mapping:
-            self.logger.warning("single_mapping is not tested in this version.") #debug("{}: ---- Samtools index completed".format(self._species_name))
+        # if self.args.single_mapping:
+        #     self.logger.warning("single_mapping is not tested in this version.") #debug("{}: ---- Samtools index completed".format(self._species_name))
 
         # self._rm_file(bam_file, ignore_error=True)
         #f self.args.debug:

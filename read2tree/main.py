@@ -158,7 +158,7 @@ def parse_args(argv, exe_name, desc):
                                  'output concatenated alignment!')
 
     arg_parser.add_argument('--step', default="all",
-                            help='[Default is all] marker map combine ')
+                            help='[Default is all  1marker 2map 3combine ')
 
     # arg_parser.add_argument('--merge_all_mappings', action='store_true',
     #                         help='[Default is off] In case multiple species were mapped to '
@@ -228,7 +228,7 @@ def parse_args(argv, exe_name, desc):
     if args.species_name:
         _species_name = args.species_name
 
-    if args.step == "combine":  # todo why is needed?
+    if args.step == "3combine":  # todo why is needed?
         _species_name = 'merge'
 
     args.reads = _reads
@@ -308,14 +308,14 @@ def main(argv, exe_name, desc=''):
     logger.info("Running r2t in mode " + args.step)
 
     if os.path.exists(args.output_path):
-        if args.step == "all" or args.step == "marker":
+        if args.step == "all" or args.step == "1marker":
             logger.error(
-                "the output folder exist" + args.output_path + ". Since you are running r2t in all mode, you need to specify output folder which will created by r2t.")
+                "the output folder exist " + args.output_path + ". Since you are running r2t in all mode, you need to specify output folder which will created by r2t.")
             sys.exit()
     else:
         os.makedirs(args.output_path)
 
-    if args.step == "all" or args.step == "map":
+    if args.step == "all" or args.step == "2map":
         if not args.reads:
             logger.error("reads are not provided in mode " + str(args.step))
             sys.exit()
@@ -363,16 +363,16 @@ def main(argv, exe_name, desc=''):
         logger.info(' ------- Read2Tree finished -*- -------')
         # print("done - all")
 
-    if args.step == "marker":
+    if args.step == "1marker":
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
         ogset = OGSet(args, oma_output=oma_output, step=args.step)  # Generate the OGs with their DNA sequences
         reference = ReferenceSet(args, og_set=ogset.ogs, step=args.step)
         alignments = Aligner(args, ogset.ogs)
-        print("done- marker")
-        logger.info(' ------- Read2Tree step marker finished -*- -------')
+        print("done- 1marker")
+        logger.info(' ------- Read2Tree step 1marker finished -*- -------')
 
-    if args.step == "map":
+    if args.step == "2map":
         mapper = Mapper(args, og_set=ogset.ogs, ref_set=reference.ref, step=args.step)
         alignments.remove_species_from_alignments()
         ogset.remove_species_from_ogs()
@@ -384,10 +384,10 @@ def main(argv, exe_name, desc=''):
         alignments.write_added_align_aa()
         alignments.write_added_align_dna()
 
-        print("done- map")
+        print("done- 2map")
         logger.info(' ------- Read2Tree step map finished -*- -------')
 
-    if args.step == "combine":
+    if args.step == "3combine":
         ogset = OGSet(args, step=args.step)
         reference = ReferenceSet(args, step=args.step)
         alignments = Aligner(args, step=args.step)  # og set is not input of this, becuase we only read the aligned seq
@@ -411,12 +411,12 @@ def main(argv, exe_name, desc=''):
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             logger.info(str(tree.tree))
 
-        print("done- combine")
-        logger.info(' ------- Read2Tree step combined finished -*- -------')
+        print("done- 3combine")
+        logger.info(' ------- Read2Tree step 3combined finished -*- -------')
 
         logger.info(' ------- Read2Tree finished -*- -------')
 
-    print("done- main")
+    print("done- main ")
     # logger.info('{}: Progress: ogs_dna {} | ref {} | ref_align {} | mapping {} | append_ogs {} | align {} '
     #             .format(args.species_name, progress.ref_ogs_01, progress.ref_dna_02,
     #                     progress.ref_align_03, progress.mapping_04, progress.append_ogs_05, progress.align_06))

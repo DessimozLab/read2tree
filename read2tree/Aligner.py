@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class Aligner(object):
 
-    def __init__(self, args, og_set=None, load=True):
+    def __init__(self, args, og_set=None, step=None):
 
         self.args = args
         self.mapped_aligns = {}
@@ -45,11 +45,11 @@ class Aligner(object):
         self.alignments = Alignment()
         #self.placement_dic = {}
 
-        if load and og_set is not None:
+        if step== "all" or step== "1marker":#and og_set is not None:
             print('--- Alignment of {} OGs ---'.format(len(list(og_set.keys()))))
             self._og_set = og_set
             self.alignments = self._align(og_set)
-        else:
+        elif step =="3combine" or step =="2map":
             self.alignments = self._reload_alignments_from_folder()
 
         # print(self._get_codon_dict_og(og_set))
