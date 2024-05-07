@@ -107,7 +107,7 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fas
 
 #### step1
 ```
-read2tree  --step 1marker  --standalone_path marker_genes  --dna_reference dna_ref.fa --output_path output  --debug # this creates just the reference folder 01 - 03
+read2tree  --step 1marker  --standalone_path marker_genes  --dna_reference dna_ref.fa --output_path output  --debug 
 ```
 
 #### step2
