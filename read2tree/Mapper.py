@@ -86,14 +86,14 @@ class Mapper(object):
             if self.mapped_records and og_set != None: #todo else
                 self.og_records = self._sort_by_og()
         elif step =="3combine":  # re-load already computed mapping
-            if og_set != None and not self.args.merge_all_mappings:
+            if og_set != None: #and not self.args.merge_all_mappings:
                 self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
                 self.og_records = self._sort_by_og()
-            elif (og_set != None and # todo to check
-                  self.args.merge_all_mappings and species_name != None):
-                self.mapped_records = \
-                    self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
-                self.og_records = self._sort_by_og()
+            # elif (og_set != None and # todo to check
+            #       self.args.merge_all_mappings and species_name != None):
+            #     self.mapped_records = \
+            #         self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
+            #     self.og_records = self._sort_by_og()
 
         # if not (self.mapped_records  or hasattr(self,"og_records")):
         #     log_line='mapped_records or og_records is empty! are the aligner and samtools installed correctly? are there enough marker genes close to the species of interest? If it is a new run, make sure there is no output folder or a file mplog.log'

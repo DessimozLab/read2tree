@@ -388,7 +388,6 @@ def main(argv, exe_name, desc=''):
         ogset.add_mapped_seq(mapper)
         ogset.write_added_ogs_aa()
         ogset.write_added_ogs_dna()
-        # alignments = Aligner(args, ogset.mapped_ogs, load=True)
         # alignments.add_mapped_seq(ogset.mapped_ogs)
         # alignments.write_added_align_aa()
         # alignments.write_added_align_dna()
