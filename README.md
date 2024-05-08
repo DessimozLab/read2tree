@@ -147,7 +147,7 @@ The goal of this test example is to infer species tree for Mus musculus using it
 
 ```
 cd tests
-read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fastq  --output_path output --dna_reference  dna_ref.fa  
+read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq  --output_path output --dna_reference  dna_ref.fa  
 ```
 
 
