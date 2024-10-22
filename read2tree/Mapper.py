@@ -40,8 +40,8 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-minimap2_ex= "minimap2"
-samtools = "samtools"
+minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2"
+samtools = "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools"
 
 
 class Mapper(object):
@@ -354,8 +354,9 @@ class Mapper(object):
                     mapped_reads = []
 
             else:
-                self.logger.error('No mapped reads.')
-                sys.exit(0)
+                self.logger.warning('No mapped reads on {} .'.format(str(species)))
+
+                #sys.exit(0) # for a few species , it is ok not to have mapped reads.
                 # self.progress.set_status('single_map', ref=species)
                 #self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
@@ -607,6 +608,8 @@ class Mapper(object):
             self._output_shell(line_samtools_index)
             self.logger.debug(line_samtools_index)
 
+        self._rm_file(sam_file_base + ".bam", ignore_error=True)
+        self._rm_file(sam_file_base + ".sam", ignore_error=True)
         # if self.args.single_mapping:
         #     self.logger.warning("single_mapping is not tested in this version.") #debug("{}: ---- Samtools index completed".format(self._species_name))
 
@@ -653,7 +656,7 @@ class Mapper(object):
         for fn in fns:
             try:
                 os.remove(fn)
-                self.logger.info("we removed {}.".format(fn)) #debug("{}: ---- Samtools index completed".format(self._species_name))
+                # self.logger.info("we removed {}.".format(fn)) #debug("{}: ---- Samtools index completed".format(self._species_name))
             except FileNotFoundError:
                 if not ignore_error:
                     raise
@@ -684,10 +687,12 @@ class Mapper(object):
         #    return None
 
         (output, err) = shell_command.communicate()
-        self.logger.debug("Shell output: "+ str(output))
-        self.logger.debug("Shell err: " + str(err))
-        print("Shell output: "+ str(output))
-        print("Shell err: " + str(err))
+        if output:
+            self.logger.debug("Shell output: "+ str(output))
+            print("Shell output: " + str(output))
+        if err:
+            self.logger.debug("Shell err: " + str(err))
+            print("Shell err: " + str(err))
         shell_command.wait()
         if shell_command.returncode != 0:
             self.logger.debug("Shell command failed to execute")

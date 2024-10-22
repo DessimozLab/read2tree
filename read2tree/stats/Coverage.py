@@ -32,7 +32,7 @@ class Coverage(object):
             gene_id = key.split("_")[0]
             coverage = value
             line = species + "," + og + "," + gene_id + "," + \
-                str(coverage[0]) + "," + str(coverage[1]) + "\n"
+                str(round(coverage[0],2)) + "," + str(round(coverage[1],3)) + "\n" # coverage,std
             out_text += line
 
         with open(file_name, "w") as myfile:
