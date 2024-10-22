@@ -264,57 +264,57 @@ class OGSet(object):
                                        id=record.id,
                                        description="")
 
-    def _get_dna_from_REST(self, record):
-        """
-
-        :param record:
-        :param name:
-        :return:
-        """
-        tmp_id = re.sub(r'\..*', '', record.id.split("_")[0])
-        use_id = re.sub(r'\W+', '', tmp_id)
-        try:
-            oma_record = requests.get(API_URL + "/protein/" + use_id + "/")
-        except requests.exceptions.RequestException:
-            self.logger.debug('DNA not found for {}.'.format(use_id))
-            pass
-        else:
-            seq = oma_record.json()['cdna']
-            rec_id = oma_record.json()['omaid']
-
-            cleaned_seq = self._clean_DNA_seq(seq)
-            # else:
-            #     cleaned_seq = dna_record.seq
-            return SeqRecord.SeqRecord(cleaned_seq, record.id,
-                                       description="", name="")
-
-    def _get_dna_from_REST_bulk(self, records, og_name):
-        """
-
-        :param record:
-        :param name:
-        :return:
-        """
-        record_ids = [r.id for r in records]
-        dna_records = []
-        try:
-            reply = requests.post('https://omabrowser.org/api/protein/bulk_retrieve/',
-                                  json={"ids": record_ids},
-                                  headers={'User-Agent': 'read2tree/'+read2tree_version})
-        except requests.exceptions.RequestException as exception_type:
-            self.logger.warning('DNA not found probably for '+str(record_ids[0])+'. The reason is '+str(exception_type))
-            pass
-        else:
-            group_members = reply.json()
-            for memb in group_members:
-                # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
-                seq = memb['target']['cdna']
-                rec_id = memb['target']['omaid']+"_"+og_name
-                cleaned_seq = self._clean_DNA_seq(seq)
-                # print(cleaned_seq)
-                dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,
-                                       description="", name=""))
-        return dna_records
+    # def _get_dna_from_REST(self, record):
+    #     """
+    #
+    #     :param record:
+    #     :param name:
+    #     :return:
+    #     """
+    #     tmp_id = re.sub(r'\..*', '', record.id.split("_")[0])
+    #     use_id = re.sub(r'\W+', '', tmp_id)
+    #     try:
+    #         oma_record = requests.get(API_URL + "/protein/" + use_id + "/")
+    #     except requests.exceptions.RequestException:
+    #         self.logger.debug('DNA not found for {}.'.format(use_id))
+    #         pass
+    #     else:
+    #         seq = oma_record.json()['cdna']
+    #         rec_id = oma_record.json()['omaid']
+    #
+    #         cleaned_seq = self._clean_DNA_seq(seq)
+    #         # else:
+    #         #     cleaned_seq = dna_record.seq
+    #         return SeqRecord.SeqRecord(cleaned_seq, record.id,
+    #                                    description="", name="")
+    #
+    # def _get_dna_from_REST_bulk(self, records, og_name):
+    #     """
+    #
+    #     :param record:
+    #     :param name:
+    #     :return:
+    #     """
+    #     record_ids = [r.id for r in records]
+    #     dna_records = []
+    #     try:
+    #         reply = requests.post('https://omabrowser.org/api/protein/bulk_retrieve/',
+    #                               json={"ids": record_ids},
+    #                               headers={'User-Agent': 'read2tree/'+read2tree_version})
+    #     except requests.exceptions.RequestException as exception_type:
+    #         self.logger.warning('DNA not found probably for '+str(record_ids[0])+'. The reason is '+str(exception_type))
+    #         pass
+    #     else:
+    #         group_members = reply.json()
+    #         for memb in group_members:
+    #             # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
+    #             seq = memb['target']['cdna']
+    #             rec_id = memb['target']['omaid']+"_"+og_name
+    #             cleaned_seq = self._clean_DNA_seq(seq)
+    #             # print(cleaned_seq)
+    #             dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,
+    #                                    description="", name=""))
+    #     return dna_records
 
     def _get_dna_from_fasta(self, record, db):
         try:
