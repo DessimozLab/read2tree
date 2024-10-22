@@ -6,9 +6,10 @@ import os
 from pkg_resources import resource_string
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-__version__ = '1.5.0'
+__version__ = '1.5.2'
 __copyright__ = 'read2tree (C) 2017-{:d} David Dylus ' \
                 .format(date.today().year)
+
 
 # path = './log.yaml'
 # if os.path.exists(path):
