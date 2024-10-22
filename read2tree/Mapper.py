@@ -126,6 +126,7 @@ class Mapper(object):
             reads_str = reads
 
         line_minimap= minimap2_ex +" "+ minimap_argm + " -t " + str(self.args.threads) +" "+ ref_file_handle + " " + reads_str + " > " + sam_file
+        #self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._output_shell(line_minimap)
         self.logger.info('mapping with ' + line_minimap)
 
@@ -352,6 +353,9 @@ class Mapper(object):
                 else:
                     mapped_reads = []
 
+            else:
+                self.logger.error('No mapped reads.')
+                sys.exit(0)
                 # self.progress.set_status('single_map', ref=species)
                 #self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
@@ -606,7 +610,7 @@ class Mapper(object):
         # if self.args.single_mapping:
         #     self.logger.warning("single_mapping is not tested in this version.") #debug("{}: ---- Samtools index completed".format(self._species_name))
 
-        # self._rm_file(bam_file, ignore_error=True)
+
         #f self.args.debug:
         #    self._bin_reads(ref_file, sam_file_base )
 
@@ -649,6 +653,7 @@ class Mapper(object):
         for fn in fns:
             try:
                 os.remove(fn)
+                self.logger.info("we removed {}.".format(fn)) #debug("{}: ---- Samtools index completed".format(self._species_name))
             except FileNotFoundError:
                 if not ignore_error:
                     raise
@@ -670,23 +675,24 @@ class Mapper(object):
         :param line:
         :return:
         """
-        try:
-            self.logger.debug("Running " + line)
-            shell_command = subprocess.Popen(
-                line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                shell=True)
-        except:
-            self.logger.debug("Shell command failed to execute by running ")
-            return None
+        #try:
+        self.logger.debug("Running " + line)
+        shell_command = subprocess.Popen( line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+        #except:
+        #    self.logger.debug("Shell command failed to execute by running ")
+        #    return None
 
         (output, err) = shell_command.communicate()
         self.logger.debug("Shell output: "+ str(output))
         self.logger.debug("Shell err: " + str(err))
+        print("Shell output: "+ str(output))
+        print("Shell err: " + str(err))
         shell_command.wait()
         if shell_command.returncode != 0:
             self.logger.debug("Shell command failed to execute")
             self.logger.debug(line)
-            return None
+            sys.exit(1)
 
         return output
 
