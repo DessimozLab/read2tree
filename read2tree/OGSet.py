@@ -268,7 +268,7 @@ class OGSet(object):
 
             # if 'X' in seq:
             cleaned_seq = self._clean_DNA_seq(seq)
-            # else:
+            # else: # a
             #     cleaned_seq = seq
 
             return SeqRecord.SeqRecord(Seq.Seq(cleaned_seq),
