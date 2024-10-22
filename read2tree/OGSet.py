@@ -362,7 +362,6 @@ class OGSet(object):
 
     def _get_dna_records(self, records, db, source, og_name):
         """
-
         :param records:
         :return:
         """
