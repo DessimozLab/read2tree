@@ -40,8 +40,8 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
-minimap2_ex= "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/minimap2"
-samtools = "/work/FAC/FBM/DBC/cdessim2/default/smajidi1/software/miniconda/envs/r2t_3.10.8b/bin/samtools"
+minimap2_ex= "minimap2"
+samtools = "samtools"
 
 
 class Mapper(object):
@@ -361,7 +361,7 @@ class Mapper(object):
                 #self._rm_file(ref_file_handle+".fai", ignore_error=True)
 
         #tmp_output_folder.cleanup()
-        end = time.time()
+        end = time.time() 
         self.elapsed_time = end - start
         if len(references) > 1:
             self.logger.info('{}: Mapping to all references took {}.'
