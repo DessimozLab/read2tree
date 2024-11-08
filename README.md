@@ -42,9 +42,10 @@ conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsi
 conda install -c bioconda dendropy pysam
 ```
 
-Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/software/) (multiple sequence aligner), [iqtree](http://www.iqtree.org/) (phylogenomic inference), [ngmlr](https://github.com/philres/ngmlr), [ngm/nextgenmap](https://github.com/Cibiv/NextGenMap) (long and short read mappers), and [samtools](http://www.htslib.org/download/) which could be installed using conda.
+Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/software/) (multiple sequence aligner), [iqtree](http://www.iqtree.org/) (phylogenomic inference), [minimap2](https://github.com/lh3/minimap2) (long and short read mappers), and [samtools](http://www.htslib.org/download/) which could be installed using conda.
+For this version, the `--read_type` argument could be either `short`, `long-hifi` or `long-ont`. You could also use `--threads 40` to be used with minimap2.
 ```
-conda install -c bioconda mafft iqtree ngmlr nextgenmap samtools
+conda install -c bioconda mafft iqtree minimap2 samtools
 ```
 
 Then, you can install the read2tree package after downlaoding the package from this GitHub repo using
