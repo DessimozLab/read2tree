@@ -68,8 +68,8 @@ conda install -c bioconda  read2tree
 Alternatively, you could also try using [mamba](https://mamba.readthedocs.io/en/latest/). Caution: please read about compatiblity of conda and mamba in one envirnoment.
 
 ### 3) Installation using Docker
+** not yet ready for this version of r2t (minimap2) 
 The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
-
 A prebuild container can be loaded from dockerhub:
 ```
 docker pull dessimozlab/read2tree:latest
@@ -197,33 +197,30 @@ export LANG=en_US.UTF-8
 
 ## Change log
 
-
+- version 1.5:
+  - using minimap2 as the read mapper 
 - version 0.1.5:
   - fix issue with UnknownSeq being removed in Biopython>1.80
   - removing unused modeltester wrappers
-
 - version 0.1.4:
    - allow reference folders not named marker_genes (#12)
    - update environment.yml file to contain all dependencies (#16)
    - documentation improvements
    - CI/CD pipeline
-
 - version 0.1.3: 
    - improvements of documentation
    - adding support for docker
-   - small bugfixes 
-
+   - small bugfixes
 - version 0.1.2: packaging
-
 - version 0.1.0: Adding covid analysis
-
 - version 0.0: Initial work
 
 
 ## Authors
 
-* [David Dylus](https://github.com/dvdylus), (main author)
+* [David Dylus](https://github.com/dvdylus)
 * [Adrian Altenhoff](http://people.inf.ethz.ch/adriaal).
+* [Sina Majidian](https://sinamajidian.github.io/)
 
 
 The authors would like to thank Alex Warwick for help how to initiate such a package.
