@@ -539,14 +539,15 @@ class Mapper(object):
         :param bam_file:
         :return:
         """
-        bam = pysam.AlignmentFile(bam_file)
+        bam = pysam.AlignmentFile(bam_file) # bam.header.to_dict()
         references = list(set([read.reference_name for read in bam.fetch()]))
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
         for ref in references:
             #     self.logger.info(read.qual)
             seq = list('N' * len(records[ref]))
-            for pileup_column in bam.pileup(ref, 0, 10000000):
+            for pileup_column in bam.pileup(ref, 0, 10000000, ignore_orphans=False): # assumption max length gene is  10m
+                # for read in bam.fetch(ref, 1, 1200000):   print(read)
                 # TODO: improve the selection of a column by its quality
                 # qualities = [pileupread.alignment.query_alignment_qualities[pileupread.query_position] for pileupread in
                 #        pileupcolumn.pileups if not pileupread.is_del and not pileupread.is_refskip]
