@@ -12,7 +12,7 @@ import numpy as np
 
 from math import ceil
 from tqdm import tqdm
-from natsort import natsorted
+# from natsort import natsorted
 
 from read2tree.FastxReader import FastxReader
 

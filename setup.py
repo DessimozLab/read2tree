@@ -10,9 +10,9 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
 
 # conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsing requests natsort pyyaml
 # conda install -c bioconda dendropy 
-requirements = ["numpy", "biopython", "ete3", "lxml", "tqdm", "scipy", 
-                "pyparsing", "requests", "natsort", "pyyaml", "dendropy", 
-                "pysam", "pyham", "filelock"]
+requirements = ["numpy", "biopython", "ete3", "lxml", "tqdm",
+                "pyparsing", "pyyaml", "dendropy",
+                "pysam", "pyham"] #  "requests", "natsort" , "filelock"  "scipy",
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
