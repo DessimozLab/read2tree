@@ -158,16 +158,30 @@ class Aligner(object):
                 # get all species that are not mapped from original alignment
                 if name_og in ogset_add.keys():
                     # find mapped records from appended records in OGSet
-                    map_record_aa = [r for r in ogset_add[name_og].aa if species_name == r.id]
+                    # map_record_aa = [r for r in ogset_add[name_og].aa if species_name == r.id]
+                    map_record_aa = [r for r in ogset_add[name_og].aa if species_name in r.id]
                     # print(map_records_aa) # todo this is important which is solved  it's a bug  in when the sample name is small , probably should be species_name == r.id    species_name='3'  id='ASTMX01499_OG1003046'
 
-                    map_record_dna = [r for r in ogset_add[name_og].dna if species_name == r.id]
+                    #map_record_dna = [r for r in ogset_add[name_og].dna if species_name == r.id]
+                    map_record_dna = [r for r in ogset_add[name_og].dna if species_name in r.id]
+                    data = 'metag'
                     if map_record_aa and map_record_dna:
-                        ref_species = self._get_species_id(map_record_aa[0])    # why the zeroth? how about the rest?
-                        self.mapped_aligns[name_og] = Alignment()
-                        self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name) # why the zeroth? how about the rest?
-                        self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
-                        num_append_seq = num_append_seq + 1
+                        if data=='metag':
+                            for recidx, map_record_aa_i  in enumerate(map_record_aa):
+                                map_record_dna_i = map_record_dna[recidx]
+                                ref_species = self._get_species_id(map_record_aa_i)
+                                self.mapped_aligns[name_og] = Alignment()
+                                self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa_i, ref_species, map_record_aa_i.id)  # why the zeroth? how about the rest?
+                                self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna_i, ref_species, map_record_dna_i.id)
+
+                        else:
+                            ref_species = self._get_species_id(map_record_aa[0])
+                            # why the zeroth? how about the rest? we need at most one per OG.
+                            # why there are more than one there? for classic r2t
+                            self.mapped_aligns[name_og] = Alignment()
+                            self.mapped_aligns[name_og].aa = self._add_mapseq_align(align_filt.aa, map_record_aa[0], ref_species, species_name) # why the zeroth? how about the rest?
+                            self.mapped_aligns[name_og].dna = self._add_mapseq_align(align_filt.dna, map_record_dna[0], ref_species, species_name)
+                            num_append_seq = num_append_seq + 1
 
                     elif self.args.keep_all_ogs: # todo   both self.args.keep_all_ogs and  "map_record_aa and map_record_dna" are true althout it is eilf
                         self.mapped_aligns[name_og] = Alignment()
@@ -383,12 +397,43 @@ class Aligner(object):
             else:
                 return grp
 
+        data = 'metag'
+        if data == 'metag':
+            dic_ogs_ = {}
+            for ogID, recs in use_alignments.items():
+                for rec in recs.aa:
+                    metag_species = rec.id
+                    if metag_species in dic_ogs_:
+                        dic_ogs_[metag_species].append(ogID)
+                    else:
+                        dic_ogs_[metag_species] = [ogID]
+        total_num_ogs=len(use_alignments)
+        list_metag_species_all=[]
+        list_metag_species_selected = []
+        list_og_num_all=[]
+        for species, og_list in dic_ogs_.items():
+            if len(species)>5: # 'dataset3_20m_reads_1RICJY', 'DEBHA',
+                metag_species= species
+                list_metag_species_all.append(metag_species)
+                list_og_num_all.append(len(og_list)) # /total_num_ogs
+                if len(og_list) > 50 and len(og_list)/total_num_ogs > 0.5:
+                    list_metag_species_selected.append(metag_species)
+        print(len(list_metag_species_selected))
         for key in sorted(use_alignments.keys(), key=sorter_groups):
-            value = use_alignments[key]
-            alignments_aa.append(value.aa)
-            alignments_dna.append(value.dna)
-            grp_names.append(key)
-        concatination_aa = concatenate(alignments_aa)
+            if data == 'metag':
+                value = use_alignments[key]
+                filtered_msa_aa=MultipleSeqAlignment([i for i in value.aa if len(i.id)==5 or i.id in list_metag_species_selected ])
+                filtered_msa_dna = MultipleSeqAlignment([i for i in value.dna if len(i.id) == 5 or i.id in list_metag_species_selected])
+                alignments_aa.append(filtered_msa_aa)
+                alignments_dna.append(filtered_msa_dna)
+                grp_names.append(key)
+                #print(len(value.aa ),len([i for i in value.aa if len(i.id)==5 or i.id in list_metag_species_selected ]))
+            else:
+                value = use_alignments[key]
+                alignments_aa.append(value.aa)
+                alignments_dna.append(value.dna)
+                grp_names.append(key)
+        concatination_aa = concatenate(alignments_aa) # len([i for i in list(concatination_aa) if len(i.id)==5]) # len([i for i in list(concatination_aa) if len(i.id)>5])
         concatination_dna = concatenate(alignments_dna)
 
         if concatination_aa:

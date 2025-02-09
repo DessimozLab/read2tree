@@ -27,7 +27,7 @@ class Coverage(object):
         header = '#species,og,gene_id,coverage,std\n'
         out_text += header
         for key, value in self.coverage.items():
-            species = key[0:5]
+            species = key #[0:5] # temp
             og = key.split("_")[-1]
             gene_id = key.split("_")[0]
             coverage = value

@@ -531,28 +531,42 @@ class OGSet(object):
                              for rec in cons_og_filt.aa
                              if self._get_id_rec(rec) in mapper.all_cov.keys()}
                     if len(cons_og_filt.aa) >= 1:  # we had at least one mapped og even after removal
-                        best_records = cons_og_filt \
-                            .get_best_consensus_by_seq_completeness(self.args.sequence_selection_mode,
-                                sc=og_sc, cov=og_cov, threshold=self.args.sc_threshold)
-                        if best_records:
-                            best_record_aa = best_records[0]
-                            best_record_dna = best_records[1]
-                            self._generate_seq_completeness(seqC, mapper,
-                                                            og, best_record_dna)
-                            cov.add_coverage(self._get_clean_id(best_record_aa),
-                                             mapper.all_cov[self._get_clean_id(best_record_aa)])
-                            best_record_aa.id = species_name
-                            best_record_dna.id = species_name
+                        data = "metag"
+                        if data != "metag": # s
+                            best_records = cons_og_filt \
+                                .get_best_consensus_by_seq_completeness(self.args.sequence_selection_mode,
+                                    sc=og_sc, cov=og_cov, threshold=self.args.sc_threshold)
+                            if best_records:
+                                best_record_aa = best_records[0]
+                                best_record_dna = best_records[1]
+                                self._generate_seq_completeness(seqC, mapper,
+                                                                og, best_record_dna)
+                                cov.add_coverage(self._get_clean_id(best_record_aa),
+                                                 mapper.all_cov[self._get_clean_id(best_record_aa)])
+                                best_record_aa.id = species_name
+                                best_record_dna.id = species_name
+                                self.mapped_ogs[name_og] = og_filt
+                                all_id = [rec.id
+                                          for rec in self.mapped_ogs[name_og].aa]
+                                if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
+                                    self.mapped_ogs[name_og] \
+                                        .aa.append(best_record_aa)
+                                    self.mapped_ogs[name_og] \
+                                        .dna.append(best_record_dna)
+                            else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
+                                self.mapped_ogs[name_og] = og_filt
+
+                        if data == "metag":
+                            print("working on metag data ")
                             self.mapped_ogs[name_og] = og_filt
-                            all_id = [rec.id
-                                      for rec in self.mapped_ogs[name_og].aa]
-                            if best_record_aa.id not in all_id:  # make sure that repeated run doesn't add the same sequence multiple times at the end of an OG
-                                self.mapped_ogs[name_og] \
-                                    .aa.append(best_record_aa)
-                                self.mapped_ogs[name_og] \
-                                    .dna.append(best_record_dna)
-                        else:  # case where no best_record_aa reported because it was smaller than the self.args.sc_threshold
-                            self.mapped_ogs[name_og] = og_filt
+                            for recid, record_aa in enumerate(cons_og_filt.aa):
+                                record_dna = cons_og_filt.dna[recid]
+                                record_aa.id = species_name + record_aa.id[:5]
+                                record_dna.id = species_name + record_dna.id[:5]
+                                self.mapped_ogs[name_og].aa.append(record_aa)
+                                self.mapped_ogs[name_og].dna.append(record_dna)
+                                cov.add_coverage(record_aa.id+"|"+self._get_clean_id(record_aa),mapper.all_cov[self._get_clean_id(record_aa)])
+
                     else:  # mapping had only one that we removed
                         if self.args.keep_all_ogs:
                             self.mapped_ogs[name_og] = og_filt
