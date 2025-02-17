@@ -57,26 +57,6 @@ python setup.py install
 ```
 
 
-### 2) Installation using Conda
-
-
-```
-conda create -n r2t python=3.10.8
-conda install -c bioconda  read2tree 
-
-```
-Alternatively, you could also try using [mamba](https://mamba.readthedocs.io/en/latest/). Caution: please read about compatiblity of conda and mamba in one envirnoment.
-
-### 3) Installation using Docker
-** not yet ready for this version of r2t (minimap2) 
-The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
-A prebuild container can be loaded from dockerhub:
-```
-docker pull dessimozlab/read2tree:latest
-```
-
-
-
 
 
 ## Run
