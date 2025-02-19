@@ -51,7 +51,7 @@ conda install -c bioconda mafft iqtree minimap2 samtools
 Then, you can install the read2tree package after downlaoding the package from this GitHub repo using
 
 ```
-git clone https://github.com/DessimozLab/read2tree.git
+git clone https://github.com/DessimozLab/read2tree.git -b minimap2
 cd read2tree
 python setup.py install
 ```
