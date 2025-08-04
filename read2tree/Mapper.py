@@ -112,14 +112,12 @@ class Mapper(object):
         sam_file= output_folder+"/"+ref_file_handle.split('/')[-1].split('.')[0]+".sam"
 
         #self._output_shell(minimap2_ex+" -ax sr "+ ref_file_handle+ " -t " + str(self.args.threads) + " "+reads+" | "+samtools_ex+" view -F 4 -bh -S -t" + str(self.args.threads)+ " > " + bam_file)
-        if 'short' in self.args.read_type:
-            minimap_argm =" -ax sr"
-        elif 'long-hifi' in self.args.read_type:
-            minimap_argm = " -ax map-hifi "
-        elif 'long-ont' in self.args.read_type:
-            minimap_argm = " -ax map-ont "
-        else:
-            self.logger.error(" read_type is not valid" +self.args.read_type+" please use one of these: short long-ont  long-hifi ")
+        
+        rt = (self.args.read_type or "").strip()
+        if not rt:
+            self.logger.error("read_type is not set, please use one of these: -ax short, -ax long-ont, -ax long-hifi")
+        minimap_argm = f" {rt} "
+        
         if isinstance(reads,list):
             reads_str=" ".join(reads)
         elif isinstance(reads,str):
