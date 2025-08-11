@@ -73,9 +73,9 @@ def parse_args(argv, exe_name, desc):
                             help='[Default is none] Reads to be mapped to reference. If paired '
                                  'end add separated by space.')
 
-    arg_parser.add_argument('--read_type', default='short',
-                            help='[Default is short] Type of reads to '
-                                 'use for mapping: short, long-hifi or long-ont corresponding to  sr,  map-hifi, or map-ont   in minimap2.')
+    arg_parser.add_argument('--read_type', default='-ax sr',
+                            help='[Default is -ax sr] Minimap2 command-line options for mapping reads to reference. '
+                                 'Examples:  -ax sr  ,  -ax map-hifi  ,  -ax map-pb  or  -ax map-ont  ')
 
     arg_parser.add_argument('--threads', type=int, default=1,
                             help='[Default is 1] Number of threads for the mapping ')
