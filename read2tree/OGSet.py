@@ -556,7 +556,9 @@ class OGSet(object):
                                 self.mapped_ogs[name_og] = og_filt
 
                         if data == "metag":
-                            print("working on metag data ")
+                            self.logger.info('----Working on metag data----')
+                            self.logger.info(self._species_name)
+                            self.logger.info('%s: working on metagenomic data', self._species_name,)
                             self.mapped_ogs[name_og] = og_filt
                             for recid, record_aa in enumerate(cons_og_filt.aa):
                                 record_dna = cons_og_filt.dna[recid]

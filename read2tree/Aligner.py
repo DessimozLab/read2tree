@@ -419,6 +419,9 @@ class Aligner(object):
                 if len(og_list) > 50 and len(og_list)/total_num_ogs > 0.5:
                     list_metag_species_selected.append(metag_species)
         print(len(list_metag_species_selected))
+        logger.info('Metagenomic mode retained %d species after filtering', len(list_metag_species_selected))
+        print(self._species_name)
+        logger.info('%s: %d metagenomic species passed filters', self._species_name, len(list_metag_species_selected),)
         for key in sorted(use_alignments.keys(), key=sorter_groups):
             if data == 'metag':
                 value = use_alignments[key]
