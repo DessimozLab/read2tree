@@ -87,7 +87,7 @@ class OGSet(object):
         folders
         :return: Dictionary with og name as key and list of SeqRecords
         """
-        print('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
+        self.logger.info('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
         ref_ogs_aa = sorted(glob.glob(os.path.join(os.path.join(
             self.args.output_path, folder_suffix+"_aa"), "*.fa")))
@@ -512,8 +512,7 @@ class OGSet(object):
         if not species_name:
             species_name = self._species_name
 
-        print('--- Add inferred mapped sequence back to OGs ---')
-
+        self.logger.info('--- Add inferred mapped sequence back to OGs ---')
         # iterate through all existing ogs
         for name_og, og in tqdm(self.ogs.items(),
                                 desc='Adding mapped seq to OG', unit=' OGs'):
@@ -662,7 +661,7 @@ class OGSet(object):
                 writer.write_file(value.aa)
                 handle.close()
         elif len(self.ogs) == len(glob.glob(os.path.join(output_folder, '*.fa'))):
-            print('Folder with files already exists and will not be overwritten.')
+            self.logger.info('Folder with files already exists and will not be overwritten.')
 
     def write_select_og_dna(self):
         """
@@ -679,7 +678,7 @@ class OGSet(object):
                 writer.write_file(value.dna)
                 handle.close()
         elif len(self.ogs_dna_by_species) == len(glob.glob(os.path.join(output_folder, '*.fa'))):
-            print('Folder with files already exists and will not be overwritten.')
+            self.logger.info('Folder with files already exists and will not be overwritten.')
 
     def append(self, name, record):
         self.ogs[name].append(record)

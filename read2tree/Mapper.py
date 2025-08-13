@@ -278,7 +278,7 @@ class Mapper(object):
                  mapped to each species
         """
         start = time.time()
-        print('--- Mapping of reads to reference sequences ---')
+        self.logger.info('--- Mapping of reads to reference sequences ---')
         mapped_reads_species = {}
         reference_path = os.path.join(self.args.output_path, "02_ref_dna")
 

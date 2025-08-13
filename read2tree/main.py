@@ -35,7 +35,8 @@ COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 
 # logger = logging.getLogger(__name__)
 logger_level = "DEBUG"  # DEBUG INFO  # TRACE  DEBUG INFO  WARN  ERROR  FATAL
-logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, 
+stream=sys.stdout, datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 if logger_level == "INFO":
     logger.setLevel(logging.INFO)
@@ -372,7 +373,7 @@ def main(argv, exe_name, desc=''):
         ogset = OGSet(args, oma_output=oma_output, step=args.step)  # Generate the OGs with their DNA sequences
         reference = ReferenceSet(args, og_set=ogset.ogs, step=args.step)
         alignments = Aligner(args, ogset.ogs, step=args.step)
-        print("done- 1marker")
+        logger.info("done- 1marker")
         logger.info(' ------- Read2Tree step 1marker finished -*- -------')
 
     if args.step == "2map":
@@ -392,7 +393,7 @@ def main(argv, exe_name, desc=''):
         # alignments.write_added_align_aa()
         # alignments.write_added_align_dna()
 
-        print("done- 2map")
+        logger.info("done- 2map")
         logger.info(' ------- Read2Tree step 2map finished -*- -------')
 
     if args.step == "3combine":
@@ -420,12 +421,12 @@ def main(argv, exe_name, desc=''):
             tree = TreeInference(args, concat_alignment=concat_alignment[0])
             logger.info(str(tree.tree))
 
-        print("done- 3combine")
+        logger.info("done- 3combine")
         logger.info(' ------- Read2Tree step 3combine finished -*- -------')
 
         logger.info(' ------- Read2Tree finished -*- -------')
 
-    print("done- main ")
+    logger.info("done- main ")
 
     # TODO: Check whether all the necessary binaries are available
     # TODO: Check all given files and throw error if faulty
