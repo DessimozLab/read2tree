@@ -70,7 +70,7 @@ class ReferenceSet(object):
             sys.exit(1)
 
 
-        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Re-loading references for mapping from folder", unit=" species"):
+        for file in tqdm(glob.glob(os.path.join(ref_dna, "*.fa")), desc="Re-loading references for mapping from folder", unit=" species",file=sys.stdout):
             species_name = file.split("/")[-1].split("_")[0]
             ref_dict[species_name] = Reference()
             ref_dict[species_name].dna = list(SeqIO.parse(file, 'fasta'))
@@ -84,7 +84,7 @@ class ReferenceSet(object):
         self.logger.info('--- Generating reference for mapping ---')
         start = time.time()
         ref_set = {}
-        for name, og in tqdm(og_set.items(), desc="Loading records", unit=" record"):
+        for name, og in tqdm(og_set.items(), desc="Loading records", unit=" record",file=sys.stdout):
             for record in og.aa:
                 species = record.id[0:5]
                 record.id = record.id  # +"_"+name

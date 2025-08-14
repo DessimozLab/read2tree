@@ -5,6 +5,7 @@
     -- David Dylus, July--XXX 2017
 '''
 import os
+import sys
 import glob
 import time
 import logging
@@ -56,7 +57,7 @@ class Aligner(object):
 
     def remove_species_from_alignments(self):
         for name_og, align in tqdm(self.alignments.items(),
-                                   desc='Adding mapped seq to alignments', unit=' alignments'):
+                                   desc='Adding mapped seq to alignments', unit=' alignments',file=sys.stdout):
             align_filt = self._remove_species_from_alignment(align)
             self.alignments[name_og] = align_filt
 
@@ -152,7 +153,7 @@ class Aligner(object):
         logger.info('--- Add inferred mapped sequence back to alignment ---')
 
         # iterate through all existing ogs
-        for name_og, align in tqdm(self.alignments.items(), desc='Adding mapped seq to alignments', unit=' alignments'):
+        for name_og, align in tqdm(self.alignments.items(), desc='Adding mapped seq to alignments', unit=' alignments',file=sys.stdout):
             align_filt = align
             if len(align_filt.aa) >= 2:
                 # get all species that are not mapped from original alignment
@@ -363,7 +364,7 @@ class Aligner(object):
             self.args.output_path, "03_align_aa")
         output_folder_dna = os.path.join(
             self.args.output_path, "03_align_dna")
-        for f in tqdm(zip(sorted(glob.glob(os.path.join(output_folder_aa, '*.phy'))), sorted(glob.glob(os.path.join(output_folder_dna, '*.phy')))), desc='Loading alignments ', unit=' Alignment'):
+        for f in tqdm(zip(sorted(glob.glob(os.path.join(output_folder_aa, '*.phy'))), sorted(glob.glob(os.path.join(output_folder_dna, '*.phy')))), desc='Loading alignments ', unit=' Alignment',file=sys.stdout):
             og_name = os.path.basename(f[0]).split(".")[0]
             align_dict[og_name] = Alignment()
             align_dict[og_name].aa = AlignIO.read(f[0], format='phylip-relaxed')

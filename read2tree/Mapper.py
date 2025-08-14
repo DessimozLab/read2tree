@@ -186,7 +186,7 @@ class Mapper(object):
         bam_files = glob.glob(os.path.join(in_folder, "*.bam"))
         if self.args.min_cons_coverage >= 2 and bam_files: # default self.args.min_cons_coverage is 1
             self.logger.debug('Generating consensus from bam files' )
-            for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species'):
+            for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species',file=sys.stdout):
                 species = file.split("/")[-1].split("_")[0]
                 ref_file = os.path.join(self.args.output_path, '02_ref_dna',species+'_OGs.fa')
                 map_reads_species[species] = Reference()
@@ -214,7 +214,7 @@ class Mapper(object):
                 self.all_sc.update(seqC.seq_completeness)
         else:
             self.logger.debug('Loading consensus read mappings '+in_folder+ "*_consensus.fa")
-            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
+            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species',file=sys.stdout):
                 species = file.split("/")[-1].split("_")[0]
                 map_reads_species[species] = Reference()
                 fasta_reader = FastxReader(file)
@@ -305,7 +305,7 @@ class Mapper(object):
         # Going through provided references and starting mapping
         for species in tqdm(references,
                             desc='Mapping reads to species',
-                            unit=' species'):
+                            unit=' species',file=sys.stdout):
             self.logger.info('{}: --- Mapping of reads to {} reference species '
                         '---'.format(self._species_name, species))
 
@@ -765,7 +765,7 @@ class Mapper(object):
             os.makedirs(output_folder)
         for key, value in tqdm(self.og_records.items(),
                                desc="Writing DNA seq sorted by OG",
-                               unit=" OG"):
+                               unit=" OG",file=sys.stdout):
             handle = open(os.path.join(output_folder,
                                        'mapped_'+key+'.fa'), "w")
             writer = FastaWriter(handle, wrap=None)

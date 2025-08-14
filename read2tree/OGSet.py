@@ -94,7 +94,7 @@ class OGSet(object):
         ref_ogs_dna = sorted(glob.glob(os.path.join(os.path.join(
             self.args.output_path, folder_suffix+"_dna"), "*.fa")))
         for file in tqdm(zip(ref_ogs_aa, ref_ogs_dna),
-                         desc='Re-loading files', unit=' OGs'):
+                         desc='Re-loading files', unit=' OGs',file=sys.stdout):
             name_og = os.path.basename(file[0]).split(".")[0]
             ogs[name_og] = OG()
             ogs[name_og].aa = list(SeqIO.parse(file[0], format='fasta'))
@@ -180,7 +180,7 @@ class OGSet(object):
 
         names_og = self.ogs
 
-        for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs'):
+        for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs',file=sys.stdout):
             # name = file.split("/")[-1].split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = self._get_aa_records(name, records)
@@ -414,7 +414,7 @@ class OGSet(object):
 
     def remove_species_from_ogs(self):
         for name_og, og in tqdm(self.ogs.items(),
-                                desc='Adding mapped seq to OG', unit=' OGs'):
+                                desc='Adding mapped seq to OG', unit=' OGs',file=sys.stdout):
             og_filt = self._remove_species_from_original_set(og)
             self.ogs[name_og] = og_filt
 
@@ -515,7 +515,7 @@ class OGSet(object):
         self.logger.info('--- Add inferred mapped sequence back to OGs ---')
         # iterate through all existing ogs
         for name_og, og in tqdm(self.ogs.items(),
-                                desc='Adding mapped seq to OG', unit=' OGs'):
+                                desc='Adding mapped seq to OG', unit=' OGs',file=sys.stdout):
             # og_filt = self._remove_species_from_original_set(og)
             og_filt = og
             if len(og_filt.aa) >= 2:
@@ -657,7 +657,7 @@ class OGSet(object):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
             for key, value in tqdm(self.ogs.items(), desc="Writing OGs sorted by species",
-                                   unit=" species"):
+                                   unit=" species",file=sys.stdout):
                 handle = open(os.path.join(output_folder, key + '.fa'), "w")
                 writer = FastaWriter(handle, wrap=None)
                 writer.write_file(value.aa)
@@ -674,7 +674,7 @@ class OGSet(object):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
             for key, value in tqdm(self.ogs.items(), desc="Writing OGs sorted by species",
-                                   unit=" species"):
+                                   unit=" species",file=sys.stdout):
                 handle = open(os.path.join(output_folder, key + '.fa'), "w")
                 writer = FastaWriter(handle, wrap=None)
                 writer.write_file(value.dna)
