@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class TreeInference(object):
 
     def __init__(self, args, concat_alignment=None):
-        print('--- Tree inference ---')
+        logger.info('--- Tree inference ---')
 
         self.args = args
 

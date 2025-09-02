@@ -7,7 +7,7 @@
 import glob
 import os
 import re
-import pyham
+# import pyham
 # import requests
 import logging
 import random
@@ -87,14 +87,14 @@ class OGSet(object):
         folders
         :return: Dictionary with og name as key and list of SeqRecords
         """
-        print('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
+        self.logger.info('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
         ref_ogs_aa = sorted(glob.glob(os.path.join(os.path.join(
             self.args.output_path, folder_suffix+"_aa"), "*.fa")))
         ref_ogs_dna = sorted(glob.glob(os.path.join(os.path.join(
             self.args.output_path, folder_suffix+"_dna"), "*.fa")))
         for file in tqdm(zip(ref_ogs_aa, ref_ogs_dna),
-                         desc='Re-loading files', unit=' OGs'):
+                         desc='Re-loading files', unit=' OGs',file=sys.stdout):
             name_og = os.path.basename(file[0]).split(".")[0]
             ogs[name_og] = OG()
             ogs[name_og].aa = list(SeqIO.parse(file[0], format='fasta'))
@@ -180,7 +180,7 @@ class OGSet(object):
 
         names_og = self.ogs
 
-        for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs'):
+        for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs',file=sys.stdout):
             # name = file.split("/")[-1].split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = self._get_aa_records(name, records)
@@ -414,7 +414,7 @@ class OGSet(object):
 
     def remove_species_from_ogs(self):
         for name_og, og in tqdm(self.ogs.items(),
-                                desc='Adding mapped seq to OG', unit=' OGs'):
+                                desc='Adding mapped seq to OG', unit=' OGs',file=sys.stdout):
             og_filt = self._remove_species_from_original_set(og)
             self.ogs[name_og] = og_filt
 
@@ -512,11 +512,10 @@ class OGSet(object):
         if not species_name:
             species_name = self._species_name
 
-        print('--- Add inferred mapped sequence back to OGs ---')
-
+        self.logger.info('--- Add inferred mapped sequence back to OGs ---')
         # iterate through all existing ogs
         for name_og, og in tqdm(self.ogs.items(),
-                                desc='Adding mapped seq to OG', unit=' OGs'):
+                                desc='Adding mapped seq to OG', unit=' OGs',file=sys.stdout):
             # og_filt = self._remove_species_from_original_set(og)
             og_filt = og
             if len(og_filt.aa) >= 2:
@@ -557,7 +556,9 @@ class OGSet(object):
                                 self.mapped_ogs[name_og] = og_filt
 
                         if data == "metag":
-                            print("working on metag data ")
+                            self.logger.info('----Working on metag data----')
+                            self.logger.info(self._species_name)
+                            self.logger.info('%s: working on metagenomic data', self._species_name,)
                             self.mapped_ogs[name_og] = og_filt
                             for recid, record_aa in enumerate(cons_og_filt.aa):
                                 record_dna = cons_og_filt.dna[recid]
@@ -656,13 +657,13 @@ class OGSet(object):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
             for key, value in tqdm(self.ogs.items(), desc="Writing OGs sorted by species",
-                                   unit=" species"):
+                                   unit=" species",file=sys.stdout):
                 handle = open(os.path.join(output_folder, key + '.fa'), "w")
                 writer = FastaWriter(handle, wrap=None)
                 writer.write_file(value.aa)
                 handle.close()
         elif len(self.ogs) == len(glob.glob(os.path.join(output_folder, '*.fa'))):
-            print('Folder with files already exists and will not be overwritten.')
+            self.logger.info('Folder with files already exists and will not be overwritten.')
 
     def write_select_og_dna(self):
         """
@@ -673,13 +674,13 @@ class OGSet(object):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
             for key, value in tqdm(self.ogs.items(), desc="Writing OGs sorted by species",
-                                   unit=" species"):
+                                   unit=" species",file=sys.stdout):
                 handle = open(os.path.join(output_folder, key + '.fa'), "w")
                 writer = FastaWriter(handle, wrap=None)
                 writer.write_file(value.dna)
                 handle.close()
         elif len(self.ogs_dna_by_species) == len(glob.glob(os.path.join(output_folder, '*.fa'))):
-            print('Folder with files already exists and will not be overwritten.')
+            self.logger.info('Folder with files already exists and will not be overwritten.')
 
     def append(self, name, record):
         self.ogs[name].append(record)

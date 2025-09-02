@@ -89,7 +89,7 @@ class Reads(object):
         with fastq_reader.open_fastx() as f:
             for name, seq, qual in tqdm(fastq_reader.readfx(f),
                                         desc='Splitting reads',
-                                        unit=' reads'):
+                                        unit=' reads',file=sys.stdout):
                 total_reads = total_reads + 1
                 read_id = name[1:].split(" ")[0]
                 # self.logger.debug("Process read {}".format(read_id))
@@ -326,7 +326,7 @@ class Reads(object):
             for i, f_input in enumerate(tqdm(fastq_reader.readfq(read_input),
                                         desc='Selecting reads from {}'
                                         .format(os.path.basename(file)),
-                                        unit=' reads')):
+                                        unit=' reads',file=sys.stdout)):
                 name = f_input[0]
                 seq = f_input[1]
                 initial_length = initial_length + len(seq)

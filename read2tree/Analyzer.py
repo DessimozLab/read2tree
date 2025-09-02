@@ -7,11 +7,14 @@
 import os
 from Bio import AlignIO
 import re
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Analyzer(object):
 
     def __init__(self, args, og_set=None):
-        print('--- Alignment of OGs ---')
+        logger.info('--- Alignment of OGs ---')
         self.args = args
         self.cov = {}
         self.seq_completeness = {}

@@ -1,7 +1,7 @@
 import glob
 import os
 import re
-
+import sys
 from tqdm import tqdm
 from Bio import SeqIO, Seq, SeqRecord
 from pathlib import Path
@@ -94,7 +94,7 @@ class OMAOutputParser(object):
         files = (glob.glob(os.path.join(self.og_fasta_path, "*.fa")) or
                  glob.glob(os.path.join(self.og_fasta_path, "*.fasta")))
         for file in tqdm(files, desc='Loading files for pre-filter',
-                         unit=' OGs'):
+                         unit=' OGs',file=sys.stdout):
             name = os.path.splitext(os.path.basename(file))[0]
             name = name.replace("OMAGroup_", "OG")
             records = list(SeqIO.parse(file, 'fasta'))
