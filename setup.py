@@ -12,7 +12,7 @@ with open('{:s}/__init__.py'.format(name), 'rt') as fp:
 # conda install -c bioconda dendropy 
 requirements = ["numpy", "biopython", "ete3", "lxml", "tqdm", "scipy", 
                 "pyparsing", "requests", "natsort", "pyyaml", "dendropy", 
-                "pysam", "pyham", "filelock"]
+                "pysam", "filelock"]
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
