@@ -55,6 +55,10 @@ class Mapper(object):
         self.elapsed_time = 0
 
         self.logger = logging.getLogger(__name__)
+        if self.args.debug:
+            self.logger.setLevel(logging.DEBUG)
+            self.logger.debug("Debug mode is on")
+
 
         self._reads = self.args.reads
         if not species_name:
@@ -126,7 +130,7 @@ class Mapper(object):
         line_minimap= minimap2_ex +" "+ minimap_argm + " -t " + str(self.args.threads) +" "+ ref_file_handle + " " + reads_str + " > " + sam_file
         #self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
         self._output_shell(line_minimap)
-        self.logger.info('mapping with ' + line_minimap)
+        self.logger.debug('mapping with ' + line_minimap)
 
         # if len(self._reads) == 2:
         #     ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder)
@@ -180,19 +184,20 @@ class Mapper(object):
         map_reads_species = {}
         if not mapping_name:
             mapping_name = self._mapping_name
-        self.logger.debug('--- Retrieve mapped consensus sequences ---'+str(mapping_name))
+        self.logger.info('--- Retrieve mapped consensus sequences ---'+str(mapping_name))
         in_folder = os.path.join(self.args.output_path, "04_mapping_"+mapping_name)
 
         bam_files = glob.glob(os.path.join(in_folder, "*.bam"))
         if self.args.min_cons_coverage >= 2 and bam_files: # default self.args.min_cons_coverage is 1
-            self.logger.debug('Generating consensus from bam files' )
+            self.logger.info('Generating consensus from bam files' )
             for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species'):
                 species = file.split("/")[-1].split("_")[0]
                 ref_file = os.path.join(self.args.output_path, '02_ref_dna',species+'_OGs.fa')
                 map_reads_species[species] = Reference()
                 line_samtools_index = samtools+' index -@ ' + str(self.args.threads) + ' ' +file
-                self._output_shell(line_samtools_index)
                 self.logger.debug(line_samtools_index)
+                self._output_shell(line_samtools_index)
+                
 
                 consensus = self._build_consensus_seq_v2(ref_file, file)
                 records = []
@@ -213,7 +218,7 @@ class Mapper(object):
                 seqC.write_seq_completeness(os.path.join(in_folder,species + "_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)
         else:
-            self.logger.debug('Loading consensus read mappings '+in_folder+ "*_consensus.fa")
+            self.logger.info('Loading consensus read mappings '+in_folder+ "*_consensus.fa")
             for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
                 species = file.split("/")[-1].split("_")[0]
                 map_reads_species[species] = Reference()
@@ -266,7 +271,7 @@ class Mapper(object):
         #                 .format(self._species_name))
         # else:
         #     tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-        #     self.logger.debug('--- Creating tmp directory on local node ---')
+        #     self.logger.info('--- Creating tmp directory on local node ---')
         tmp_output_folder=self.args.output_path
         return tmp_output_folder
 
@@ -340,14 +345,14 @@ class Mapper(object):
                                                            species+"_OGs_sc.txt"))
                     self.all_sc.update(seqC.seq_completeness)
                 except AttributeError as a:
-                    self.logger.debug('Reads not properly processed for further steps.')
-                    self.logger.debug('AttributeError: {}'.format(a))
+                    self.logger.info('Reads not properly processed for further steps.')
+                    self.logger.info('AttributeError: {}'.format(a))
                 except ValueError as v:
-                    self.logger.debug('Reads not properly processed for further steps.')
-                    self.logger.debug('ValueError: {}'.format(v))
+                    self.logger.info('Reads not properly processed for further steps.')
+                    self.logger.info('ValueError: {}'.format(v))
                 except TypeError as t:
-                    self.logger.debug('Reads not properly processed for further steps.')
-                    self.logger.debug('TypeError: {}'.format(t))
+                    self.logger.info('Reads not properly processed for further steps.')
+                    self.logger.info('TypeError: {}'.format(t))
                 else:
                     mapped_reads = []
 
@@ -462,7 +467,7 @@ class Mapper(object):
     #     """
     #     bam_file = sam_file_base+ '_sorted.bam'
     #
-    #     self.logger.debug("{}: --- Binning reads ---".format(self._species_name))
+    #     self.logger.info("{}: --- Binning reads ---".format(self._species_name))
     #     output_folder = os.path.join(self.args.output_path, "04_read_ogs_" +
     #                                  self._species_name)
     #     if not os.path.exists(output_folder):
@@ -574,7 +579,7 @@ class Mapper(object):
         #                            ref_file.split('/')[-1].split('.')[0] +
         #                            "_post")
         # if self.args.single_mapping:
-        #     self.logger.debug("{}: --- POSTPROCESSING MAPPING ---".format(self._species_name))
+        #     self.logger.info("{}: --- POSTPROCESSING MAPPING ---".format(self._species_name))
 
         # ngmlr doesn't have the option to write in bam file directly
         #if 'sam' in bam_file.split(".")[-1]:
@@ -582,30 +587,33 @@ class Mapper(object):
         sam_file_base = sam_file[:-4]
         if os.path.exists(sam_file):
             line_samtools_view = samtools+' view -F 4 -bh -S -@ ' + str(self.args.threads) +' -o ' + sam_file_base + ".bam " + sam_file
-            self._output_shell(line_samtools_view)
             self.logger.debug(line_samtools_view)
+            self._output_shell(line_samtools_view)
+            
         else:
-            self.logger.debug("Sam file is not generated", sam_file)
+            self.logger.info("Sam file is not generated", sam_file)
 
         # if self.args.single_mapping:
         #     self.logger.error("single mapping is not tested with this version ")
-            #self.logger.debug("{}: ---- Samtools view completed".format(self._species_name))
+            #self.logger.info("{}: ---- Samtools view completed".format(self._species_name))
 
         if os.path.exists(sam_file_base+".bam"):
 
             line_samtools_sort = samtools+' sort  -@ ' + str(self.args.threads) + ' -o ' + sam_file_base + "_sorted.bam " + sam_file_base+".bam"
+            self.logger.debug("Running "+ line_samtools_sort)
             self._output_shell(line_samtools_sort)
-            self.logger.debug("running "+ line_samtools_sort)
+            
         else:
-            self.logger.debug("bam file is not generated", sam_file_base+".bam")
+            self.logger.info("BAM file is not generated", sam_file_base+".bam")
 
         # if self.args.single_mapping:
-        #     self.logger.debug("{}: ---- Samtools sort completed".format(self._species_name))
+        #     self.logger.info("{}: ---- Samtools sort completed".format(self._species_name))
 
         if os.path.exists(sam_file_base + "_sorted.bam"):
             line_samtools_index= samtools+' index -@ ' + str(self.args.threads) + ' ' + sam_file_base + "_sorted.bam"
-            self._output_shell(line_samtools_index)
             self.logger.debug(line_samtools_index)
+            self._output_shell(line_samtools_index)
+            
 
         self._rm_file(sam_file_base + ".bam", ignore_error=True)
         self._rm_file(sam_file_base + ".sam", ignore_error=True)
@@ -682,27 +690,27 @@ class Mapper(object):
         shell_command = subprocess.Popen( line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
         #except:
-        #    self.logger.debug("Shell command failed to execute by running ")
+        #    self.logger.info("Shell command failed to execute by running ")
         #    return None
 
 #         try:
-#             self.logger.debug("Running " + line)
+#             self.logger.info("Running " + line)
 #             shell_command = subprocess.Popen(
 #                 line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
 #                 shell=True)
 #         except:
-#             self.logger.debug("Shell command failed to execute by running ")
+#             self.logger.info("Shell command failed to execute by running ")
 #             return None
 
         (output, err) = shell_command.communicate()
         if output:
             self.logger.debug("Shell output: "+ str(output))
-            print("Shell output: " + str(output))
+            #print("Shell output: " + str(output))
         if err:
             self.logger.debug("Shell err: " + str(err))
-            print("Shell err: " + str(err))
+            #print("Shell err: " + str(err))
 #         if err:
-#             self.logger.debug("Shell err: " + str(err))
+#             self.logger.info("Shell err: " + str(err))
         
         shell_command.wait()
         if shell_command.returncode != 0:

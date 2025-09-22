@@ -34,12 +34,10 @@ import sys
 COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 
 # logger = logging.getLogger(__name__)
-logger_level = "DEBUG"  # DEBUG INFO  # TRACE  DEBUG INFO  WARN  ERROR  FATAL
+
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
-if logger_level == "INFO":
-    logger.setLevel(logging.INFO)
 
 # logger.disabled = True
 
@@ -78,7 +76,7 @@ def parse_args(argv, exe_name, desc):
                                  'Examples:  -ax sr  ,  -ax map-hifi  ,  -ax map-pb  or  -ax map-ont  ')
 
     arg_parser.add_argument('--threads', type=int, default=1,
-                            help='[Default is 1] Number of threads for the mapping ')
+                            help='[Default is 1] Number of threads for gene marker alignment (mafft) and read mapping (minimap2) and tree inference (iqtree) ')
 
     # arg_parser.add_argument('--split_reads', action='store_true',
     #                         help='[Default is off] Splits reads as defined by split_len (200) '
@@ -213,6 +211,10 @@ def parse_args(argv, exe_name, desc):
     # Parse the arguments.
     args = arg_parser.parse_args(argv)
 
+    if args.debug: #  "DEBUG"  # DEBUG INFO  # TRACE  DEBUG INFO  WARN  ERROR  FATAL
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Debug mode is on")
+
     _reads = ""
     _species_name = ""
 
@@ -331,7 +333,7 @@ def main(argv, exe_name, desc=''):
                 logger.error("read file doesn't exist")
                 sys.exit()
 
-    if args.step == "all":
+    if args.step == "all": 
         logger.info('{}: ------- NEW RUN -------'.format(args.species_name))
         oma_output = OMAOutputParser(args)
         args.oma_output_path = oma_output.oma_output_path
