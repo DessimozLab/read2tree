@@ -4,11 +4,16 @@ read2tree is a software tool that allows to obtain alignment matrices for tree i
 
 read2tree works in linux with  [![Python 3.10.8](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
+## Important note 
+If you want to re-run a read2tree analysis (after facing an error, or changing the inputs), please make sure that you removed the `mplog.log` file and the output folder. Alternatively you could start from an empty folder. Otherwise, read2tree might use the faulty output of previous unfinished run.
 
-#### Read2Tree Talk:
-You can watch David Dylus's presentation on Read2Tree as part of the [in silico talks](https://www.sib.swiss/in-silico-talks/read2tree-inferring-phylogenetic-trees-from-raw-sequencing-data)
+We are working on a new [read2tree version](https://github.com/DessimozLab/read2tree/tree/minimap2) using the [minimap2](https://github.com/lh3/minimap2) aligner, which is much faster. For this version, the `--read_type` argument could be either `short`, `long-hifi` or `long-ont`. You could also use `--threads 40` to be used with minimap2. 
 
-#### Read2Tree publication
+
+## Read2Tree Talk:
+You can watch David Dylus's presentation on Read2Tree as part of the SIB [in silico talks](https://www.sib.swiss/in-silico-talks/read2tree-inferring-phylogenetic-trees-from-raw-sequencing-data).
+
+## Read2Tree publication
 You can cite Read2Tree published in [Nature Biotechnology](https://doi.org/10.1038/s41587-023-01753-4): 
 ```
 David Dylus, Adrian Altenhoff, Sina Majidian, Fritz J. Sedlazeck & Christophe Dessimoz.

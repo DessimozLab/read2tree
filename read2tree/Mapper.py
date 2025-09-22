@@ -685,6 +685,15 @@ class Mapper(object):
         #    self.logger.debug("Shell command failed to execute by running ")
         #    return None
 
+#         try:
+#             self.logger.debug("Running " + line)
+#             shell_command = subprocess.Popen(
+#                 line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+#                 shell=True)
+#         except:
+#             self.logger.debug("Shell command failed to execute by running ")
+#             return None
+
         (output, err) = shell_command.communicate()
         if output:
             self.logger.debug("Shell output: "+ str(output))
@@ -692,6 +701,9 @@ class Mapper(object):
         if err:
             self.logger.debug("Shell err: " + str(err))
             print("Shell err: " + str(err))
+#         if err:
+#             self.logger.debug("Shell err: " + str(err))
+        
         shell_command.wait()
         if shell_command.returncode != 0:
             self.logger.debug("Shell command failed to execute")

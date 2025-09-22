@@ -37,9 +37,9 @@ COPYRIGHT = '(C) 2017-{:d} David V Dylus'.format(date.today().year)
 logger_level = "DEBUG"  # DEBUG INFO  # TRACE  DEBUG INFO  WARN  ERROR  FATAL
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
+
 if logger_level == "INFO":
     logger.setLevel(logging.INFO)
-
 
 # logger.disabled = True
 
@@ -295,6 +295,7 @@ def main(argv, exe_name, desc=''):
     from . import __version__ as r2t_version
 
     logger.info(' ------- Read2Tree version: {} -------'.format(r2t_version))
+
     # print(' ------- Read2Tree version: '+str(r2t_version)+' -------')
 
     t1 = timer()
