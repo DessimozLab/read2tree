@@ -19,7 +19,7 @@ dependencies:
   - mafft
   - iqtree
   - ngmlr
-  - nextgenmap
+  - minimap2
   - samtools
   - filelock
   - pysam

@@ -52,6 +52,7 @@ class TreeInference(object):
         iqtree_wrapper.options.options['-m'].set_value('LG')
         iqtree_wrapper.options.options['-nt'].set_value(self.args.threads)
         tree = iqtree_wrapper()
+        logger.info("Tree is written to " + os.path.join(output_folder, "tree_" + self._species_name + ".nwk"))
         with open(os.path.join(output_folder, "tree_" + self._species_name + ".nwk"), "w") as text_file:
             text_file.write("{}".format(tree))
         self.tree = "{}".format(tree)
