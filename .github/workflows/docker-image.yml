@@ -60,11 +60,10 @@ jobs:
       -
         name: Test
         run: |
-          docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run ${{ env.TEST_TAG }} --tree --standalone_path /input/marker_genes --dna_reference /input/dna_ref.fa --reads /reads/sample_1.fastq --output_path /out/output --debug --threads 1
-          ls -l /out/output
-          ls -l /out
-          ls -l / 
-          if [ ! -f /out/output/tree_sample_1.nwk ] ; then exit 1; fi
+          docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/outside_docker_out:/inside_docker_out -v $PWD/run:/run ${{ env.TEST_TAG }} --tree --standalone_path /input/marker_genes --dna_reference /input/dna_ref.fa --reads /reads/sample_1.fastq --output_path /inside_docker_out/output --debug --threads 1
+          ls -l $PWD/outside_docker_out
+          ls -l $PWD/outside_docker_out/output
+          if [ ! -f $PWD/outside_docker_out/output/tree_sample_1.nwk ] ; then exit 1; fi
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request' && github.event_name != 'push'
