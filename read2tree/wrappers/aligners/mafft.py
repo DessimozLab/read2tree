@@ -181,6 +181,8 @@ def get_default_options():
         # --fastapair or --blastpair is selected. Default: 2.7
         FloatOption('--weighti', 2.7, active=False),
 
+        FloatOption('--thread', 1, active=False),
+
         # Guide tree is built number times in the progressive stage. Valid with 6mer
         # distance. Default: 2
         IntegerOption('--retree', 2, active=False),

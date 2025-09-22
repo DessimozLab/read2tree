@@ -23,7 +23,9 @@ from tqdm import tqdm
 from .wrappers.aligners import Mafft, DataType
 from .utils.seq_utils import concatenate
 
+
 logger = logging.getLogger(__name__)
+
 
 class Aligner(object):
 
@@ -32,6 +34,11 @@ class Aligner(object):
         self.args = args
         self.mapped_aligns = {}
         self.elapsed_time = 0
+
+        # # Configure logging based on provided args
+        # if self.args.debug:
+        #     logger.setLevel(logging.debug)
+        #     logger.debug("Debug mode is on")
 
         self._reads = self.args.reads
         self._species_name = self.args.species_name
@@ -285,7 +292,8 @@ class Aligner(object):
             mafft_wrapper = Mafft(value.aa, datatype=DataType.PROTEIN)
             mafft_wrapper.options.options['--localpair'].set_value(True)
             mafft_wrapper.options.options['--maxiterate'].set_value(1000)
-            logger.debug("aligning OG {} with {} proteins".format(key, len(value.aa)))
+            mafft_wrapper.options.options['--thread'].set_value(self.args.threads)
+            logger.info("aligning OG {} with {} proteins".format(key, len(value.aa)))
             alignment = mafft_wrapper()
             codons = self._get_codon_dict_og(value)
             align = Alignment()
