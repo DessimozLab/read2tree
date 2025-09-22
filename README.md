@@ -4,10 +4,8 @@ read2tree is a software tool that allows to obtain alignment matrices for tree i
 
 read2tree works in linux with  [![Python 3.10.8](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
-## Important note 
-If you want to re-run a read2tree analysis (after facing an error, or changing the inputs), please make sure that you removed the `mplog.log` file and the output folder. Alternatively you could start from an empty folder. Otherwise, read2tree might use the faulty output of previous unfinished run.
-
-We are working on a new [read2tree version](https://github.com/DessimozLab/read2tree/tree/minimap2) using the [minimap2](https://github.com/lh3/minimap2) aligner, which is much faster. For this version, the `--read_type` argument could be either `short`, `long-hifi` or `long-ont`. You could also use `--threads 40` to be used with minimap2. 
+## New release 
+We are now realasing Read2Tree v2.0.0 with improved spead and logging. As the aligner, we are now using minimap2 [minimap2](https://github.com/lh3/minimap2). Also, MAFFT and IQtree are now using multiple threads. We would suggest to run r2t with `--debug` which helps to debug later. Please note that arguments have slightly changed in this release(see below for details). 
 
 
 ## Read2Tree Talk:
@@ -140,7 +138,7 @@ read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2
 #### Run test example using docker
 (to be updated  )
 ```
-docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run  dessimozlab/read2tree:latest  --tree --standalone_path /input/marker_genes --dna_reference /input/cds-marker_genes.fasta.gz --reads /reads/sample_1.fastq --output_path /out
+docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/outside_docker_out:/inside_docker_out -v $PWD/run:/run ${{ env.TEST_TAG }} --tree --standalone_path /input/marker_genes --dna_reference /input/dna_ref.fa --reads /reads/sample_1.fastq --output_path /inside_docker_out/output --debug --threads 1
 ```
 
 ### output files
