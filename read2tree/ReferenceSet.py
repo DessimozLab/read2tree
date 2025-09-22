@@ -14,15 +14,13 @@ from tqdm import tqdm
 from Bio import SeqIO
 from Bio.SeqIO.FastaIO import FastaWriter
 
-from read2tree.Progress import Progress
-
 
 class ReferenceSet(object):
     '''
     Structure for reference
     '''
 
-    def __init__(self, args, og_set=None, load=True, progress=None):
+    def __init__(self, args, og_set=None, step=None):
         """
 
         :param args: list of arguments from command line
@@ -30,16 +28,18 @@ class ReferenceSet(object):
         :param load: set to True when reference loaded from folder/file of list of arguments
         """
         self.ref = {}
-        self.load = load
+        #self.load = load
         self.args = args
-        self.progress = progress
+        self.step = step
 
         self.logger = logging.getLogger(__name__)
         self._species_name = self.args.species_name
 
-        if load is False:
+        #if load is False:
+        if step == "2map":
             self.ref = self._load_records_folder()
-        elif og_set is not None and load is True:
+        #elif og_set is not None and load is True:
+        elif step == "all" or step == "1marker":  #
             self.ref = self._generate_reference(og_set)
             self.write()
             # self.progress.set_status('ref')

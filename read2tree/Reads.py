@@ -27,9 +27,9 @@ class Reads(object):
         self.elapsed_time = 0
         self.total_reads = 0
 
-        self.split_len = args.split_len
-        self.split_overlap = args.split_overlap
-        self.split_min_read_len = args.split_min_read_len
+        #self.split_len = args.split_len
+        #self.split_overlap = args.split_overlap
+        #self.split_min_read_len = args.split_min_read_len
 
         self.logger = logging.getLogger(__name__)
 
@@ -44,34 +44,34 @@ class Reads(object):
         self._reads = self.args.reads
         self._species_name = self.args.species_name
 
-        if load:
-            if len(self.args.reads) == 2 and self.args.check_mate_pairing:
-                mate_pairs = self.check_read_consistency(self._reads)
-                if mate_pairs:
-                    tmp = self.select_mates_from_reads(self._reads,
-                                                       mate_pairs)
-                    self._reads = tmp
+        #if load:
+        # if len(self.args.reads) == 2 and self.args.check_mate_pairing:
+        #     mate_pairs = self.check_read_consistency(self._reads)
+        #     if mate_pairs:
+        #         tmp = self.select_mates_from_reads(self._reads,
+        #                                            mate_pairs)
+        #         self._reads = tmp
 
-            if self.args.split_reads:
-                print('--- Splitting reads from {} ---'.format(self._reads))
-                self.logger.info('{}: --- Splitting reads from {} ---'
-                            .format(self._species_name, self._reads))
-                # print(memory_usage(self.process_reads))
-                # self.split_reads = self._write_to_tmp_file(self\
-                #       .process_reads())
-                self.reads = self.process_reads()
-            else:
-                self.reads = self._reads
-
-            if self.args.sample_reads:
-                print('--- Sampling reads from {} ---'.format(self.reads))
-                self.logger.info('{}: --- Sampling reads from {} ---'
-                            .format(self._species_name, self.reads))
-                self.reads = self.sample_from_reads(self.reads)
-            else:
-                self.reads = self.reads
+        # if self.args.split_reads:
+        #     print('--- Splitting reads from {} ---'.format(self._reads))
+        #     self.logger.info('{}: --- Splitting reads from {} ---'
+        #                 .format(self._species_name, self._reads))
+        #     # print(memory_usage(self.process_reads))
+        #     # self.split_reads = self._write_to_tmp_file(self\
+        #     #       .process_reads())
+        #     self.reads = self.process_reads()
+        # else:
+        #     self.reads = self._reads
+        self.reads = self._reads
+        if self.args.sample_reads:
+            print('--- Sampling reads from {} ---'.format(self.reads))
+            self.logger.info('{}: --- Sampling reads from {} ---'
+                        .format(self._species_name, self.reads))
+            self.reads = self.sample_from_reads(self.reads)
         else:
-            self.reads = self._reads
+            self.reads = self.reads
+        #else:
+        #    self.reads = self._reads
 
     def process_reads(self):
         '''
@@ -126,11 +126,11 @@ class Reads(object):
         end = time.time()
         self.elapsed_time = end - start
 
-        self.logger.info('{}: Reads larger than {} were split into {} bp long '
-                    'fragments with an overlap of {} bp.'.format(
-                        self._species_name, self.split_min_read_len,
-                        self.split_len,
-                        self.split_overlap))
+        # self.logger.info('{}: Reads larger than {} were split into {} bp long '
+        #             'fragments with an overlap of {} bp.'.format(
+        #                 self._species_name, self.split_min_read_len,
+        #                 self.split_len,
+        #                 self.split_overlap))
 
         self.logger.info('{}: {} reads were split into {} reads.'
                     .format(self._species_name, total_reads, total_new_reads))

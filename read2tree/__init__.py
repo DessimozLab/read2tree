@@ -6,9 +6,10 @@ import os
 from pkg_resources import resource_string
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-__version__ = '0.1.5'
-__copyright__ = 'read2tree (C) 2017-{:d} David Dylus' \
+__version__ = '1.5.3'
+__copyright__ = 'read2tree (C) 2017-{:d} David Dylus ' \
                 .format(date.today().year)
+
 
 # path = './log.yaml'
 # if os.path.exists(path):
@@ -16,9 +17,9 @@ __copyright__ = 'read2tree (C) 2017-{:d} David Dylus' \
 #         config = yaml.load(f.read())
 #     logging.config.dictConfig(config)
 
-conf = resource_string(__name__, 'logging/log.yaml')
+#conf = resource_string(__name__, 'logging/log.yaml')
 
-D = yaml.load(conf, Loader=yaml.FullLoader)
-D.setdefault('version', 1)
-logging.config.dictConfig(D)
+# D = yaml.load(conf, Loader=yaml.FullLoader)
+# D.setdefault('version', 1)
+# logging.config.dictConfig(D)
 # del D

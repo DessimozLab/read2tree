@@ -25,6 +25,7 @@ from tqdm import tqdm
 
 import functools
 from Bio import SeqIO, SeqRecord, Seq
+import sys
 try:
     from Bio.Alphabet import generic_dna
 except ImportError:
@@ -39,13 +40,16 @@ from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
 from read2tree.FastxReader import FastxReader
 
+minimap2_ex= "minimap2"
+samtools = "samtools"
+
 
 class Mapper(object):
     """
     Structure for reference
     """
 
-    def __init__(self, args, ref_set=None, og_set=None, species_name=None, progress=None,
+    def __init__(self, args, ref_set=None, og_set=None, species_name=None, step=None,
                  load=True):
         self.args = args
         self.elapsed_time = 0
@@ -68,74 +72,99 @@ class Mapper(object):
         else:
             self._mapping_name = self._species_name
 
-        self.progress = progress
+        self.step = step
         self.all_cov = {}
         self.all_sc = {}
 
         self.read_og_set = {}
 
-        if load:  # compute mapping
-            if ref_set != None:
-                self.mapped_records = \
-                    self._map_reads_to_references(ref_set)
+        if step=="2map" or step=="all":  # compute mapping
+            if ref_set != None: #todo else
+                self.mapped_records = self._map_reads_to_references(ref_set)
                 #if self.progress.get_mapping_status():
                 #    self.progress.set_status('map')
-            if self.mapped_records and og_set != None:
+            if self.mapped_records and og_set != None: #todo else
                 self.og_records = self._sort_by_og()
-        else:  # re-load already computed mapping
-            if og_set != None and not self.args.merge_all_mappings:
+        elif step =="3combine":  # re-load already computed mapping
+            if og_set != None: #and not self.args.merge_all_mappings:  # todo else
                 self.mapped_records = self._read_mapping_from_folder(ref_records=ref_set)
                 self.og_records = self._sort_by_og()
-            elif (og_set != None and
-                  self.args.merge_all_mappings and species_name != None):
-                self.mapped_records = \
-                    self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
-                self.og_records = self._sort_by_og()
+            # elif (og_set != None and # todo to check
+            #       self.args.merge_all_mappings and species_name != None):
+            #     self.mapped_records = \
+            #         self._read_mapping_from_folder(mapping_name=self._mapping_name, ref_records=ref_set)
+            #     self.og_records = self._sort_by_og()
+
+        # if not (self.mapped_records  or hasattr(self,"og_records")):
+        #     log_line='mapped_records or og_records is empty! are the aligner and samtools installed correctly? are there enough marker genes close to the species of interest? If it is a new run, make sure there is no output folder or a file mplog.log'
+        #     self.logger.error(log_line)
+        #     print(log_line)
+        #     sys.exit(-1)
+
+
 
     def _call_wrapper(self, ref_file_handle, reads, tmp_output_folder):
         start = time.time()
-        output_folder = os.path.join(self.args.output_path,
-                                     "04_mapping_" + self._species_name)
+        sample_reads = str(self._species_name)  # input sequencing read
+        output_folder = os.path.join(self.args.output_path, "04_mapping_" + sample_reads)
+        # ref_file_handle 'output/02_ref_dna/PYGNA_OGs.fa'
 
-        if len(self._reads) == 2:
-            ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads != None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        elif len(self._reads) != 2 and 'short' in self.args.read_type:
-            ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads != None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        elif len(self._reads) != 2 and 'long' in self.args.read_type:
-            ngm_wrapper = NGMLR(ref_file_handle, reads, tmp_output_folder.name)
-            if self.args.threads != None:
-                ngm_wrapper.options.options['-t'].set_value(self.args.threads)
-            if self.args.ngmlr_parameters != None:
-                par = self.args.ngmlr_parameters.split(',')
-                ngm_wrapper.options.options['-x'].set_value(str(par[0]))
-                ngm_wrapper.options \
-                           .options['--subread-length'].set_value(int(par[1]))
-                ngm_wrapper.options.options['-R'].set_value(float(par[2]))
-            ngm = ngm_wrapper()
-            bam_file = ngm['file']
-        self.logger.info('{}: Mapped {} / {} reads to {}'.format(self._species_name, ngm['reads_mapped'],
-                         ngm['total_reads']+ngm['reads_mapped'], os.path.basename(ref_file_handle)))
-        self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
-        self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        sam_file= output_folder+"/"+ref_file_handle.split('/')[-1].split('.')[0]+".sam"
 
+        #self._output_shell(minimap2_ex+" -ax sr "+ ref_file_handle+ " -t " + str(self.args.threads) + " "+reads+" | "+samtools_ex+" view -F 4 -bh -S -t" + str(self.args.threads)+ " > " + bam_file)
+        
+        rt = (self.args.read_type or "").strip()
+        if not rt:
+            self.logger.error("read_type is not set, please use one of these: -ax short, -ax long-ont, -ax long-hifi")
+        minimap_argm = f" {rt} "
+        
+        if isinstance(reads,list):
+            reads_str=" ".join(reads)
+        elif isinstance(reads,str):
+            reads_str = reads
+
+        line_minimap= minimap2_ex +" "+ minimap_argm + " -t " + str(self.args.threads) +" "+ ref_file_handle + " " + reads_str + " > " + sam_file
+        #self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True)
+        self._output_shell(line_minimap)
+        self.logger.info('mapping with ' + line_minimap)
+
+        # if len(self._reads) == 2:
+        #     ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder)
+        #     if self.args.threads != None:
+        #         ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+        #     ngm = ngm_wrapper()
+        #     bam_file = ngm['file']
+        # elif len(self._reads) != 2 and 'short' in self.args.read_type:
+        #     ngm_wrapper = NGM(ref_file_handle, reads, tmp_output_folder)
+        #     if self.args.threads != None:
+        #         ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+        #     ngm = ngm_wrapper()
+        #     bam_file = ngm['file']
+        # elif len(self._reads) != 2 and 'long' in self.args.read_type:
+        #     ngm_wrapper = NGMLR(ref_file_handle, reads, tmp_output_folder)
+        #     if self.args.threads != None:
+        #         ngm_wrapper.options.options['-t'].set_value(self.args.threads)
+        #     if self.args.ngmlr_parameters != None:
+        #         par = self.args.ngmlr_parameters.split(',')
+        #         ngm_wrapper.options.options['-x'].set_value(str(par[0]))
+        #         ngm_wrapper.options \
+        #                    .options['--subread-length'].set_value(int(par[1]))
+        #         ngm_wrapper.options.options['-R'].set_value(float(par[2]))
+        #     ngm = ngm_wrapper()
+        #     bam_file = ngm['file'] # this is a same file ! 'folder/output1/PYGNA_OGs.fa.sam'
+        # self.logger.info('{}: Mapped {} / {} reads to {}'.format(self._species_name, ngm['reads_mapped'],
+        #                  ngm['total_reads']+ngm['reads_mapped'], os.path.basename(ref_file_handle)))
+        # self._rm_file(ref_file_handle + "-enc.2.ngm", ignore_error=True) # ngmlr deosn't produce these files !
+        # self._rm_file(ref_file_handle + "-ht-13-2.2.ngm", ignore_error=True)
+        # self._rm_file(ref_file_handle + "-ht-13-2.3.ngm", ignore_error=True)
+        #
         end = time.time()
         self.elapsed_time = end - start
-        self.logger.info('{}: Mapping to {} references took {}.'
-                         .format(self._species_name, os.path.basename(ref_file_handle),
-                                 self.elapsed_time))
+        self.logger.info('{}: Mapping to {} references took {}.' .format(self._species_name, os.path.basename(ref_file_handle),self.elapsed_time))
 
-        if ngm['reads_mapped'] > 0 and os.path.exists(bam_file) and os.path.getsize(bam_file) > 0:
-            shutil.copy(bam_file, os.path.join(output_folder, os.path.basename(bam_file)))
-            return self._post_process_read_mapping(ref_file_handle, bam_file)
+        if  os.path.exists(sam_file) and os.path.getsize(sam_file) > 2: # ngm['reads_mapped'] > 0 and
+            #shutil.copy(sam_file, os.path.join(output_folder, os.path.basename(sam_file)))
+            return self._post_process_read_mapping(ref_file_handle, sam_file)
         else:
             open(os.path.join(output_folder, os.path.basename(ref_file_handle).split('.')[0]+'_cov.txt'), 'a').close()
             return None
@@ -147,22 +176,24 @@ class Mapper(object):
         :return: dictionary with key og_name and value sequences mapped to each
                  species
         """
-        print('--- Retrieve mapped consensus sequences ---')
+
         map_reads_species = {}
         if not mapping_name:
             mapping_name = self._mapping_name
-        in_folder = os.path.join(self.args.output_path,
-                                 "04_mapping_"+mapping_name)
+        self.logger.debug('--- Retrieve mapped consensus sequences ---'+str(mapping_name))
+        in_folder = os.path.join(self.args.output_path, "04_mapping_"+mapping_name)
+
         bam_files = glob.glob(os.path.join(in_folder, "*.bam"))
-        if self.args.min_cons_coverage >= 2 and bam_files:
+        if self.args.min_cons_coverage >= 2 and bam_files: # default self.args.min_cons_coverage is 1
+            self.logger.debug('Generating consensus from bam files' )
             for file in tqdm(bam_files, desc='Generating consensus from bam files ', unit=' species'):
                 species = file.split("/")[-1].split("_")[0]
-                ref_file = os.path.join(self.args.output_path, '02_ref_dna',
-                                 species+'_OGs.fa')
+                ref_file = os.path.join(self.args.output_path, '02_ref_dna',species+'_OGs.fa')
                 map_reads_species[species] = Reference()
-                self._output_shell(
-                    'samtools index -@ ' + str(self.args.threads) + ' ' +
-                    file)
+                line_samtools_index = samtools+' index -@ ' + str(self.args.threads) + ' ' +file
+                self._output_shell(line_samtools_index)
+                self.logger.debug(line_samtools_index)
+
                 consensus = self._build_consensus_seq_v2(ref_file, file)
                 records = []
 
@@ -174,20 +205,16 @@ class Mapper(object):
 
                 cov = Coverage(self.args)
                 cov.get_coverage_bam(file)
-                cov.write_coverage_bam(os.path.join(
-                    in_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
+                cov.write_coverage_bam(os.path.join(in_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
                 self.all_cov.update(cov.coverage)
 
                 seqC = SeqCompleteness(mapped_ref=ref_records[species].dna)
                 seqC.get_seq_completeness(map_reads_species[species].dna)
-                seqC.write_seq_completeness(os
-                                            .path.join(in_folder,
-                                                       species + "_OGs_sc.txt"))
+                seqC.write_seq_completeness(os.path.join(in_folder,species + "_OGs_sc.txt"))
                 self.all_sc.update(seqC.seq_completeness)
         else:
-            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")),
-                             desc='Loading consensus read mappings ',
-                             unit=' species'):
+            self.logger.debug('Loading consensus read mappings '+in_folder+ "*_consensus.fa")
+            for file in tqdm(glob.glob(os.path.join(in_folder, "*_consensus.fa")), desc='Loading consensus read mappings ', unit=' species'):
                 species = file.split("/")[-1].split("_")[0]
                 map_reads_species[species] = Reference()
                 fasta_reader = FastxReader(file)
@@ -230,16 +257,17 @@ class Mapper(object):
         accelerated when parsing large files from the node drive.
 
         '''
-        try:
-            tmp_output_folder = tempfile.TemporaryDirectory(
-                prefix='ngm', dir=os.environ.get("TMPDIR"))
-        except NotADirectoryError:
-            self.logger.info('{}: Environmental variable TMPDIR not set, will use \
-                        native python tmpdir location.'
-                        .format(self._species_name))
-        else:
-            tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
-            self.logger.debug('--- Creating tmp directory on local node ---')
+        # try:
+        #     tmp_output_folder = tempfile.TemporaryDirectory(
+        #         prefix='ngm', dir=os.environ.get("TMPDIR"))
+        # except NotADirectoryError:
+        #     self.logger.info('{}: Environmental variable TMPDIR not set, will use \
+        #                 native python tmpdir location.'
+        #                 .format(self._species_name))
+        # else:
+        #     tmp_output_folder = tempfile.TemporaryDirectory(prefix='ngm_')
+        #     self.logger.debug('--- Creating tmp directory on local node ---')
+        tmp_output_folder=self.args.output_path
         return tmp_output_folder
 
     def _map_reads_to_references(self, ref):
@@ -266,11 +294,13 @@ class Mapper(object):
         reads = read_container.reads
         # print(os.path.getsize(reads[0]))
 
-        if self.args.single_mapping:
-            references = [self.args
-                          .single_mapping.split("/")[-1].split("_")[0]]
-        else:
-            references = list(ref.keys())
+        # if self.args.single_mapping:
+        #     references = [self.args
+        #                   .single_mapping.split("/")[-1].split("_")[0]]
+        # else:
+        #     references = list(ref.keys())
+        #
+        references = list(ref.keys())
 
         # Going through provided references and starting mapping
         for species in tqdm(references,
@@ -281,9 +311,10 @@ class Mapper(object):
 
             # write reference into temporary file
             ref_file_handle = os.path.join(reference_path, species+'_OGs.fa')
-            ref_tmp_file_handle = os.path.join(tmp_output_folder.name,
-                                               species + '_OGs.fa')
-            shutil.copy(ref_file_handle, ref_tmp_file_handle)
+            #ref_tmp_file_handle = os.path.join(tmp_output_folder, #.name,
+            #                                   species + '_OGs.fa')
+            #shutil.copy(ref_file_handle, ref_tmp_file_handle) # it doesnt need to be temp.
+            ref_tmp_file_handle= ref_file_handle
 
             # call the WRAPPER here
             processed_reads = self._call_wrapper(ref_tmp_file_handle, reads,
@@ -320,16 +351,25 @@ class Mapper(object):
                 else:
                     mapped_reads = []
 
-                # self.progress.set_status('single_map', ref=species)
-                self._rm_file(ref_file_handle+".fai", ignore_error=True)
+            else:
+                self.logger.warning('No mapped reads on {} .'.format(str(species)))
 
-        tmp_output_folder.cleanup()
-        end = time.time()
+                #sys.exit(0) # for a few species , it is ok not to have mapped reads.
+                # self.progress.set_status('single_map', ref=species)
+                #self._rm_file(ref_file_handle+".fai", ignore_error=True)
+
+        #tmp_output_folder.cleanup()
+        end = time.time() 
         self.elapsed_time = end - start
         if len(references) > 1:
             self.logger.info('{}: Mapping to all references took {}.'
                         .format(self._species_name,
                                 self.elapsed_time))
+        if not mapped_reads_species :
+            log_line='mapped_reads_species is empty! are the aligner and samtools installed correctly? are there enough marker genes close to the species of interest? If it is a new run, make sure there is no output folder or a file mplog.log'
+            self.logger.warning(log_line)
+            print(log_line)
+
         return mapped_reads_species
 
     def _write_read_query_aling(self, read, og_name_file, write_mode):
@@ -414,29 +454,31 @@ class Mapper(object):
                                       for l in x])
         return mapped, all_reads
 
-    def _bin_reads(self, ref_file, bam_file):
-        """
-        Function that bins reads into their  orthologous groups
-        :param ref_file: Current species reference file
-        :param bam_file: Mapped bam file
-        """
-        self.logger.debug("{}: --- Binning reads ---".format(self._species_name))
-        output_folder = os.path.join(self.args.output_path, "04_read_ogs_" +
-                                     self._species_name)
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
-        tmp_folder = os.path.dirname(bam_file)
-        outfile_name = os.path.join(tmp_folder,
-                                    ref_file.split('/')[-1].split('.')[0] +
-                                    "_post")
-
-        shutil.copy(bam_file, os.path.join(output_folder,
-                                           os.path.basename(outfile_name +
-                                                            "_sorted.bam")))
-        shutil.copy(bam_file + ".bai",
-                    os.path.join(output_folder,
-                                 os.path.basename(outfile_name +
-                                                  "_sorted.bam.bai")))
+    # def _bin_reads(self, ref_file, sam_file_base):
+    #     """
+    #     Function that bins reads into their  orthologous groups
+    #     :param ref_file: Current species reference file
+    #     :param bam_file: Mapped bam file
+    #     """
+    #     bam_file = sam_file_base+ '_sorted.bam'
+    #
+    #     self.logger.debug("{}: --- Binning reads ---".format(self._species_name))
+    #     output_folder = os.path.join(self.args.output_path, "04_read_ogs_" +
+    #                                  self._species_name)
+    #     if not os.path.exists(output_folder):
+    #         os.makedirs(output_folder)
+    #     tmp_folder = os.path.dirname(bam_file)
+    #     outfile_name = os.path.join(tmp_folder,
+    #                                 ref_file.split('/')[-1].split('.')[0] +
+    #                                 "_post")
+    #
+    #     shutil.copy(bam_file, os.path.join(output_folder,
+    #                                        os.path.basename(outfile_name +
+    #                                                         "_sorted.bam")))
+    #     shutil.copy(bam_file + ".bai",
+    #                 os.path.join(output_folder,
+    #                              os.path.basename(outfile_name +
+    #                                               "_sorted.bam.bai")))
 
         # if os.path.exists(bam_file):
         #     bam = pysam.AlignmentFile(bam_file, "rb")
@@ -495,14 +537,15 @@ class Mapper(object):
         :param bam_file:
         :return:
         """
-        bam = pysam.AlignmentFile(bam_file)
+        bam = pysam.AlignmentFile(bam_file) # bam.header.to_dict()
         references = list(set([read.reference_name for read in bam.fetch()]))
         records = {rec.id: rec for rec in list(SeqIO.parse(ref_file, "fasta"))}
         new_records = {}
         for ref in references:
             #     self.logger.info(read.qual)
             seq = list('N' * len(records[ref]))
-            for pileup_column in bam.pileup(ref, 0, 10000000):
+            for pileup_column in bam.pileup(ref, 0, 10000000, ignore_orphans=False): # assumption max length gene is  10m
+                # for read in bam.fetch(ref, 1, 1200000):   print(read)
                 # TODO: improve the selection of a column by its quality
                 # qualities = [pileupread.alignment.query_alignment_qualities[pileupread.query_position] for pileupread in
                 #        pileupcolumn.pileups if not pileupread.is_del and not pileupread.is_refskip]
@@ -516,7 +559,7 @@ class Mapper(object):
                 new_records[ref] = ("").join(seq)
         return new_records
 
-    def _post_process_read_mapping(self, ref_file, bam_file):
+    def _post_process_read_mapping(self, ref_file, sam_file):
         """
         Function that will perform postprocessing of finished read mapping
         using the pysam functionality
@@ -525,50 +568,55 @@ class Mapper(object):
         :return:
         """
         # self.logger.info("--- Postprocessing reads to {} ---".format(self._species_name))
-        output_folder = os.path.join(self.args.output_path,
-                                     "04_mapping_"+self._species_name)
-        tmp_folder = os.path.dirname(bam_file)
-        outfile_name = os.path.join(tmp_folder,
-                                    ref_file.split('/')[-1].split('.')[0] +
-                                    "_post")
-        if self.args.single_mapping:
-            self.logger.debug("{}: --- POSTPROCESSING MAPPING "
-                         "---".format(self._species_name))
+        output_folder = os.path.join(self.args.output_path, "04_mapping_"+self._species_name)
+        #tmp_folder = os.path.dirname(bam_file)
+        #outfile_name = os.path.join(tmp_folder,
+        #                            ref_file.split('/')[-1].split('.')[0] +
+        #                            "_post")
+        # if self.args.single_mapping:
+        #     self.logger.debug("{}: --- POSTPROCESSING MAPPING ---".format(self._species_name))
 
         # ngmlr doesn't have the option to write in bam file directly
-        if 'sam' in bam_file.split(".")[-1]:
-            sam_file = bam_file
-            bam_file = sam_file.replace(".sam", ".bam")
-            if os.path.exists(sam_file):
-                self._output_shell(
-                    'samtools view -F 4 -bh -S -@ ' + str(self.args.threads) +
-                    ' -o ' + bam_file + " " + sam_file)
-        if self.args.single_mapping:
-            self.logger.debug("{}: ---- Samtools view completed"
-                         .format(self._species_name))
+        #if 'sam' in bam_file.split(".")[-1]:
+        #    sam_file = bam_file
+        sam_file_base = sam_file[:-4]
+        if os.path.exists(sam_file):
+            line_samtools_view = samtools+' view -F 4 -bh -S -@ ' + str(self.args.threads) +' -o ' + sam_file_base + ".bam " + sam_file
+            self._output_shell(line_samtools_view)
+            self.logger.debug(line_samtools_view)
+        else:
+            self.logger.debug("Sam file is not generated", sam_file)
 
-        if os.path.exists(bam_file):
-            self._output_shell(
-                'samtools sort -m 2G  -@ ' + str(self.args.threads) +
-                ' -o ' + outfile_name + "_sorted.bam " + bam_file)
-        if self.args.single_mapping:
-            self.logger.debug("{}: ---- Samtools sort completed"
-                         .format(self._species_name))
+        # if self.args.single_mapping:
+        #     self.logger.error("single mapping is not tested with this version ")
+            #self.logger.debug("{}: ---- Samtools view completed".format(self._species_name))
 
-        if os.path.exists(outfile_name + "_sorted.bam"):
-            self._output_shell(
-                'samtools index -@ ' + str(self.args.threads) + ' ' +
-                outfile_name + "_sorted.bam")
-        if self.args.single_mapping:
-            self.logger.debug("{}: ---- Samtools index completed"
-                         .format(self._species_name))
+        if os.path.exists(sam_file_base+".bam"):
 
-        # self._rm_file(bam_file, ignore_error=True)
-        if self.args.debug:
-            self._bin_reads(ref_file, outfile_name + '_sorted.bam')
+            line_samtools_sort = samtools+' sort  -@ ' + str(self.args.threads) + ' -o ' + sam_file_base + "_sorted.bam " + sam_file_base+".bam"
+            self._output_shell(line_samtools_sort)
+            self.logger.debug("running "+ line_samtools_sort)
+        else:
+            self.logger.debug("bam file is not generated", sam_file_base+".bam")
 
-        consensus = self._build_consensus_seq_v2(ref_file, outfile_name +
-                                                 '_sorted.bam')
+        # if self.args.single_mapping:
+        #     self.logger.debug("{}: ---- Samtools sort completed".format(self._species_name))
+
+        if os.path.exists(sam_file_base + "_sorted.bam"):
+            line_samtools_index= samtools+' index -@ ' + str(self.args.threads) + ' ' + sam_file_base + "_sorted.bam"
+            self._output_shell(line_samtools_index)
+            self.logger.debug(line_samtools_index)
+
+        self._rm_file(sam_file_base + ".bam", ignore_error=True)
+        self._rm_file(sam_file_base + ".sam", ignore_error=True)
+        # if self.args.single_mapping:
+        #     self.logger.warning("single_mapping is not tested in this version.") #debug("{}: ---- Samtools index completed".format(self._species_name))
+
+
+        #f self.args.debug:
+        #    self._bin_reads(ref_file, sam_file_base )
+
+        consensus = self._build_consensus_seq_v2(ref_file, sam_file_base +'_sorted.bam')
 
         all_consensus = []
         if consensus:
@@ -596,7 +644,7 @@ class Mapper(object):
 
         # Get effective coverage of each mapped sequence
         cov = Coverage(self.args)
-        cov.get_coverage_bam(outfile_name + "_sorted.bam")
+        cov.get_coverage_bam(sam_file_base + "_sorted.bam")
         cov.write_coverage_bam(os.path.join(
             output_folder, ref_file.split('/')[-1].split('.')[0] + "_cov.txt"))
         self.all_cov.update(cov.coverage)
@@ -607,19 +655,20 @@ class Mapper(object):
         for fn in fns:
             try:
                 os.remove(fn)
+                # self.logger.info("we removed {}.".format(fn)) #debug("{}: ---- Samtools index completed".format(self._species_name))
             except FileNotFoundError:
                 if not ignore_error:
                     raise
 
-    def _clean_up_tmp_files_single(self, species):
-        output_folder = os.path.join(self.args.output_path, "04_mapping_" +
-                                     self._species_name)
-        fn_ends = ('_post.bam', '_post_consensus_call.fq', '_post_sorted.bam',
-                   '_post_sorted.bam.bai', '.fa.fai',
-                   '.fa.sam', '.fa-ht-13-2.3.ngm', '.fa-ht-13-2.3.ngm',
-                   '.fa', '.fa-enc.2.ngm')
-        self._rm_file(*[os.path.join(output_folder, species + fn_end)
-                        for fn_end in fn_ends], ignore_error=True)
+    # def _clean_up_tmp_files_single(self, species):
+    #     output_folder = os.path.join(self.args.output_path, "04_mapping_" +
+    #                                  self._species_name)
+    #     fn_ends = ('_post.bam', '_post_consensus_call.fq', '_post_sorted.bam',
+    #                '_post_sorted.bam.bai', '.fa.fai',
+    #                '.fa.sam', '.fa-ht-13-2.3.ngm', '.fa-ht-13-2.3.ngm',
+    #                '.fa', '.fa-enc.2.ngm')
+    #     self._rm_file(*[os.path.join(output_folder, species + fn_end)
+    #                     for fn_end in fn_ends], ignore_error=True)
 
     def _output_shell(self, line):
         """
@@ -628,26 +677,38 @@ class Mapper(object):
         :param line:
         :return:
         """
-        try:
-            self.logger.debug("Running " + line)
-            shell_command = subprocess.Popen(
-                line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                shell=True)
-        except:
-            self.logger.debug("Shell command failed to execute by running ")
-            return None
+        #try:
+        self.logger.debug("Running " + line)
+        shell_command = subprocess.Popen( line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+        #except:
+        #    self.logger.debug("Shell command failed to execute by running ")
+        #    return None
+
+#         try:
+#             self.logger.debug("Running " + line)
+#             shell_command = subprocess.Popen(
+#                 line, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+#                 shell=True)
+#         except:
+#             self.logger.debug("Shell command failed to execute by running ")
+#             return None
 
         (output, err) = shell_command.communicate()
         if output:
             self.logger.debug("Shell output: "+ str(output))
+            print("Shell output: " + str(output))
         if err:
             self.logger.debug("Shell err: " + str(err))
+            print("Shell err: " + str(err))
+#         if err:
+#             self.logger.debug("Shell err: " + str(err))
         
         shell_command.wait()
         if shell_command.returncode != 0:
             self.logger.debug("Shell command failed to execute")
             self.logger.debug(line)
-            return None
+            sys.exit(1)
 
         return output
 

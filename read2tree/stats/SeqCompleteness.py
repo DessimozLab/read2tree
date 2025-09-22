@@ -93,7 +93,7 @@ class SeqCompleteness(object):
             gene_id = key.split("_")[0]
             seq_completeness = value
             line = species + "," + og + "," + gene_id + "," + \
-                str(seq_completeness[0]) + "," + str(seq_completeness[1]) + \
+                str(round(seq_completeness[0],5)) + "," + str(round(seq_completeness[1],5)) + \
                 "," + str(seq_completeness[2]) + "," + \
                 str(seq_completeness[3]) + "," + \
                 str(seq_completeness[4]) + "\n"

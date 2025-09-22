@@ -7,13 +7,14 @@
 import glob
 import os
 import re
-import pyham
-import requests
+# import pyham
+# import requests
 import logging
 import random
 import time
 import numpy as np
 import gzip
+import sys
 
 from tqdm import tqdm
 from collections import OrderedDict
@@ -26,14 +27,14 @@ from Bio.SeqIO.FastaIO import FastaWriter
 from . import __version__ as read2tree_version
 from read2tree.stats.Coverage import Coverage
 from read2tree.stats.SeqCompleteness import SeqCompleteness
-from read2tree.FastxReader import FastxReader
+# from read2tree.FastxReader import FastxReader
 
-API_URL = 'http://omabrowser.org/api'
+# API_URL = 'http://omabrowser.org/api'
 
 
 class OGSet(object):
 
-    def __init__(self, args, oma_output=None, load=True, progress=None):
+    def __init__(self, args, oma_output=None, step=None):
         self.args = args
 
         self.logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class OGSet(object):
 
         self._ham_analysis = None
 
-        self.progress = progress
+        self.step = step
         # self.progress.get_status(species_name=self._species_name)
 
         if self.args.remove_species_mapping:
@@ -69,9 +70,11 @@ class OGSet(object):
         #     self.mapped_ogs = self._reload_ogs_from_folder(
         #         folder_suffix="05_ogs_map_" + self._species_name)
         #     self.ogs = self.mapped_ogs
-        if not load and self.progress.ref_ogs_01:
+        #if not load and self.progress.ref_ogs_01:
+        if step == "2map" or step=="3combine":
             self.ogs = self._reload_ogs_from_folder()
-        elif load and oma_output is not None:
+
+        elif step == "all" or step == "1marker" : #load and oma_output is not None:
             self.min_species = oma_output.min_species
             self.oma = oma_output
             self.ogs = oma_output.ogs
@@ -84,8 +87,7 @@ class OGSet(object):
         folders
         :return: Dictionary with og name as key and list of SeqRecords
         """
-        print('--- Re-load ogs and find their corresponding DNA seq '
-              'from output folder ---')
+        print('--- Re-load ogs and find their corresponding DNA seq from output folder ---')
         ogs = {}
         ref_ogs_aa = sorted(glob.glob(os.path.join(os.path.join(
             self.args.output_path, folder_suffix+"_aa"), "*.fa")))
@@ -114,30 +116,37 @@ class OGSet(object):
             os.makedirs(path)
         return path
 
-    def _load_orthoxml(self):
-        if self.oma.mode == 'standalone':
-            og_orthoxml = os.path.join(self.oma_output_path,
-                                       'OrthologousGroups.orthoxml')
-            tree_str = os.path.join(self.oma_output_path,
-                                    'EstimatedSpeciesTree.nwk')
-            self._ham_analysis = pyham.Ham(tree_str, og_orthoxml,
-                                     use_internal_name=False)
+    # def _load_orthoxml(self):
+    #     if self.oma.mode == 'standalone':
+    #         og_orthoxml = os.path.join(self.oma_output_path,
+    #                                    'OrthologousGroups.orthoxml')
+    #         tree_str = os.path.join(self.oma_output_path,
+    #                                 'EstimatedSpeciesTree.nwk')
+    #         self._ham_analysis = pyham.Ham(tree_str, og_orthoxml,
+    #                                  use_internal_name=False)
 
     def _load_dna_db(self):
-        if '.fa' in self.args.dna_reference or \
-           '.fasta' in self.args.dna_reference:
-            db = {}
-            self.logger.info('--- Load ogs and find their corresponding '
-                  'DNA seq from {} ---'.format(self.args.dna_reference))
-            self.logger.info('Loading {} into memory. This might take a '
-                'while . . . '.format(self.args.dna_reference.split("/")[-1]))
+        # if not ('.fa' in self.args.dna_reference or \
+        #    '.fasta' in self.args.dna_reference):
+        #     self.logger.info('--- The input  ')
+        #     sys.exit(0)
+        db = {}
+        self.logger.info('--- Load ogs and find their corresponding '
+              'DNA seq from {} ---'.format(self.args.dna_reference))
+        self.logger.info('Loading {} into memory. This might take a '
+            'while . . . '.format(self.args.dna_reference.split("/")[-1]))
 
-            open_ = gzip.open if self.args.dna_reference.endswith('.gz') else open
-            with open_(self.args.dna_reference, 'rt') as f:
-                for rec in SeqIO.parse(f, 'fasta'):
-                    db[rec.id.strip()] = str(rec.seq)
-            source = 'fa'
-            return db, source
+        open_ = gzip.open if self.args.dna_reference.endswith('.gz') else open
+        with open_(self.args.dna_reference, 'rt') as f:
+            for rec in SeqIO.parse(f, 'fasta'):
+                if "_" in rec.id:
+                    self.logger.info( 'The fasta record id should not contain underscore _ . (You cannot use the output gene markers of read2tree in 01_ folders.)')
+                    sys.exit(0)
+                db[rec.id.strip()] = str(rec.seq)
+
+        source = 'fa'
+        return db, source
+
         # ---------------- only to be used internally ----------------------
         # elif '.h5' in self.args.dna_reference:
         #     print('--- Load ogs and find their corresponding DNA \
@@ -149,11 +158,11 @@ class OGSet(object):
         #                                .decode("utf-8") for row in
         #                                self._db_id_map.genome_table]
         #     # print(self._db_species_list)
-        else:
-            self.logger.info('--- Load ogs and find their corresponding DNA seq using '
-                  'the REST api ---')
-            source = 'REST_api'
-            return None, source
+        # else:
+        #     self.logger.info('--- Load ogs and find their corresponding DNA seq using '
+        #           'the REST api ---')
+        #     source = 'REST_api'
+        #     return None, source
 
     def _load_ogs(self):
         """
@@ -162,7 +171,7 @@ class OGSet(object):
         :return: Dictionary with og name as key and list of SeqRecords
         """
         db, source = self._load_dna_db()
-        self._load_orthoxml()
+        #self._load_orthoxml()
         start = time.time()
         ogs = {}
 
@@ -171,46 +180,48 @@ class OGSet(object):
 
         names_og = self.ogs
 
-        for name, records in tqdm(names_og.items(), desc='Loading OGs',
-                                  unit=' OGs'):
+        for name, records in tqdm(names_og.items(), desc='Loading OGs', unit=' OGs'):
             # name = file.split("/")[-1].split(".")[0]
             ogs[name] = OG()
             ogs[name].aa = self._get_aa_records(name, records)
-            output_file_aa = os.path.join(orthologous_groups_aa,
-                                          name + ".fa")
-            output_file_dna = os.path.join(orthologous_groups_dna,
-                                           name + ".fa")
+            output_file_aa = os.path.join(orthologous_groups_aa, name + ".fa")
+            output_file_dna = os.path.join(orthologous_groups_dna, name + ".fa")
+            ogs[name].dna = self._get_dna_records(ogs[name].aa, db, source, name)
 
-            if source:
-                try:
-                    ogs[name].dna = self._get_dna_records(ogs[name].aa,
-                                                          db, source, name)
-                except (ValueError, TypeError):
-                    self.logger.warning('This OG {} did not have any DNA'.format(name))
-                    pass
-                else:
-                    all_len_consistent = self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna)
-                    if "REST_api" in source and not all_len_consistent:
-                        msg = "The returned DNA sequences from the REST API do not match the protein sequences. " \
-                              "Most likely this is due to an update of the OMA Browser. Please download the DNA " \
-                              "sequences from the download page of the OMA Browser that correspond to the release " \
-                              "of your reference groups."
-                        self.logger.error(msg)
-                        raise Exception(msg)
-                    self._write(output_file_dna, ogs[name].dna)
-                    self._write(output_file_aa, ogs[name].aa)
-            else:
-                self.logger.debug('DNA reference was not provided. '
-                                  'Only amino acid sequences gathered!')
+            all_len_consistent = self._check_dna_aa_consistency(name, ogs[name].aa, ogs[name].dna)
+
+            self._write(output_file_dna, ogs[name].dna)
+            self._write(output_file_aa, ogs[name].aa)
+            end = time.time()
+            self.elapsed_time = end - start
+            self.logger.info('{}: Gathering of DNA seq for {} OGs took {}.'
+                             .format(self._species_name, len(names_og.keys()), self.elapsed_time))
+
+            # if source:
+            #     try:
+            #         ogs[name].dna = self._get_dna_records(ogs[name].aa, db, source, name)
+            #     except (ValueError, TypeError):
+            #         self.logger.warning('This OG {} did not have any DNA'.format(name))
+            #         pass
+            #     else:
+            #         all_len_consistent = self._check_dna_aa_length_consistency(name, ogs[name].aa, ogs[name].dna)
+            #         if "REST_api" in source and not all_len_consistent:
+            #             msg = "The returned DNA sequences from the REST API do not match the protein sequences. " \
+            #                   "Most likely this is due to an update of the OMA Browser. Please download the DNA " \
+            #                   "sequences from the download page of the OMA Browser that correspond to the release " \
+            #                   "of your reference groups."
+            #             self.logger.error(msg)
+            #             raise Exception(msg)
+            #         self._write(output_file_dna, ogs[name].dna)
+            #         self._write(output_file_aa, ogs[name].aa)
+            # else:
+            #     self.logger.debug('DNA reference was not provided. '
+            #                       'Only amino acid sequences gathered!')
         # self.progress.set_status('ogs')
-        end = time.time()
-        self.elapsed_time = end-start
-        self.logger.info('{}: Gathering of DNA seq for {} OGs took {}.'
-                         .format(self._species_name, len(names_og.keys()), self.elapsed_time))
         if db:
             db.clear()
-        if self._ham_analysis:
-            self._ham_analysis = None
+        # if self._ham_analysis:
+        #     self._ham_analysis = None
         return ogs
 
     def _get_aa_records(self, name, records):
@@ -257,112 +268,116 @@ class OGSet(object):
 
             # if 'X' in seq:
             cleaned_seq = self._clean_DNA_seq(seq)
-            # else:
+            # else: #
             #     cleaned_seq = seq
 
             return SeqRecord.SeqRecord(Seq.Seq(cleaned_seq),
                                        id=record.id,
                                        description="")
 
-    def _get_dna_from_REST(self, record):
-        """
-
-        :param record:
-        :param name:
-        :return:
-        """
-        tmp_id = re.sub(r'\..*', '', record.id.split("_")[0])
-        use_id = re.sub(r'\W+', '', tmp_id)
-        try:
-            oma_record = requests.get(API_URL + "/protein/" + use_id + "/")
-        except requests.exceptions.RequestException:
-            self.logger.debug('DNA not found for {}.'.format(use_id))
-            pass
-        else:
-            seq = oma_record.json()['cdna']
-            rec_id = oma_record.json()['omaid']
-
-            cleaned_seq = self._clean_DNA_seq(seq)
-            # else:
-            #     cleaned_seq = dna_record.seq
-            return SeqRecord.SeqRecord(cleaned_seq, record.id,
-                                       description="", name="")
-
-    def _get_dna_from_REST_bulk(self, records, og_name):
-        """
-
-        :param record:
-        :param name:
-        :return:
-        """
-        record_ids = [r.id for r in records]
-        dna_records = []
-        try:
-            reply = requests.post('https://omabrowser.org/api/protein/bulk_retrieve/',
-                                  json={"ids": record_ids},
-                                  headers={'User-Agent': 'read2tree/'+read2tree_version})
-        except requests.exceptions.RequestException as exception_type:
-            self.logger.warning('DNA not found probably for '+str(record_ids[0])+'. The reason is '+str(exception_type))
-            pass
-        else:
-            group_members = reply.json()
-            for memb in group_members:
-                # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
-                seq = memb['target']['cdna']
-                rec_id = memb['target']['omaid']+"_"+og_name
-                cleaned_seq = self._clean_DNA_seq(seq)
-                # print(cleaned_seq)
-                dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,
-                                       description="", name=""))
-        return dna_records
+    # def _get_dna_from_REST(self, record):
+    #     """
+    #
+    #     :param record:
+    #     :param name:
+    #     :return:
+    #     """
+    #     tmp_id = re.sub(r'\..*', '', record.id.split("_")[0])
+    #     use_id = re.sub(r'\W+', '', tmp_id)
+    #     try:
+    #         oma_record = requests.get(API_URL + "/protein/" + use_id + "/")
+    #     except requests.exceptions.RequestException:
+    #         self.logger.debug('DNA not found for {}.'.format(use_id))
+    #         pass
+    #     else:
+    #         seq = oma_record.json()['cdna']
+    #         rec_id = oma_record.json()['omaid']
+    #
+    #         cleaned_seq = self._clean_DNA_seq(seq)
+    #         # else:
+    #         #     cleaned_seq = dna_record.seq
+    #         return SeqRecord.SeqRecord(cleaned_seq, record.id,
+    #                                    description="", name="")
+    #
+    # def _get_dna_from_REST_bulk(self, records, og_name):
+    #     """
+    #
+    #     :param record:
+    #     :param name:
+    #     :return:
+    #     """
+    #     record_ids = [r.id for r in records]
+    #     dna_records = []
+    #     try:
+    #         reply = requests.post('https://omabrowser.org/api/protein/bulk_retrieve/',
+    #                               json={"ids": record_ids},
+    #                               headers={'User-Agent': 'read2tree/'+read2tree_version})
+    #     except requests.exceptions.RequestException as exception_type:
+    #         self.logger.warning('DNA not found probably for '+str(record_ids[0])+'. The reason is '+str(exception_type))
+    #         pass
+    #     else:
+    #         group_members = reply.json()
+    #         for memb in group_members:
+    #             # print(">{}\n{}\n\n".format(memb['omaid'], memb['cdna']))
+    #             seq = memb['target']['cdna']
+    #             rec_id = memb['target']['omaid']+"_"+og_name
+    #             cleaned_seq = self._clean_DNA_seq(seq)
+    #             # print(cleaned_seq)
+    #             dna_records.append(SeqRecord.SeqRecord(cleaned_seq, id=rec_id,
+    #                                    description="", name=""))
+    #     return dna_records
 
     def _get_dna_from_fasta(self, record, db):
         try:
-            if record.id.split("_")[0] not in db.keys():
-                return self._get_dna_from_REST(record)
-            else:
-                dna = db[record.id.split("_")[0]]
-        except ValueError:
-            self.logger.debug('DNA not found for {}.'.format(record.id))
-            pass
-        else:
-            return SeqRecord.SeqRecord(self._clean_DNA_seq(dna),
-                                           id=record.id,
-                                           description="")
+            # if record.id.split("_")[0] not in db.keys():
+            #     return self._get_dna_from_REST(record)
+            # else:
+            dna = db[record.id.split("_")[0]]
+        except: # ValueError
+            self.logger.debug('DNA not found for {} in the input dna gene marker fasta file. '.format(record.id))
+            sys.exit(0)
+
+        return SeqRecord.SeqRecord(self._clean_DNA_seq(dna), id=record.id, description="")
+
             # else:
             #     return SeqRecord.SeqRecord(Seq.Seq(dna.upper()),  id=record.id,
             #                                description="")
 
-    def _check_dna_aa_length_consistency(self, og_name, aa, dna):
+    def _check_dna_aa_consistency(self, og_name, aa, dna):
         dna_dic = {r.id.split("_")[0]: r for r in dna}
         aa_dic = {r.id.split("_")[0]: r for r in aa}
         all_consistent = True
         for k, r_dna in dna_dic.items():
             r_aa = aa_dic[k]
             if abs(len(r_dna.seq) - 3*len(r_aa.seq)) > 3:
-                self.logger.warning('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
+                self.logger.error('{}: {} has aa-length {} and dna-length {}'.format(self._species_name, og_name+" "+k, 3*len(r_aa.seq), len(r_dna.seq)))
                 all_consistent = False
+        if set(dna_dic.keys()) != set(aa_dic.keys()):
+            self.logger.error(' All aa marker genes should have corresponding dna sequences, not the case for {} '.format(str(set(aa_dic.keys()) - set(dna_dic.keys()))))
+            all_consistent = False
+        if not all_consistent:
+            sys.exit(0)
+
         return all_consistent
 
     def _get_dna_records(self, records, db, source, og_name):
         """
-
         :param records:
         :return:
         """
         og_cdna = []
-        if 'REST_api' in source:
-            return self._get_dna_from_REST_bulk(records, og_name)
-        else:
-            for i, record in enumerate(records):
-                if 'h5' in source:
-                    og_cdna.append(self._get_dna_from_h5(record))
-                elif 'fa' in source:
-                    og_cdna.append(self._get_dna_from_fasta(record, db))
-                # elif 'REST_api' in source:
-                #     og_cdna.append(self._get_dna_from_REST(record))
+        # if 'REST_api' in source:
+        #     return self._get_dna_from_REST_bulk(records, og_name)
+        # else:
+        for i, record in enumerate(records):
+            # if 'h5' in source:
+            #     og_cdna.append(self._get_dna_from_h5(record))
+            #elif 'fa' in source:
+            og_cdna.append(self._get_dna_from_fasta(record, db))
+            # elif 'REST_api' in source:
+            #     og_cdna.append(self._get_dna_from_REST(record))
 
-            return og_cdna
+        return og_cdna
 
     def _clean_DNA_seq(self, record):
         """
@@ -451,7 +466,7 @@ class OGSet(object):
             best_record_dna.id = species_name
             return (best_record_aa, best_record_dna)
         else:
-            return none
+            return None
 
     def _generate_seq_completeness(self, seqC, mapper, og, best_record_dna):
         if self.args.remove_species_ogs:
@@ -563,7 +578,6 @@ class OGSet(object):
 
     def write_added_ogs_aa(self, folder_name=None):
         """
-
         :param self:
         :param folder_name:
         :return:
@@ -582,7 +596,6 @@ class OGSet(object):
 
     def write_added_ogs_dna(self, folder_name=None):
         """
-
         :param self:
         :param folder_name:
         :return:

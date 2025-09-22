@@ -1,6 +1,6 @@
 # read2tree 
 
-read2tree is a software tool that allows to obtain alignment matrices for tree inference. For this purpose it makes use of the OMA database and a set of reads. Its strength lies in the fact that it bipasses the several standard steps when obtaining such a matrix in regular analysis. These steps are read filtereing, assembly, gene prediction, gene annotation, all vs all comparison, orthology prediction, alignment and concatination. 
+read2tree is a software tool that allows to obtain alignment matrices for tree inference. For this purpose it makes use of the OMA database and a set of reads. Its strength lies in the fact that it bipasses the several standard steps when obtaining such a matrix in regular analysis. These steps are read filtereing, assembly, gene prediction, gene annotation, all vs all comparison, orthology prediction, alignment and concatenation. 
 
 read2tree works in linux with  [![Python 3.10.8](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
@@ -47,38 +47,19 @@ conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsi
 conda install -c bioconda dendropy pysam
 ```
 
-Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/software/) (multiple sequence aligner), [iqtree](http://www.iqtree.org/) (phylogenomic inference), [ngmlr](https://github.com/philres/ngmlr), [ngm/nextgenmap](https://github.com/Cibiv/NextGenMap) (long and short read mappers), and [samtools](http://www.htslib.org/download/) which could be installed using conda.
+Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/software/) (multiple sequence aligner), [iqtree](http://www.iqtree.org/) (phylogenomic inference), [minimap2](https://github.com/lh3/minimap2) (long and short read mappers), and [samtools](http://www.htslib.org/download/) which could be installed using conda.
+For this version, the `--read_type` argument accepts any minimap2 options string that defines how reads are aligned to the reference. For example, it could be `-ax sr`, `-ax map-hifi` or `-ax map-ont`. You can also pass `--threads 40` to be used with minimap2.
 ```
-conda install -c bioconda mafft iqtree ngmlr nextgenmap samtools
+conda install -c bioconda mafft iqtree minimap2 samtools
 ```
 
 Then, you can install the read2tree package after downlaoding the package from this GitHub repo using
 
 ```
-git clone https://github.com/DessimozLab/read2tree.git
+git clone https://github.com/DessimozLab/read2tree.git -b minimap2
 cd read2tree
 python setup.py install
 ```
-
-
-### 2) Installation using Conda
-
-
-```
-conda create -n r2t python=3.10.8
-conda install -c bioconda  read2tree 
-
-```
-Alternatively, you could also try using [mamba](https://mamba.readthedocs.io/en/latest/). Caution: please read about compatiblity of conda and mamba in one envirnoment.
-
-### 3) Installation using Docker
-The Dockerfile is also available in this repository. There is an example how to run in the [test example](#test-example) section.
-
-A prebuild container can be loaded from dockerhub:
-```
-docker pull dessimozlab/read2tree:latest
-```
-
 
 
 
@@ -100,7 +81,7 @@ cat marker_genes/*.fna > dna_ref.fa
 
 ### output 
 
-The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as defualt.  
+The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as default.  
 
 
 ### Single species mode
@@ -109,12 +90,23 @@ read2tree --tree --standalone_path marker_genes/ --reads read_1.fastq read_2.fas
 ```
 
 ### Multiple species mode
+
+#### step1
 ```
-read2tree --standalone_path marker_genes/ --output_path output --reference --dna_reference  dna_ref.fa  # this creates just the reference folder 01 - 03
-read2tree --standalone_path marker_genes/ --output_path output --reads species1_R1.fastq species2_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --reads species2_R1.fastq species2_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --reads species3_R1.fastq species3_R2.fastq
-read2tree --standalone_path marker_genes/ --output_path output --merge_all_mappings --tree
+read2tree  --step 1marker  --standalone_path marker_genes  --dna_reference dna_ref.fa --output_path output  --debug 
+```
+
+#### step2
+The following could be run in parallel. 
+```
+read2tree --step 2map --standalone_path marker_genes  --dna_reference dna_ref.fa --reads species1_R1.fastq species2_R2.fastq  --output_path output --debug
+read2tree --step 2map --standalone_path marker_genes  --dna_reference dna_ref.fa --reads species2_R1.fastq species2_R2.fastq  --output_path output --debug
+read2tree --step 2map --standalone_path marker_genes  --dna_reference dna_ref.fa --reads species3_R1.fastq species3_R2.fastq  --output_path output  --debug
+```
+
+#### step3
+```
+read2tree  --step 3combine --standalone_path marker_genes  --dna_reference dna_ref.fa  --output_path output  --tree --debug
 ```
 
 ### bootstraping
@@ -141,12 +133,12 @@ The goal of this test example is to infer species tree for Mus musculus using it
 
 ```
 cd tests
-read2tree --debug --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq --output_path output/  --dna_reference  dna_ref.fa 
+read2tree --tree --standalone_path marker_genes/ --reads sample_1.fastq sample_2.fastq  --output_path output --dna_reference  dna_ref.fa  
 ```
 
 
 #### Run test example using docker
-
+(to be updated  )
 ```
 docker run --rm -i -v $PWD/tests:/input -v $PWD/tests/:/reads -v $PWD/output:/out -v $PWD/run:/run  dessimozlab/read2tree:latest  --tree --standalone_path /input/marker_genes --dna_reference /input/cds-marker_genes.fasta.gz --reads /reads/sample_1.fastq --output_path /out
 ```
@@ -190,33 +182,30 @@ export LANG=en_US.UTF-8
 
 ## Change log
 
-
+- version 1.5:
+  - using minimap2 as the read mapper 
 - version 0.1.5:
   - fix issue with UnknownSeq being removed in Biopython>1.80
   - removing unused modeltester wrappers
-
 - version 0.1.4:
    - allow reference folders not named marker_genes (#12)
    - update environment.yml file to contain all dependencies (#16)
    - documentation improvements
    - CI/CD pipeline
-
 - version 0.1.3: 
    - improvements of documentation
    - adding support for docker
-   - small bugfixes 
-
+   - small bugfixes
 - version 0.1.2: packaging
-
 - version 0.1.0: Adding covid analysis
-
 - version 0.0: Initial work
 
 
 ## Authors
 
-* [David Dylus](https://github.com/dvdylus), (main author)
+* [David Dylus](https://github.com/dvdylus)
 * [Adrian Altenhoff](http://people.inf.ethz.ch/adriaal).
+* [Sina Majidian](https://sinamajidian.github.io/)
 
 
 The authors would like to thank Alex Warwick for help how to initiate such a package.
