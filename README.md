@@ -163,6 +163,13 @@ Hint: As read2tree exploits the `progress` package, the user can benefit from co
 To see the details of arguments, please take look at our wiki [page](https://github.com/DessimozLab/read2tree/wiki/Details-of-arguments)
 
 ## Possible issues
+It seems that minimap2 doesn't have the preset option  `-x sr` for short reads in older versions like 2.1. Then, you might get
+```
+Shell err: b"[E::main] unknown preset 'sr'\n"
+```
+
+Updating minimap2 to version 2.30 should fix the issue.
+
 
 Installing on MAC sometimes drops this error:
 
@@ -180,8 +187,12 @@ export LANG=en_US.UTF-8
 
 ## Change log
 
+- version 2.0.1:
+  - fixing a few bugs
+- version 2.0.0:
+  - pre-release: improve logging and make minimap2 as default aligner
 - version 1.5:
-  - using minimap2 as the read mapper 
+  - using minimap2 as the read mapper in the minimap2 branch
 - version 0.1.5:
   - fix issue with UnknownSeq being removed in Biopython>1.80
   - removing unused modeltester wrappers

@@ -99,7 +99,7 @@ class FloatOption(TypedValueOption):
         return Real
 
     def get_value(self):
-        return float(self._value)
+        return self._value
 
 
 class StringOption(TypedValueOption):

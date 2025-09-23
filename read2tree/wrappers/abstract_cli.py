@@ -212,7 +212,7 @@ class AbstractCLI(object):
         if flags:
             cmd = ' '.join([cmd.strip(), _kwargs_to_args(flags, self._hyphen_policy)])
         self.cmd = '{} {}'.format(self.exe, cmd)
-        logger.debug('Running following command: {}'.format(self.cmd))
+        logger.info('Running following command: {}'.format(self.cmd))
 
         # spawn
         self.process = Popen(shlex.split(self.cmd),
