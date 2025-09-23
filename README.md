@@ -1,11 +1,11 @@
 # read2tree 
 
-read2tree is a software tool that allows to obtain alignment matrices for tree inference. For this purpose it makes use of the OMA database and a set of reads. Its strength lies in the fact that it bipasses the several standard steps when obtaining such a matrix in regular analysis. These steps are read filtereing, assembly, gene prediction, gene annotation, all vs all comparison, orthology prediction, alignment and concatenation. 
+read2tree is a software tool that allows obtaining alignment matrices for tree inference. For this purpose it makes use of the OMA database and a set of reads. Its strength lies in the fact that it bypasses the several standard steps when obtaining such a matrix in regular analysis. These steps are read filtering, assembly, gene prediction, gene annotation, all vs all comparison, orthology prediction, alignment and concatenation. 
 
 read2tree works in linux with  [![Python 3.10.8](https://img.shields.io/badge/python-3.10.8-blue.svg)](https://www.python.org/downloads/release/python-310/)
 
 ## New release 
-We are now realasing Read2Tree v2.0.0 with improved spead and logging. As the aligner, we are now using minimap2 [minimap2](https://github.com/lh3/minimap2). Also, MAFFT and IQtree are now using multiple threads. We would suggest to run r2t with `--debug` which helps to debug later. Please note that arguments have slightly changed in this release(see below for details). 
+We are now releasing Read2Tree v2.0.0 with improved speed and logging. As the aligner, we are now using minimap2 [minimap2](https://github.com/lh3/minimap2). Also, MAFFT and IQtree are now using multiple threads. We would suggest running r2t with `--debug` which helps to debug later. Please note that arguments have slightly changed in this release(see below for details). 
 
 
 ## Read2Tree Talk:
@@ -45,7 +45,7 @@ conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsi
 conda install -c bioconda dendropy pysam
 ```
 
-Besides, you need softwares including [mafft](http://mafft.cbrc.jp/alignment/software/) (multiple sequence aligner), [iqtree](http://www.iqtree.org/) (phylogenomic inference), [minimap2](https://github.com/lh3/minimap2) (long and short read mappers), and [samtools](http://www.htslib.org/download/) which could be installed using conda.
+Besides, you need software packages including [mafft](http://mafft.cbrc.jp/alignment/software/) (multiple sequence aligner), [iqtree](http://www.iqtree.org/) (phylogenomic inference), [minimap2](https://github.com/lh3/minimap2) (long and short read mappers), and [samtools](http://www.htslib.org/download/) which could be installed using conda.
 For this version, the `--read_type` argument accepts any minimap2 options string that defines how reads are aligned to the reference. For example, it could be `-ax sr`, `-ax map-hifi` or `-ax map-ont`. You can also pass `--threads 40` to be used with minimap2.
 ```
 conda install -c bioconda mafft iqtree minimap2 samtools
