@@ -41,7 +41,7 @@ The following python packages are needed: [numpy](https://github.com/numpy/numpy
 
 You can install all of them using.
 ```
-conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsing requests natsort pyyaml filelock
+conda install -c conda-forge biopython numpy Cython ete3 lxml tqdm scipy pyparsing requests natsort pyyaml filelock libdeflate libcurl
 conda install -c bioconda dendropy pysam
 ```
 
