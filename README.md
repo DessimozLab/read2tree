@@ -16,7 +16,7 @@ You can cite Read2Tree published in [Nature Biotechnology](https://doi.org/10.10
 ```
 David Dylus, Adrian Altenhoff, Sina Majidian, Fritz J. Sedlazeck & Christophe Dessimoz.
 
-Inference of phylogenetic trees directly from raw sequencing reads using Read2Tree.  Nat Biotechnol (2023). https://doi.org/10.1038/s41587-023-01753-4/.
+Inference of phylogenetic trees directly from raw sequencing reads using Read2Tree.  Nat Biotechnol (2023). https://doi.org/10.1038/s41587-023-01753-4.
 ```
 
 
