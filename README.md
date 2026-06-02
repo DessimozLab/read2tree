@@ -51,6 +51,11 @@ For this version, the `--read_type` argument accepts any minimap2 options string
 conda install -c bioconda mafft iqtree minimap2 samtools
 ```
 
+For the coalescent species tree (step 4), [ASTER](https://github.com/chaoszhang/ASTER) (the C++ implementation of ASTRAL-III) is required. [ClipKIT](https://github.com/JLSteenwyk/ClipKIT) is optional and used only when `--trim` is passed.
+```
+conda install -c bioconda aster clipkit
+```
+
 Then, you can install the read2tree package after downlaoding the package from this GitHub repo using
 
 ```
@@ -79,7 +84,9 @@ cat marker_genes/*.fna > dna_ref.fa
 
 ### output 
 
-The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as default.  
+The output of Read2Tree is the concatenated alignments as a fasta file where each record corresponds to one species. We also provide the option `--tree` for inferring the species tree using IQTREE as default (concatenation/supermatrix approach).
+
+For a coalescent-based species tree that accounts for incomplete lineage sorting and differing gene tree histories, run the optional **step 4** after step 3 (see below).  
 
 
 ### Single species mode
@@ -120,6 +127,74 @@ Tunable filters (only active with `--meta`):
 - `--meta_marker_fraction` (float in 0-1, default `0.0`): minimum fraction of total marker genes a metagenomic species must have alignments in.
 
 **Note on false positives:** metagenomic mode is permissive by design and may include species that share marker reads only by chance. We recommend tuning `--meta_min_markers` and `--meta_marker_fraction` to your dataset (e.g. `50` and `0.5` as a starting point for typical microbial communities) to reduce false positives.
+
+#### step4 (optional: coalescent species tree)
+
+Step 3 builds a supermatrix tree by concatenating all OG alignments. If you want a **coalescent-based species tree** instead, which better handles incomplete lineage sorting and the different evolutionary histories of individual genes, run step 4 after step 3:
+
+```
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24
+```
+
+Step 4 does the following automatically:
+1. Filters the per-OG alignments from step 3 by taxon occupancy (`--min_samples`, default 10) and gap fraction (`--max_gap`, default 0.80).
+2. Runs IQ-TREE on each passing alignment in parallel (`-m LG+F+G`, `-alrt 1000`, `--abayes`, `-fast`) to infer individual gene trees.
+3. Collects all gene trees and passes them to [ASTER](https://github.com/chaoszhang/ASTER) to produce the final coalescent species tree.
+
+**ASTER binary.** The ASTER suite provides several binaries, all installed by `conda install aster`. By default, step 4 auto-detects the first available in your PATH (`astral3`,`astral-pro3`,`astral-pro2`,`wastral`,`astral4`). Use `--astral_binary` to opt into a specific estimator:
+
+| Binary | When to use |
+|---|---|
+| `astral3` | Default. Standard ASTRAL-III for single-copy orthologs. |
+| `astral-pro3` | Gene trees with paralogs (multi-copy gene families). |
+| `wastral` | Recommended for noisy gene trees. Weights each quartet by gene tree branch support, so poorly supported splits contribute less to the species tree. IQ-TREE's `--abayes` supports (already included in step 4) provide the weighting signal. |
+| `astral4` | Large datasets with substantial missing taxa, or when substitution-rate branch lengths on internal nodes are needed for downstream rate analyses. |
+
+```
+# weighted ASTRAL - better accuracy when gene tree support is variable
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --astral_binary wastral
+
+# ASTRAL-IV - better robustness under missing data
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --astral_binary astral4
+```
+
+**Choosing `--min_samples` for large datasets.** The default of 10 is intentionally permissive so the tool works out of the box for small test datasets. For studies with many samples, the occupancy threshold has a large effect on how many OGs survive filtering and on the quality of the resulting gene trees. A useful empirical guideline is to require at least 30–40% taxon occupancy. For example, `--min_samples 100` for a dataset of ~300 samples. In practice, applying a meaningful occupancy threshold together with `--max_gap 0.80` can reduce the number of OGs from tens of thousands to a few hundred; this is expected and desirable, as the surviving alignments are well-sampled across the tree and produce far more reliable gene trees for ASTRAL than a large set of sparse, gap-heavy alignments would. If the filtered set is very small (fewer than ~50 OGs), consider relaxing `--min_samples` slightly rather than `--max_gap`, since taxon occupancy drives gene tree resolution more than column-level gap content.
+
+Optionally, pass `--trim` to run [ClipKIT](https://github.com/JLSteenwyk/ClipKIT) column-trimming on each alignment before gene tree inference:
+```
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --trim
+```
+
+**IQ-TREE and ASTER options.** Step 4 uses sensible defaults for per-gene tree inference (`-m LG+F+G -alrt 1000 --abayes -fast`). For cases where these need to be adjusted, three pass-through arguments are available:
+
+| Argument | Default | Purpose |
+|---|---|---|
+| `--iqtree_model` | `LG+F+G` | Substitution model for per-gene IQ-TREE runs (e.g. `WAG+G`, `LG+G`, `TEST` for ModelFinder) |
+| `--iqtree_args` | none | Extra flags appended verbatim to every per-gene IQ-TREE call (e.g. `"-B 1000"`) |
+| `--astral_args` | none | Extra flags appended verbatim to the ASTER call; see the ASTER documentation for available options |
+| `--no_fast` | off | Disable the `-fast` flag to run a full ML tree search per gene. Required when using bootstrap via `--iqtree_args` (e.g. `--iqtree_args "-B 1000"`), as `-fast` and bootstrap are incompatible in IQ-TREE |
+| `--dna` | off | Use DNA alignments from `06_align_merge_dna` instead of amino acid alignments. Recommended for closely related species. Default model switches to `GTR+G` |
+
+```
+# Use WAG+G model instead of LG+F+G
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --iqtree_model WAG+G
+
+# Run ModelFinder per gene (much slower, but selects best-fit model for each OG)
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --iqtree_model TEST
+
+# Full ML search with ultrafast bootstrap (--no_fast required when using -B)
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --no_fast --iqtree_args "-B 1000"
+
+# DNA-based coalescent tree (recommended for closely related species)
+read2tree --step 4astral --standalone_path marker_genes --dna_reference dna_ref.fa --output_path output --threads 24 --dna
+```
+
+Key output files written to `output/` (suffix is `aa` by default, `dna` when `--dna` is used):
+- `07_astral_filtered_aa/` or `07_astral_filtered_dna/` - per-OG FASTA alignments that passed filtering
+- `07_astral_trimmed_aa/` or `07_astral_trimmed_dna/` - ClipKIT-trimmed alignments (only when `--trim` is used)
+- `08_gene_trees_aa/` or `08_gene_trees_dna/` - individual IQ-TREE gene tree files
+- `gene_trees_merge_aa.nwk` or `gene_trees_merge_dna.nwk` - all gene trees concatenated into one file (input to ASTER)
+- `astral_tree_merge_aa.nwk` or `astral_tree_merge_dna.nwk` - the final coalescent species tree in Newick format
 
 ### bootstraping
 

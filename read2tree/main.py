@@ -25,6 +25,7 @@ from read2tree.Mapper import Mapper
 from read2tree.Aligner import Aligner
 # from read2tree.Progress import Progress
 from read2tree.TreeInference import TreeInference
+from read2tree.CoalescentInference import CoalescentInference
 from read2tree.parser import OMAOutputParser
 import argparse
 import glob
@@ -172,8 +173,59 @@ def parse_args(argv, exe_name, desc):
                             help='[Default is false] Compute tree, otherwise just '
                                  'output concatenated alignment!')
 
+    arg_parser.add_argument('--min_samples', type=int, default=10,
+                            help='[Default is 10] Minimum number of sequences per OG '
+                                 'after gap filtering. Used by step 4astral.')
+
+    arg_parser.add_argument('--max_gap', type=float, default=0.80,
+                            help='[Default is 0.80] Maximum allowed fraction of gaps '
+                                 '(-, X, N) per sequence. Used by step 4astral.')
+
+    arg_parser.add_argument('--trim', action='store_true',
+                            help='[Default is false] Run ClipKIT trimming on filtered '
+                                 'alignments before per-gene IQ-TREE. Requires clipkit '
+                                 'in PATH. Used by step 4astral.')
+
+    arg_parser.add_argument('--astral_binary', default=None,
+                            help='[Default is auto-detect] Name or path of the ASTER '
+                                 'binary to use for coalescent species tree estimation '
+                                 '(e.g. astral3, astral-pro3, astral-pro2). If not set, '
+                                 'the first available binary is used. Used by step 4astral.')
+
+    arg_parser.add_argument('--iqtree_model', default=None,
+                            help='[Default is LG+F+G] Substitution model passed to IQ-TREE '
+                                 'for per-gene tree inference in step 4astral. Overrides the '
+                                 'built-in default (e.g. --iqtree_model WAG+G, '
+                                 '--iqtree_model LG+G, --iqtree_model TEST). '
+                                 'Used by step 4astral.')
+
+    arg_parser.add_argument('--iqtree_args', default=None,
+                            help='[Default is none] Extra IQ-TREE flags appended verbatim to '
+                                 'every per-gene tree invocation in step 4astral. Use quotes '
+                                 'for multiple flags (e.g. --iqtree_args "-bb 1000 -redo"). '
+                                 'Used by step 4astral.')
+
+    arg_parser.add_argument('--astral_args', default=None,
+                            help='[Default is none] Extra flags appended verbatim to the ASTER '
+                                 'command in step 4astral. Use quotes for multiple flags. '
+                                 'See ASTER documentation for available options. '
+                                 'Used by step 4astral.')
+
+    arg_parser.add_argument('--no_fast', action='store_true',
+                            help='[Default is false] Disable the -fast flag for per-gene '
+                                 'IQ-TREE runs in step 4astral, enabling a full ML tree '
+                                 'search. Required when using bootstrap via --iqtree_args '
+                                 '(e.g. --iqtree_args "-B 1000"). Used by step 4astral.')
+
+    arg_parser.add_argument('--dna', action='store_true',
+                            help='[Default is false] Use DNA alignments from '
+                                 '06_align_merge_dna instead of amino acid alignments '
+                                 'for step 4astral. Recommended for closely related '
+                                 'species. Default IQ-TREE model switches to GTR+G. '
+                                 'Used by step 4astral.')
+
     arg_parser.add_argument('--step', default="all",
-                            help='[Default is all  1marker 2map 3combine ')
+                            help='[Default is all  1marker 2map 3combine 4astral')
 
     # arg_parser.add_argument('--merge_all_mappings', action='store_true',
     #                         help='[Default is off] In case multiple species were mapped to '
@@ -247,7 +299,7 @@ def parse_args(argv, exe_name, desc):
     if args.species_name:
         _species_name = args.species_name
 
-    if args.step == "3combine":  # todo why is needed?
+    if args.step == "3combine" or args.step == "4astral":
         _species_name = 'merge'
 
     args.reads = _reads
@@ -444,6 +496,22 @@ def main(argv, exe_name, desc=''):
         logger.info(' ------- Read2Tree step 3combine finished -*- -------')
 
         logger.info(' ------- Read2Tree finished -*- -------')
+
+    if args.step == "4astral":
+        _seq_type = 'dna' if args.dna else 'aa'
+        input_align_folder = os.path.join(args.output_path, '06_align_merge_' + _seq_type)
+        if not os.path.exists(input_align_folder):
+            logger.error(
+                'Step 4astral requires completed step 3combine output. '
+                'Folder not found: {}'.format(input_align_folder))
+            sys.exit()
+        logger.info('{}: ------- Read2Tree step 4astral (coalescent species tree) -------'.format(
+            args.species_name))
+        coalescent = CoalescentInference(args)
+        if coalescent.tree:
+            logger.info(str(coalescent.tree))
+        print("done- 4astral")
+        logger.info(' ------- Read2Tree step 4astral finished -*- -------')
 
     print("done- main ")
 

@@ -23,3 +23,5 @@ dependencies:
   - samtools
   - filelock
   - pysam
+  - aster
+  - clipkit

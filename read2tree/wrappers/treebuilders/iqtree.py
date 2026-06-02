@@ -147,3 +147,40 @@ def get_default_options():
         # Bootstrap + ML tree + consensus tree (>=100)
         IntegerOption('-b', 0, active=False)
     ])
+
+
+def get_gene_tree_options():
+    """Options for per-gene protein tree inference in the coalescent pipeline (step 4astral).
+
+    Uses -T (IQ-TREE 2/3 thread flag) rather than the legacy -nt flag.
+    --abayes computes aBayes posterior branch supports alongside SH-aLRT values.
+    Both are annotated as node labels on the output tree, which wASTRAL uses for
+    quartet weighting when --astral_binary wastral is selected.
+    """
+    return OptionSet([
+        IntegerOption('-T', 1, active=True),
+        StringOption('-m', 'LG+F+G', active=True),
+        StringOption('-st', 'AA', active=True),
+        StringOption('-mem', '4G', active=True),
+        IntegerOption('-alrt', 1000, active=True),
+        FlagOption('-fast', True, active=True),
+        FlagOption('--abayes', True, active=True),
+    ])
+
+
+def get_gene_tree_dna_options():
+    """Options for per-gene DNA tree inference in the coalescent pipeline (step 4astral).
+
+    Uses GTR+G as the default model for nucleotide alignments. Recommended for
+    closely related species where DNA-level variation is more informative than
+    amino acid sequences.
+    """
+    return OptionSet([
+        IntegerOption('-T', 1, active=True),
+        StringOption('-m', 'GTR+G', active=True),
+        StringOption('-st', 'DNA', active=True),
+        StringOption('-mem', '4G', active=True),
+        IntegerOption('-alrt', 1000, active=True),
+        FlagOption('-fast', True, active=True),
+        FlagOption('--abayes', True, active=True),
+    ])
