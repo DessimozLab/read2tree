@@ -3,7 +3,6 @@ import logging
 import logging.config
 import yaml
 import os
-from pkg_resources import resource_string
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 __version__ = '2.0.1'
